@@ -80,6 +80,10 @@ body{
   transition:background .15s, transform .1s;box-shadow:0 8px 18px -6px rgba(232,119,34,.4);}
 .gate button:hover{background:var(--orange-dark)}
 .gate button:active{transform:translateY(1px)}
+.gate-remember{display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer;
+  font-size:.78rem;color:var(--grey-700);font-weight:500;letter-spacing:0;text-transform:none;}
+.gate-remember input{width:auto;margin:0;cursor:pointer;accent-color:var(--orange)}
+.gate-remember em{font-style:normal;color:var(--grey-500);font-weight:400}
 .gate .err{display:none;align-items:center;gap:6px;margin-top:12px;font-size:.8rem;color:var(--red);font-weight:500;}
 .gate .err.show{display:flex}
 .gate-foot{margin-top:20px;padding-top:16px;border-top:1px solid var(--grey-150);
@@ -108,6 +112,11 @@ body{
   border:1px solid rgba(232,119,34,.25);font-family:inherit;font-size:.75rem;font-weight:600;
   cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s;}
 .refresh-btn:hover{background:var(--orange);color:#fff;border-color:var(--orange)}
+.topbar-icon-btn{margin-left:8px;width:32px;height:32px;border-radius:8px;
+  background:var(--white);color:var(--grey-600);border:1px solid var(--grey-200);
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0;}
+.topbar-icon-btn:hover{background:var(--grey-100);color:var(--grey-900);border-color:var(--grey-300)}
 .kpi-row{background:var(--white);padding:18px 24px;border-bottom:1px solid var(--grey-200);
   display:grid;grid-template-columns:repeat(5, 1fr);gap:18px;}
 .kpi{position:relative;}
@@ -561,6 +570,10 @@ body{
     <form id="gate-form" autocomplete="off">
       <label for="gate-pw">Toegangscode</label>
       <input type="password" id="gate-pw" autofocus required placeholder="Voer toegangscode in">
+      <label class="gate-remember" for="gate-remember">
+        <input type="checkbox" id="gate-remember" checked>
+        <span>Onthoud mij op dit apparaat <em>(30 dagen)</em></span>
+      </label>
       <button type="submit">Open MarktRadar &rarr;</button>
       <div class="err" id="gate-err"><span>&#9888; Onjuiste toegangscode.</span></div>
     </form>
@@ -597,6 +610,9 @@ body{
     <button class="refresh-btn" id="refreshBtn">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
       Wekelijks bijwerken
+    </button>
+    <button class="topbar-icon-btn" id="logoutBtn" title="Uitloggen en sessie vergeten" aria-label="Uitloggen">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
   </div>
 
@@ -2446,10 +2462,41 @@ DATA.meta.totalLeveranciers = DATA.leveranciers.length;
 
 /* SHA-256 hash van toegangscode. Default: "GF2026!" */
 const PW_HASH = "4ad43b0f629d886acfbe35de3fc526f0ab7468d8d985fe607e8314f138f36ef9";
+const AUTH_KEY = 'marktradar.auth.v1';
+const AUTH_TTL_DAYS = 30;
 
 async function sha256(str){
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function isAuthRemembered(){
+  try {
+    const raw = localStorage.getItem(AUTH_KEY);
+    if(!raw) return false;
+    const { expires, hash } = JSON.parse(raw);
+    if(!expires || !hash) return false;
+    if(Date.now() > expires){ localStorage.removeItem(AUTH_KEY); return false; }
+    return hash === PW_HASH;
+  } catch(e){ return false; }
+}
+function rememberAuth(){
+  try {
+    const expires = Date.now() + AUTH_TTL_DAYS * 86400000;
+    localStorage.setItem(AUTH_KEY, JSON.stringify({ expires, hash: PW_HASH }));
+  } catch(e){}
+}
+function forgetAuth(){
+  try { localStorage.removeItem(AUTH_KEY); } catch(e){}
+}
+function openApp(){
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.add('active');
+  initApp();
+}
+function logout(){
+  forgetAuth();
+  location.reload();
 }
 
 document.getElementById('gate-form').addEventListener('submit', async (e) => {
@@ -2457,15 +2504,20 @@ document.getElementById('gate-form').addEventListener('submit', async (e) => {
   const pw = document.getElementById('gate-pw').value;
   const hash = await sha256(pw);
   if(hash === PW_HASH){
-    document.getElementById('gate').classList.add('hidden');
-    document.getElementById('app').classList.add('active');
-    initApp();
+    const remember = document.getElementById('gate-remember')?.checked;
+    if(remember) rememberAuth(); else forgetAuth();
+    openApp();
   } else {
     document.getElementById('gate-err').classList.add('show');
     document.getElementById('gate-pw').value = '';
     document.getElementById('gate-pw').focus();
   }
 });
+
+if(isAuthRemembered()){
+  document.addEventListener('DOMContentLoaded', openApp, { once: true });
+  if(document.readyState !== 'loading') openApp();
+}
 
 (function(){
   const weekEl = document.getElementById('gate-week');
@@ -2690,6 +2742,12 @@ function initApp(){
   bindVersionModal();
   renderVersion();
   syncAssignments();
+  const logoutBtn = document.getElementById('logoutBtn');
+  if(logoutBtn){
+    logoutBtn.addEventListener('click', () => {
+      if(confirm('Uitloggen en de onthouden sessie wissen op dit apparaat?')) logout();
+    });
+  }
 }
 
 function renderKpiRow(){
