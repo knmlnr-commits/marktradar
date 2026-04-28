@@ -1,0 +1,3466 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeriCall · MarktRadar</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#E8732A;
+  --orange-light:#F09A5E;
+  --orange-pale:#FFF3EB;
+  --orange-dark:#C45E1E;
+  --grey-900:#2d2d2d;
+  --grey-800:#3d3d3d;
+  --grey-700:#555555;
+  --grey-600:#777777;
+  --grey-500:#999999;
+  --grey-400:#b3b3b3;
+  --grey-300:#d4d4d4;
+  --grey-200:#ececec;
+  --grey-150:#f0f0f0;
+  --grey-100:#f5f5f5;
+  --grey-50:#fafafa;
+  --white:#ffffff;
+  --green:#2D9D78;
+  --green-light:#E8F5F0;
+  --red:#D94F4F;
+  --red-light:#FCEAEA;
+  --amber:#D9A23B;
+  --amber-light:#FBF1DD;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'DM Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color:var(--grey-800);background:var(--grey-50);min-height:100vh;
+  -webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5;
+}
+.gate{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(900px 600px at 80% -10%, rgba(232,119,34,.10) 0%, transparent 55%),
+    radial-gradient(700px 500px at 10% 110%, rgba(232,119,34,.06) 0%, transparent 55%),var(--grey-50);
+  padding:24px;}
+.gate.hidden{display:none}
+.gate-card{width:100%;max-width:420px;background:var(--white);border:1px solid var(--grey-200);
+  border-radius:16px;padding:32px 32px 24px;
+  box-shadow:0 24px 60px -20px rgba(60,60,60,.18), 0 0 0 1px rgba(255,255,255,.04);}
+.gate-brand{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.brand-mark{width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--orange-light),var(--orange-dark));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;
+  font-size:1.05rem;letter-spacing:-.02em;
+  box-shadow:0 8px 22px rgba(232,119,34,.28), inset 0 1px 0 rgba(255,255,255,.25);}
+.brand-name{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;color:var(--grey-900)}
+.brand-name em{font-style:normal;color:var(--orange);font-weight:600}
+.brand-sub{margin-left:auto;font-family:'DM Mono',ui-monospace,monospace;
+  font-size:.62rem;letter-spacing:.22em;color:var(--grey-500);text-transform:uppercase;}
+.gate-pill-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:.62rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;}
+.pill-vertr{background:var(--orange-pale);color:var(--orange-dark);border:1px solid rgba(232,119,34,.3)}
+.pill-vertr::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange)}
+.pill-meta{background:var(--grey-100);color:var(--grey-600);border:1px solid var(--grey-200)}
+.gate-card h1{font-size:1.4rem;font-weight:700;letter-spacing:-.02em;
+  margin-bottom:6px;color:var(--grey-900);line-height:1.2;}
+.gate-card h1 em{color:var(--orange);font-style:normal}
+.gate-card p.sub{color:var(--grey-600);font-size:.88rem;line-height:1.5;margin-bottom:18px}
+.gate label{display:block;font-size:.62rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--grey-500);margin-bottom:6px;}
+.gate input{width:100%;padding:.85rem 1rem;background:var(--grey-50);border:1px solid var(--grey-200);
+  border-radius:10px;color:var(--grey-900);font-size:.95rem;font-family:inherit;outline:none;
+  transition:border-color .15s, box-shadow .15s, background .15s;letter-spacing:.06em;}
+.gate input:focus{border-color:var(--orange);background:#fff;box-shadow:0 0 0 3px rgba(232,119,34,.12)}
+.gate button{margin-top:14px;width:100%;padding:.85rem 1rem;background:var(--orange);color:#fff;
+  border:none;border-radius:10px;font-size:.95rem;font-weight:700;font-family:inherit;
+  letter-spacing:-.01em;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .15s, transform .1s;box-shadow:0 8px 18px -6px rgba(232,119,34,.4);}
+.gate button:hover{background:var(--orange-dark)}
+.gate button:active{transform:translateY(1px)}
+.gate .err{display:none;align-items:center;gap:6px;margin-top:12px;font-size:.8rem;color:var(--red);font-weight:500;}
+.gate .err.show{display:flex}
+.gate-foot{margin-top:20px;padding-top:16px;border-top:1px solid var(--grey-150);
+  display:flex;justify-content:space-between;font-family:'DM Mono',monospace;
+  font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-500);}
+.app{display:none;min-height:100vh}
+.app.active{display:block}
+.topbar{background:var(--white);border-bottom:1px solid var(--grey-200);padding:14px 24px;
+  display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:50;}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-title{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;color:var(--grey-900);}
+.topbar-title em{color:var(--orange);font-style:normal;font-weight:700}
+.topbar-sub{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.22em;color:var(--grey-500);
+  text-transform:uppercase;padding-left:10px;border-left:1px solid var(--grey-200);margin-left:4px;}
+.topbar-search{flex:1;max-width:520px;margin:0 auto;position:relative;}
+.topbar-search input{width:100%;padding:8px 14px 8px 36px;background:var(--grey-100);
+  border:1px solid var(--grey-200);border-radius:10px;font-family:inherit;font-size:.88rem;
+  color:var(--grey-900);outline:none;transition:all .15s;}
+.topbar-search input:focus{background:#fff;border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,119,34,.12)}
+.topbar-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--grey-500);}
+.topbar-meta{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;
+  font-size:.7rem;letter-spacing:.05em;color:var(--grey-600);}
+.topbar-meta-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(45,157,120,.5)}
+.topbar-meta strong{color:var(--grey-900);font-weight:700}
+.refresh-btn{padding:7px 12px;border-radius:8px;background:var(--orange-pale);color:var(--orange-dark);
+  border:1px solid rgba(232,119,34,.25);font-family:inherit;font-size:.75rem;font-weight:600;
+  cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s;}
+.refresh-btn:hover{background:var(--orange);color:#fff;border-color:var(--orange)}
+.kpi-row{background:var(--white);padding:18px 24px;border-bottom:1px solid var(--grey-200);
+  display:grid;grid-template-columns:repeat(5, 1fr);gap:18px;}
+.kpi{position:relative;}
+.kpi:not(:last-child)::after{content:"";position:absolute;right:-9px;top:8px;bottom:8px;width:1px;background:var(--grey-200);}
+.kpi-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-500);margin-bottom:4px;}
+.kpi-value{font-size:1.6rem;font-weight:700;color:var(--grey-900);letter-spacing:-.02em;display:flex;align-items:baseline;gap:8px;}
+.kpi-value small{font-size:.7rem;font-weight:600;color:var(--grey-500);letter-spacing:0}
+.kpi-trend{font-size:.7rem;font-weight:600;display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:5px;}
+.kpi-trend.up{background:var(--green-light);color:var(--green)}
+.kpi-trend.down{background:var(--red-light);color:var(--red)}
+.kpi-trend.flat{background:var(--grey-100);color:var(--grey-600)}
+.tabs{background:var(--white);padding:0 24px;border-bottom:1px solid var(--grey-200);display:flex;gap:0;}
+.tab{padding:14px 18px;font-family:inherit;font-size:.88rem;font-weight:600;color:var(--grey-600);
+  background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent;
+  transition:color .15s, border-color .15s;display:inline-flex;align-items:center;gap:8px;}
+.tab:hover{color:var(--grey-900)}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+.tab-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:18px;
+  padding:0 6px;border-radius:9px;background:var(--grey-150);color:var(--grey-700);
+  font-family:'DM Mono',monospace;font-size:.68rem;font-weight:600;}
+.tab.active .tab-count{background:var(--orange-pale);color:var(--orange-dark)}
+.main{padding:24px;max-width:1600px;margin:0 auto}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.chip-row{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:20px;background:var(--white);border:1px solid var(--grey-200);
+  font-family:inherit;font-size:.78rem;font-weight:500;color:var(--grey-700);cursor:pointer;transition:all .15s;
+  display:inline-flex;align-items:center;gap:5px;}
+.chip:hover{border-color:var(--grey-400);color:var(--grey-900)}
+.chip.active{background:var(--grey-900);color:#fff;border-color:var(--grey-900)}
+.chip.active.orange{background:var(--orange);border-color:var(--orange)}
+.chip-count{font-family:'DM Mono',monospace;font-size:.68rem;opacity:.7;}
+.toolbar-spacer{flex:1}
+.filter-bar{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px;
+  padding:10px 14px;background:var(--orange-pale);border:1px solid var(--orange);border-radius:10px;}
+.filter-group{display:flex;flex-direction:column;gap:4px;min-width:170px}
+.filter-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--orange-dark);}
+.filter-select{background-color:white;border-color:var(--orange-light);font-weight:600;color:var(--grey-900);}
+.filter-select:hover{border-color:var(--orange)}
+.filter-select:focus{outline:2px solid var(--orange);outline-offset:1px}
+.sort-select{padding:6px 28px 6px 12px;border-radius:8px;
+  background:var(--white) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='3' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 10px center;
+  border:1px solid var(--grey-200);font-family:inherit;font-size:.8rem;color:var(--grey-700);cursor:pointer;appearance:none;}
+.feed{display:flex;flex-direction:column;gap:10px}
+.signal{background:var(--white);border:1px solid var(--grey-200);border-left:3px solid var(--grey-300);
+  border-radius:10px;padding:14px 18px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;
+  transition:border-color .15s, transform .1s, box-shadow .15s;cursor:pointer;}
+.signal:hover{border-color:var(--grey-300);border-left-color:var(--orange);box-shadow:0 6px 18px -8px rgba(60,60,60,.18);}
+.signal.urgency-hoog{border-left-color:var(--red)}
+.signal.urgency-middel{border-left-color:var(--amber)}
+.signal.urgency-laag{border-left-color:var(--grey-400)}
+.signal-date{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--grey-500);font-weight:500;
+  text-transform:uppercase;letter-spacing:.06em;width:62px;flex-shrink:0;line-height:1.4;}
+.signal-date strong{display:block;color:var(--grey-800);font-size:.78rem;font-weight:700}
+.signal-body{min-width:0}
+.signal-meta-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.signal-type{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 8px;border-radius:4px;background:var(--grey-100);color:var(--grey-700);}
+.signal-type.management{background:#FBF1DD;color:#8a6a1c}
+.signal-type.aanbesteding{background:var(--orange-pale);color:var(--orange-dark)}
+.signal-type.nieuws{background:var(--grey-100);color:var(--grey-700)}
+.signal-type.financieel{background:var(--red-light);color:#9c2f2f}
+.signal-type.fusie{background:#EFEAFB;color:#5d3fa6}
+.signal-type.contract{background:var(--green-light);color:var(--green)}
+.signal-type.uitbreiding{background:var(--green-light);color:var(--green)}
+.signal-type.attentie{background:var(--red-light);color:#9c2f2f}
+.signal-urgency{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:4px;color:var(--grey-600);}
+.signal-urgency .dot{width:6px;height:6px;border-radius:50%}
+.signal-urgency.hoog .dot{background:var(--red);box-shadow:0 0 6px var(--red)}
+.signal-urgency.middel .dot{background:var(--amber)}
+.signal-urgency.laag .dot{background:var(--grey-400)}
+.signal-headline{font-size:.95rem;font-weight:700;color:var(--grey-900);letter-spacing:-.01em;line-height:1.35;margin-bottom:4px;}
+.signal-summary{font-size:.85rem;color:var(--grey-700);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.signal-instelling{display:inline-flex;align-items:center;gap:6px;margin-top:8px;
+  font-size:.78rem;font-weight:600;color:var(--grey-700);padding:3px 9px;border-radius:6px;
+  background:var(--grey-100);cursor:pointer;transition:background .15s, color .15s;}
+.signal-instelling:hover{background:var(--orange-pale);color:var(--orange-dark)}
+.signal-instelling .arrow{font-size:.7rem;opacity:.5}
+.signal-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.signal-source{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--grey-500);
+  text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:5px;}
+.signal-source:hover{background:var(--grey-100);color:var(--grey-700)}
+.inst-grid{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;overflow:hidden;}
+.inst-head{display:grid;grid-template-columns:minmax(220px,2.2fr) 1fr 1fr 1fr 1fr 90px 60px;
+  gap:12px;padding:11px 18px;background:var(--grey-50);border-bottom:1px solid var(--grey-200);
+  font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-500);}
+.inst-row{display:grid;grid-template-columns:minmax(220px,2.2fr) 1fr 1fr 1fr 1fr 90px 60px;
+  gap:12px;padding:14px 18px;border-bottom:1px solid var(--grey-150);cursor:pointer;
+  transition:background .12s;align-items:center;}
+.inst-row:last-child{border-bottom:none}
+.inst-row:hover{background:var(--grey-50)}
+.inst-name{display:flex;flex-direction:column;gap:2px;min-width:0}
+.inst-name-main{font-size:.92rem;font-weight:700;color:var(--grey-900);letter-spacing:-.01em;
+  display:flex;align-items:center;gap:8px;}
+.inst-name-main .signal-badge{font-family:'DM Mono',monospace;font-size:.6rem;font-weight:600;
+  letter-spacing:.05em;padding:1px 6px;border-radius:4px;background:var(--orange);color:#fff;}
+.inst-name-main .signal-badge.zero{background:var(--grey-200);color:var(--grey-600)}
+.inst-name-sub{font-size:.75rem;color:var(--grey-500)}
+.inst-cell{font-size:.82rem;color:var(--grey-700)}
+.inst-cell strong{color:var(--grey-900);font-weight:600}
+.inst-cell .muted{color:var(--grey-500)}
+.status-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:5px;
+  font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.status-klant{background:var(--green-light);color:var(--green)}
+.status-prospect{background:var(--orange-pale);color:var(--orange-dark)}
+.status-lead{background:var(--amber-light);color:#8a6a1c}
+.status-cold{background:var(--grey-100);color:var(--grey-600)}
+.lead-score{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:700;color:var(--grey-900);
+  display:flex;align-items:center;gap:6px;}
+.lead-score .bar{flex:1;height:5px;background:var(--grey-150);border-radius:3px;overflow:hidden;min-width:30px;}
+.lead-score .bar-fill{height:100%;border-radius:3px;background:var(--orange)}
+.lead-score.cold .bar-fill{background:var(--grey-400)}
+.lead-score.hot .bar-fill{background:var(--red)}
+.score-cell{display:flex;flex-direction:column;gap:3px}
+.score-lens-label{font-size:.62rem;font-weight:600;color:var(--grey-500);text-transform:uppercase;letter-spacing:.05em}
+.lens-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lens-row{padding:10px 12px;background:var(--grey-50);border:1px solid var(--grey-150);border-radius:8px;transition:opacity .15s}
+.lens-row.relevant{background:white;border-color:var(--orange-pale);box-shadow:0 0 0 1px var(--orange-pale) inset}
+.lens-row.irrelevant{opacity:.45}
+.lens-row-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.lens-row-name{font-size:.78rem;font-weight:700;color:var(--grey-900);display:flex;align-items:center;gap:6px}
+.lens-row-value{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:700;color:var(--grey-900)}
+.lens-row-bar{height:5px;background:var(--grey-150);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.lens-row-fill{display:block;height:100%;border-radius:3px;background:var(--orange);transition:width .3s}
+.lens-row-fill.cold{background:var(--grey-400)}
+.lens-row-fill.hot{background:var(--red)}
+.lens-row-desc{font-size:.68rem;color:var(--grey-600);line-height:1.35}
+.lens-relevant-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 2px var(--orange-pale)}
+.lens-legend{margin-top:8px;font-size:.7rem;color:var(--grey-600);display:flex;align-items:center;gap:6px}
+.sparkline{display:inline-block;vertical-align:middle}
+.sparkline-cell{display:flex;align-items:center;gap:6px}
+.sparkline path.line{fill:none;stroke:var(--orange);stroke-width:1.6}
+.sparkline path.area{fill:var(--orange-pale);stroke:none}
+.sparkline circle.last{fill:var(--orange);stroke:white;stroke-width:1.5}
+.sparkline circle.point{fill:var(--orange);opacity:.4}
+.sparkline.cold path.line{stroke:var(--grey-400)}
+.sparkline.cold path.area{fill:var(--grey-100)}
+.sparkline.cold circle.last{fill:var(--grey-400)}
+.sparkline.cold circle.point{fill:var(--grey-400)}
+.sparkline.hot path.line{stroke:var(--red)}
+.sparkline.hot circle.last{fill:var(--red)}
+.delta-up{color:var(--red);font-weight:700;font-size:.7rem}
+.delta-down{color:#5a8a5a;font-weight:700;font-size:.7rem}
+.delta-flat{color:var(--grey-500);font-weight:600;font-size:.7rem}
+.trends-meta{display:flex;gap:14px;flex-wrap:wrap;padding:14px 16px;background:var(--grey-50);
+  border:1px solid var(--grey-150);border-radius:10px;margin-bottom:18px;font-size:.78rem;color:var(--grey-700)}
+.trends-meta-item{display:flex;flex-direction:column;gap:2px}
+.trends-meta-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.05em;color:var(--grey-500);font-weight:600}
+.trends-meta-value{font-family:'DM Mono',monospace;font-size:.95rem;font-weight:700;color:var(--grey-900)}
+.trends-section{margin-bottom:24px}
+.trends-section-title{font-size:.95rem;font-weight:700;color:var(--grey-900);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--grey-150)}
+.mover-row{display:grid;grid-template-columns:2fr 1fr 110px 80px 60px;gap:14px;align-items:center;
+  padding:10px 14px;background:white;border:1px solid var(--grey-150);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
+.mover-row:hover{border-color:var(--orange)}
+.mover-name{font-size:.86rem;font-weight:700;color:var(--grey-900)}
+.mover-meta{font-size:.7rem;color:var(--grey-500)}
+.mover-lens{font-size:.7rem;color:var(--grey-700);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.stale-row{display:grid;grid-template-columns:2fr 1fr 100px 60px;gap:14px;align-items:center;
+  padding:8px 14px;background:var(--grey-50);border:1px solid var(--grey-150);border-radius:8px;margin-bottom:5px;cursor:pointer;font-size:.8rem}
+.stale-row:hover{background:white;border-color:var(--orange)}
+.stale-weeks{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--grey-600)}
+.trends-list-row{display:grid;grid-template-columns:2fr 1fr 130px 60px 50px;gap:14px;align-items:center;
+  padding:8px 14px;background:white;border-bottom:1px solid var(--grey-100);cursor:pointer}
+.trends-list-row:hover{background:var(--grey-50)}
+.trends-list-row:first-child{border-top-left-radius:8px;border-top-right-radius:8px;border-top:1px solid var(--grey-150)}
+.trends-list-row:last-child{border-bottom-left-radius:8px;border-bottom-right-radius:8px;border-bottom:1px solid var(--grey-150)}
+.trends-list-empty{padding:24px;text-align:center;color:var(--grey-500);font-size:.85rem;background:var(--grey-50);border-radius:8px;border:1px dashed var(--grey-150)}
+.trends-no-history{padding:18px 22px;background:var(--orange-pale);border:1px solid var(--orange);border-radius:8px;font-size:.82rem;color:var(--orange-dark);line-height:1.55;margin-bottom:18px}
+.lens-chart{margin-top:14px;padding:12px;background:var(--grey-50);border:1px solid var(--grey-150);border-radius:8px}
+.lens-chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lens-chart-cell{padding:10px;background:white;border-radius:6px;border:1px solid var(--grey-150)}
+.lens-chart-cell.relevant{border-color:var(--orange-pale)}
+.lens-chart-cell-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;
+  font-size:.72rem;font-weight:700;color:var(--grey-700);text-transform:uppercase;letter-spacing:.05em}
+.lens-chart-cell-value{font-family:'DM Mono',monospace;font-size:.95rem;color:var(--grey-900)}
+.owner-mini{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;
+  border-radius:50%;background:var(--orange);color:white;font-size:.6rem;font-weight:700;
+  font-family:'DM Mono',monospace;letter-spacing:0;margin-left:2px}
+.owner-pill{display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;
+  background:white;border:1px solid var(--orange-pale);border-radius:24px}
+.owner-avatar{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+  border-radius:50%;background:var(--orange);color:white;font-size:.78rem;font-weight:700;font-family:'DM Mono',monospace}
+.owner-name{font-size:.85rem;font-weight:700;color:var(--grey-900);line-height:1.1}
+.owner-rol{font-size:.7rem;color:var(--grey-600);margin-top:2px}
+.owner-select{width:100%;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:.85rem;
+  color:var(--grey-900);background:white;border:1px solid var(--grey-300);border-radius:6px;cursor:pointer}
+.owner-select:focus{outline:none;border-color:var(--orange)}
+.owner-prominent{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 18px;margin-bottom:18px;border-radius:10px;border:2px solid;}
+.owner-prominent.unassigned{
+  background:repeating-linear-gradient(45deg,var(--grey-50),var(--grey-50) 8px,var(--grey-100) 8px,var(--grey-100) 16px);
+  border-color:var(--orange);border-style:dashed;}
+.owner-prominent.assigned{background:var(--orange-pale);border-color:var(--orange);border-style:solid;}
+.owner-prominent-left{display:flex;flex-direction:column;gap:4px;flex:1}
+.owner-prominent-label{font-size:.62rem;font-weight:700;color:var(--orange-dark);text-transform:uppercase;letter-spacing:.08em;}
+.owner-prominent-current{font-size:.85rem}
+.owner-empty-prominent{font-size:.92rem;font-weight:700;color:var(--orange-dark);font-style:italic;}
+.owner-prominent-right{min-width:240px}
+.owner-prominent-right .owner-select{background:white;border-color:var(--orange);font-weight:600;}
+.version-pill{display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 9px;margin-left:8px;
+  background:var(--orange-pale);border:1px solid var(--orange);border-radius:12px;cursor:pointer;
+  font-family:'DM Mono',monospace;font-size:.68rem;font-weight:700;color:var(--orange-dark);letter-spacing:.02em;transition:all .15s;}
+.version-pill:hover{background:var(--orange);color:white}
+.version-pill:hover .version-codename{color:rgba(255,255,255,.85);border-left-color:rgba(255,255,255,.4)}
+.version-codename{font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:600;color:var(--orange);
+  padding-left:6px;border-left:1px solid var(--orange-light);font-style:italic;}
+.version-history{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;margin:14px 0}
+.version-row{display:grid;grid-template-columns:78px 130px 1fr 86px;gap:12px;align-items:start;
+  padding:10px 12px;background:var(--grey-50);border:1px solid var(--grey-150);border-radius:6px;font-size:.78rem;}
+.version-row.current{background:var(--orange-pale);border-color:var(--orange)}
+.version-num{font-family:'DM Mono',monospace;font-weight:700;color:var(--grey-900)}
+.version-name{font-weight:700;color:var(--orange-dark);font-style:italic}
+.version-note{color:var(--grey-700);line-height:1.45}
+.version-date{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--grey-500);text-align:right}
+.inst-arrow{font-size:1rem;color:var(--grey-400);text-align:right}
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(45,45,45,.5);backdrop-filter:blur(4px);
+  display:flex;align-items:flex-start;justify-content:center;padding:60px 24px 24px;
+  opacity:0;visibility:hidden;transition:opacity .2s, visibility .2s;overflow-y:auto;}
+.overlay.show{opacity:1;visibility:visible}
+.overlay-panel{width:100%;max-width:1000px;background:var(--white);border-radius:16px;
+  box-shadow:0 30px 80px -20px rgba(40,40,40,.45);overflow:hidden;transform:translateY(20px);
+  transition:transform .25s cubic-bezier(.2,.8,.2,1);}
+.overlay.show .overlay-panel{transform:translateY(0)}
+.overlay-head{padding:22px 28px;
+  background:linear-gradient(135deg, var(--orange-pale) 0%, var(--white) 100%);
+  border-bottom:1px solid var(--grey-200);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;}
+.overlay-title-block h2{font-size:1.4rem;font-weight:700;color:var(--grey-900);letter-spacing:-.02em;margin-bottom:5px;line-height:1.2;}
+.overlay-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.8rem;color:var(--grey-600);}
+.overlay-meta strong{color:var(--grey-800);font-weight:600}
+.overlay-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--grey-400)}
+.overlay-close{width:34px;height:34px;border-radius:50%;border:1px solid var(--grey-200);
+  background:var(--white);color:var(--grey-700);font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.overlay-close:hover{background:var(--grey-100);color:var(--grey-900)}
+.overlay-body{padding:24px 28px}
+.overlay-section{margin-bottom:26px}
+.overlay-section:last-child{margin-bottom:0}
+.section-title{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--grey-500);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:"";flex:1;height:1px;background:var(--grey-150);}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.stat{padding:12px 14px;border-radius:10px;background:var(--grey-50);border:1px solid var(--grey-150);}
+.stat-label{font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-500);margin-bottom:4px;}
+.stat-value{font-size:1.15rem;font-weight:700;color:var(--grey-900);letter-spacing:-.02em;}
+.stat-value small{font-size:.7rem;font-weight:500;color:var(--grey-500)}
+.segments{display:flex;gap:6px;flex-wrap:wrap}
+.segment-tag{padding:3px 9px;border-radius:5px;background:var(--white);border:1px solid var(--grey-200);
+  font-size:.7rem;font-weight:600;color:var(--grey-700);letter-spacing:.05em;}
+.segment-tag.has{background:var(--orange-pale);border-color:rgba(232,119,34,.3);color:var(--orange-dark)}
+.directie-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.directie-item{padding:11px 14px;border-radius:8px;background:var(--white);border:1px solid var(--grey-200);}
+.directie-naam{font-size:.88rem;font-weight:700;color:var(--grey-900);margin-bottom:2px}
+.directie-functie{font-size:.75rem;color:var(--grey-600)}
+.directie-sinds{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--grey-500);
+  margin-top:4px;display:flex;align-items:center;gap:5px;}
+.directie-item.recent{border-color:rgba(232,119,34,.4);background:var(--orange-pale)}
+.directie-item.recent .directie-sinds{color:var(--orange-dark);font-weight:600}
+.it-stack{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.it-block{padding:14px;border-radius:10px;background:var(--grey-50);border:1px solid var(--grey-150);}
+.it-block-title{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-600);margin-bottom:8px;}
+.it-leverancier{font-size:1rem;font-weight:700;color:var(--grey-900);margin-bottom:3px;}
+.it-systeem{font-size:.8rem;color:var(--grey-600)}
+.it-list{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.it-list-item{font-size:.78rem;color:var(--grey-700);display:flex;justify-content:space-between;
+  padding:6px 8px;background:var(--white);border-radius:5px;}
+.it-list-item span:last-child{color:var(--grey-500);font-family:'DM Mono',monospace;font-size:.7rem}
+.signal-mini{padding:10px 14px;border-left:3px solid var(--grey-300);background:var(--grey-50);
+  border-radius:0 8px 8px 0;margin-bottom:8px;cursor:pointer;transition:background .12s;}
+.signal-mini:hover{background:var(--orange-pale)}
+.signal-mini.urgency-hoog{border-left-color:var(--red)}
+.signal-mini.urgency-middel{border-left-color:var(--amber)}
+.signal-mini-head{display:flex;justify-content:space-between;align-items:center;
+  font-size:.65rem;font-family:'DM Mono',monospace;color:var(--grey-500);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.signal-mini-head strong{color:var(--grey-700);font-weight:700}
+.signal-mini-body{font-size:.85rem;color:var(--grey-800);font-weight:500;line-height:1.4}
+.opportunity-block{padding:14px 16px;border-radius:10px;
+  background:linear-gradient(135deg, var(--orange-pale) 0%, var(--white) 100%);
+  border:1px solid rgba(232,119,34,.3);}
+.opportunity-block strong{color:var(--orange-dark)}
+.no-data{padding:14px;text-align:center;color:var(--grey-500);font-size:.82rem;font-style:italic;}
+.lev-cat{margin-bottom:24px}
+.lev-cat-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;
+  padding-bottom:8px;border-bottom:1px solid var(--grey-200);}
+.lev-cat-title{font-size:1.05rem;font-weight:700;color:var(--grey-900);letter-spacing:-.01em;}
+.lev-cat-meta{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--grey-500);}
+.lev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;}
+.lev-card{background:var(--white);border:1px solid var(--grey-200);border-radius:10px;
+  padding:14px 16px;transition:border-color .15s, box-shadow .15s;}
+.lev-card:hover{border-color:var(--grey-300);box-shadow:0 6px 18px -8px rgba(60,60,60,.15)}
+.lev-card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.lev-name{font-size:.98rem;font-weight:700;color:var(--grey-900);letter-spacing:-.01em}
+.lev-type{font-size:.7rem;color:var(--grey-500);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.partner-pill{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:5px;flex-shrink:0;}
+.partner-eigen{background:var(--orange-pale);color:var(--orange-dark)}
+.partner-huidig{background:var(--green-light);color:var(--green)}
+.partner-mogelijk{background:var(--orange-pale);color:var(--orange-dark)}
+.partner-concurrent{background:var(--red-light);color:var(--red)}
+.partner-neutraal{background:var(--grey-100);color:var(--grey-600)}
+.lev-stat-row{display:flex;gap:14px;margin-bottom:10px;padding:8px 0;border-top:1px solid var(--grey-150);border-bottom:1px solid var(--grey-150)}
+.lev-stat{flex:1}
+.lev-stat-label{font-size:.6rem;color:var(--grey-500);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:2px}
+.lev-stat-value{font-size:1rem;font-weight:700;color:var(--grey-900)}
+.lev-stat-value small{font-size:.7rem;font-weight:500;color:var(--grey-500)}
+.lev-customers{font-size:.78rem;color:var(--grey-700);line-height:1.55;}
+.lev-customers strong{color:var(--grey-900);font-weight:600}
+.lev-notes{margin-top:8px;padding-top:8px;border-top:1px solid var(--grey-150);
+  font-size:.78rem;color:var(--grey-700);line-height:1.5;font-style:italic;}
+.whitespace-block{background:var(--white);border:1px solid var(--grey-200);border-radius:10px;
+  padding:16px 18px;margin-top:18px;}
+.whitespace-title{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--orange-dark);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.whitespace-list{display:flex;flex-wrap:wrap;gap:6px}
+.whitespace-tag{padding:5px 10px;border-radius:6px;background:var(--orange-pale);color:var(--orange-dark);
+  font-size:.78rem;font-weight:600;cursor:pointer;border:1px solid rgba(232,119,34,.2);transition:all .12s;}
+.whitespace-tag:hover{background:var(--orange);color:#fff;border-color:var(--orange)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+.refresh-modal{position:fixed;inset:0;z-index:120;background:rgba(45,45,45,.5);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;padding:24px;}
+.refresh-modal.show{display:flex}
+.refresh-modal-panel{background:var(--white);border-radius:16px;width:100%;max-width:680px;
+  padding:28px 32px;box-shadow:0 30px 80px -20px rgba(40,40,40,.45);}
+.refresh-modal h3{font-size:1.2rem;font-weight:700;color:var(--grey-900);letter-spacing:-.02em;margin-bottom:6px;}
+.refresh-modal p{font-size:.88rem;color:var(--grey-700);margin-bottom:14px;line-height:1.55}
+.refresh-modal pre{background:var(--grey-50);border:1px solid var(--grey-200);border-radius:8px;padding:14px;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--grey-800);
+  white-space:pre-wrap;line-height:1.55;max-height:280px;overflow-y:auto;}
+.refresh-modal .btn-row{margin-top:16px;display:flex;gap:10px;justify-content:flex-end;}
+.refresh-modal button{padding:9px 16px;border-radius:8px;font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-secondary{background:var(--white);color:var(--grey-700);border:1px solid var(--grey-300)}
+.btn-secondary:hover{background:var(--grey-100)}
+.btn-primary{background:var(--orange);color:#fff;border:1px solid var(--orange)}
+.btn-primary:hover{background:var(--orange-dark);border-color:var(--orange-dark)}
+@media (max-width:980px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .kpi:not(:last-child)::after{display:none}
+  .inst-head{display:none}
+  .inst-row{grid-template-columns:1fr;gap:6px;padding:14px}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .it-stack{grid-template-columns:1fr}
+  .directie-list{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">GeriCall<em> ·</em></div>
+      <div class="brand-sub">MarktRadar</div>
+    </div>
+    <div class="gate-pill-row">
+      <span class="pill pill-vertr">Vertrouwelijk</span>
+      <span class="pill pill-meta">VVT · ANW · Leads</span>
+    </div>
+    <h1>Markt<em>Radar</em> · Intelligence Portal</h1>
+    <p class="sub">Live overzicht van VVT-instellingen, ANW-leveranciers en marktsignalen. Voor intern gebruik.</p>
+    <form id="gate-form" autocomplete="off">
+      <label for="gate-pw">Toegangscode</label>
+      <input type="password" id="gate-pw" autofocus required placeholder="Voer toegangscode in">
+      <button type="submit">Open MarktRadar &rarr;</button>
+      <div class="err" id="gate-err"><span>&#9888; Onjuiste toegangscode.</span></div>
+    </form>
+    <div class="gate-foot">
+      <span id="gate-version">Client-side &middot; v1.0.0 &middot; Aldebaran</span>
+      <span id="gate-week"></span>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-mark">G</div>
+      <div class="topbar-title">Markt<em>Radar</em></div>
+      <div class="topbar-sub">VVT Intelligence</div>
+      <button class="version-pill" id="versionPill" title="Klik voor release-historie">
+        <span id="versionNumber">v1.0.0</span>
+        <span class="version-codename" id="versionCodename">Aldebaran</span>
+      </button>
+    </div>
+    <div class="topbar-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="globalSearch" placeholder="Zoek instelling, leverancier, signaal &hellip;">
+    </div>
+    <div class="topbar-meta">
+      <span class="topbar-meta-dot"></span>
+      <span>Bijgewerkt <strong id="lastUpdated">&mdash;</strong></span>
+    </div>
+    <button class="refresh-btn" id="ownersBtn" style="margin-right:8px" title="Eigenaar-toewijzingen exporteren of importeren">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6"/><path d="M19 8v6"/></svg>
+      Eigenaren
+    </button>
+    <button class="refresh-btn" id="refreshBtn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+      Wekelijks bijwerken
+    </button>
+  </div>
+
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="signalen">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h2"/><path d="M20 12h2"/><path d="M12 2v2"/><path d="M12 20v2"/><circle cx="12" cy="12" r="4"/></svg>
+      Signalen <span class="tab-count" id="tabCountSignalen">0</span>
+    </button>
+    <button class="tab" data-tab="instellingen">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+      Instellingen <span class="tab-count" id="tabCountInst">0</span>
+    </button>
+    <button class="tab" data-tab="leveranciers">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      Leveranciers <span class="tab-count" id="tabCountLev">0</span>
+    </button>
+    <button class="tab" data-tab="trends">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+      Trends <span class="tab-count" id="tabCountTrends">0</span>
+    </button>
+  </div>
+
+  <div class="main">
+    <div class="tab-pane active" id="pane-signalen">
+      <div class="toolbar">
+        <div class="chip-row" id="signalFilters"></div>
+        <div class="toolbar-spacer"></div>
+        <select class="sort-select" id="signalSort">
+          <option value="date">Sorteer op datum</option>
+          <option value="urgency">Sorteer op urgentie</option>
+          <option value="leadscore">Sorteer op lead score</option>
+        </select>
+      </div>
+      <div class="feed" id="signalFeed"></div>
+    </div>
+
+    <div class="tab-pane" id="pane-instellingen">
+      <div class="toolbar">
+        <div class="chip-row" id="instFilters"></div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label class="filter-label">Regio</label>
+          <select class="sort-select filter-select" id="instRegio">
+            <option value="all">Alle regio's</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Provincie</label>
+          <select class="sort-select filter-select" id="instProv">
+            <option value="all">Alle provincies</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Eigenaar</label>
+          <select class="sort-select filter-select" id="instOwner">
+            <option value="all">Alle eigenaren</option>
+          </select>
+        </div>
+        <div class="toolbar-spacer"></div>
+        <div class="filter-group">
+          <label class="filter-label">Sortering</label>
+          <select class="sort-select filter-select" id="instSort">
+            <option value="auto">Score (status-specifiek)</option>
+            <option value="acquisitie">Acquisitie-score (winnen)</option>
+            <option value="retention">Retention-risico (klanten)</option>
+            <option value="expansion">Expansion-score (upsell)</option>
+            <option value="consolidatie">Consolidatie-score (M&amp;A)</option>
+            <option value="signals">Sorteer op signalen</option>
+            <option value="size">Sorteer op grootte</option>
+            <option value="name">Sorteer alfabetisch</option>
+          </select>
+        </div>
+      </div>
+      <div class="inst-grid" id="instGrid"></div>
+    </div>
+
+    <div class="tab-pane" id="pane-leveranciers">
+      <div id="levContainer"></div>
+    </div>
+
+    <div class="tab-pane" id="pane-trends">
+      <div class="trends-meta" id="trendsMeta"></div>
+      <div class="trends-section">
+        <div class="trends-section-title">Top movers &middot; sinds vorige snapshot</div>
+        <div id="trendsMovers"></div>
+      </div>
+      <div class="trends-section">
+        <div class="trends-section-title">Stale &middot; 4+ snapshots geen beweging</div>
+        <div id="trendsStale"></div>
+      </div>
+      <div class="trends-section">
+        <div class="trends-section-title">Alle instellingen &middot; score-historie</div>
+        <div class="toolbar" style="margin-bottom:10px">
+          <div class="chip-row" id="trendsLensChips"></div>
+          <div class="toolbar-spacer"></div>
+          <select class="sort-select" id="trendsSort">
+            <option value="delta-abs">Sorteer op grootste beweging</option>
+            <option value="current-desc">Sorteer op huidige score (hoog)</option>
+            <option value="name">Sorteer alfabetisch</option>
+          </select>
+        </div>
+        <div id="trendsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay-panel" id="overlayPanel"></div>
+</div>
+
+<div class="refresh-modal" id="versionModal">
+  <div class="refresh-modal-panel">
+    <h3 id="versionModalTitle">Release-historie</h3>
+    <p>MarktRadar gebruikt semantische versie-nummering (<code>major.minor.patch</code>) en geeft elke
+    minor- of major-release een codename uit de sterren-reeks (alfabetisch).</p>
+    <div id="versionHistory" class="version-history"></div>
+    <div class="btn-row">
+      <button class="btn-secondary" id="closeVersionBtn">Sluiten</button>
+    </div>
+  </div>
+</div>
+
+<div class="refresh-modal" id="refreshModal">
+  <div class="refresh-modal-panel">
+    <h3>Wekelijks bijwerken</h3>
+    <p>Kopieer onderstaande prompt naar Claude (of Claude Code in je werkmap) om het <code>DATA</code>-blok in <code>marktradar.html</code> te vervangen met de meest recente signalen.</p>
+    <pre id="weeklyPrompt"></pre>
+    <div class="btn-row">
+      <button class="btn-secondary" id="closeRefreshBtn">Sluiten</button>
+      <button class="btn-primary" id="copyPromptBtn">Prompt kopi&euml;ren</button>
+    </div>
+  </div>
+</div>
+
+<div class="refresh-modal" id="ownersModal">
+  <div class="refresh-modal-panel">
+    <h3>Eigenaar-toewijzingen</h3>
+    <p>Toewijzingen worden lokaal in deze browser opgeslagen (localStorage). Wil je een backup of synchronisatie tussen apparaten? Exporteer als CSV en importeer waar nodig.</p>
+    <div id="ownersStats" style="margin:14px 0;font-size:.82rem;color:var(--grey-700);padding:10px 14px;background:var(--grey-50);border-radius:6px;border:1px solid var(--grey-150)"></div>
+    <pre id="ownersCsv" style="font-size:.7rem;max-height:240px;overflow:auto"></pre>
+    <div class="btn-row">
+      <button class="btn-secondary" id="closeOwnersBtn">Sluiten</button>
+      <button class="btn-secondary" id="clearOwnersBtn" style="border-color:var(--red);color:var(--red)">Alles wissen</button>
+      <button class="btn-secondary" id="importOwnersBtn">CSV importeren</button>
+      <button class="btn-primary" id="copyOwnersBtn">CSV kopi&euml;ren</button>
+    </div>
+    <input type="file" id="ownersFileInput" accept=".csv,text/csv" style="display:none">
+  </div>
+</div>
+<script>
+/* ============================================================ */
+/* MARKTRADAR DATA  ·  START                                     */
+/* Vervang dit gehele blok wekelijks via de Claude-prompt.       */
+/* ============================================================ */
+const DATA = {
+  meta: {
+    lastUpdated: "2026-04-28",
+    weekNumber: 18,
+    sources: [
+      "ZorgkaartNL", "Filica", "KvK Handelsregister",
+      "Jaarverslagenzorg.nl", "Skipr", "Zorgvisie", "ICTHealth"
+    ],
+    version: "1.0.0",
+    codename: "Aldebaran",
+    promptVersion: "1.0.0",
+    releaseHistory: [
+      { version: "1.0.0", codename: "Aldebaran", date: "2026-04-28",
+        note: "Initiële rebuild: 60+ grootste VVT-instellingen NL met multi-dimensionale scoring (acquisitie, retention, expansion, consolidatie), signalen-feed en leveranciers-mapping." }
+    ],
+    totalInstellingen: 0,
+    totalSignalen: 0,
+    totalLeveranciers: 0
+  },
+  instellingen: [
+    {
+      id: "cordaan", naam: "Cordaan", hoofdvestiging: "Amsterdam",
+      regio: "West", provincie: "Noord-Holland",
+      aantalBedden: 3500, aantalMedewerkersEst: 6300, omzetMlnEst: 297.5,
+      grootte: "g", locaties: 120,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: true, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Verwijspunt 020",
+      anwDetail: "Grootste Amsterdamse VVT. Eigen SO's. Verwijspunt 020 partner.",
+      tags: ["SO in dienst", "Verwijspunt 020"],
+      fusie: "Verwijspunt 020 (Amsterdams ANW-verband)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "Ronald Schmidt", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/ronald-schmidt-92a84028", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 0 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Eigen SO's; sterke incumbent via Verwijspunt 020. GeriForce-tooling als langetermijn-mogelijkheid.",
+      website: "https://www.cordaan.nl"
+    },
+    {
+      id: "carintreggeland", naam: "Carintreggeland",
+      hoofdvestiging: "Enschede/Hengelo/Almelo",
+      regio: "Oost", provincie: "Overijssel",
+      aantalBedden: 1600, aantalMedewerkersEst: 2880, omzetMlnEst: 136.0,
+      grootte: "g", locaties: 20,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: true, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "ThoeZ Twente raamovereenkomst (11 organisaties, feb. 2025).",
+      tags: ["Twente 11-org.", "GeriCall klant"],
+      fusie: "ThoeZ Twente (11 organisaties, raamovereenkomst feb. 2025)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "Heidi de Bruijn", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/heidi-de-bruijn-2486422b", sinds: null, recent: false },
+        { naam: "Inge Zwijnenberg", functie: "Lid Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/ingezwijnenberg", sinds: null, recent: false }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd GeriCall klant via ThoeZ Twente",
+      scores: { acquisitie: 0, retention: 20, expansion: 65, consolidatie: 10 },
+      leadScore: 65, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules (eLearning, NUTS, dashboards).",
+      website: "https://www.carintreggeland.nl"
+    },
+    {
+      id: "laurens", naam: "Laurens", hoofdvestiging: "Rotterdam",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 2100, aantalMedewerkersEst: 3780, omzetMlnEst: 178.5,
+      grootte: "g", locaties: 26,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: true, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Archipel ZHE",
+      anwDetail: "Grootste Rotterdamse VVT. Eigen SO's. Archipel ZHE partner.",
+      tags: ["SO in dienst", "Archipel ZHE"],
+      fusie: "Archipel ZHE (13 organisaties)",
+      recenteUitbreiding: "Borgstede Barendrecht dec. 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "Ronald Buijs", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/ronald-buijs-68a9752", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 0 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Eigen SO's plus Archipel-verband; minder voor de hand liggende ANW-vervanging.",
+      website: "https://www.laurens.nl"
+    },
+    {
+      id: "aafje", naam: "Aafje", hoofdvestiging: "Rotterdam/Spijkenisse",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 1800, aantalMedewerkersEst: 3240, omzetMlnEst: 153.0,
+      grootte: "g", locaties: 22,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: true, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Archipel ZHE",
+      anwDetail: "Eigen SO's. Archipel ZHE partner. ~1.800 bedden.",
+      tags: ["SO in dienst", "Archipel ZHE"],
+      fusie: "Archipel ZHE",
+      recenteUitbreiding: "De Molenlei Rotterdam 2026", recenteUitbreidingJaar: 2026,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "Guy Buck", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/guy-buck-159847b", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 8, retention: 0, expansion: 0, consolidatie: 0 },
+      leadScore: 8, leadLens: "acquisitie",
+      opportunity: "Recent uitbreidings-momentum; ANW-vervanging onwaarschijnlijk maar tooling/partnership mogelijk.",
+      website: "https://www.aafje.nl"
+    },
+    {
+      id: "amsta", naam: "Amsta", hoofdvestiging: "Amsterdam",
+      regio: "West", provincie: "Noord-Holland",
+      aantalBedden: 1800, aantalMedewerkersEst: 3240, omzetMlnEst: 153.0,
+      grootte: "g", locaties: 30,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: true, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Verwijspunt 020",
+      anwDetail: "Grote Amsterdamse VVT. Eigen SO's. Verwijspunt 020 verband.",
+      tags: ["SO in dienst", "Verwijspunt 020"],
+      fusie: "Verwijspunt 020",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "Monique Cremers", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/monique-cremers-5419286", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 0 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Sterk Amsterdams verband; complementair-aanbod (tooling) kansrijker dan ANW-vervanging.",
+      website: "https://www.amsta.nl"
+    },
+    {
+      id: "brabantzorg", naam: "BrabantZorg", hoofdvestiging: "Oss/Uden/Den Bosch",
+      regio: "Zuid", provincie: "Noord-Brabant",
+      aantalBedden: 2200, aantalMedewerkersEst: 3960, omzetMlnEst: 187.0,
+      grootte: "g", locaties: 28,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: true, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "NOB Green Deal",
+      anwDetail: "Eigen SO's op 33 locaties. NOB Green Deal (13 org.) deelnemer.",
+      tags: ["SO in dienst", "NOB Green Deal"],
+      fusie: "NOB Green Deal (13 organisaties)",
+      recenteUitbreiding: "Nieuwe Hoeven Schaijk + De Wielewaal Zaltbommel 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "Miriam Haagh", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false },
+        { naam: "Felicia Brandsma", functie: "Lid Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/felicia-brandsma-9a0ba429", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 0 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Eigen SO's plus NOB-verband; tooling-partnership mogelijk maar ANW-vervanging onwaarschijnlijk.",
+      website: "https://www.brabantzorg.eu"
+    },
+    {
+      id: "alliade", naam: "Alliade", hoofdvestiging: "Heerenveen/Joure",
+      regio: "Noord", provincie: "Friesland",
+      aantalBedden: 2400, aantalMedewerkersEst: 4320, omzetMlnEst: 204.0,
+      grootte: "g", locaties: 30,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: true, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "Eigen SO's. Friese GeriForce-samenwerking jan. 2025.",
+      tags: ["SO in dienst", "GeriForce Friesland"],
+      fusie: "Fusie Talant + Reik (2020); GeriForce Friesland (2025)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "Elze Vonk", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/elze-vonk-50554510", sinds: null, recent: false }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd — Friese GeriForce-samenwerking jan. 2025",
+      scores: { acquisitie: 0, retention: 10, expansion: 65, consolidatie: 0 },
+      leadScore: 65, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules (eLearning, NUTS, dashboards).",
+      website: "https://www.alliade.nl"
+    },
+    {
+      id: "pieter-van-foreest", naam: "Pieter van Foreest",
+      hoofdvestiging: "Delft/Westland/Den Haag",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 1400, aantalMedewerkersEst: 2520, omzetMlnEst: 119.0,
+      grootte: "g", locaties: 18,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "WSD Haaglanden",
+      anwDetail: "Grote VVT Haaglanden. Eigen SO's. WSD-partner.",
+      tags: ["SO in dienst", "WSD"],
+      fusie: "WSD Haaglanden",
+      recenteUitbreiding: "Kopblok Delft (oplevering 2026)", recenteUitbreidingJaar: 2026,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "P. de Jongh", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 3, retention: 0, expansion: 0, consolidatie: 0 },
+      leadScore: 3, leadLens: "acquisitie",
+      opportunity: "Sterke incumbent (eigen SO + WSD); minder voor de hand liggende ANW-vervanging.",
+      website: "https://www.pietervanforeest.nl"
+    },
+    {
+      id: "envida", naam: "Envida", hoofdvestiging: "Maastricht/Zuid-Limburg",
+      regio: "Zuid", provincie: "Limburg",
+      aantalBedden: 1400, aantalMedewerkersEst: 2520, omzetMlnEst: 119.0,
+      grootte: "g", locaties: 18,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "Grootste VVT Zuid-Limburg. Eigen SO's. GeriCall klant.",
+      tags: ["SO in dienst", "GeriCall klant"],
+      fusie: "",
+      recenteUitbreiding: "3 nieuwe locaties (Gronsveld, Lindenhoven, Herculeshof) 2024",
+      recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "Milenka van Kempen-Vanderheijden", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/milenka-van-kempen-vanderheijden-mha-3892b8124", sinds: null, recent: false }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd GeriCall klant",
+      scores: { acquisitie: 0, retention: 20, expansion: 50, consolidatie: 0 },
+      leadScore: 50, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules (eLearning, NUTS, dashboards).",
+      website: "https://www.envida.nl"
+    },
+    {
+      id: "zzg-zorggroep", naam: "ZZG Zorggroep", hoofdvestiging: "Nijmegen-Noord",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 1400, aantalMedewerkersEst: 2520, omzetMlnEst: 119.0,
+      grootte: "g", locaties: 18,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Nonna Reco",
+      anwDetail: "Eigen SO's. Nonna Reco netwerk. VS/PA actief.",
+      tags: ["SO in dienst", "Nonna Reco"],
+      fusie: "Nonna Reco ANW-netwerk Nijmegen",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "",
+      andereItLeveranciers: [],
+      directie: [
+        { naam: "Angela Jansen", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/angela-jansen-6306438", sinds: null, recent: false },
+        { naam: "Eefje Perlot-Naber", functie: "Lid Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/eefje-perlot-b16649252", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 0 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Eigen SO's plus Nonna Reco; tooling-partnership op middellange termijn denkbaar.",
+      website: "https://www.zzgzorggroep.nl"
+    },
+    {
+      id: "amstelring", naam: "Amstelring", hoofdvestiging: "Amsterdam/Amstelveen",
+      regio: "West", provincie: "Noord-Holland",
+      aantalBedden: 1400, aantalMedewerkersEst: 2520, omzetMlnEst: 119.0,
+      grootte: "g", locaties: 18,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: true },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Verwijspunt 020",
+      anwDetail: "Verwijspunt 020. Universitaire praktijk ouderengeneeskunde via Amsterdam UMC.",
+      tags: ["Verwijspunt 020", "Amsterdam UMC"],
+      fusie: "Verwijspunt 020 + Amsterdam UMC universitair", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Jeroen Lambriks", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 25 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel Verwijspunt 020; tooling-partnership op middellange termijn mogelijk.",
+      website: "https://www.amstelring.nl"
+    },
+    {
+      id: "sevagram", naam: "Sevagram", hoofdvestiging: "Maastricht/Heerlen",
+      regio: "Zuid", provincie: "Limburg",
+      aantalBedden: 1400, aantalMedewerkersEst: 2520, omzetMlnEst: 119.0,
+      grootte: "g", locaties: 18,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Eigen SO's. Zuid-Limburg cluster.",
+      tags: ["SO in dienst"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Kim Hurkens", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 15 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Eigen SO's; verkenning ANW-tooling/back-up denkbaar.",
+      website: "https://www.sevagram.nl"
+    },
+    {
+      id: "sensire", naam: "Sensire", hoofdvestiging: "Achterhoek",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 1300, aantalMedewerkersEst: 2340, omzetMlnEst: 110.5,
+      grootte: "g", locaties: 16,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Eigen SO's. Achterhoek-samenwerking met Markenheem en Azora.",
+      tags: ["SO in dienst", "Achterhoek"],
+      fusie: "Achterhoek-samenwerking met Markenheem + Azora (2022)",
+      recenteUitbreiding: "Ons Zorghuis Zutphen 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Margje Mahler", functie: "Bestuurder",
+          linkedin: "https://www.linkedin.com/in/margjemahler", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 10 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Eigen SO's plus regiocluster; tooling-partnership denkbaar.",
+      website: "https://www.sensire.nl"
+    },
+    {
+      id: "thebe", naam: "Thebe", hoofdvestiging: "Tilburg/West-Brabant",
+      regio: "Zuid", provincie: "Noord-Brabant",
+      aantalBedden: 1300, aantalMedewerkersEst: 2340, omzetMlnEst: 110.5,
+      grootte: "g", locaties: 16,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "AWIZ West-Brabant",
+      anwDetail: "Eigen medische dienst. AWIZ West-Brabant deelnemer.",
+      tags: ["SO in dienst", "AWIZ West-Brabant"],
+      fusie: "AWIZ West-Brabant",
+      recenteUitbreiding: "Heilaarstaete Breda 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Agnes Klaren", functie: "Lid Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 15 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "AWIZ-deelnemer; tooling-aanbod kansrijker dan ANW-vervanging.",
+      website: "https://www.thebe.nl"
+    },
+    {
+      id: "stichting-svrz", naam: "Stichting SVRZ", hoofdvestiging: "Geheel Zeeland",
+      regio: "Zuid", provincie: "Zeeland",
+      aantalBedden: 1300, aantalMedewerkersEst: 2340, omzetMlnEst: 110.5,
+      grootte: "g", locaties: 16,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Grootste VVT Zeeland. Eigen SO's provinciaal ingezet.",
+      tags: ["SO in dienst"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Angela Bras", functie: "Directeur/Bestuurder",
+          linkedin: "https://www.linkedin.com/in/angela-bras-98b1303a", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 5 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Provinciale dekking Zeeland; verkenningsgesprek waardevol.",
+      website: "https://www.svrz.nl"
+    },
+    {
+      id: "noorderbreedte", naam: "Noorderbreedte", hoofdvestiging: "Leeuwarden/Harlingen",
+      regio: "Noord", provincie: "Friesland",
+      aantalBedden: 1260, aantalMedewerkersEst: 2268, omzetMlnEst: 107.1,
+      grootte: "g", locaties: 16,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "GeriForce Friesland. AWIZ Friesland.",
+      tags: ["GeriForce Friesland", "AWIZ Friesland"],
+      fusie: "GeriForce Friesland + AWIZ Friesland",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Martin Kirchner", functie: "Bestuurder (vertrek jan. 2026)",
+          linkedin: "https://nl.linkedin.com/in/martin-kirchner-a35ba948", sinds: null, recent: true }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd — Friese GeriForce-samenwerking jan. 2025",
+      scores: { acquisitie: 0, retention: 35, expansion: 50, consolidatie: 25 },
+      leadScore: 50, leadLens: "expansion",
+      opportunity: "Bestuurderswissel komt; relatie warm houden via account-team. Expansion blijft hoog.",
+      website: "https://www.noorderbreedte.nl"
+    },
+    {
+      id: "kwadrantgroep", naam: "KwadrantGroep", hoofdvestiging: "Leeuwarden/Noord-Friesland",
+      regio: "Noord", provincie: "Friesland",
+      aantalBedden: 1250, aantalMedewerkersEst: 2250, omzetMlnEst: 106.3,
+      grootte: "g", locaties: 16,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "GeriForce Friesland. Eigen SO's deels.",
+      tags: ["GeriForce Friesland"],
+      fusie: "GeriForce Friesland",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Jan Maarten Nuijens", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/jan-maarten-nuijens-66816238", sinds: null, recent: false }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd — Friese GeriForce-samenwerking jan. 2025",
+      scores: { acquisitie: 0, retention: 10, expansion: 50, consolidatie: 0 },
+      leadScore: 50, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules.",
+      website: "https://www.kwadrantgroep.nl"
+    },
+    {
+      id: "argos-zorggroep", naam: "Argos Zorggroep", hoofdvestiging: "Schiedam/Vlaardingen/Spijkenisse",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 1200, aantalMedewerkersEst: 2160, omzetMlnEst: 102.0,
+      grootte: "g", locaties: 15,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Archipel ZHE",
+      anwDetail: "Archipel ZHE samenwerking (13 org.). WSD Rotterdam-coordinatiepunt.",
+      tags: ["Archipel ZHE", "WSD Rotterdam"],
+      fusie: "Archipel ZHE (13 organisaties) + WSD Rotterdam",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Edwin Wulff", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/edwin-wulff-77899825", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 25 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel Archipel ZHE plus WSD; tooling/complementair aanbod kansrijker.",
+      website: "https://www.argoszorggroep.nl"
+    },
+    {
+      id: "icare", naam: "Icare", hoofdvestiging: "Zwolle/Deventer/Meppel",
+      regio: "Oost", provincie: "Overijssel",
+      aantalBedden: 1200, aantalMedewerkersEst: 2160, omzetMlnEst: 102.0,
+      grootte: "g", locaties: 15,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Groot Overijssel/Drenthe. Mobiel Geriatrisch Team.",
+      tags: ["SO in dienst", "Mobiel Geriatrisch Team"],
+      fusie: "Espria-concern", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 15, retention: 0, expansion: 0, consolidatie: 30 },
+      leadScore: 15, leadLens: "acquisitie",
+      opportunity: "Onderdeel Espria; geen ANW-leverancier publiek bekend — verkenningsgesprek waardevol.",
+      website: "https://www.icare.nl"
+    },
+    {
+      id: "vitalis-woonzorg", naam: "Vitalis WoonZorg", hoofdvestiging: "Eindhoven",
+      regio: "Zuid", provincie: "Noord-Brabant",
+      aantalBedden: 1200, aantalMedewerkersEst: 2160, omzetMlnEst: 102.0,
+      grootte: "g", locaties: 15,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "AWIZ-verband",
+      anwDetail: "AWIZ Zuidoost-Brabant (10 org.).",
+      tags: ["AWIZ ZOB"],
+      fusie: "AWIZ Zuidoost-Brabant (10 organisaties)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Inge Fleischeuer", functie: "Bestuurder",
+          linkedin: "https://www.linkedin.com/in/inge-fleischeuer-6743842b", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 40 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel AWIZ ZOB; tooling-partnership op middellange termijn denkbaar.",
+      website: "https://www.vitalisgroep.nl"
+    },
+    {
+      id: "proteion", naam: "Proteion", hoofdvestiging: "Venlo/Noord-Limburg",
+      regio: "Zuid", provincie: "Limburg",
+      aantalBedden: 1200, aantalMedewerkersEst: 2160, omzetMlnEst: 102.0,
+      grootte: "g", locaties: 15,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Regionale ANW-samenwerking Noord-Limburg.",
+      tags: ["Regionaal Noord-Limburg"],
+      fusie: "Regionale ANW-samenwerking Noord-Limburg",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Bjorn Ceresa", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/bjornceresa", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 15, retention: 0, expansion: 0, consolidatie: 25 },
+      leadScore: 15, leadLens: "acquisitie",
+      opportunity: "ANW-leverancier niet publiek bekend — verkenningsgesprek waardevol.",
+      website: "https://www.proteion.nl"
+    },
+    {
+      id: "evean", naam: "Evean", hoofdvestiging: "Noord-Holland",
+      regio: "West", provincie: "Noord-Holland",
+      aantalBedden: 1200, aantalMedewerkersEst: 2160, omzetMlnEst: 102.0,
+      grootte: "g", locaties: 18,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Verwijspunt 020",
+      anwDetail: "Eigen SO's. Verwijspunt 020 partner. Onderdeel Espria.",
+      tags: ["SO in dienst", "Verwijspunt 020"],
+      fusie: "Espria-concern + Verwijspunt 020",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Marieke van Guldener", functie: "Directeur-Bestuurder", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 15 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel Espria + Verwijspunt 020; tooling-aanbod kansrijker.",
+      website: "https://www.evean.nl"
+    },
+    {
+      id: "humanitas-rotterdam", naam: "Humanitas Rotterdam", hoofdvestiging: "Rotterdam/Hoogvliet",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 1100, aantalMedewerkersEst: 1980, omzetMlnEst: 93.5,
+      grootte: "g", locaties: 14,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "WSD Rotterdam",
+      anwDetail: "WSD-coordinatiepunt partner. Verwijspunt-samenwerking Rotterdam.",
+      tags: ["WSD Rotterdam"],
+      fusie: "WSD Rotterdam + Verwijspunt",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Joost Zielstra", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 25 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel WSD-Rotterdam-cluster; tooling/complementair denkbaar.",
+      website: "https://www.humanitas-rotterdam.nl"
+    },
+    {
+      id: "pleyade", naam: "Pleyade", hoofdvestiging: "Rivierenland/Arnhem",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 1100, aantalMedewerkersEst: 1980, omzetMlnEst: 93.5,
+      grootte: "g", locaties: 14,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "GeriCall (ANW Nederland)",
+      anwDetail: "Voorwacht via ANW Nederland/GeriCall; SO's alleen achterwacht.",
+      tags: ["ANW Nederland voorwacht", "GeriCall klant"],
+      fusie: "ANW Nederland voorwacht-samenwerking",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "John Olde Olthof", functie: "Bestuurder",
+          linkedin: "https://nl.linkedin.com/in/johnoldeolthof", sinds: null, recent: false },
+        { naam: "Esther van het Erve", functie: "Bestuurder",
+          linkedin: "https://www.linkedin.com/in/esther-van-het-erve-6a23a545", sinds: null, recent: false }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd — voorwacht via ANW Nederland/GeriCall",
+      scores: { acquisitie: 0, retention: 20, expansion: 50, consolidatie: 10 },
+      leadScore: 50, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules.",
+      website: "https://www.pleyade.nl"
+    },
+    {
+      id: "patyna", naam: "Patyna", hoofdvestiging: "Sneek/Leeuwarden",
+      regio: "Noord", provincie: "Friesland",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "Eigen SO's. GeriForce Friesland jan. 2025.",
+      tags: ["SO in dienst", "GeriForce Friesland"],
+      fusie: "GeriForce Friesland (jan. 2025)",
+      recenteUitbreiding: "Gezondheidscentrum Makkum juni 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Renate Kamphuis", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/renate-kamphuis-9a36b17", sinds: null, recent: false }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd — Friese GeriForce-samenwerking jan. 2025",
+      scores: { acquisitie: 0, retention: 20, expansion: 50, consolidatie: 0 },
+      leadScore: 50, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules.",
+      website: "https://www.patyna.nl"
+    },
+    {
+      id: "zuidoostzorg", naam: "ZuidOostZorg", hoofdvestiging: "Drachten/Smallingerland",
+      regio: "Noord", provincie: "Friesland",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "GeriForce Friesland. Triage.nu betrokken.",
+      tags: ["GeriForce Friesland", "Triage.nu"],
+      fusie: "GeriForce Friesland + Triage.nu",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Karine van der Kraan", functie: "Bestuurder",
+          linkedin: "https://nl.linkedin.com/in/karine-van-der-kraan-mba-938a1a134", sinds: null, recent: false }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd — Friese GeriForce-samenwerking jan. 2025",
+      scores: { acquisitie: 0, retention: 10, expansion: 50, consolidatie: 10 },
+      leadScore: 50, leadLens: "expansion",
+      opportunity: "Bestaande klant; ook Triage.nu betrokken — interessante context voor expansion.",
+      website: "https://www.zuidoostzorg.nl"
+    },
+    {
+      id: "pantein", naam: "Pantein", hoofdvestiging: "Cuijk/Land van Cuijk",
+      regio: "Zuid", provincie: "Noord-Brabant",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Eigen SO's per behandelteam.",
+      tags: ["SO in dienst"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Pauline Terwijn", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/pauline-terwijn-9158a919", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 15 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Eigen SO's; verkenning ANW-back-up of tooling-aanbod.",
+      website: "https://www.pantein.nl"
+    },
+    {
+      id: "sante-partners", naam: "Sante Partners", hoofdvestiging: "Apeldoorn/Veluwe",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 1100, aantalMedewerkersEst: 1980, omzetMlnEst: 93.5,
+      grootte: "g", locaties: 14,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Groot medisch team, eigen SO's.",
+      tags: ["SO in dienst"],
+      fusie: "Fusie STMR + Vitras (2018)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Anne-Marie Laeven", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/anne-marie-laeven-de-boer-652b883", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 30 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Eigen SO's; tooling-partnership of GeriCall-back-up denkbaar.",
+      website: "https://www.santepartners.nl"
+    },
+    {
+      id: "opella", naam: "Opella", hoofdvestiging: "Gelderse Vallei (Ede)",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 1000, aantalMedewerkersEst: 1800, omzetMlnEst: 85.0,
+      grootte: "g", locaties: 12,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Eigen SO's. Vallei Vitaal netwerk.",
+      tags: ["SO in dienst"],
+      fusie: "Vallei Vitaal netwerk",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "André Kok", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/andrekok", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 30 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Eigen SO's plus regionetwerk; tooling-partnership denkbaar.",
+      website: "https://www.opella.nl"
+    },
+    {
+      id: "treant-zorggroep", naam: "Treant Zorggroep", hoofdvestiging: "Emmen/Hoogeveen",
+      regio: "Noord", provincie: "Drenthe",
+      aantalBedden: 1100, aantalMedewerkersEst: 1980, omzetMlnEst: 93.5,
+      grootte: "g", locaties: 14,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Kernteams ouderenzorg Drenthe. Mobiel Geriatrisch Team.",
+      tags: ["Mobiel Geriatrisch Team"],
+      fusie: "Mobiel Geriatrisch Team (regionaal)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Rolf de Folter", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 15, retention: 0, expansion: 0, consolidatie: 25 },
+      leadScore: 15, leadLens: "acquisitie",
+      opportunity: "ANW-leverancier niet publiek bekend — verkenningsgesprek waardevol.",
+      website: "https://www.treant.nl"
+    },
+    {
+      id: "dignis", naam: "Dignis", hoofdvestiging: "Groningen stad/Veendam",
+      regio: "Noord", provincie: "Groningen",
+      aantalBedden: 850, aantalMedewerkersEst: 1530, omzetMlnEst: 72.2,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Triage.nu",
+      anwDetail: "Marktleider Groningen. Eigen SO's. Mede-oprichter Triage.nu.",
+      tags: ["SO in dienst", "Triage.nu"],
+      fusie: "Onderdeel Lentis-concern (splitsing 2025)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Leo Wanders", functie: "Lid Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/leo-wanders-1068159", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 25 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Eigen SO's plus Triage.nu (concurrent op tooling); tooling-aanbod kansrijker dan ANW.",
+      website: "https://www.dignis.nl"
+    },
+    {
+      id: "markenheem", naam: "Markenheem", hoofdvestiging: "Bronckhorst/Doetinchem",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 420, aantalMedewerkersEst: 756, omzetMlnEst: 35.7,
+      grootte: "k", locaties: 5,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Tripartiete samenwerking Sensire + Azora.",
+      tags: ["Sensire/Azora", "Achterhoek"],
+      fusie: "Tripartiete Sensire + Azora (Achterhoek)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Anja Stunnenberg", functie: "Bestuurder", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 60 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Klein, in regiocluster; consolidatie-target.",
+      website: "https://www.markenheem.nl"
+    },
+    {
+      id: "azora", naam: "Azora", hoofdvestiging: "Achterhoek",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 560, aantalMedewerkersEst: 1008, omzetMlnEst: 47.6,
+      grootte: "k", locaties: 7,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Achterhoek-samenwerking met Sensire + Markenheem.",
+      tags: ["Achterhoek"],
+      fusie: "Achterhoek-samenwerking Sensire + Markenheem",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Mieke Zemmelink", functie: "Bestuurder",
+          linkedin: "https://nl.linkedin.com/in/mieke-zemmelink-11419848", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 50 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Onderdeel Achterhoek-cluster; consolidatie-target.",
+      website: "https://www.azora.nl"
+    },
+    {
+      id: "mijzo-zh", naam: "Mijzo ZH", hoofdvestiging: "Dordrecht/Zwijndrecht",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 350, aantalMedewerkersEst: 630, omzetMlnEst: 29.8,
+      grootte: "k", locaties: 4,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Extern bureau / inkoop", anwModelKort: "extern",
+      anwLeverancier: "Extern bureau (onbekend)",
+      anwDetail: "Beperkt eigen ANW. Extern ingekocht.",
+      tags: ["Extern"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [],
+      gericallStatus: "lead", gericallNote: "Externe ANW-inkoop — directe aanbiedingsgrond.",
+      scores: { acquisitie: 35, retention: 0, expansion: 0, consolidatie: 45 },
+      leadScore: 35, leadLens: "acquisitie",
+      opportunity: "Externe ANW-inkoop; directe aanbiedingsgrond. Verkenningsgesprek inplannen.",
+      website: "https://www.mijzo.nl"
+    },
+    {
+      id: "de-zorgboog", naam: "De Zorgboog", hoofdvestiging: "Deurne/Helmond",
+      regio: "Zuid", provincie: "Noord-Brabant",
+      aantalBedden: 950, aantalMedewerkersEst: 1710, omzetMlnEst: 80.8,
+      grootte: "g", locaties: 12,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Onbekend", anwModelKort: "onbekend",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Geen publieke informatie over ANW-model.",
+      tags: ["Nader uitzoeken"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Coby Nogarede-Hoekstra", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/cobynogaredehoekstra", sinds: null, recent: false },
+        { naam: "Sven Turnhout", functie: "Lid Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/sventurnhout", sinds: null, recent: false }
+      ],
+      gericallStatus: "lead", gericallNote: "ANW-structuur niet publiek bekend.",
+      scores: { acquisitie: 30, retention: 0, expansion: 0, consolidatie: 10 },
+      leadScore: 30, leadLens: "acquisitie",
+      opportunity: "ANW-model onbekend; verkenningsgesprek waardevol.",
+      website: "https://www.zorgboog.nl"
+    },
+    {
+      id: "topaz", naam: "Topaz", hoofdvestiging: "Leiden/Leiderdorp",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 880, aantalMedewerkersEst: 1584, omzetMlnEst: 74.8,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Eigen SO's. ~880 bedden.",
+      tags: ["SO in dienst"],
+      fusie: "", recenteUitbreiding: "Foreschate Voorschoten 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 20 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Eigen SO's; tooling-partnership denkbaar.",
+      website: "https://www.topaz.nl"
+    },
+    {
+      id: "kennemerhart", naam: "Kennemerhart", hoofdvestiging: "Alkmaar/Heerhugowaard",
+      regio: "West", provincie: "Noord-Holland",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Regionaal ANW-verband Noord-Holland Noord.",
+      tags: ["Regionaal NH-Noord"],
+      fusie: "Regionaal ANW-verband NH-Noord",
+      recenteUitbreiding: "Janskliniek Haarlem zomer 2025", recenteUitbreidingJaar: 2025,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Joke Hoekstra", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 23, retention: 0, expansion: 0, consolidatie: 25 },
+      leadScore: 23, leadLens: "acquisitie",
+      opportunity: "Recent uitbreidings-momentum; verkenning ANW-tooling.",
+      website: "https://www.kennemerhart.nl"
+    },
+    {
+      id: "marente", naam: "Marente", hoofdvestiging: "Leiden/Leidschendam",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Eigen SO's. AVANT-netwerk Den Haag.",
+      tags: ["SO in dienst", "AVANT"],
+      fusie: "AVANT-netwerk Den Haag",
+      recenteUitbreiding: "Wooncomplex Hillegom 2025", recenteUitbreidingJaar: 2025,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Edwin van der Meer", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 18, retention: 0, expansion: 0, consolidatie: 20 },
+      leadScore: 18, leadLens: "acquisitie",
+      opportunity: "Recent uitbreidings-momentum; tooling-partnership denkbaar.",
+      website: "https://www.marente.nl"
+    },
+    {
+      id: "careyn-zhe", naam: "Careyn ZHE", hoofdvestiging: "Zuid-Hollandse Eilanden",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "GeriCall klant via ZHE-cluster. WSD-partner.",
+      tags: ["WSD Rotterdam", "GeriCall klant"],
+      fusie: "WSD-partner (ZHE-cluster)",
+      recenteUitbreiding: "De Eik Hellevoetsluis nov. 2025", recenteUitbreidingJaar: 2025,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Chantal Beks", functie: "Bestuurder", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "klant", gericallNote: "Bevestigd GeriCall klant",
+      scores: { acquisitie: 0, retention: 15, expansion: 60, consolidatie: 10 },
+      leadScore: 60, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules.",
+      website: "https://www.careyn.nl"
+    },
+    {
+      id: "zinzia-zorggroep", naam: "Zinzia Zorggroep", hoofdvestiging: "Arnhem/Rhenen",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 580, aantalMedewerkersEst: 1044, omzetMlnEst: 49.3,
+      grootte: "k", locaties: 7,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Extern bureau / inkoop", anwModelKort: "extern",
+      anwLeverancier: "GeriCall (vermoedelijk)",
+      anwDetail: "Medische ANW deels ingehuurd via extern.",
+      tags: ["Deels ingekocht"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Hans Somer", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/hans-somer-687938229", sinds: null, recent: false },
+        { naam: "Mireille Prins", functie: "Lid Raad van Bestuur", linkedin: null, sinds: null, recent: false }
+      ],
+      gericallStatus: "prospect", gericallNote: "Waarschijnlijk GeriCall klant",
+      scores: { acquisitie: 60, retention: 0, expansion: 30, consolidatie: 0 },
+      leadScore: 60, leadLens: "acquisitie",
+      opportunity: "Externe ANW-inkoop; bevestiging klantstatus en eventuele uitbreiding.",
+      website: "https://www.zinzia.nl"
+    },
+    {
+      id: "novicare-west", naam: "Novicare West", hoofdvestiging: "Amsterdam West/Haarlemmermeer",
+      regio: "West", provincie: "Noord-Holland",
+      aantalBedden: 864, aantalMedewerkersEst: 1555, omzetMlnEst: 73.4,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Extern bureau / inkoop", anwModelKort: "extern",
+      anwLeverancier: "GeriCall",
+      anwDetail: "Extern ANW. GeriCall klant.",
+      tags: ["Extern", "GeriCall klant"],
+      fusie: "Novicare concern (landelijk)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Wencke van der Meijden", functie: "Directeur",
+          linkedin: "https://www.linkedin.com/in/wenckev", sinds: null, recent: false }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd GeriCall klant",
+      scores: { acquisitie: 0, retention: 20, expansion: 50, consolidatie: 0 },
+      leadScore: 50, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules.",
+      website: "https://www.novicare.nl"
+    },
+    {
+      id: "rijnstad", naam: "Rijnstad", hoofdvestiging: "Arnhem",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 250, aantalMedewerkersEst: 450, omzetMlnEst: 21.2,
+      grootte: "k", locaties: 3,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Extern bureau / inkoop", anwModelKort: "extern",
+      anwLeverancier: "GeriCall (vermoedelijk)",
+      anwDetail: "Geen eigen SO voor ANW. Inhuurt bij regio.",
+      tags: ["Ingekocht"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Maudy Hylkema", functie: "Directeur-Bestuurder",
+          linkedin: "https://www.linkedin.com/in/maudyhylkema", sinds: null, recent: false }
+      ],
+      gericallStatus: "prospect", gericallNote: "Waarschijnlijk GeriCall klant",
+      scores: { acquisitie: 55, retention: 0, expansion: 30, consolidatie: 35 },
+      leadScore: 55, leadLens: "acquisitie",
+      opportunity: "Externe ANW-inkoop; bevestiging klantstatus.",
+      website: "https://www.rijnstad.nl"
+    },
+    {
+      id: "interzorg", naam: "Interzorg", hoofdvestiging: "Hoogezand/Slochteren",
+      regio: "Noord", provincie: "Groningen",
+      aantalBedden: 350, aantalMedewerkersEst: 630, omzetMlnEst: 29.8,
+      grootte: "k", locaties: 4,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Extern bureau / inkoop", anwModelKort: "extern",
+      anwLeverancier: "Extern bureau (onbekend)",
+      anwDetail: "Beperkt eigen ANW. Extern ingekocht.",
+      tags: ["Extern"],
+      fusie: "", recenteUitbreiding: "De Slingeborgh Assen fase 1 lente 2025", recenteUitbreidingJaar: 2025,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Peter van der Noord", functie: "Bestuurder", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "lead", gericallNote: "",
+      scores: { acquisitie: 43, retention: 0, expansion: 0, consolidatie: 35 },
+      leadScore: 43, leadLens: "acquisitie",
+      opportunity: "Externe ANW-inkoop; recent uitbreidings-momentum (Assen).",
+      website: "https://www.interzorg.nl"
+    },
+    {
+      id: "vivent", naam: "Vivent", hoofdvestiging: "Den Bosch",
+      regio: "Zuid", provincie: "Noord-Brabant",
+      aantalBedden: 950, aantalMedewerkersEst: 1710, omzetMlnEst: 80.8,
+      grootte: "g", locaties: 12,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "GeriCall (vermoedelijk)",
+      anwDetail: "NOB Green Deal samenwerking. Voorwacht via ANW Nederland.",
+      tags: ["NOB Green Deal", "ANW Nederland"],
+      fusie: "NOB Green Deal + ANW Nederland",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Pieter Hermsen", functie: "Bestuurder",
+          linkedin: "https://www.linkedin.com/in/pieter-pgjm-hermsen-a069a44a", sinds: null, recent: false }
+      ],
+      gericallStatus: "prospect", gericallNote: "Waarschijnlijk GeriCall klant via ANW Nederland",
+      scores: { acquisitie: 20, retention: 0, expansion: 45, consolidatie: 35 },
+      leadScore: 45, leadLens: "expansion",
+      opportunity: "Vermoedelijk al klant; bevestiging en uitbreiding.",
+      website: "https://www.vivent.nl"
+    },
+    {
+      id: "de-rijnhoven", naam: "De Rijnhoven", hoofdvestiging: "Houten/Nieuwegein",
+      regio: "West", provincie: "Utrecht",
+      aantalBedden: 650, aantalMedewerkersEst: 1170, omzetMlnEst: 55.3,
+      grootte: "k", locaties: 8,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "GeriCall (vermoedelijk)",
+      anwDetail: "Regionaal ANW-verband Utrecht Zuid.",
+      tags: ["Regionaal Utrecht"],
+      fusie: "Regionaal ANW-verband Utrecht Zuid",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Marjolein Zanen", functie: "Bestuurder", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "prospect", gericallNote: "Waarschijnlijk GeriCall klant",
+      scores: { acquisitie: 30, retention: 0, expansion: 35, consolidatie: 35 },
+      leadScore: 35, leadLens: "expansion",
+      opportunity: "Vermoedelijk al klant; bevestiging en uitbreiding.",
+      website: "https://www.derijnhoven.nl"
+    },
+    {
+      id: "de-waalboog", naam: "De Waalboog", hoofdvestiging: "Nijmegen",
+      regio: "Oost", provincie: "Gelderland",
+      aantalBedden: 620, aantalMedewerkersEst: 1116, omzetMlnEst: 52.7,
+      grootte: "g", locaties: 8,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "GeriCall (ANW Nederland)",
+      anwDetail: "Eigen SO's achterwacht. Voorwacht via ANW Nederland/GeriCall. Opleidingsinstelling.",
+      tags: ["SO in dienst", "ANW Nederland voorwacht"],
+      fusie: "Fusie met LuciVer (2025) — samenwerking Nijmegen-Noord",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Rita Arts", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/rita-arts-a05a8820", sinds: null, recent: false }
+      ],
+      gericallStatus: "klant", gericallNote: "Bevestigd — voorwacht via ANW Nederland/GeriCall",
+      scores: { acquisitie: 0, retention: 20, expansion: 35, consolidatie: 35 },
+      leadScore: 35, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules.",
+      website: "https://www.waalboog.nl"
+    },
+    {
+      id: "zuyderland-zorgcentra", naam: "Zuyderland Zorgcentra", hoofdvestiging: "Heerlen/Kerkrade",
+      regio: "Zuid", provincie: "Limburg",
+      aantalBedden: 1500, aantalMedewerkersEst: 2700, omzetMlnEst: 127.5,
+      grootte: "g", locaties: 19,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Eigen SO's. ZIO-netwerk Maastricht.",
+      tags: ["SO in dienst", "ZIO"],
+      fusie: "ZIO-netwerk Maastricht",
+      recenteUitbreiding: "Egtherhof geopend 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Esther Talboom-Kamp", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 0 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Sterke incumbent; tooling-aanbod kansrijker.",
+      website: "https://www.zuyderland.nl"
+    },
+    {
+      id: "cicero-zorggroep", naam: "Cicero Zorggroep", hoofdvestiging: "Brunssum/Parkstad",
+      regio: "Zuid", provincie: "Limburg",
+      aantalBedden: 650, aantalMedewerkersEst: 1170, omzetMlnEst: 55.3,
+      grootte: "g", locaties: 8,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "Eigen SO's. 0 consulten geregistreerd — activering nodig.",
+      tags: ["SO in dienst", "Attentie"],
+      fusie: "", recenteUitbreiding: "Cicero Residentie Amby 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Kina Koster", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "klant", gericallNote: "GeriCall klant — activering nodig (0 consulten)",
+      scores: { acquisitie: 0, retention: 55, expansion: 35, consolidatie: 10 },
+      leadScore: 55, leadLens: "retention",
+      opportunity: "Klant op risico: 0 consulten geregistreerd. Activering en relatie-versterking prioriteit.",
+      website: "https://www.cicerozorggroep.nl"
+    },
+    {
+      id: "frankelandgroep", naam: "Frankelandgroep", hoofdvestiging: "Schiedam/Vlaardingen",
+      regio: "West", provincie: "Zuid-Holland",
+      aantalBedden: 650, aantalMedewerkersEst: 1170, omzetMlnEst: 55.3,
+      grootte: "k", locaties: 8,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "GeriCall",
+      anwDetail: "WSD Rotterdam-coordinatiepunt partner.",
+      tags: ["WSD Rotterdam", "GeriCall klant"],
+      fusie: "WSD Rotterdam",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Pepita Breugem", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "klant", gericallNote: "Bevestigd GeriCall klant",
+      scores: { acquisitie: 0, retention: 15, expansion: 35, consolidatie: 35 },
+      leadScore: 35, leadLens: "expansion",
+      opportunity: "Bestaande klant. Account development; uitbreiding GeriForce-modules.",
+      website: "https://www.frankelandgroep.nl"
+    },
+    {
+      id: "zorgspectrum", naam: "Zorgspectrum", hoofdvestiging: "Woerden/Oudewater/IJsselstein",
+      regio: "West", provincie: "Utrecht",
+      aantalBedden: 550, aantalMedewerkersEst: 990, omzetMlnEst: 46.8,
+      grootte: "k", locaties: 7,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Regionaal samenwerkingsverband Utrecht West.",
+      tags: ["Regionaal Utrecht"],
+      fusie: "Regionaal samenwerkingsverband Utrecht West",
+      recenteUitbreiding: "Brinkhoef Hoef en Haag okt. 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Françoise Dings", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/fran%C3%A7oise-dings-607062182", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 35 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Onderdeel regionaal Utrecht-verband; tooling-partnership denkbaar.",
+      website: "https://www.zorgspectrum.nl"
+    },
+    {
+      id: "vivantes", naam: "Vivantes", hoofdvestiging: "Weert/Roermond/Midden-Limburg",
+      regio: "Zuid", provincie: "Limburg",
+      aantalBedden: 600, aantalMedewerkersEst: 1080, omzetMlnEst: 51.0,
+      grootte: "k", locaties: 8,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Regionaal ANW-verband Midden-Limburg.",
+      tags: ["Regionaal Midden-Limburg"],
+      fusie: "Regionaal ANW-verband Midden-Limburg",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Manon Goertz", functie: "Bestuurder",
+          linkedin: "https://nl.linkedin.com/in/manon-goertz-80728457", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 35 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Onderdeel regionaal Midden-Limburg-verband; tooling-partnership denkbaar.",
+      website: "https://www.vivantes.nl"
+    },
+    {
+      id: "zorgsaam-limburg", naam: "ZorgSaam Limburg", hoofdvestiging: "Sittard/Geleen",
+      regio: "Zuid", provincie: "Limburg",
+      aantalBedden: 450, aantalMedewerkersEst: 810, omzetMlnEst: 38.2,
+      grootte: "k", locaties: 6,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "ZIO-netwerk samenwerking.",
+      tags: ["ZIO", "Regionaal"],
+      fusie: "ZIO-netwerk samenwerking",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Wouter Boogaard", functie: "Lid Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/wouter-boogaard", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 45 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel ZIO-netwerk; consolidatie-target.",
+      website: "https://www.zorgsaam.org"
+    },
+    {
+      id: "zorggroep-sint-maarten", naam: "Zorggroep Sint Maarten", hoofdvestiging: "Denekamp/Oldenzaal",
+      regio: "Oost", provincie: "Overijssel",
+      aantalBedden: 650, aantalMedewerkersEst: 1170, omzetMlnEst: 55.3,
+      grootte: "k", locaties: 8,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "ThoeZ Twente (samenwerkingsverband)",
+      anwDetail: "Lid ThoeZ Twente. Raamovereenkomst feb. 2025.",
+      tags: ["Twente 11-org."],
+      fusie: "ThoeZ Twente (11 organisaties)",
+      recenteUitbreiding: "Bosweg Lochem eind 2025", recenteUitbreidingJaar: 2025,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Patricia Bangma", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/patricia-bangma-73b29213", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 3, retention: 0, expansion: 0, consolidatie: 35 },
+      leadScore: 3, leadLens: "acquisitie",
+      opportunity: "Onderdeel ThoeZ Twente; ANW-vervanging onwaarschijnlijk, complementair denkbaar.",
+      website: "https://www.zgsm.nl"
+    },
+    {
+      id: "triviummeulenbeltzorg", naam: "TriviumMeulenbeltZorg", hoofdvestiging: "Almelo/Borne",
+      regio: "Oost", provincie: "Overijssel",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "ThoeZ Twente (samenwerkingsverband)",
+      anwDetail: "Lid ThoeZ Twente. Gezamenlijke nachtzorg.",
+      tags: ["Twente 11-org."],
+      fusie: "ThoeZ Twente (11 organisaties)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Fred Schrander", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/fred-schrander-46531436", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 35 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel ThoeZ Twente; complementair aanbod denkbaar.",
+      website: "https://www.tmz.nl"
+    },
+    {
+      id: "livio", naam: "Livio", hoofdvestiging: "Enschede/Hengelo",
+      regio: "Oost", provincie: "Overijssel",
+      aantalBedden: 1100, aantalMedewerkersEst: 1980, omzetMlnEst: 93.5,
+      grootte: "g", locaties: 14,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "ThoeZ Twente (samenwerkingsverband)",
+      anwDetail: "Lid ThoeZ Twente.",
+      tags: ["Twente 11-org."],
+      fusie: "ThoeZ Twente (11 organisaties)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Jeroen Regtuijt", functie: "Lid Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/jeroenregtuijt", sinds: null, recent: false },
+        { naam: "Anneke Morsink", functie: "Lid Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/anneke-morsink-1a171429", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 20 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel ThoeZ Twente; complementair aanbod denkbaar.",
+      website: "https://www.livio.nl"
+    },
+    {
+      id: "zorgaccent", naam: "ZorgAccent", hoofdvestiging: "Twente (Almelo)",
+      regio: "Oost", provincie: "Overijssel",
+      aantalBedden: 700, aantalMedewerkersEst: 1260, omzetMlnEst: 59.5,
+      grootte: "k", locaties: 9,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "ThoeZ Twente (samenwerkingsverband)",
+      anwDetail: "Lid ThoeZ Twente. Wijkverpleging samenwerking.",
+      tags: ["Twente 11-org."],
+      fusie: "ThoeZ Twente (11 organisaties)",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 40 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel ThoeZ Twente; complementair aanbod denkbaar.",
+      website: "https://www.zorgaccent.nl"
+    },
+    {
+      id: "ijsselheem", naam: "IJsselheem", hoofdvestiging: "Kampen/IJsseldelta",
+      regio: "Oost", provincie: "Overijssel",
+      aantalBedden: 580, aantalMedewerkersEst: 1044, omzetMlnEst: 49.3,
+      grootte: "k", locaties: 7,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Samenwerking Icare. West-Overijssel.",
+      tags: ["Regionaal"],
+      fusie: "Samenwerking Icare; eerdere fusie met Hanzeheerd",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Karin Leferink", functie: "Bestuurder",
+          linkedin: "https://www.linkedin.com/in/karin-leferink-1a758835", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 50 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Onderdeel Icare-cluster; consolidatie-target.",
+      website: "https://www.ijsselheem.nl"
+    },
+    {
+      id: "cedrah", naam: "Cedrah", hoofdvestiging: "Zeeuws-Vlaanderen",
+      regio: "Zuid", provincie: "Zeeland",
+      aantalBedden: 420, aantalMedewerkersEst: 756, omzetMlnEst: 35.7,
+      grootte: "k", locaties: 5,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Samenwerking ZorgSaam. Huisartsentekort acuut.",
+      tags: ["Regionaal Zeeland"],
+      fusie: "Samenwerking ZorgSaam",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Teunis Stoop", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://www.linkedin.com/in/teunis-stoop-510705b7", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 50 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Klein, in regiocluster; consolidatie-target.",
+      website: "https://www.cedrah.nl"
+    },
+    {
+      id: "zorggroep-drenthe", naam: "Zorggroep Drenthe", hoofdvestiging: "Meppel/Hoogeveen/Assen",
+      regio: "Noord", provincie: "Drenthe",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Grootste VVT Drenthe. Eigen SO's.",
+      tags: ["SO in dienst"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [
+        { naam: "Gerben Krewinkel", functie: "Voorzitter Raad van Bestuur",
+          linkedin: "https://nl.linkedin.com/in/gerben-krewinkel-54549a1", sinds: null, recent: false }
+      ],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 15 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Provinciale dekking Drenthe; tooling-partnership denkbaar.",
+      website: "https://www.zorggroepdrenthe.nl"
+    },
+    {
+      id: "sherpa", naam: "Sherpa", hoofdvestiging: "Baarn/Blaricum/Hilversum",
+      regio: "West", provincie: "Utrecht",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "k", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Samenwerking regio Gooi & Vechtstreek.",
+      tags: ["Regionaal Gooi"],
+      fusie: "Eemhart-fusie met Amerpoort (2024 → 2026)",
+      recenteUitbreiding: "Zwinstraat woonlocatie Baarn 2024", recenteUitbreidingJaar: 2024,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Albert van Esterik", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 15, retention: 0, expansion: 0, consolidatie: 50 },
+      leadScore: 15, leadLens: "acquisitie",
+      opportunity: "Aanstaande fusie; consolidatie-target. Verkenningsgesprek na consolidatie waardevol.",
+      website: "https://www.sherpa.org"
+    },
+    {
+      id: "axioncontinu-utrecht", naam: "AxionContinu Utrecht", hoofdvestiging: "Utrecht/Zeist",
+      regio: "West", provincie: "Utrecht",
+      aantalBedden: 900, aantalMedewerkersEst: 1620, omzetMlnEst: 76.5,
+      grootte: "g", locaties: 11,
+      segmenten: { vvt: true, vpt: false, thuiszorg: true, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend", anwDetail: "Eigen SO's.",
+      tags: ["SO in dienst"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Martin den Hartog", functie: "Voorzitter Raad van Bestuur", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 10, retention: 0, expansion: 0, consolidatie: 15 },
+      leadScore: 10, leadLens: "acquisitie",
+      opportunity: "Eigen SO's; tooling-partnership denkbaar.",
+      website: "https://www.axioncontinu.nl"
+    },
+    {
+      id: "zorgbalans", naam: "Zorgbalans", hoofdvestiging: "Haarlem/Heemstede/Bloemendaal",
+      regio: "West", provincie: "Noord-Holland",
+      aantalBedden: 780, aantalMedewerkersEst: 1404, omzetMlnEst: 66.3,
+      grootte: "g", locaties: 10,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend", anwDetail: "Eigen medisch team met SO's.",
+      tags: ["SO in dienst"],
+      fusie: "", recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Tamara Pieterse", functie: "Bestuurder", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 5, retention: 0, expansion: 0, consolidatie: 15 },
+      leadScore: 5, leadLens: "acquisitie",
+      opportunity: "Eigen SO's; tooling-partnership op middellange termijn.",
+      website: "https://www.zorgbalans.nl"
+    },
+    {
+      id: "mosae-zorggroep", naam: "Mosae Zorggroep", hoofdvestiging: "Maastricht",
+      regio: "Zuid", provincie: "Limburg",
+      aantalBedden: 700, aantalMedewerkersEst: 1260, omzetMlnEst: 59.5,
+      grootte: "k", locaties: 9,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: true },
+      anwModel: "Eigen SO's in dienst", anwModelKort: "eigen",
+      anwLeverancier: "Onbekend",
+      anwDetail: "Eigen SO's. Maastricht UMC+ samenwerking.",
+      tags: ["SO in dienst", "MUMC+"],
+      fusie: "Maastricht UMC+ samenwerking",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Frank Beffers", functie: "Bestuurder", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 5, retention: 0, expansion: 0, consolidatie: 35 },
+      leadScore: 5, leadLens: "acquisitie",
+      opportunity: "Eigen SO's plus UMC+; tooling-partnership op middellange termijn.",
+      website: "https://www.mosaezorggroep.nl"
+    },
+    {
+      id: "zonnehuisgroep-amstelland", naam: "Zonnehuisgroep Amstelland", hoofdvestiging: "Amsterdam/Amstelveen",
+      regio: "West", provincie: "Noord-Holland",
+      aantalBedden: 600, aantalMedewerkersEst: 1080, omzetMlnEst: 51.0,
+      grootte: "k", locaties: 8,
+      segmenten: { vvt: true, vpt: false, thuiszorg: false, elv: false, grz: false },
+      anwModel: "Regionaal samenwerkingsverband", anwModelKort: "samen",
+      anwLeverancier: "Verwijspunt 020",
+      anwDetail: "Verwijspunt 020 samenwerking.",
+      tags: ["Verwijspunt 020"],
+      fusie: "Verwijspunt 020",
+      recenteUitbreiding: null, recenteUitbreidingJaar: null,
+      ecdLeverancier: "Onbekend", ecdSysteem: "", andereItLeveranciers: [],
+      directie: [{ naam: "Sandra Oud", functie: "Bestuurder", linkedin: null, sinds: null, recent: false }],
+      gericallStatus: "cold", gericallNote: "",
+      scores: { acquisitie: 0, retention: 0, expansion: 0, consolidatie: 35 },
+      leadScore: 0, leadLens: "acquisitie",
+      opportunity: "Onderdeel Verwijspunt 020; complementair aanbod denkbaar.",
+      website: "https://www.zga.nl"
+    }
+  ],
+  signalen: [
+    { id: "SIG-2026-001", datum: "2026-04-15", instellingId: "pieter-van-foreest", instellingNaam: "Pieter van Foreest",
+      type: "uitbreiding", urgentie: "hoog",
+      headline: "Pieter van Foreest opent Kopblok Delft (2026)",
+      summary: "Nieuwe locatie Kopblok in Delft staat in 2026 op de planning; uitbreiding aanbod Haaglanden.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.pietervanforeest.nl" },
+    { id: "SIG-2026-002", datum: "2026-04-10", instellingId: "aafje", instellingNaam: "Aafje",
+      type: "uitbreiding", urgentie: "middel",
+      headline: "Aafje opent De Molenlei Rotterdam (2026)",
+      summary: "Nieuwe locatie De Molenlei in Rotterdam in 2026; verdere groei in eigen verzorgingsgebied.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.aafje.nl" },
+    { id: "SIG-2026-003", datum: "2026-01-15", instellingId: "noorderbreedte", instellingNaam: "Noorderbreedte",
+      type: "management", urgentie: "hoog",
+      headline: "Bestuurderswissel Noorderbreedte: Kirchner met pensioen",
+      summary: "Martin Kirchner gaat per januari 2026 met pensioen; opvolging nog niet bekend.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.noorderbreedte.nl" },
+    { id: "SIG-2025-010", datum: "2025-11-20", instellingId: "careyn-zhe", instellingNaam: "Careyn ZHE",
+      type: "uitbreiding", urgentie: "middel",
+      headline: "Careyn ZHE opent De Eik Hellevoetsluis (nov. 2025)",
+      summary: "Nieuwe locatie De Eik in Hellevoetsluis; uitbreiding aanbod Zuid-Hollandse Eilanden.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.careyn.nl" },
+    { id: "SIG-2025-011", datum: "2025-09-15", instellingId: "kennemerhart", instellingNaam: "Kennemerhart",
+      type: "uitbreiding", urgentie: "middel",
+      headline: "Kennemerhart opent Janskliniek Haarlem (zomer 2025)",
+      summary: "Nieuwe locatie Janskliniek in Haarlem; uitbreiding capaciteit Noord-Holland Noord.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.kennemerhart.nl" },
+    { id: "SIG-2025-012", datum: "2025-09-01", instellingId: "marente", instellingNaam: "Marente",
+      type: "uitbreiding", urgentie: "middel",
+      headline: "Marente opent wooncomplex Hillegom (2025)",
+      summary: "Nieuwe woonlocatie Hillegom; bredere dekking regio Leiden/Bollenstreek.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.marente.nl" },
+    { id: "SIG-2025-013", datum: "2025-09-01", instellingId: "zorggroep-sint-maarten", instellingNaam: "Zorggroep Sint Maarten",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Zorggroep Sint Maarten opent Bosweg Lochem (eind 2025)",
+      summary: "Nieuwe locatie Bosweg in Lochem; uitbreiding capaciteit Twente.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.zgsm.nl" },
+    { id: "SIG-2025-014", datum: "2025-05-20", instellingId: "interzorg", instellingNaam: "Interzorg",
+      type: "uitbreiding", urgentie: "middel",
+      headline: "Interzorg opent De Slingeborgh Assen fase 1 (lente 2025)",
+      summary: "Eerste fase van nieuwe locatie De Slingeborgh in Assen geopend.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.interzorg.nl" },
+    { id: "SIG-2025-015", datum: "2025-03-15", instellingId: "de-waalboog", instellingNaam: "De Waalboog",
+      type: "fusie", urgentie: "middel",
+      headline: "De Waalboog fuseert met LuciVer (2025)",
+      summary: "Fusie met LuciVer; samenwerking Nijmegen-Noord met ZZG.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.waalboog.nl" },
+    { id: "SIG-2025-016", datum: "2025-03-01", instellingId: "cicero-zorggroep", instellingNaam: "Cicero Zorggroep",
+      type: "attentie", urgentie: "hoog",
+      headline: "Cicero: 0 consulten geregistreerd in periode",
+      summary: "GeriCall-klant met 0 consulten in de geregistreerde periode; activering en relatieversterking nodig.",
+      source: "GeriCall interne data", sourceUrl: "" },
+    { id: "SIG-2025-020", datum: "2025-02-01", instellingId: "carintreggeland", instellingNaam: "Carintreggeland",
+      type: "contract", urgentie: "hoog",
+      headline: "ThoeZ Twente raamovereenkomst (feb. 2025)",
+      summary: "11-organisatie raamovereenkomst voor gezamenlijke ANW Twente; Carintreggeland als grootste partij.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.carintreggeland.nl" },
+    { id: "SIG-2025-021", datum: "2025-01-15", instellingId: "alliade", instellingNaam: "Alliade",
+      type: "contract", urgentie: "hoog",
+      headline: "Alliade tekent voor GeriForce Friesland (jan. 2025)",
+      summary: "Friese 5-org. samenwerking via GeriForce Friesland; GeriCall partner.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.alliade.nl" },
+    { id: "SIG-2025-022", datum: "2025-01-15", instellingId: "patyna", instellingNaam: "Patyna",
+      type: "contract", urgentie: "hoog",
+      headline: "Patyna tekent voor GeriForce Friesland (jan. 2025)",
+      summary: "Friese 5-org. samenwerking; eigen SO's blijven actief.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.patyna.nl" },
+    { id: "SIG-2025-023", datum: "2025-01-15", instellingId: "zuidoostzorg", instellingNaam: "ZuidOostZorg",
+      type: "contract", urgentie: "hoog",
+      headline: "ZuidOostZorg in GeriForce Friesland-samenwerking",
+      summary: "Friese samenwerking; Triage.nu als achterliggende tooling betrokken.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.zuidoostzorg.nl" },
+    { id: "SIG-2025-024", datum: "2025-01-15", instellingId: "kwadrantgroep", instellingNaam: "KwadrantGroep",
+      type: "contract", urgentie: "hoog",
+      headline: "KwadrantGroep in GeriForce Friesland-samenwerking",
+      summary: "Friese samenwerking; eigen SO's deels behouden.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.kwadrantgroep.nl" },
+    { id: "SIG-2025-025", datum: "2025-01-15", instellingId: "noorderbreedte", instellingNaam: "Noorderbreedte",
+      type: "contract", urgentie: "hoog",
+      headline: "Noorderbreedte in GeriForce Friesland-samenwerking",
+      summary: "Friese samenwerking; bestuurderswissel begin 2026 mogelijk effect op vervolg.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.noorderbreedte.nl" },
+    { id: "SIG-2024-001", datum: "2024-09-01", instellingId: "envida", instellingNaam: "Envida",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Envida opent drie nieuwe locaties (2024)",
+      summary: "Gronsveld, Lindenhoven en Herculeshof toegevoegd aan Zuid-Limburgs portfolio.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.envida.nl" },
+    { id: "SIG-2024-002", datum: "2024-09-01", instellingId: "sensire", instellingNaam: "Sensire",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Sensire opent Ons Zorghuis Zutphen (2024)",
+      summary: "Nieuwe Achterhoek-locatie Zutphen.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.sensire.nl" },
+    { id: "SIG-2024-003", datum: "2024-10-15", instellingId: "zorgspectrum", instellingNaam: "Zorgspectrum",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Zorgspectrum opent Brinkhoef Hoef en Haag (okt. 2024)",
+      summary: "Nieuwe locatie Brinkhoef in Hoef en Haag.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.zorgspectrum.nl" },
+    { id: "SIG-2024-004", datum: "2024-09-01", instellingId: "thebe", instellingNaam: "Thebe",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Thebe opent Heilaarstaete Breda (2024)",
+      summary: "Nieuwe locatie Heilaarstaete in Breda.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.thebe.nl" },
+    { id: "SIG-2024-005", datum: "2024-09-01", instellingId: "zuyderland-zorgcentra", instellingNaam: "Zuyderland Zorgcentra",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Zuyderland opent Egtherhof (2024)",
+      summary: "Nieuwe Zuid-Limburgs locatie Egtherhof.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.zuyderland.nl" },
+    { id: "SIG-2024-006", datum: "2024-09-01", instellingId: "brabantzorg", instellingNaam: "BrabantZorg",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "BrabantZorg opent Nieuwe Hoeven Schaijk + De Wielewaal Zaltbommel (2024)",
+      summary: "Twee nieuwe locaties in Schaijk en Zaltbommel.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.brabantzorg.eu" },
+    { id: "SIG-2024-007", datum: "2024-12-01", instellingId: "laurens", instellingNaam: "Laurens",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Laurens opent Borgstede Barendrecht (dec. 2024)",
+      summary: "Nieuwe locatie Borgstede in Barendrecht.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.laurens.nl" },
+    { id: "SIG-2024-008", datum: "2024-09-01", instellingId: "cicero-zorggroep", instellingNaam: "Cicero Zorggroep",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Cicero opent Cicero Residentie Amby (2024)",
+      summary: "Nieuwe locatie Cicero Residentie in Amby (Maastricht).",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.cicerozorggroep.nl" },
+    { id: "SIG-2024-009", datum: "2024-09-01", instellingId: "topaz", instellingNaam: "Topaz",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Topaz opent Foreschate Voorschoten (2024)",
+      summary: "Nieuwe locatie Foreschate in Voorschoten.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.topaz.nl" },
+    { id: "SIG-2024-010", datum: "2024-09-01", instellingId: "sherpa", instellingNaam: "Sherpa",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Sherpa opent Zwinstraat Baarn (2024)",
+      summary: "Nieuwe woonlocatie aan de Zwinstraat in Baarn.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.sherpa.org" },
+    { id: "SIG-2024-011", datum: "2024-06-01", instellingId: "patyna", instellingNaam: "Patyna",
+      type: "uitbreiding", urgentie: "laag",
+      headline: "Patyna opent Gezondheidscentrum Makkum (juni 2024)",
+      summary: "Nieuw Gezondheidscentrum in Makkum.",
+      source: "Marktscan GeriCall", sourceUrl: "https://www.patyna.nl" }
+  ],
+  leveranciers: [
+    {
+      id: "gericall", naam: "GeriCall (ANW Nederland)",
+      categorie: "ANW dienstverlening", type: "voorwacht + achterwacht",
+      partnerStatus: "eigen",
+      klanten: [
+        "carintreggeland", "alliade", "patyna", "zuidoostzorg", "kwadrantgroep",
+        "noorderbreedte", "envida", "novicare-west", "careyn-zhe", "frankelandgroep",
+        "pleyade", "de-waalboog", "cicero-zorggroep"
+      ],
+      klantenLikely: ["zinzia-zorggroep", "rijnstad", "vivent", "de-rijnhoven"],
+      notes: "Eigen propositie. Voorwacht via ANW Nederland, achterwacht-tooling via GeriForce."
+    },
+    {
+      id: "thoez-twente", naam: "ThoeZ Twente",
+      categorie: "ANW samenwerkingsverband", type: "regionaal verband (11 organisaties)",
+      partnerStatus: "concurrent",
+      klanten: ["carintreggeland", "zorggroep-sint-maarten", "triviummeulenbeltzorg", "livio", "zorgaccent"],
+      notes: "Raamovereenkomst feb. 2025 voor gezamenlijke ANW. Inclusief Carintreggeland (GeriCall klant) — coöpetitie."
+    },
+    {
+      id: "awiz-zob", naam: "AWIZ Zuidoost-Brabant",
+      categorie: "ANW samenwerkingsverband", type: "regionaal verband (~10 organisaties)",
+      partnerStatus: "concurrent",
+      klanten: ["vitalis-woonzorg"],
+      notes: "Eindhoven-regio. Sterke incumbent; ANW-vervanging onwaarschijnlijk, tooling-partnership wel mogelijk."
+    },
+    {
+      id: "awiz-westbrabant", naam: "AWIZ West-Brabant",
+      categorie: "ANW samenwerkingsverband", type: "regionaal verband",
+      partnerStatus: "concurrent",
+      klanten: ["thebe"],
+      notes: "Breda-regio."
+    },
+    {
+      id: "nob-green-deal", naam: "NOB Green Deal",
+      categorie: "ANW samenwerkingsverband", type: "regionaal verband (13 organisaties)",
+      partnerStatus: "concurrent",
+      klanten: ["brabantzorg", "vivent"],
+      notes: "Brabantse samenwerking voor duurzame ANW."
+    },
+    {
+      id: "archipel-zhe", naam: "Archipel ZHE",
+      categorie: "ANW samenwerkingsverband", type: "regionaal verband (13 organisaties)",
+      partnerStatus: "concurrent",
+      klanten: ["aafje", "laurens", "argos-zorggroep"],
+      notes: "Zuid-Hollandse Eilanden. Inclusief Aafje + Laurens (eigen SO's) — sterke positie."
+    },
+    {
+      id: "wsd-rotterdam", naam: "WSD-coordinatiepunt Rotterdam",
+      categorie: "WSD", type: "regionaal verband",
+      partnerStatus: "mogelijk",
+      klanten: ["careyn-zhe", "frankelandgroep", "argos-zorggroep", "humanitas-rotterdam"],
+      notes: "Rotterdam wijkverpleging-samenwerkingsdienst. Discharge coordination overlap."
+    },
+    {
+      id: "verwijspunt-020", naam: "Verwijspunt 020",
+      categorie: "ANW samenwerkingsverband", type: "regionaal verband (~7 organisaties)",
+      partnerStatus: "concurrent",
+      klanten: ["cordaan", "amsta", "amstelring", "evean", "zonnehuisgroep-amstelland"],
+      notes: "Amsterdamse VVT-samenwerking. Cordaan + Amsta + Evean dominant."
+    },
+    {
+      id: "triagenu", naam: "Triage.nu",
+      categorie: "Triage tooling", type: "platform",
+      partnerStatus: "concurrent",
+      klanten: ["dignis", "zuidoostzorg"],
+      notes: "Mede-opgericht door Dignis; in gebruik bij ZuidOostZorg (Friesland)."
+    },
+    {
+      id: "nonna-reco", naam: "Nonna Reco",
+      categorie: "ANW netwerk", type: "netwerk",
+      partnerStatus: "neutraal",
+      klanten: ["zzg-zorggroep"],
+      notes: "ZZG-netwerk Nijmegen."
+    },
+    {
+      id: "zio", naam: "ZIO Maastricht",
+      categorie: "ANW netwerk", type: "netwerk",
+      partnerStatus: "neutraal",
+      klanten: ["zuyderland-zorgcentra", "zorgsaam-limburg"],
+      notes: "Maastricht-regio specialisten netwerk."
+    },
+    {
+      id: "nedap-ons", naam: "Nedap ONS",
+      categorie: "ECD", type: "EPD/ECD systeem",
+      marktaandeelPct: 45, partnerStatus: "mogelijk",
+      klanten: [],
+      notes: "Marktleider VVT-ECD (~45% schatting). NUTS-integratie partner. Per instelling nog te bevestigen."
+    },
+    {
+      id: "pinkroccade-ysis", naam: "PinkRoccade Ysis",
+      categorie: "ECD", type: "EPD/ECD systeem",
+      marktaandeelPct: 25, partnerStatus: "mogelijk",
+      klanten: [],
+      notes: "Tweede speler VVT-ECD. Per instelling nog te bevestigen."
+    },
+    {
+      id: "gerimedica-ysis", naam: "Gerimedica Ysis",
+      categorie: "ECD", type: "EPD/ECD systeem",
+      marktaandeelPct: 15, partnerStatus: "mogelijk",
+      klanten: [],
+      notes: "Specialistische ouderengeneeskunde ECD. Per instelling nog te bevestigen."
+    },
+    {
+      id: "drillster", naam: "Drillster",
+      categorie: "eLearning", type: "platform",
+      partnerStatus: "concurrent",
+      klanten: [],
+      notes: "Wordt verdrongen door GeriForce eLearning (IDEA-013, SLIM subsidie deadline feb. 2027)."
+    }
+  ],
+  snapshots: []
+};
+DATA.meta.totalInstellingen = DATA.instellingen.length;
+DATA.meta.totalSignalen = DATA.signalen.length;
+DATA.meta.totalLeveranciers = DATA.leveranciers.length;
+/* ============================================================ */
+/* MARKTRADAR DATA  ·  EIND                                      */
+/* ============================================================ */
+
+/* SHA-256 hash van toegangscode. Default: "GF2026!" */
+const PW_HASH = "4ad43b0f629d886acfbe35de3fc526f0ab7468d8d985fe607e8314f138f36ef9";
+
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+document.getElementById('gate-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pw = document.getElementById('gate-pw').value;
+  const hash = await sha256(pw);
+  if(hash === PW_HASH){
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('app').classList.add('active');
+    initApp();
+  } else {
+    document.getElementById('gate-err').classList.add('show');
+    document.getElementById('gate-pw').value = '';
+    document.getElementById('gate-pw').focus();
+  }
+});
+
+(function(){
+  const weekEl = document.getElementById('gate-week');
+  if(weekEl) weekEl.textContent = `WK ${DATA.meta.weekNumber} · ${DATA.meta.lastUpdated}`;
+  const verEl = document.getElementById('gate-version');
+  if(verEl){
+    const v = DATA.meta?.version || '1.0.0';
+    const cn = DATA.meta?.codename || 'Aldebaran';
+    verEl.textContent = 'Client-side · v' + v + ' · ' + cn;
+  }
+})();
+
+let signalFilter = 'alle';
+let signalSort = 'date';
+let instFilter = 'alle';
+let instSort = 'auto';
+let instProv = 'all';
+let instRegio = 'all';
+let instOwner = 'all';
+let searchQuery = '';
+let trendsLens = 'auto';
+let trendsSort = 'delta-abs';
+
+const OWNERS = [
+  {id: 'koen',     naam: 'Koen Molenaar',   rol: 'Strategisch productlead'},
+  {id: 'rene',     naam: 'René van Hattem', rol: 'CEO'},
+  {id: 'laurina',  naam: 'Laurina Nieukerke', rol: 'International CEO (M&A)'},
+  {id: 'jeff',     naam: 'Jeff Lafranca',   rol: 'Operations'},
+  {id: 'niels',    naam: 'Niels Langhout',  rol: 'SO / Quality & Education'},
+  {id: 'famke',    naam: 'Famke',           rol: 'Thuiszorg / GeriThuis'},
+  {id: 'irma',     naam: 'Irma Elzinga',    rol: 'Klantcommunicatie'},
+];
+
+const STORAGE_KEY = 'marktradar.assignments.v1';
+function loadAssignments(){
+  try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
+  catch(e){ return {}; }
+}
+function saveAssignments(map){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); } catch(e){}
+}
+let assignments = loadAssignments();
+function ownerForInst(id){ return assignments[id] || null; }
+function ownerById(id){ return OWNERS.find(o => o.id === id); }
+function setOwner(instId, ownerId){
+  if(ownerId) assignments[instId] = ownerId; else delete assignments[instId];
+  saveAssignments(assignments);
+}
+function clearAllAssignments(){ assignments = {}; saveAssignments(assignments); }
+function exportAssignments(){
+  const lines = ['instelling_id,instelling_naam,owner_id,owner_naam'];
+  Object.entries(assignments).forEach(([iid, oid]) => {
+    const inst = getInstelling(iid);
+    const owner = ownerById(oid);
+    lines.push(`"${iid}","${(inst?.naam||'').replace(/"/g,'""')}","${oid}","${owner?.naam||''}"`);
+  });
+  return lines.join('\n');
+}
+
+const CODENAMES = ['Aldebaran','Betelgeuse','Capella','Deneb','Electra',
+  'Fomalhaut','Gienah','Hadar','Izar','Jabbah','Kornephoros','Lesath','Mira',
+  'Nashira','Polaris','Rigel','Sirius','Toliman','Vega','Wezen','Zaurak'];
+
+function fmtDate(s){
+  const d = new Date(s);
+  const months = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+function fmtFullDate(s){
+  const d = new Date(s);
+  const months = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+function fmtRelative(s){
+  const d = new Date(s);
+  const days = Math.round((Date.now() - d.getTime()) / 86400000);
+  if(days === 0) return 'vandaag';
+  if(days === 1) return 'gisteren';
+  if(days < 7) return `${days}d geleden`;
+  if(days < 30) return `${Math.floor(days/7)}w geleden`;
+  return fmtFullDate(s);
+}
+function getInstelling(id){ return DATA.instellingen.find(i => i.id === id); }
+function urgencyOrder(u){ return {hoog:3, middel:2, laag:1}[u] || 0; }
+function signalsForInst(id){ return DATA.signalen.filter(s => s.instellingId === id); }
+function leadScoreClass(score){
+  if(score >= 80) return 'hot';
+  if(score >= 50) return '';
+  return 'cold';
+}
+function snapshotCount(){ return (DATA.snapshots || []).length; }
+function snapshotsForInst(id, lens){
+  return (DATA.snapshots || []).map(s => {
+    const inst = s.instellingen[id];
+    if(!inst) return null;
+    const value = lens ? (inst.scores?.[lens] ?? 0) : (inst.leadScore ?? 0);
+    return { date: s.date, week: s.week, value };
+  }).filter(Boolean);
+}
+function leadScoreHistoryForInst(id){
+  return (DATA.snapshots || []).map(s => s.instellingen[id]?.leadScore ?? 0);
+}
+
+const LENS_INFO = {
+  acquisitie:   { label: 'Acquisitie',   short: 'Acq',  color: 'var(--orange)' },
+  retention:    { label: 'Retention',    short: 'Ret',  color: '#b94a3c' },
+  expansion:    { label: 'Expansion',    short: 'Exp',  color: '#5a8a5a' },
+  consolidatie: { label: 'Consolidatie', short: 'Cons', color: '#6b6b8c' }
+};
+const LENS_DESCRIPTIONS = {
+  acquisitie:   'Kans op winnen als nieuwe klant; hoger = sterkere acquisitiecase',
+  retention:    'Risico op verlies van bestaande klant; hoger = meer aandacht nodig',
+  expansion:    'Potentieel voor extra GeriForce-modules; hoger = grotere upsell',
+  consolidatie: 'Kans op fusie/overname binnen 24 mnd; verandert het speelveld'
+};
+function activeLensFor(inst, sortMode){
+  const scores = inst.scores || {};
+  if(['acquisitie','retention','expansion','consolidatie'].includes(sortMode)){
+    return { lens: sortMode, score: scores[sortMode]||0, label: LENS_INFO[sortMode].label };
+  }
+  const leadLens = inst.leadLens || 'acquisitie';
+  return { lens: leadLens, score: inst.leadScore || 0, label: LENS_INFO[leadLens]?.label || 'Score' };
+}
+function relevantLensesFor(status){
+  if(status === 'klant')    return ['retention','expansion','consolidatie'];
+  if(status === 'prospect') return ['acquisitie','expansion','consolidatie'];
+  if(status === 'lead')     return ['acquisitie','consolidatie'];
+  return ['acquisitie','consolidatie'];
+}
+
+function initApp(){
+  document.getElementById('lastUpdated').textContent = `${fmtFullDate(DATA.meta.lastUpdated)} · WK ${DATA.meta.weekNumber}`;
+  renderKpiRow();
+  renderTabs();
+  renderSignalFilters();
+  renderSignals();
+  renderInstFilters();
+  renderRegioFilter();
+  renderProvinceFilter();
+  renderOwnerFilter();
+  renderInstellingen();
+  renderLeveranciers();
+  bindTabs();
+  bindSearch();
+  bindSorts();
+  bindRefreshModal();
+  bindOwnersModal();
+  bindVersionModal();
+  renderVersion();
+}
+
+function renderKpiRow(){
+  const sigCount = DATA.signalen.length;
+  const sigHoog = DATA.signalen.filter(s => s.urgentie === 'hoog').length;
+  const hotLeads = DATA.instellingen.filter(i => i.leadScore >= 70 && i.gericallStatus !== 'klant').length;
+  const klanten = DATA.instellingen.filter(i => i.gericallStatus === 'klant').length;
+  const totalInst = DATA.instellingen.length;
+  const totalBedden = DATA.instellingen.reduce((s,i) => s + (i.aantalBedden||0), 0);
+  const klantBedden = DATA.instellingen.filter(i => i.gericallStatus === 'klant').reduce((s,i) => s + (i.aantalBedden||0), 0);
+  const dekkingPct = totalBedden > 0 ? Math.round((klantBedden / totalBedden) * 100) : 0;
+  document.getElementById('kpiRow').innerHTML = `
+    <div class="kpi"><div class="kpi-label">Signalen deze week</div><div class="kpi-value">${sigCount} <small>waarvan ${sigHoog} hoog</small></div></div>
+    <div class="kpi"><div class="kpi-label">Hot leads</div><div class="kpi-value" style="color:var(--orange-dark)">${hotLeads} <small>score &ge; 70</small></div></div>
+    <div class="kpi"><div class="kpi-label">Instellingen in beeld</div><div class="kpi-value">${totalInst}</div></div>
+    <div class="kpi"><div class="kpi-label">GeriCall klanten</div><div class="kpi-value">${klanten} <small>van ${totalInst}</small></div></div>
+    <div class="kpi"><div class="kpi-label">Marktdekking (bedden)</div><div class="kpi-value">${dekkingPct}<small>%</small></div></div>
+  `;
+}
+
+function renderVersion(){
+  const v = DATA.meta?.version || '1.0.0';
+  const cn = DATA.meta?.codename || 'Aldebaran';
+  const numEl = document.getElementById('versionNumber');
+  const cnEl = document.getElementById('versionCodename');
+  if(numEl) numEl.textContent = 'v' + v;
+  if(cnEl) cnEl.textContent = cn;
+  const gateEl = document.getElementById('gate-version');
+  if(gateEl) gateEl.textContent = 'Client-side · v' + v + ' · ' + cn;
+  document.title = 'GeriCall · MarktRadar v' + v + ' ' + cn;
+}
+
+function renderVersionHistory(){
+  const list = (DATA.meta?.releaseHistory || []).slice().reverse();
+  const current = DATA.meta?.version;
+  const html = list.map(r => `
+    <div class="version-row ${r.version === current ? 'current' : ''}">
+      <div class="version-num">v${r.version}</div>
+      <div class="version-name">${r.codename}</div>
+      <div class="version-note">${r.note}</div>
+      <div class="version-date">${r.date}</div>
+    </div>
+  `).join('');
+  document.getElementById('versionHistory').innerHTML = html || '<div class="muted">Geen release-historie beschikbaar.</div>';
+}
+
+function bindVersionModal(){
+  const pill = document.getElementById('versionPill');
+  if(pill){
+    pill.addEventListener('click', () => {
+      renderVersionHistory();
+      document.getElementById('versionModal').classList.add('show');
+    });
+  }
+  document.getElementById('closeVersionBtn').addEventListener('click', () => {
+    document.getElementById('versionModal').classList.remove('show');
+  });
+  document.getElementById('versionModal').addEventListener('click', (e) => {
+    if(e.target.id === 'versionModal') document.getElementById('versionModal').classList.remove('show');
+  });
+}
+
+function renderTabs(){
+  document.getElementById('tabCountSignalen').textContent = DATA.signalen.length;
+  document.getElementById('tabCountInst').textContent = DATA.instellingen.length;
+  document.getElementById('tabCountLev').textContent = DATA.leveranciers.length;
+  document.getElementById('tabCountTrends').textContent = (DATA.snapshots || []).length;
+}
+function bindTabs(){
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      const target = t.dataset.tab;
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.getElementById(`pane-${target}`).classList.add('active');
+      if(target === 'trends'){ renderTrendsLensChips(); renderTrendsTab(); }
+    });
+  });
+  const trendsSortEl = document.getElementById('trendsSort');
+  if(trendsSortEl){
+    trendsSortEl.addEventListener('change', e => {
+      trendsSort = e.target.value;
+      renderTrendsList(); bindTrendsClicks();
+    });
+  }
+}
+
+const SIGNAL_TYPES = [
+  {key:'alle', label:'Alle'},
+  {key:'management', label:'Management'},
+  {key:'aanbesteding', label:'Aanbesteding'},
+  {key:'fusie', label:'Fusie/Samenwerking'},
+  {key:'financieel', label:'Financieel'},
+  {key:'contract', label:'Contract'},
+  {key:'uitbreiding', label:'Uitbreiding'},
+  {key:'attentie', label:'Attentie'},
+  {key:'nieuws', label:'Nieuws'}
+];
+
+function renderSignalFilters(){
+  const counts = {};
+  DATA.signalen.forEach(s => { counts[s.type] = (counts[s.type]||0) + 1; });
+  const total = DATA.signalen.length;
+  const html = SIGNAL_TYPES.map(t => {
+    const count = t.key === 'alle' ? total : (counts[t.key] || 0);
+    if(t.key !== 'alle' && count === 0) return '';
+    return `<button class="chip ${signalFilter === t.key ? 'active orange' : ''}" data-filter="${t.key}">
+      ${t.label} <span class="chip-count">${count}</span>
+    </button>`;
+  }).join('');
+  document.getElementById('signalFilters').innerHTML = html;
+  document.querySelectorAll('#signalFilters .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      signalFilter = c.dataset.filter;
+      renderSignalFilters(); renderSignals();
+    });
+  });
+}
+
+function renderSignals(){
+  let signalen = DATA.signalen.slice();
+  if(signalFilter !== 'alle') signalen = signalen.filter(s => s.type === signalFilter);
+  if(searchQuery){
+    const q = searchQuery.toLowerCase();
+    signalen = signalen.filter(s => {
+      const inst = getInstelling(s.instellingId);
+      return s.headline.toLowerCase().includes(q)
+          || s.summary.toLowerCase().includes(q)
+          || (inst && inst.naam.toLowerCase().includes(q));
+    });
+  }
+  if(signalSort === 'date'){
+    signalen.sort((a,b) => b.datum.localeCompare(a.datum));
+  } else if(signalSort === 'urgency'){
+    signalen.sort((a,b) => urgencyOrder(b.urgentie) - urgencyOrder(a.urgentie));
+  } else if(signalSort === 'leadscore'){
+    signalen.sort((a,b) => {
+      const ia = getInstelling(a.instellingId);
+      const ib = getInstelling(b.instellingId);
+      return (ib?.leadScore || 0) - (ia?.leadScore || 0);
+    });
+  }
+  const html = signalen.map(s => {
+    const inst = getInstelling(s.instellingId);
+    return `
+      <div class="signal urgency-${s.urgentie}" data-signal-id="${s.id}">
+        <div class="signal-date">
+          <strong>${fmtDate(s.datum)}</strong>
+          <span>${fmtRelative(s.datum)}</span>
+        </div>
+        <div class="signal-body">
+          <div class="signal-meta-row">
+            <span class="signal-type ${s.type}">${s.type}</span>
+            <span class="signal-urgency ${s.urgentie}"><span class="dot"></span>${s.urgentie}</span>
+          </div>
+          <div class="signal-headline">${s.headline}</div>
+          <div class="signal-summary">${s.summary}</div>
+          ${inst ? `<span class="signal-instelling" data-inst-id="${inst.id}">${inst.naam} <span class="muted">&middot;</span> ${inst.regio} <span class="arrow">&rarr;</span></span>` : ''}
+        </div>
+        <div class="signal-side">
+          ${s.sourceUrl && s.sourceUrl !== '#'
+            ? `<a class="signal-source" href="${s.sourceUrl}" target="_blank" rel="noopener">${s.source} &#x2197;</a>`
+            : `<span class="signal-source">${s.source}</span>`}
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('signalFeed').innerHTML = html || '<div class="no-data">Geen signalen die voldoen aan dit filter.</div>';
+  document.querySelectorAll('.signal-instelling').forEach(el => {
+    el.addEventListener('click', (e) => { e.stopPropagation(); openInstelling(el.dataset.instId); });
+  });
+  document.querySelectorAll('.signal').forEach(el => {
+    el.addEventListener('click', () => {
+      const sid = el.dataset.signalId;
+      const sig = DATA.signalen.find(x => x.id === sid);
+      if(sig && sig.instellingId) openInstelling(sig.instellingId);
+    });
+  });
+}
+
+const INST_FILTERS = [
+  {key:'alle', label:'Alle'},
+  {key:'klant', label:'Klant'},
+  {key:'lead', label:'Lead'},
+  {key:'prospect', label:'Prospect'},
+  {key:'cold', label:'Cold'},
+  {key:'mgmt', label:'Recent mgmt-wisseling'},
+  {key:'hot-acq', label:'Hot acquisitie', lens:'acquisitie', threshold:50},
+  {key:'klant-risk', label:'Klanten op risico', lens:'retention', threshold:35},
+  {key:'top-exp', label:'Top expansion', lens:'expansion', threshold:55},
+  {key:'consol', label:'Consolidatie-target', lens:'consolidatie', threshold:55}
+];
+
+function applyLensFilter(items, key){
+  const f = INST_FILTERS.find(x => x.key === key);
+  if(!f || !f.lens) return items;
+  return items.filter(i => (i.scores?.[f.lens] || 0) >= f.threshold);
+}
+
+function renderInstFilters(){
+  const counts = {alle: DATA.instellingen.length};
+  DATA.instellingen.forEach(i => { counts[i.gericallStatus] = (counts[i.gericallStatus]||0) + 1; });
+  counts.mgmt = DATA.instellingen.filter(i => (i.directie||[]).some(d => d.recent)).length;
+  INST_FILTERS.filter(f => f.lens).forEach(f => { counts[f.key] = applyLensFilter(DATA.instellingen, f.key).length; });
+  const html = INST_FILTERS.map(f => {
+    const c = counts[f.key] || 0;
+    if(f.key !== 'alle' && c === 0) return '';
+    return `<button class="chip ${instFilter === f.key ? 'active' : ''}" data-filter="${f.key}">${f.label} <span class="chip-count">${c}</span></button>`;
+  }).join('');
+  document.getElementById('instFilters').innerHTML = html;
+  document.querySelectorAll('#instFilters .chip').forEach(c => {
+    c.addEventListener('click', () => { instFilter = c.dataset.filter; renderInstFilters(); renderInstellingen(); });
+  });
+}
+
+function renderProvinceFilter(){
+  const provCounts = {};
+  DATA.instellingen.forEach(i => { const p = i.provincie || '—'; provCounts[p] = (provCounts[p] || 0) + 1; });
+  const sel = document.getElementById('instProv');
+  if(!sel) return;
+  const sorted = Object.keys(provCounts).sort();
+  sel.innerHTML = `<option value="all">Alle provincies (${DATA.instellingen.length})</option>` +
+    sorted.map(p => `<option value="${p}" ${instProv===p?'selected':''}>${p} (${provCounts[p]})</option>`).join('');
+}
+
+function renderRegioFilter(){
+  const regCounts = {};
+  DATA.instellingen.forEach(i => { const r = i.regio || '—'; regCounts[r] = (regCounts[r] || 0) + 1; });
+  const sel = document.getElementById('instRegio');
+  if(!sel) return;
+  const order = ['Noord','Oost','Midden','West','Zuid','Landelijk','—'];
+  const sorted = Object.keys(regCounts).sort((a,b) => {
+    const ai = order.indexOf(a); const bi = order.indexOf(b);
+    if(ai === -1 && bi === -1) return a.localeCompare(b);
+    if(ai === -1) return 1;
+    if(bi === -1) return -1;
+    return ai - bi;
+  });
+  sel.innerHTML = `<option value="all">Alle regio's (${DATA.instellingen.length})</option>` +
+    sorted.map(r => `<option value="${r}" ${instRegio===r?'selected':''}>${r} (${regCounts[r]})</option>`).join('');
+}
+
+function renderOwnerFilter(){
+  const ownerCounts = {};
+  let unassigned = 0;
+  DATA.instellingen.forEach(i => {
+    const o = ownerForInst(i.id);
+    if(o) ownerCounts[o] = (ownerCounts[o] || 0) + 1;
+    else unassigned++;
+  });
+  const sel = document.getElementById('instOwner');
+  if(!sel) return;
+  const opts = [
+    `<option value="all">Alle eigenaren (${DATA.instellingen.length})</option>`,
+    `<option value="unassigned" ${instOwner==='unassigned'?'selected':''}>Niet toegewezen (${unassigned})</option>`,
+  ];
+  OWNERS.forEach(o => {
+    const c = ownerCounts[o.id] || 0;
+    if(c === 0 && instOwner !== o.id) return;
+    opts.push(`<option value="${o.id}" ${instOwner===o.id?'selected':''}>${o.naam} (${c})</option>`);
+  });
+  sel.innerHTML = opts.join('');
+}
+
+function buildSparkline(history, opts){
+  const w = opts?.width ?? 60;
+  const h = opts?.height ?? 18;
+  const pad = 2;
+  const values = history.map(p => typeof p === 'number' ? p : p.value);
+  if(values.length === 0) return '<span class="muted" style="font-size:.7rem">geen data</span>';
+  if(values.length === 1) return `<span style="font-size:.7rem;color:var(--grey-500);font-family:'DM Mono',monospace">${values[0]} &middot; één punt</span>`;
+  const min = 0, max = 100;
+  const xStep = (w - 2*pad) / (values.length - 1);
+  const points = values.map((v, i) => {
+    const x = pad + i*xStep;
+    const y = h - pad - ((v - min) / (max - min)) * (h - 2*pad);
+    return [x, y];
+  });
+  const linePath = points.map((p, i) => `${i===0?'M':'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const areaPath = `M${points[0][0]},${h-pad} ` + points.map(p => `L${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ') + ` L${points[points.length-1][0]},${h-pad} Z`;
+  const lastVal = values[values.length-1];
+  const cls = opts?.scoreClass || (lastVal >= 80 ? 'hot' : lastVal >= 50 ? '' : 'cold');
+  const dotsHtml = points.slice(0, -1).map(p => `<circle class="point" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="1.3"/>`).join('');
+  return `<svg class="sparkline ${cls}" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <path class="area" d="${areaPath}"/>
+    <path class="line" d="${linePath}"/>
+    ${dotsHtml}
+    <circle class="last" cx="${points[points.length-1][0].toFixed(1)}" cy="${points[points.length-1][1].toFixed(1)}" r="2"/>
+  </svg>`;
+}
+
+function deltaIndicator(history){
+  if(!history || history.length < 2) return '';
+  const last = history[history.length-1];
+  const prev = history[history.length-2];
+  const lastV = typeof last === 'number' ? last : last.value;
+  const prevV = typeof prev === 'number' ? prev : prev.value;
+  const delta = lastV - prevV;
+  if(delta === 0) return `<span class="delta-flat">→ 0</span>`;
+  if(delta > 0) return `<span class="delta-up">↑ +${delta}</span>`;
+  return `<span class="delta-down">↓ ${delta}</span>`;
+}
+
+function renderScoringPanel(inst){
+  const scores = inst.scores || {};
+  const relevant = new Set(relevantLensesFor(inst.gericallStatus));
+  const order = ['acquisitie','retention','expansion','consolidatie'];
+  const rows = order.map(lens => {
+    const s = scores[lens] || 0;
+    const isRelevant = relevant.has(lens);
+    const info = LENS_INFO[lens];
+    return `
+      <div class="lens-row ${isRelevant ? 'relevant' : 'irrelevant'}" title="${LENS_DESCRIPTIONS[lens]}">
+        <div class="lens-row-head">
+          <div class="lens-row-name">${info.label}${isRelevant ? '<span class="lens-relevant-dot"></span>' : ''}</div>
+          <div class="lens-row-value">${s}</div>
+        </div>
+        <div class="lens-row-bar"><span class="lens-row-fill ${leadScoreClass(s)}" style="width:${s}%"></span></div>
+        <div class="lens-row-desc">${LENS_DESCRIPTIONS[lens]}</div>
+      </div>`;
+  }).join('');
+  let chartHtml = '';
+  if(snapshotCount() >= 2){
+    const cells = order.map(lens => {
+      const history = snapshotsForInst(inst.id, lens);
+      const last = history[history.length-1];
+      const prev = history[history.length-2];
+      const delta = (last?.value || 0) - (prev?.value || 0);
+      const isRelevant = relevant.has(lens);
+      return `
+        <div class="lens-chart-cell ${isRelevant ? 'relevant' : ''}">
+          <div class="lens-chart-cell-head">
+            <span>${LENS_INFO[lens].label}</span>
+            <span class="lens-chart-cell-value">${last?.value || 0}</span>
+          </div>
+          ${buildSparkline(history, {width: 140, height: 36})}
+          <div style="margin-top:4px;font-size:.65rem;color:var(--grey-500)">
+            ${snapshotCount()} snapshots ${delta !== 0 ? '· ' + (delta > 0 ? '<span class="delta-up">↑+'+delta+'</span>' : '<span class="delta-down">↓'+delta+'</span>') : ''}
+          </div>
+        </div>`;
+    }).join('');
+    chartHtml = `
+      <div class="lens-chart">
+        <div style="font-size:.72rem;font-weight:700;color:var(--grey-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Score-historie · alle ${snapshotCount()} snapshots</div>
+        <div class="lens-chart-grid">${cells}</div>
+      </div>`;
+  } else {
+    chartHtml = `<div style="margin-top:10px;padding:10px 12px;background:var(--orange-pale);border-radius:6px;font-size:.75rem;color:var(--orange-dark)">Score-historie verschijnt vanaf snapshot #2 (volgende wekelijkse update).</div>`;
+  }
+  return `<div class="lens-grid">${rows}</div>
+    <div class="lens-legend"><span class="lens-relevant-dot"></span> Lens is relevant voor status &laquo;${inst.gericallStatus}&raquo;</div>
+    ${chartHtml}`;
+}
+
+function renderInstellingen(){
+  let instellingen = DATA.instellingen.slice();
+  let effectiveSort = instSort;
+  if(instFilter === 'mgmt'){
+    instellingen = instellingen.filter(i => (i.directie||[]).some(d => d.recent));
+  } else if(['hot-acq','klant-risk','top-exp','consol'].includes(instFilter)){
+    instellingen = applyLensFilter(instellingen, instFilter);
+    const f = INST_FILTERS.find(x => x.key === instFilter);
+    if(instFilter === 'klant-risk') instellingen = instellingen.filter(i => i.gericallStatus === 'klant');
+    if(instSort === 'auto' && f) effectiveSort = f.lens;
+  } else if(instFilter !== 'alle'){
+    instellingen = instellingen.filter(i => i.gericallStatus === instFilter);
+  }
+  if(instProv !== 'all') instellingen = instellingen.filter(i => (i.provincie || '') === instProv);
+  if(instRegio !== 'all') instellingen = instellingen.filter(i => (i.regio || '') === instRegio);
+  if(instOwner !== 'all'){
+    if(instOwner === 'unassigned') instellingen = instellingen.filter(i => !ownerForInst(i.id));
+    else instellingen = instellingen.filter(i => ownerForInst(i.id) === instOwner);
+  }
+  if(searchQuery){
+    const q = searchQuery.toLowerCase();
+    instellingen = instellingen.filter(i =>
+      i.naam.toLowerCase().includes(q) ||
+      (i.regio||'').toLowerCase().includes(q) ||
+      (i.provincie||'').toLowerCase().includes(q) ||
+      (i.hoofdvestiging||'').toLowerCase().includes(q) ||
+      (i.anwLeverancier||'').toLowerCase().includes(q) ||
+      (i.ecdLeverancier||'').toLowerCase().includes(q) ||
+      (i.tags||[]).some(t => t.toLowerCase().includes(q)) ||
+      (i.directie||[]).some(d => (d.naam||'').toLowerCase().includes(q))
+    );
+  }
+  if(effectiveSort === 'auto' || effectiveSort === 'leadscore') instellingen.sort((a,b) => b.leadScore - a.leadScore);
+  if(effectiveSort === 'acquisitie') instellingen.sort((a,b) => (b.scores?.acquisitie||0) - (a.scores?.acquisitie||0));
+  if(effectiveSort === 'retention') instellingen.sort((a,b) => (b.scores?.retention||0) - (a.scores?.retention||0));
+  if(effectiveSort === 'expansion') instellingen.sort((a,b) => (b.scores?.expansion||0) - (a.scores?.expansion||0));
+  if(effectiveSort === 'consolidatie') instellingen.sort((a,b) => (b.scores?.consolidatie||0) - (a.scores?.consolidatie||0));
+  if(effectiveSort === 'signals') instellingen.sort((a,b) => signalsForInst(b.id).length - signalsForInst(a.id).length);
+  if(effectiveSort === 'size') instellingen.sort((a,b) => (b.aantalBedden||0) - (a.aantalBedden||0));
+  if(effectiveSort === 'name') instellingen.sort((a,b) => a.naam.localeCompare(b.naam));
+  const head = `<div class="inst-head"><div>Instelling</div><div>Provincie</div><div>ANW</div><div>Status</div><div>Lead score</div><div>Bedden</div><div></div></div>`;
+  const rows = instellingen.map(i => {
+    const sigCount = signalsForInst(i.id).length;
+    const recentMgmt = (i.directie||[]).some(d => d.recent);
+    const lensConfig = activeLensFor(i, effectiveSort);
+    const displayScore = lensConfig.score;
+    const lensLabel = lensConfig.label;
+    const ownerId = ownerForInst(i.id);
+    const owner = ownerId ? ownerById(ownerId) : null;
+    const ownerInitials = owner ? owner.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase() : '';
+    return `
+      <div class="inst-row" data-inst-id="${i.id}">
+        <div class="inst-name">
+          <div class="inst-name-main">
+            ${i.naam}
+            ${sigCount > 0 ? `<span class="signal-badge">${sigCount}</span>` : `<span class="signal-badge zero">0</span>`}
+            ${recentMgmt ? '<span style="font-size:.65rem;color:var(--orange);font-weight:700">&bull; mgmt-wisseling</span>' : ''}
+            ${owner ? `<span class="owner-mini" title="Eigenaar: ${owner.naam}">${ownerInitials}</span>` : ''}
+          </div>
+          <div class="inst-name-sub">${i.hoofdvestiging}${i.locaties ? ` &middot; ${i.locaties} locaties` : ''}</div>
+        </div>
+        <div class="inst-cell"><strong>${i.provincie || i.regio}</strong></div>
+        <div class="inst-cell">${i.anwLeverancier || '<span class="muted">onbekend</span>'}</div>
+        <div class="inst-cell"><span class="status-pill status-${i.gericallStatus}">${i.gericallStatus}</span></div>
+        <div class="inst-cell">
+          <div class="score-cell">
+            <span class="lead-score ${leadScoreClass(displayScore)}">${displayScore}<span class="bar"><span class="bar-fill" style="width:${displayScore}%"></span></span></span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <div class="score-lens-label">${lensLabel}</div>
+              ${snapshotCount() >= 2 ? buildSparkline(snapshotsForInst(i.id, lensConfig.lens), {width: 50, height: 14}) : ''}
+            </div>
+          </div>
+        </div>
+        <div class="inst-cell"><strong>${(i.aantalBedden||0).toLocaleString('nl-NL')}</strong></div>
+        <div class="inst-arrow">&rsaquo;</div>
+      </div>`;
+  }).join('');
+  document.getElementById('instGrid').innerHTML = head + (rows || '<div class="no-data" style="padding:32px">Geen instellingen gevonden.</div>');
+  document.querySelectorAll('.inst-row').forEach(r => {
+    r.addEventListener('click', () => openInstelling(r.dataset.instId));
+  });
+}
+
+function openInstelling(id){
+  const i = getInstelling(id);
+  if(!i) return;
+  const sigs = signalsForInst(id).sort((a,b) => b.datum.localeCompare(a.datum));
+  const segLabels = [
+    {key:'vvt', label:'VVT'}, {key:'vpt', label:'VPT'}, {key:'thuiszorg', label:'Thuiszorg'},
+    {key:'elv', label:'ELV'}, {key:'grz', label:'GRZ'}
+  ];
+  const html = `
+    <div class="overlay-head">
+      <div class="overlay-title-block">
+        <h2>${i.naam}</h2>
+        <div class="overlay-meta">
+          <strong>${i.hoofdvestiging}</strong>
+          <span class="overlay-meta-dot"></span>
+          <span>${i.provincie || i.regio}</span>
+          ${i.locaties ? `<span class="overlay-meta-dot"></span><span>${i.locaties} locaties</span>` : ''}
+          <span class="overlay-meta-dot"></span>
+          <span class="status-pill status-${i.gericallStatus}">${i.gericallStatus}</span>
+          <span class="overlay-meta-dot"></span>
+          <span class="lead-score ${leadScoreClass(i.leadScore)}" style="display:inline-flex">
+            score ${i.leadScore}
+            <span class="bar" style="width:50px"><span class="bar-fill" style="width:${i.leadScore}%"></span></span>
+          </span>
+        </div>
+      </div>
+      <button class="overlay-close" id="overlayClose">&times;</button>
+    </div>
+    <div class="overlay-body">
+      <div class="owner-prominent ${ownerForInst(i.id) ? 'assigned' : 'unassigned'}">
+        <div class="owner-prominent-left">
+          <div class="owner-prominent-label">Eigenaar</div>
+          <div class="owner-prominent-current">
+            ${(() => {
+              const oid = ownerForInst(i.id);
+              const o = oid ? ownerById(oid) : null;
+              return o
+                ? `<div class="owner-pill"><span class="owner-avatar">${o.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase()}</span><div><div class="owner-name">${o.naam}</div><div class="owner-rol">${o.rol}</div></div></div>`
+                : `<div class="owner-empty-prominent">&larr; Wijs een eigenaar toe</div>`;
+            })()}
+          </div>
+        </div>
+        <div class="owner-prominent-right">
+          <select class="owner-select" id="ownerSelect-${i.id}">
+            <option value="">— Niemand —</option>
+            ${OWNERS.map(o => `<option value="${o.id}" ${ownerForInst(i.id)===o.id?'selected':''}>${o.naam} · ${o.rol}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="overlay-section">
+        <div class="section-title">Scoring per lens</div>
+        ${renderScoringPanel(i)}
+      </div>
+      <div class="overlay-section">
+        <div class="section-title">Kerngetallen</div>
+        <div class="stat-grid">
+          <div class="stat"><div class="stat-label">Bedden</div><div class="stat-value">${(i.aantalBedden||0).toLocaleString('nl-NL')}</div></div>
+          <div class="stat"><div class="stat-label">Medewerkers <small>(est.)</small></div><div class="stat-value">${(i.aantalMedewerkersEst||0).toLocaleString('nl-NL')}</div></div>
+          <div class="stat"><div class="stat-label">Locaties</div><div class="stat-value">${i.locaties || '&mdash;'}</div></div>
+          <div class="stat"><div class="stat-label">Omzet <small>(est.)</small></div><div class="stat-value">${(i.omzetMlnEst||0)} <small>mln &euro;</small></div></div>
+        </div>
+        ${(i.tags||[]).length > 0 ? `<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+          ${i.tags.map(t => `<span style="font-size:.7rem;padding:3px 9px;background:var(--orange-pale);color:var(--orange-dark);border-radius:10px;font-weight:600">${t}</span>`).join('')}
+        </div>` : ''}
+        ${i.fusie ? `<div style="margin-top:10px;font-size:.78rem;color:var(--grey-700);padding:8px 10px;background:var(--grey-50);border-left:3px solid var(--orange);border-radius:4px"><strong>Verband / fusie:</strong> ${i.fusie}</div>` : ''}
+        ${i.recenteUitbreiding ? `<div style="margin-top:8px;font-size:.78rem;color:var(--grey-700);padding:8px 10px;background:var(--grey-50);border-left:3px solid var(--orange);border-radius:4px"><strong>Recente uitbreiding (${i.recenteUitbreidingJaar||''}):</strong> ${i.recenteUitbreiding}</div>` : ''}
+      </div>
+      <div class="overlay-section">
+        <div class="section-title">Segmenten</div>
+        <div class="segments">
+          ${segLabels.map(s => `<span class="segment-tag ${i.segmenten && i.segmenten[s.key] ? 'has' : ''}">${s.label}</span>`).join('')}
+        </div>
+      </div>
+      <div class="overlay-section">
+        <div class="section-title">IT-stack &amp; ANW</div>
+        <div class="it-stack">
+          <div class="it-block">
+            <div class="it-block-title">ECD &middot; Cli&euml;ntdossier</div>
+            <div class="it-leverancier">${i.ecdLeverancier || 'Onbekend'}</div>
+            <div class="it-systeem">${i.ecdSysteem && i.ecdSysteem !== 'Onbekend' ? i.ecdSysteem : ''}</div>
+            ${(i.andereItLeveranciers||[]).length > 0 ? `<div class="it-list">
+              ${i.andereItLeveranciers.map(l => `<div class="it-list-item"><span><strong>${l.naam}</strong></span><span>${l.domein}</span></div>`).join('')}
+            </div>` : ''}
+          </div>
+          <div class="it-block">
+            <div class="it-block-title">ANW &middot; Avond/Nacht/Weekend</div>
+            <div class="it-leverancier">${i.anwLeverancier || 'Onbekend'}</div>
+            <div class="it-systeem">${i.anwModel || ''}</div>
+            ${i.anwDetail ? `<div style="margin-top:6px;font-size:.75rem;color:var(--grey-600);line-height:1.5">${i.anwDetail}</div>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="overlay-section">
+        <div class="section-title">Directie / Raad van Bestuur</div>
+        <div class="directie-list">
+          ${(i.directie||[]).map(d => `
+            <div class="directie-item ${d.recent ? 'recent' : ''}">
+              <div class="directie-naam">${d.naam}${d.linkedin ? ` <a href="${d.linkedin}" target="_blank" rel="noopener" style="font-size:.7rem;color:var(--orange-dark);text-decoration:none;font-weight:600;margin-left:4px">LinkedIn &#x2197;</a>` : ''}</div>
+              <div class="directie-functie">${d.functie}</div>
+              ${d.sinds || d.recent ? `<div class="directie-sinds">${d.recent ? '&#9888; recente wijziging' : ''}${d.sinds ? `${d.recent ? ' &middot; ' : ''}sinds ${d.sinds}` : ''}</div>` : ''}
+            </div>`).join('') || '<div class="no-data">Geen directie-info bekend.</div>'}
+        </div>
+      </div>
+      <div class="overlay-section">
+        <div class="section-title">Recente signalen (${sigs.length})</div>
+        ${sigs.length === 0 ? '<div class="no-data">Geen recente signalen.</div>' : sigs.map(s => `
+          <div class="signal-mini urgency-${s.urgentie}">
+            <div class="signal-mini-head"><strong>${fmtFullDate(s.datum)} &middot; ${s.type}</strong><span>${s.urgentie}</span></div>
+            <div class="signal-mini-body">${s.headline}</div>
+          </div>`).join('')}
+      </div>
+      <div class="overlay-section">
+        <div class="section-title">GeriCall context</div>
+        <div class="opportunity-block">
+          <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">GeriCall-status</div>
+          <div style="margin-bottom:12px"><span class="status-pill status-${i.gericallStatus}" style="margin-right:8px">${i.gericallStatus}</span>${i.gericallNote || '<span class="muted">Geen notities.</span>'}</div>
+          <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Opportunity</div>
+          <div><strong>${i.opportunity || ''}</strong></div>
+        </div>
+      </div>
+      ${i.website ? `<div class="overlay-section" style="margin-bottom:0">
+        <a href="${i.website}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--orange-dark);font-weight:600;text-decoration:none">
+          ${i.website.replace('https://','').replace('http://','')} &#x2197;
+        </a>
+      </div>` : ''}
+    </div>`;
+  document.getElementById('overlayPanel').innerHTML = html;
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('overlayClose').addEventListener('click', closeOverlay);
+  const ownerSel = document.getElementById('ownerSelect-' + i.id);
+  if(ownerSel){
+    ownerSel.addEventListener('change', (e) => {
+      setOwner(i.id, e.target.value || null);
+      openInstelling(i.id);
+      renderOwnerFilter();
+      renderInstellingen();
+    });
+  }
+}
+function closeOverlay(){ document.getElementById('overlay').classList.remove('show'); }
+document.getElementById('overlay').addEventListener('click', (e) => {
+  if(e.target.id === 'overlay') closeOverlay();
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape'){
+    closeOverlay();
+    document.getElementById('refreshModal').classList.remove('show');
+    const om = document.getElementById('ownersModal'); if(om) om.classList.remove('show');
+    const vm = document.getElementById('versionModal'); if(vm) vm.classList.remove('show');
+  }
+});
+
+function renderLeveranciers(){
+  const cats = {};
+  DATA.leveranciers.forEach(l => {
+    if(!cats[l.categorie]) cats[l.categorie] = [];
+    cats[l.categorie].push(l);
+  });
+  const order = ['ANW dienstverlening','ANW samenwerkingsverband','ANW netwerk','WSD','Triage tooling','ECD','eLearning','Cliëntportaal','Telefonie/CC','Planning','HRM/Salaris'];
+  const sortedCats = Object.keys(cats).sort((a,b) => {
+    const ia = order.indexOf(a); const ib = order.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+  const totalInst = DATA.instellingen.length;
+  let html = '';
+  sortedCats.forEach(cat => {
+    const items = cats[cat];
+    const totalCustomers = items.reduce((s,l) => s + (l.klanten?.length || 0), 0);
+    html += `
+      <div class="lev-cat">
+        <div class="lev-cat-head">
+          <div class="lev-cat-title">${cat}</div>
+          <div class="lev-cat-meta">${items.length} leveranciers &middot; ${totalCustomers} bekende klanten in DB</div>
+        </div>
+        <div class="lev-grid">
+          ${items.map(l => {
+            const klantNamen = (l.klanten||[]).map(id => getInstelling(id)?.naam).filter(Boolean);
+            const likelyNamen = (l.klantenLikely||[]).map(id => getInstelling(id)?.naam).filter(Boolean);
+            const sharePct = totalInst > 0 ? Math.round((l.klanten.length / totalInst) * 100) : 0;
+            const hasMarketShare = typeof l.marktaandeelPct === 'number';
+            return `
+              <div class="lev-card">
+                <div class="lev-card-head">
+                  <div>
+                    <div class="lev-name">${l.naam}</div>
+                    <div class="lev-type">${l.type}</div>
+                  </div>
+                  <span class="partner-pill partner-${l.partnerStatus}">${l.partnerStatus}</span>
+                </div>
+                <div class="lev-stat-row">
+                  <div class="lev-stat"><div class="lev-stat-label">In DB</div><div class="lev-stat-value">${l.klanten.length}<small>/${totalInst}</small></div></div>
+                  ${hasMarketShare ? `<div class="lev-stat"><div class="lev-stat-label">Markt-aandeel</div><div class="lev-stat-value">${l.marktaandeelPct}<small>%</small></div></div>` : ''}
+                  <div class="lev-stat"><div class="lev-stat-label">Dekking DB</div><div class="lev-stat-value">${sharePct}<small>%</small></div></div>
+                </div>
+                <div class="lev-customers">
+                  ${klantNamen.length > 0 ? `<strong>Klanten in DB:</strong> ${klantNamen.join(', ')}` : '<span class="muted">Nog geen klanten in DB gemapt.</span>'}
+                  ${likelyNamen.length > 0 ? `<div style="margin-top:6px;color:var(--grey-600)"><strong>Vermoedelijk:</strong> ${likelyNamen.join(', ')}</div>` : ''}
+                </div>
+                ${l.notes ? `<div class="lev-notes">${l.notes}</div>` : ''}
+              </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  });
+  const whiteSpaceCats = ['ANW dienstverlening','ECD'];
+  whiteSpaceCats.forEach(cat => {
+    const knownInstIds = new Set();
+    (cats[cat]||[]).forEach(l => (l.klanten||[]).forEach(id => knownInstIds.add(id)));
+    const missing = DATA.instellingen.filter(i => !knownInstIds.has(i.id));
+    if(missing.length > 0){
+      html += `
+        <div class="whitespace-block">
+          <div class="whitespace-title">&#9678; White space &middot; geen ${cat}-leverancier bekend</div>
+          <div class="whitespace-list">
+            ${missing.map(i => `<span class="whitespace-tag" data-inst-id="${i.id}">${i.naam}</span>`).join('')}
+          </div>
+        </div>`;
+    }
+  });
+  document.getElementById('levContainer').innerHTML = html;
+  document.querySelectorAll('.whitespace-tag').forEach(t => {
+    t.addEventListener('click', () => openInstelling(t.dataset.instId));
+  });
+}
+
+function findMovers(){
+  const snaps = DATA.snapshots || [];
+  if(snaps.length < 2) return [];
+  const last = snaps[snaps.length-1];
+  const prev = snaps[snaps.length-2];
+  const movers = [];
+  DATA.instellingen.forEach(inst => {
+    const lastE = last.instellingen[inst.id];
+    const prevE = prev.instellingen[inst.id];
+    if(!lastE || !prevE) return;
+    const lenses = ['acquisitie','retention','expansion','consolidatie'];
+    let topDelta = 0, topLens = null;
+    lenses.forEach(l => {
+      const d = (lastE.scores?.[l] || 0) - (prevE.scores?.[l] || 0);
+      if(Math.abs(d) > Math.abs(topDelta)){ topDelta = d; topLens = l; }
+    });
+    if(topDelta !== 0) movers.push({inst, lens: topLens, delta: topDelta, currentScore: lastE.scores[topLens]});
+  });
+  movers.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+  return movers;
+}
+
+function findStale(thresholdSnapshots){
+  const snaps = DATA.snapshots || [];
+  if(snaps.length < thresholdSnapshots) return [];
+  const recent = snaps.slice(-thresholdSnapshots);
+  const stale = [];
+  DATA.instellingen.forEach(inst => {
+    const lenses = ['acquisitie','retention','expansion','consolidatie'];
+    let anyMovement = false;
+    for(const l of lenses){
+      const vals = recent.map(s => s.instellingen[inst.id]?.scores?.[l] ?? 0);
+      if(Math.max(...vals) - Math.min(...vals) > 0){ anyMovement = true; break; }
+    }
+    if(!anyMovement){
+      const lastSnap = snaps[snaps.length-1];
+      stale.push({inst, lastScore: lastSnap.instellingen[inst.id]?.leadScore ?? 0});
+    }
+  });
+  stale.sort((a, b) => b.lastScore - a.lastScore);
+  return stale;
+}
+
+function renderTrendsTab(){
+  const snaps = DATA.snapshots || [];
+  const meta = document.getElementById('trendsMeta');
+  if(snaps.length === 0){
+    meta.innerHTML = '<div class="trends-no-history">Nog geen snapshots beschikbaar; trends verschijnen vanaf de eerste wekelijkse update.</div>';
+    document.getElementById('trendsMovers').innerHTML = '';
+    document.getElementById('trendsStale').innerHTML = '';
+    document.getElementById('trendsList').innerHTML = '';
+    return;
+  }
+  const first = snaps[0], last = snaps[snaps.length-1];
+  const moversCount = findMovers().length;
+  const staleCount = findStale(Math.min(4, snaps.length)).length;
+  meta.innerHTML = `
+    <div class="trends-meta-item"><div class="trends-meta-label">Snapshots</div><div class="trends-meta-value">${snaps.length}</div></div>
+    <div class="trends-meta-item"><div class="trends-meta-label">Eerste</div><div class="trends-meta-value">${first.date} (${first.week})</div></div>
+    <div class="trends-meta-item"><div class="trends-meta-label">Laatste</div><div class="trends-meta-value">${last.date} (${last.week})</div></div>
+    <div class="trends-meta-item"><div class="trends-meta-label">Movers (vorige snap)</div><div class="trends-meta-value">${moversCount}</div></div>
+    <div class="trends-meta-item"><div class="trends-meta-label">Stale (4+ snapshots)</div><div class="trends-meta-value">${staleCount}</div></div>
+  `;
+  if(snaps.length === 1){
+    document.getElementById('trendsMovers').innerHTML = '<div class="trends-no-history">Eerste snapshot. Beweging-detectie verschijnt vanaf snapshot #2 (volgende update).</div>';
+    document.getElementById('trendsStale').innerHTML = '';
+    renderTrendsList();
+    return;
+  }
+  const movers = findMovers();
+  document.getElementById('trendsMovers').innerHTML = movers.length === 0
+    ? '<div class="trends-list-empty">Geen instellingen verplaatst sinds vorige snapshot.</div>'
+    : movers.slice(0, 10).map(m => {
+      const sign = m.delta > 0 ? '+' : '';
+      const cls = m.delta > 0 ? 'delta-up' : 'delta-down';
+      const arrow = m.delta > 0 ? '↑' : '↓';
+      return `<div class="mover-row" data-inst-id="${m.inst.id}">
+        <div><div class="mover-name">${m.inst.naam}</div><div class="mover-meta">${m.inst.provincie || m.inst.regio} &middot; ${(m.inst.aantalBedden||0).toLocaleString('nl-NL')} bedden</div></div>
+        <div><span class="status-pill status-${m.inst.gericallStatus}">${m.inst.gericallStatus}</span></div>
+        <div class="mover-lens">${LENS_INFO[m.lens].label}</div>
+        <div><span class="${cls}" style="font-size:.85rem">${arrow} ${sign}${m.delta}</span></div>
+        <div style="font-family:'DM Mono',monospace;font-weight:700">${m.currentScore}</div>
+      </div>`;
+    }).join('');
+  const stale = findStale(Math.min(4, snaps.length));
+  document.getElementById('trendsStale').innerHTML = stale.length === 0
+    ? '<div class="trends-list-empty">Geen instellingen al lang stilstaand.</div>'
+    : stale.slice(0, 12).map(s => `
+      <div class="stale-row" data-inst-id="${s.inst.id}">
+        <div><strong>${s.inst.naam}</strong></div>
+        <div><span class="status-pill status-${s.inst.gericallStatus}" style="font-size:.65rem;padding:1px 6px">${s.inst.gericallStatus}</span></div>
+        <div class="stale-weeks">${snaps.length} snapshots stil</div>
+        <div style="font-family:'DM Mono',monospace;font-weight:700">${s.lastScore}</div>
+      </div>`).join('');
+  renderTrendsList();
+  bindTrendsClicks();
+}
+
+function renderTrendsList(){
+  const snaps = DATA.snapshots || [];
+  if(snaps.length === 0){ document.getElementById('trendsList').innerHTML=''; return; }
+  const lensKey = trendsLens === 'auto' ? null : trendsLens;
+  const items = DATA.instellingen.map(inst => {
+    const history = lensKey
+      ? snaps.map(s => s.instellingen[inst.id]?.scores?.[lensKey] ?? 0)
+      : leadScoreHistoryForInst(inst.id);
+    const current = history[history.length-1];
+    const delta = history.length >= 2 ? current - history[history.length-2] : 0;
+    return { inst, history, current, delta };
+  });
+  if(trendsSort === 'delta-abs') items.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+  if(trendsSort === 'current-desc') items.sort((a, b) => b.current - a.current);
+  if(trendsSort === 'name') items.sort((a, b) => a.inst.naam.localeCompare(b.inst.naam));
+  const head = `<div class="trends-list-row" style="background:var(--grey-50);font-size:.7rem;color:var(--grey-500);font-weight:700;text-transform:uppercase;letter-spacing:.04em">
+    <div>Instelling</div><div>Status</div><div>Historie</div><div>Huidig</div><div>Δ</div>
+  </div>`;
+  const rows = items.slice(0, 50).map(it => `
+    <div class="trends-list-row" data-inst-id="${it.inst.id}">
+      <div>
+        <div style="font-weight:700;font-size:.85rem">${it.inst.naam}</div>
+        <div style="font-size:.7rem;color:var(--grey-500)">${it.inst.provincie || it.inst.regio}</div>
+      </div>
+      <div><span class="status-pill status-${it.inst.gericallStatus}" style="font-size:.65rem;padding:1px 6px">${it.inst.gericallStatus}</span></div>
+      <div>${buildSparkline(it.history, {width: 100, height: 22})}</div>
+      <div style="font-family:'DM Mono',monospace;font-weight:700">${it.current}</div>
+      <div>${deltaIndicator(it.history)}</div>
+    </div>`).join('');
+  document.getElementById('trendsList').innerHTML = head + rows;
+}
+
+function bindTrendsClicks(){
+  document.querySelectorAll('#trendsMovers .mover-row, #trendsStale .stale-row, #trendsList .trends-list-row[data-inst-id]').forEach(r => {
+    r.addEventListener('click', () => openInstelling(r.dataset.instId));
+  });
+}
+
+function renderTrendsLensChips(){
+  const lenses = [
+    {key: 'auto', label: 'Lead score'},
+    {key: 'acquisitie', label: 'Acquisitie'},
+    {key: 'retention', label: 'Retention'},
+    {key: 'expansion', label: 'Expansion'},
+    {key: 'consolidatie', label: 'Consolidatie'}
+  ];
+  const html = lenses.map(l => `<button class="chip ${trendsLens === l.key ? 'active' : ''}" data-lens="${l.key}">${l.label}</button>`).join('');
+  document.getElementById('trendsLensChips').innerHTML = html;
+  document.querySelectorAll('#trendsLensChips .chip').forEach(c => {
+    c.addEventListener('click', () => { trendsLens = c.dataset.lens; renderTrendsLensChips(); renderTrendsList(); bindTrendsClicks(); });
+  });
+}
+
+function bindSearch(){
+  document.getElementById('globalSearch').addEventListener('input', (e) => {
+    searchQuery = e.target.value.trim(); renderSignals(); renderInstellingen();
+  });
+}
+function bindSorts(){
+  document.getElementById('signalSort').addEventListener('change', e => { signalSort = e.target.value; renderSignals(); });
+  document.getElementById('instSort').addEventListener('change', e => { instSort = e.target.value; renderInstellingen(); });
+  document.getElementById('instProv').addEventListener('change', e => { instProv = e.target.value; renderInstellingen(); });
+  document.getElementById('instRegio').addEventListener('change', e => { instRegio = e.target.value; renderInstellingen(); });
+  document.getElementById('instOwner').addEventListener('change', e => { instOwner = e.target.value; renderInstellingen(); });
+}
+
+const WEEKLY_PROMPT = `Werk marktradar.html bij met de signalen van de afgelopen 7 dagen.
+
+REGELS
+- Wijzig UITSLUITEND het DATA-blok tussen de markers:
+    /* MARKTRADAR DATA  ·  START */
+    en
+    /* MARKTRADAR DATA  ·  EIND */
+- Geen wijzigingen aan HTML, CSS, JS-code, gate-password of styling
+- Behoud datamodel exact zoals het is
+
+STAPPENPLAN
+1. Lees DATA.instellingen uit het bestaande bestand; gebruik dit als de te volgen lijst.
+2. Voor elke instelling: zoek met deze queries op het web:
+     "<naam instelling> bestuur 2026"
+     "<naam instelling> aanbesteding ANW"
+     "<naam instelling> fusie samenwerking 2026"
+     site:skipr.nl OR site:zorgvisie.nl OR site:icthealth.nl "<naam instelling>"
+     site:tenderned.nl "<naam instelling>"
+   Filter: alleen items met datum binnen de afgelopen 14 dagen.
+3. Vervang DATA.signalen volledig (max 30, nieuw eerst).
+4. Update directie[] bij nieuwe mgmt-wisselingen; recent:true bij <90 dagen.
+5. Herbereken alle vier scores per instelling volgens de formules.
+6. Voeg een nieuwe snapshot toe aan DATA.snapshots.
+7. Update DATA.meta.lastUpdated, weekNumber, version (bump per semver-regels).
+
+Bronnen prio: TenderNed > Skipr > Zorgvisie > ICTHealth > KvK > LinkedIn > persberichten`;
+
+function bindRefreshModal(){
+  document.getElementById('weeklyPrompt').textContent = WEEKLY_PROMPT;
+  document.getElementById('refreshBtn').addEventListener('click', () => {
+    document.getElementById('refreshModal').classList.add('show');
+  });
+  document.getElementById('closeRefreshBtn').addEventListener('click', () => {
+    document.getElementById('refreshModal').classList.remove('show');
+  });
+  document.getElementById('refreshModal').addEventListener('click', (e) => {
+    if(e.target.id === 'refreshModal') document.getElementById('refreshModal').classList.remove('show');
+  });
+  document.getElementById('copyPromptBtn').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(WEEKLY_PROMPT);
+      const btn = document.getElementById('copyPromptBtn');
+      const orig = btn.textContent;
+      btn.textContent = 'Gekopieerd ✓';
+      setTimeout(() => btn.textContent = orig, 1600);
+    } catch(e){ alert('Kopiëren mislukt; selecteer de tekst handmatig.'); }
+  });
+}
+
+function bindOwnersModal(){
+  function refreshOwnersUI(){
+    const csv = exportAssignments();
+    document.getElementById('ownersCsv').textContent = csv;
+    const total = Object.keys(assignments).length;
+    const byOwner = {};
+    Object.values(assignments).forEach(oid => { byOwner[oid] = (byOwner[oid]||0) + 1; });
+    const breakdown = OWNERS.filter(o => byOwner[o.id]).map(o => o.naam + ': ' + byOwner[o.id]).join(' · ') || 'Nog geen toewijzingen.';
+    document.getElementById('ownersStats').innerHTML = '<strong>' + total + '</strong> instellingen toegewezen van ' + DATA.instellingen.length + '. ' + breakdown;
+  }
+  document.getElementById('ownersBtn').addEventListener('click', () => {
+    refreshOwnersUI();
+    document.getElementById('ownersModal').classList.add('show');
+  });
+  document.getElementById('closeOwnersBtn').addEventListener('click', () => {
+    document.getElementById('ownersModal').classList.remove('show');
+  });
+  document.getElementById('ownersModal').addEventListener('click', (e) => {
+    if(e.target.id === 'ownersModal') document.getElementById('ownersModal').classList.remove('show');
+  });
+  document.getElementById('copyOwnersBtn').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(exportAssignments());
+      const btn = document.getElementById('copyOwnersBtn');
+      const orig = btn.textContent;
+      btn.textContent = 'Gekopieerd ✓';
+      setTimeout(() => btn.textContent = orig, 1600);
+    } catch(e){ alert('Kopiëren mislukt; selecteer de tekst handmatig.'); }
+  });
+  document.getElementById('clearOwnersBtn').addEventListener('click', () => {
+    if(confirm('Alle ' + Object.keys(assignments).length + ' eigenaar-toewijzingen wissen? Dit kan niet ongedaan gemaakt worden.')){
+      clearAllAssignments();
+      refreshOwnersUI();
+      renderOwnerFilter();
+      renderInstellingen();
+    }
+  });
+  document.getElementById('importOwnersBtn').addEventListener('click', () => {
+    document.getElementById('ownersFileInput').click();
+  });
+  document.getElementById('ownersFileInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).slice(1).filter(l => l.trim());
+    let imported = 0, skipped = 0;
+    lines.forEach(line => {
+      const m = line.match(/^"?([^",]+)"?,"?[^"]*"?,"?([^",]+)"?/);
+      if(!m){ skipped++; return; }
+      const iid = m[1].trim();
+      const oid = m[2].trim();
+      if(!getInstelling(iid) || !ownerById(oid)){ skipped++; return; }
+      assignments[iid] = oid;
+      imported++;
+    });
+    saveAssignments(assignments);
+    refreshOwnersUI();
+    renderOwnerFilter();
+    renderInstellingen();
+    alert('Import: ' + imported + ' toewijzingen verwerkt, ' + skipped + ' overgeslagen.');
+    e.target.value = '';
+  });
+}
+</script>
+</body>
+</html>
