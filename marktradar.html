@@ -443,14 +443,104 @@ body{
 .btn-secondary:hover{background:var(--grey-100)}
 .btn-primary{background:var(--orange);color:#fff;border:1px solid var(--orange)}
 .btn-primary:hover{background:var(--orange-dark);border-color:var(--orange-dark)}
+/* Tablet / smaller laptop */
 @media (max-width:980px){
   .kpi-row{grid-template-columns:repeat(2,1fr)}
   .kpi:not(:last-child)::after{display:none}
   .inst-head{display:none}
-  .inst-row{grid-template-columns:1fr;gap:6px;padding:14px}
+  .inst-row{
+    grid-template-columns:1fr 1fr;gap:8px 12px;padding:14px;
+    grid-template-areas:"name name" "prov status" "anw score" "bedden arrow";
+  }
+  .inst-row .inst-name{grid-area:name}
+  .inst-row > .inst-cell:nth-of-type(1){grid-area:prov}
+  .inst-row > .inst-cell:nth-of-type(2){grid-area:anw}
+  .inst-row > .inst-cell:nth-of-type(3){grid-area:status;justify-self:end}
+  .inst-row > .inst-cell:nth-of-type(4){grid-area:score}
+  .inst-row > .inst-cell:nth-of-type(5){grid-area:bedden}
+  .inst-row .inst-arrow{grid-area:arrow;justify-self:end;align-self:center}
   .stat-grid{grid-template-columns:repeat(2,1fr)}
   .it-stack{grid-template-columns:1fr}
   .directie-list{grid-template-columns:1fr}
+  .lens-grid{grid-template-columns:1fr 1fr}
+  .lens-chart-grid{grid-template-columns:1fr 1fr}
+  .mover-row{grid-template-columns:1.4fr 90px 90px 60px;gap:8px}
+  .mover-row > div:nth-of-type(3){display:none}
+  .trends-list-row{grid-template-columns:1.4fr 90px 1fr 50px 50px;gap:8px}
+  .version-row{grid-template-columns:60px 1fr;gap:6px;row-gap:2px}
+  .version-row .version-note{grid-column:1 / -1}
+  .version-row .version-date{grid-column:1 / -1;text-align:left;color:var(--grey-500)}
+  .filter-group{flex:1 1 45%;min-width:0}
+  .topbar{flex-wrap:wrap;gap:10px;padding:12px 16px}
+  .topbar-search{order:5;flex:1 1 100%;max-width:none;margin:0}
+  .topbar-meta{font-size:.65rem}
+  .topbar-meta strong{display:block}
+  .main{padding:16px}
+}
+/* Large mobile / small tablet portrait */
+@media (max-width:720px){
+  body{font-size:13px}
+  .kpi-row{grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px}
+  .kpi-value{font-size:1.3rem}
+  .tabs{padding:0 12px;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{padding:12px 14px;font-size:.82rem;white-space:nowrap;flex-shrink:0}
+  .lens-grid{grid-template-columns:1fr}
+  .lens-chart-grid{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .overlay{padding:24px 12px}
+  .overlay-head{padding:16px 18px;flex-direction:column;align-items:flex-start;gap:10px}
+  .overlay-close{position:absolute;top:14px;right:14px}
+  .overlay-body{padding:18px}
+  .overlay-title-block h2{font-size:1.15rem}
+  .overlay-meta{font-size:.72rem;gap:6px}
+  .owner-prominent{flex-direction:column;align-items:stretch;gap:10px;padding:12px 14px}
+  .owner-prominent-right{min-width:0;width:100%}
+  .filter-bar{padding:10px;gap:10px}
+  .filter-group{flex:1 1 100%}
+  .signal{grid-template-columns:1fr;gap:8px;padding:12px 14px}
+  .signal-date{flex-direction:row;gap:8px;width:auto}
+  .signal-date strong{display:inline}
+  .signal-side{align-items:flex-start}
+  .lev-grid{grid-template-columns:1fr}
+  .mover-row{grid-template-columns:1fr 70px 60px;gap:8px;font-size:.8rem}
+  .mover-row > div:nth-of-type(3),
+  .mover-row > div:nth-of-type(4){display:none}
+  .stale-row{grid-template-columns:1fr 70px 50px;gap:8px}
+  .stale-row > div:nth-of-type(3){display:none}
+  .trends-list-row{grid-template-columns:1fr 60px 50px;gap:8px}
+  .trends-list-row > div:nth-of-type(3),
+  .trends-list-row > div:nth-of-type(4){display:none}
+  .trends-meta{padding:10px 12px;gap:10px}
+  .trends-meta-item{flex:1 1 45%}
+  .it-stack{gap:10px}
+  .gate-card{padding:24px 22px 20px}
+  .refresh-modal{padding:12px}
+  .refresh-modal-panel{padding:20px 18px;max-height:90vh;overflow-y:auto}
+  .refresh-modal pre{font-size:.7rem;max-height:180px}
+  .refresh-modal .btn-row{flex-wrap:wrap}
+  .refresh-modal button{flex:1 1 45%}
+  .topbar-meta{display:none}
+  .refresh-btn{padding:6px 10px;font-size:.7rem}
+  .refresh-btn svg{display:none}
+  .topbar-title{font-size:.95rem}
+  .topbar-sub{display:none}
+  .version-pill{margin-left:6px;font-size:.62rem}
+}
+/* Small mobile (<480px) */
+@media (max-width:480px){
+  .kpi-row{grid-template-columns:1fr;gap:8px}
+  .inst-row{
+    grid-template-columns:1fr;
+    grid-template-areas:"name" "status" "anw" "prov" "score" "bedden";
+  }
+  .inst-row > .inst-cell:nth-of-type(3){justify-self:flex-start}
+  .inst-row .inst-arrow{display:none}
+  .stat-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .stat{padding:10px}
+  .stat-value{font-size:1rem}
+  .gate-card{padding:20px 18px 16px;border-radius:12px}
+  .gate-card h1{font-size:1.2rem}
 }
 </style>
 </head>
@@ -648,7 +738,8 @@ body{
 <div class="refresh-modal" id="ownersModal">
   <div class="refresh-modal-panel">
     <h3>Eigenaar-toewijzingen</h3>
-    <p>Toewijzingen worden lokaal in deze browser opgeslagen (localStorage). Wil je een backup of synchronisatie tussen apparaten? Exporteer als CSV en importeer waar nodig.</p>
+    <p id="ownersIntro">Toewijzingen worden gesynchroniseerd met de server zodat ze cross-device behouden blijven. Bij offline of niet-geconfigureerde server fallt de app terug op localStorage; gebruik dan CSV-export voor backup.</p>
+    <div id="ownersSyncStatus" style="margin-bottom:10px;font-size:.78rem;padding:8px 12px;border-radius:6px;border:1px solid var(--grey-150);background:var(--grey-50);display:flex;align-items:center;gap:8px"></div>
     <div id="ownersStats" style="margin:14px 0;font-size:.82rem;color:var(--grey-700);padding:10px 14px;background:var(--grey-50);border-radius:6px;border:1px solid var(--grey-150)"></div>
     <pre id="ownersCsv" style="font-size:.7rem;max-height:240px;overflow:auto"></pre>
     <div class="btn-row">
@@ -2409,6 +2500,12 @@ const OWNERS = [
 ];
 
 const STORAGE_KEY = 'marktradar.assignments.v1';
+const STORAGE_DIRTY = 'marktradar.assignments.dirty.v1';
+const ASSIGNMENTS_API = '/api/assignments';
+const ASSIGNMENTS_STATIC = '/data/assignments.json';
+let assignmentsRemoteAvailable = false;
+let assignmentsSyncStatus = 'idle';
+
 function loadAssignments(){
   try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
   catch(e){ return {}; }
@@ -2416,14 +2513,82 @@ function loadAssignments(){
 function saveAssignments(map){
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); } catch(e){}
 }
+function getDirty(){
+  try { const raw = localStorage.getItem(STORAGE_DIRTY); return raw === '1'; }
+  catch(e){ return false; }
+}
+function setDirty(v){
+  try { localStorage.setItem(STORAGE_DIRTY, v ? '1' : '0'); } catch(e){}
+}
 let assignments = loadAssignments();
+
+async function fetchRemoteAssignments(){
+  try {
+    const r = await fetch(ASSIGNMENTS_API, { headers: { 'Accept': 'application/json' } });
+    if(r.ok){
+      assignmentsRemoteAvailable = true;
+      const j = await r.json();
+      return j.assignments || {};
+    }
+    if(r.status === 503){ assignmentsRemoteAvailable = false; }
+  } catch(e){}
+  try {
+    const r = await fetch(ASSIGNMENTS_STATIC, { headers: { 'Accept': 'application/json' } });
+    if(r.ok){ return await r.json(); }
+  } catch(e){}
+  return null;
+}
+
+async function pushRemoteAssignments(map){
+  if(!assignmentsRemoteAvailable) return false;
+  try {
+    const r = await fetch(ASSIGNMENTS_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ assignments: map }),
+    });
+    if(r.ok){ setDirty(false); return true; }
+  } catch(e){}
+  return false;
+}
+
+async function syncAssignments(){
+  assignmentsSyncStatus = 'syncing';
+  const remote = await fetchRemoteAssignments();
+  if(remote){
+    if(getDirty() && Object.keys(assignments).length > 0){
+      const merged = { ...remote, ...assignments };
+      assignments = merged;
+      saveAssignments(assignments);
+      const ok = await pushRemoteAssignments(assignments);
+      assignmentsSyncStatus = ok ? 'synced' : 'local-only';
+    } else {
+      assignments = remote;
+      saveAssignments(assignments);
+      setDirty(false);
+      assignmentsSyncStatus = 'synced';
+    }
+  } else {
+    assignmentsSyncStatus = 'local-only';
+  }
+  if(typeof renderOwnerFilter === 'function') renderOwnerFilter();
+  if(typeof renderInstellingen === 'function') renderInstellingen();
+}
+
 function ownerForInst(id){ return assignments[id] || null; }
 function ownerById(id){ return OWNERS.find(o => o.id === id); }
 function setOwner(instId, ownerId){
   if(ownerId) assignments[instId] = ownerId; else delete assignments[instId];
   saveAssignments(assignments);
+  setDirty(true);
+  pushRemoteAssignments(assignments);
 }
-function clearAllAssignments(){ assignments = {}; saveAssignments(assignments); }
+function clearAllAssignments(){
+  assignments = {};
+  saveAssignments(assignments);
+  setDirty(true);
+  pushRemoteAssignments(assignments);
+}
 function exportAssignments(){
   const lines = ['instelling_id,instelling_naam,owner_id,owner_naam'];
   Object.entries(assignments).forEach(([iid, oid]) => {
@@ -2524,6 +2689,7 @@ function initApp(){
   bindOwnersModal();
   bindVersionModal();
   renderVersion();
+  syncAssignments();
 }
 
 function renderKpiRow(){
@@ -2999,7 +3165,7 @@ function openInstelling(id){
               const oid = ownerForInst(i.id);
               const o = oid ? ownerById(oid) : null;
               return o
-                ? `<div class="owner-pill"><span class="owner-avatar">${o.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase()}</span><div><div class="owner-name">${o.naam}</div><div class="owner-rol">${o.rol}</div></div></div>`
+                ? `<div class="owner-pill"><span class="owner-avatar">${o.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase()}</span><div class="owner-name">${o.naam}</div></div>`
                 : `<div class="owner-empty-prominent">&larr; Wijs een eigenaar toe</div>`;
             })()}
           </div>
@@ -3007,7 +3173,7 @@ function openInstelling(id){
         <div class="owner-prominent-right">
           <select class="owner-select" id="ownerSelect-${i.id}">
             <option value="">— Niemand —</option>
-            ${OWNERS.map(o => `<option value="${o.id}" ${ownerForInst(i.id)===o.id?'selected':''}>${o.naam} · ${o.rol}</option>`).join('')}
+            ${OWNERS.map(o => `<option value="${o.id}" ${ownerForInst(i.id)===o.id?'selected':''}>${o.naam}</option>`).join('')}
           </select>
         </div>
       </div>
@@ -3409,6 +3575,26 @@ function bindOwnersModal(){
     Object.values(assignments).forEach(oid => { byOwner[oid] = (byOwner[oid]||0) + 1; });
     const breakdown = OWNERS.filter(o => byOwner[o.id]).map(o => o.naam + ': ' + byOwner[o.id]).join(' · ') || 'Nog geen toewijzingen.';
     document.getElementById('ownersStats').innerHTML = '<strong>' + total + '</strong> instellingen toegewezen van ' + DATA.instellingen.length + '. ' + breakdown;
+    const syncEl = document.getElementById('ownersSyncStatus');
+    if(syncEl){
+      let dot, txt;
+      if(assignmentsSyncStatus === 'synced'){
+        dot = 'background:var(--green);box-shadow:0 0 6px var(--green)';
+        txt = 'Server-sync actief — toewijzingen worden cross-device gedeeld.';
+      } else if(assignmentsSyncStatus === 'syncing'){
+        dot = 'background:var(--amber)';
+        txt = 'Synchroniseren met server…';
+      } else if(assignmentsSyncStatus === 'local-only'){
+        dot = 'background:var(--grey-400)';
+        txt = getDirty()
+          ? 'Server niet bereikbaar — wijzigingen staan lokaal en worden later geüpload.'
+          : 'Server niet geconfigureerd of bereikbaar — werkt op localStorage. Gebruik CSV voor cross-device.';
+      } else {
+        dot = 'background:var(--grey-400)';
+        txt = 'Status onbekend.';
+      }
+      syncEl.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;${dot}"></span><span>${txt}</span>`;
+    }
   }
   document.getElementById('ownersBtn').addEventListener('click', () => {
     refreshOwnersUI();
