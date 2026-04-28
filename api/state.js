@@ -7,7 +7,7 @@
 //
 // Toegestane keys staan in een whitelist hieronder om misbruik te voorkomen.
 
-const ALLOWED_KEYS = new Set(['todos', 'dmu-overrides', 'spec-overrides', 'overrides']);
+const ALLOWED_KEYS = new Set(['todos', 'dmu-overrides', 'spec-overrides', 'overrides', 'dropdowns', 'owners', 'signal-history']);
 const KEY_PREFIX = 'marktradar:state:v1:';
 
 async function kvFetch(path, init) {
