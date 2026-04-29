@@ -583,36 +583,6 @@ body{
   border-bottom:1px solid #f4d2a0;font-size:.76rem;color:#8a5614;text-align:center;display:none}
 .kv-banner.show{display:block}
 .kv-banner a{color:var(--orange-dark);font-weight:700;text-decoration:underline}
-.crm-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;background:var(--grey-50);border:1px solid var(--grey-150);border-radius:8px;margin-bottom:10px;font-size:.78rem;color:var(--grey-700)}
-.crm-status-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:14px;font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
-.crm-status-actieve-klant{background:var(--orange);color:white}
-.crm-status-warm-prospect, .crm-status-warm-lead{background:var(--orange-pale);color:var(--orange-dark)}
-.crm-status-koel-prospect, .crm-status-lead-onbewerkt{background:var(--grey-200);color:var(--grey-700)}
-.crm-status-verloren{background:var(--red-light);color:var(--red)}
-.crm-status-geen-pipeline{background:var(--grey-100);color:var(--grey-500)}
-.crm-engagement, .crm-owner, .crm-pdid{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--grey-600)}
-.crm-deals{display:flex;flex-direction:column;gap:8px}
-.crm-deal{padding:8px 12px;background:var(--white);border:1px solid var(--grey-200);border-radius:6px}
-.crm-deal-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px}
-.crm-deal-titel{font-weight:700;color:var(--grey-900);font-size:.86rem}
-.crm-deal-status{font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:1px 7px;border-radius:4px;background:var(--grey-100);color:var(--grey-700)}
-.crm-deal-status.status-open{background:var(--orange-pale);color:var(--orange-dark)}
-.crm-deal-status.status-gewonnen{background:var(--green-light);color:var(--green)}
-.crm-deal-status.status-verloren{background:var(--red-light);color:var(--red)}
-.crm-deal-meta{font-size:.72rem;color:var(--grey-600);font-family:'DM Mono',monospace}
-.crm-deal-labels{margin-top:5px;display:flex;flex-wrap:wrap;gap:4px}
-.crm-label{font-size:.62rem;padding:1px 7px;border-radius:8px;background:var(--orange-pale);color:var(--orange-dark);font-weight:600}
-.crm-list{display:flex;flex-direction:column;gap:6px}
-.crm-row{font-size:.78rem;color:var(--grey-700);padding:6px 10px;background:var(--grey-50);border-radius:6px;border-left:3px solid var(--orange-pale);line-height:1.4}
-.crm-row strong{color:var(--grey-900);font-family:'DM Mono',monospace;font-size:.7rem}
-.gap-section{background:var(--white);border:1px solid var(--grey-200);border-radius:10px;padding:14px 18px;margin-top:18px}
-.gap-section-title{font-size:.85rem;font-weight:700;color:var(--grey-900);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.gap-section-title .gap-count{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--grey-500);font-weight:500}
-.gap-list{display:flex;flex-direction:column;gap:5px}
-.gap-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:6px 10px;background:var(--grey-50);border-radius:6px;font-size:.8rem;align-items:center}
-.gap-row .gap-naam{color:var(--grey-900);font-weight:600}
-.gap-row .gap-meta{font-size:.7rem;color:var(--grey-600);font-family:'DM Mono',monospace}
-.gap-row .gap-score{font-family:'DM Mono',monospace;font-weight:700;color:var(--orange-dark);font-size:.85rem}
 .user-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;
   padding:10px 12px;background:var(--grey-50);border:1px solid var(--grey-150);border-radius:8px;margin-bottom:6px}
 .user-row-naam{font-size:.86rem;font-weight:700;color:var(--grey-900)}
@@ -1113,17 +1083,6 @@ body{
   </div>
 </div>
 
-<div id="bottomSections" style="margin:24px 24px 32px;display:none">
-  <div class="gap-section" id="toevoegSection">
-    <div class="gap-section-title">Toevoeg-voorstellen uit PipeDrive <span class="gap-count" id="toevoegCount"></span></div>
-    <div class="gap-list" id="toevoegList"></div>
-  </div>
-  <div class="gap-section" id="salesGapSection">
-    <div class="gap-section-title">Sales-gap (instellingen zonder PipeDrive-aanwezigheid) <span class="gap-count" id="salesGapCount"></span></div>
-    <div class="gap-list" id="salesGapList"></div>
-  </div>
-</div>
-
 <div class="overlay" id="overlay">
   <div class="overlay-panel" id="overlayPanel"></div>
 </div>
@@ -1280,9 +1239,9 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.11.0",
-    "codename": "Lesath",
-    "promptVersion": "1.11.0",
+    "version": "1.10.1",
+    "codename": "Kornephoros",
+    "promptVersion": "1.10.1",
     "releaseHistory": [
       {
         "version": "1.0.0",
@@ -1379,25 +1338,11 @@ const DATA = {
         "codename": "Kornephoros",
         "date": "2026-04-29",
         "note": "Patch: bronType-enum gelijk getrokken voor de aankomende PipeDrive-import. \"pipedrive\" toegevoegd aan DROPDOWN_REGISTRY.bronType defaults en aan de validBronTypes-validatie van de contacten-import-flow. Bestaande KV-overrides blijven werken; klik \"reset\" in Beheer > Dropdowns > Bron-type om de uitgebreide lijst te zien."
-      },
-      {
-        "version": "1.11.0",
-        "codename": "Lesath",
-        "date": "2026-04-29",
-        "note": "PipeDrive CRM-import: 37 instellingen verrijkt met deals/contacten/notities; 44 toevoeg-voorstellen voor curatie; 27 sales-gap geidentificeerd; 24 producten geimporteerd; 3 contacten gepromoveerd naar DMU."
       }
     ],
     "totalInstellingen": 64,
     "totalSignalen": 27,
-    "totalLeveranciers": 15,
-    "crmImport": {
-      "bron": "pipedrive",
-      "importDatum": "2026-04-29",
-      "aantalGematcht": 37,
-      "aantalKandidaat": 0,
-      "aantalToevoegVoorstel": 44,
-      "aantalSalesGap": 27
-    }
+    "totalLeveranciers": 15
   },
   "instellingen": [
     {
@@ -1468,58 +1413,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 39,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [
-          {
-            "id": null,
-            "titel": "Cordaan deal",
-            "bekeken": "Niet bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Trudy des Bouvrie (manager ouderenzorg)",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "lead-onbewerkt",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "carintreggeland",
@@ -1679,49 +1573,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 88,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 140,
-        "laatsteActiviteit": "2025-11-28",
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Robert Sio",
-            "functie": null,
-            "email": "r.sio@laurens.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": "2025-11-28",
-            "emailVolume": 140
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "aafje",
@@ -1791,38 +1643,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 80,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "amsta",
@@ -1892,87 +1713,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 79,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": "2025-11-25",
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 75,
-            "titel": "GeriForce voor Verpleging",
-            "pijplijn": "@Emergency",
-            "stadium": "Deal",
-            "status": "Open",
-            "labels": [],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-09-26",
-            "bijgewerkt": "2026-03-06",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Aimee Mesker",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          },
-          {
-            "naam": "Willemijn Montijn",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          },
-          {
-            "naam": "Fabian de Jong",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": "2025-11-25",
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "brabantzorg",
@@ -2132,69 +1873,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 58,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 360,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 56,
-            "titel": "Alliade lead",
-            "pijplijn": "@Emergency",
-            "stadium": "Lead: afspraak gemaakt",
-            "status": "Open",
-            "labels": [
-              "Regionaal samenwerken"
-            ],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-02-05",
-            "bijgewerkt": "2025-10-17",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Lodewijk Oostra",
-            "functie": null,
-            "email": "lodewijk.oostra@kwadrantgroep.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 360
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "pieter-van-foreest",
@@ -2264,49 +1943,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 120,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 41,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Gert van Empel",
-            "functie": null,
-            "email": "g.van.empel@pietervanforeest.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 41
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "envida",
@@ -2376,76 +2013,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 75,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 126,
-        "laatsteActiviteit": "2025-07-22",
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 71,
-            "titel": "GeriForce voor verpleging",
-            "pijplijn": "@Emergency",
-            "stadium": "Hot Prospect: onderhandelen",
-            "status": "Open",
-            "labels": [
-              "GeriForce Standalone"
-            ],
-            "waarde": 38539.2,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-08-07",
-            "bijgewerkt": "2026-03-06",
-            "verwachteSluiting": "2025-10-01",
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Gildy Hertogs",
-            "functie": null,
-            "email": "gildy.hertogs@envida.nl",
-            "telefoonWerk": "(06) 25 04 01 96",
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": "2025-07-22",
-            "emailVolume": 126
-          }
-        ],
-        "notities": [],
-        "activiteiten": [
-          {
-            "datum": "2025-07-22",
-            "type": "Afspraak op locatie",
-            "onderwerp": "Presentatie GeriForce",
-            "beschrijving": ""
-          }
-        ],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "zzg-zorggroep",
@@ -2603,73 +2171,9 @@ const DATA = {
           "geverifieerd": "2026-04-28",
           "vertrouwen": "middel",
           "notitie": null
-        },
-        {
-          "naam": "Alice Veen",
-          "functie": "manager behandeling",
-          "rol": "champion",
-          "linkedin": null,
-          "email": null,
-          "telefoon": null,
-          "bron": "pipedrive",
-          "bronType": "pipedrive",
-          "geverifieerd": "2026-04-29",
-          "vertrouwen": "hoog",
-          "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 40,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [
-          {
-            "id": null,
-            "titel": "Amstelring deal",
-            "bekeken": "Niet bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Alice Veen (manager behandeling)",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "lead-onbewerkt",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "sevagram",
@@ -2738,49 +2242,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 108,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Marceline Misere",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "sensire",
@@ -2848,113 +2310,9 @@ const DATA = {
           "geverifieerd": "2026-04-28",
           "vertrouwen": "middel",
           "notitie": null
-        },
-        {
-          "naam": "Saskia Prins",
-          "functie": "manager zorg",
-          "rol": "influencer",
-          "linkedin": null,
-          "email": null,
-          "telefoon": null,
-          "bron": "pipedrive",
-          "bronType": "pipedrive",
-          "geverifieerd": "2026-04-29",
-          "vertrouwen": "hoog",
-          "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 18,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 73,
-            "titel": "Sensire",
-            "pijplijn": "@Emergency",
-            "stadium": "Qualified (contact opnemen)",
-            "status": "Open",
-            "labels": [
-              "Regionaal samenwerken"
-            ],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-09-19",
-            "bijgewerkt": "2025-09-19",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [
-          {
-            "id": null,
-            "titel": "Sensire deal",
-            "bekeken": "Niet bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Margje Mahler",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          },
-          {
-            "naam": "Saskia Prins (manager zorg)",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          },
-          {
-            "naam": "Marco Repko",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "thebe",
@@ -3163,38 +2521,7 @@ const DATA = {
           "notitie": "Recente bestuurswisseling"
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 147,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "kwadrantgroep",
@@ -3333,49 +2660,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 97,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 155,
-        "laatsteActiviteit": "2026-04-15",
-        "volgendeActiviteit": "2026-10-15",
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Nicoline van der Hagen",
-            "functie": null,
-            "email": "n.vanderhagen@argoszorggroep.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": "2026-04-15",
-            "emailVolume": 155
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 60
-      }
+      "specialisten": []
     },
     {
       "id": "icare",
@@ -3700,58 +2985,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 42,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [
-          {
-            "id": null,
-            "titel": "Humanitas deal",
-            "bekeken": "Niet bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Merel Boon-van Maren (directeur behandeling)",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "lead-onbewerkt",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "pleyade",
@@ -3841,69 +3075,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 76,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 18,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 72,
-            "titel": "Pleyade",
-            "pijplijn": "@Emergency",
-            "stadium": "Qualified (contact opnemen)",
-            "status": "Open",
-            "labels": [
-              "Regionaal samenwerken"
-            ],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-09-19",
-            "bijgewerkt": "2025-12-05",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Landja Hamamurad",
-            "functie": null,
-            "email": "lhamamurad@gericall.nl",
-            "telefoonWerk": "31 6 41 99 76 04",
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 18
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "patyna",
@@ -3973,38 +3145,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 149,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "zuidoostzorg",
@@ -4350,67 +3491,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 60,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 57,
-            "titel": "Treant lead",
-            "pijplijn": "@Emergency",
-            "stadium": "Qualified (contact opnemen)",
-            "status": "Open",
-            "labels": [],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-02-11",
-            "bijgewerkt": "2025-02-11",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Sjoukje Galama",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "dignis",
@@ -4480,58 +3561,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 36,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [
-          {
-            "id": null,
-            "titel": "Dignis deal",
-            "bekeken": "Niet bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Niessette Ridder (manager behandeldienst)",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "lead-onbewerkt",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "markenheem",
@@ -4601,70 +3631,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 85,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 79,
-            "titel": "Markenheem",
-            "pijplijn": "@Emergency",
-            "stadium": "Suspect: Contact opgenomen",
-            "status": "Open",
-            "labels": [
-              "Regionaal samenwerken",
-              "GeriForce Standalone"
-            ],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-10-03",
-            "bijgewerkt": "2025-10-03",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Riona Zevenhuizen",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "azora",
@@ -4733,103 +3700,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 16,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": "2023-12-20",
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 67,
-            "titel": "Stichting Azora deal",
-            "pijplijn": "@Emergency",
-            "stadium": "Qualified (contact opnemen)",
-            "status": "Open",
-            "labels": [],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-06-19",
-            "bijgewerkt": "2025-06-19",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [
-          {
-            "id": null,
-            "titel": "Stichting Azora deal",
-            "bekeken": "Niet bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Mieke Zemmelink",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          },
-          {
-            "naam": "Bram Wassink (manager behandel)",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          },
-          {
-            "naam": "Lusi Rachmat",
-            "functie": null,
-            "email": "L.Rachmat@azora.nl",
-            "telefoonWerk": "0315 338164",
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": "2023-12-20",
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [
-          {
-            "datum": "2023-12-20",
-            "type": "Afspraak op locatie",
-            "onderwerp": "Meeting gehad",
-            "beschrijving": ""
-          }
-        ],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "mijzo-zh",
@@ -4876,38 +3747,7 @@ const DATA = {
       "opportunity": "Externe ANW-inkoop; directe aanbiedingsgrond. Verkenningsgesprek inplannen.",
       "website": "https://www.mijzo.nl",
       "dmu": [],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 92,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "de-zorgboog",
@@ -5043,49 +3883,7 @@ const DATA = {
       "opportunity": "Eigen SO's; tooling-partnership denkbaar.",
       "website": "https://www.topaz.nl",
       "dmu": [],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 124,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Clasien de Graaf",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "kennemerhart",
@@ -5154,69 +3952,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 66,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 63,
-            "titel": "KennemerHart deal",
-            "pijplijn": "@Emergency",
-            "stadium": "On Hold",
-            "status": "Open",
-            "labels": [
-              "Regionaal samenwerken"
-            ],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-02-28",
-            "bijgewerkt": "2026-03-06",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Marijke Bol",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "marente",
@@ -5286,97 +4022,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 89,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 2,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 117,
-        "laatsteActiviteit": "2025-10-14",
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 82,
-            "titel": "IBS ANW Marente",
-            "pijplijn": "@Home",
-            "stadium": "Afspraak gepland",
-            "status": "Open",
-            "labels": [],
-            "waarde": 3,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Famke de Wilde",
-            "aangemaakt": "2025-10-17",
-            "bijgewerkt": "2026-01-09",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Susanne Groot",
-            "functie": null,
-            "email": "susanne.groot@marente.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": "2025-10-14",
-            "emailVolume": 70
-          },
-          {
-            "naam": "Karin Nijboer",
-            "functie": null,
-            "email": "karin.nijboer@marente.nl",
-            "telefoonWerk": "+31623735481",
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": "2025-10-14",
-            "emailVolume": 40
-          },
-          {
-            "naam": "Richard Siere",
-            "functie": null,
-            "email": "Richard.Siere@marente.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Famke de Wilde",
-            "laatsteActiviteit": null,
-            "emailVolume": 4
-          },
-          {
-            "naam": "Carola v/d Oever",
-            "functie": null,
-            "email": "c.vd.oever-vd.plas@activite.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Famke de Wilde",
-            "laatsteActiviteit": null,
-            "emailVolume": 3
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "careyn-zhe",
@@ -5446,84 +4092,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 155,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "nlanghout@gericall.nl",
-        "openDeals": 2,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 21,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 110,
-            "titel": "Careyn ZHE",
-            "pijplijn": "@Home",
-            "stadium": "Afspraak gepland",
-            "status": "Open",
-            "labels": [],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "nlanghout@gericall.nl",
-            "aangemaakt": "2026-04-03",
-            "bijgewerkt": "2026-04-13",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          },
-          {
-            "id": 118,
-            "titel": "Careyn ZHE",
-            "pijplijn": "@Emergency",
-            "stadium": "Prospect: voorstel gedaan",
-            "status": "Open",
-            "labels": [],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Raymond",
-            "aangemaakt": "2026-04-21",
-            "bijgewerkt": "2026-04-21",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Suzanne Dekker",
-            "functie": null,
-            "email": "S.dekker@careyn.nl",
-            "telefoonWerk": "0622293233",
-            "telefoonMobiel": null,
-            "eigenaar": "nlanghout@gericall.nl",
-            "laatsteActiviteit": null,
-            "emailVolume": 21
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "zinzia-zorggroep",
@@ -5612,58 +4181,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 28,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [
-          {
-            "id": null,
-            "titel": "Zinzia Zorggroep deal",
-            "bekeken": "Niet bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Mireille Prins (directeur zorg en behandeling)",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "lead-onbewerkt",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "novicare-west",
@@ -5733,69 +4251,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 72,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 131,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Jet Wiechers",
-            "functie": null,
-            "email": "jwiechers@novicare.nl",
-            "telefoonWerk": "+31 6 52 33 22 90",
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 68
-          },
-          {
-            "naam": "Paula Boot",
-            "functie": null,
-            "email": "PBoot@novicare.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 31
-          },
-          {
-            "naam": "Liz de Vroome",
-            "functie": null,
-            "email": "ldevroome@novicare.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 32
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "rijnstad",
@@ -6072,38 +4528,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 100,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "de-waalboog",
@@ -6243,49 +4668,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 74,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 21,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Alesha D Elfant",
-            "functie": null,
-            "email": "a.soumokil@zuyderland.nl",
-            "telefoonWerk": "(06) 15 56 74 17",
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 21
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "cicero-zorggroep",
@@ -6355,49 +4738,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 99,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 12,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Noortje Mies",
-            "functie": null,
-            "email": "n.mies@cicerozorggroep.nl",
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 12
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 20
-      }
+      "specialisten": []
     },
     {
       "id": "frankelandgroep",
@@ -6467,49 +4808,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 103,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Els Nauta",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "zorgspectrum",
@@ -6578,58 +4877,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 46,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [
-          {
-            "id": null,
-            "titel": "Zorgspectrum deal",
-            "bekeken": "Niet bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Marieke van Gilsdonk",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "lead-onbewerkt",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "vivantes",
@@ -6698,49 +4946,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 111,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Edwin Tijssen",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "zorgsaam-limburg",
@@ -6810,67 +5016,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 73,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jelle Blok",
-        "openDeals": 1,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [
-          {
-            "id": 70,
-            "titel": "ZorgSaam deal",
-            "pijplijn": "@Emergency",
-            "stadium": "Qualified (contact opnemen)",
-            "status": "Open",
-            "labels": [],
-            "waarde": 0,
-            "mrr": 0,
-            "arr": 0,
-            "eigenaar": "Jeff Lafranca",
-            "aangemaakt": "2025-07-15",
-            "bijgewerkt": "2025-07-15",
-            "verwachteSluiting": null,
-            "redenVerlies": null,
-            "regionaalVerband": null
-          }
-        ],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Tiffany Aksu - Bonne",
-            "functie": null,
-            "email": "t.aksu@zzv.nl",
-            "telefoonWerk": "06-57944201",
-            "telefoonMobiel": null,
-            "eigenaar": "Jelle Blok",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "zorggroep-sint-maarten",
@@ -7211,73 +5357,9 @@ const DATA = {
           "geverifieerd": "2026-04-28",
           "vertrouwen": "middel",
           "notitie": null
-        },
-        {
-          "naam": "Gerda Veldman",
-          "functie": "manager behandeling",
-          "rol": "champion",
-          "linkedin": null,
-          "email": null,
-          "telefoon": null,
-          "bron": "pipedrive",
-          "bronType": "pipedrive",
-          "geverifieerd": "2026-04-29",
-          "vertrouwen": "hoog",
-          "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 25,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [
-          {
-            "id": null,
-            "titel": "Ijsselheem deal",
-            "bekeken": "Niet bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Gerda Veldman (manager behandeling)",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "lead-onbewerkt",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "cedrah",
@@ -7553,58 +5635,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 44,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [
-          {
-            "id": null,
-            "titel": "AxionContinu deal",
-            "bekeken": "Bekeken",
-            "eigenaar": "Jeff Lafranca",
-            "bron": "Deal",
-            "aangemaakt": "2025-02-11"
-          }
-        ],
-        "contacten": [
-          {
-            "naam": "Margreet van Dokkum (manager behandel)",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "lead-onbewerkt",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "zorgbalans",
@@ -7673,38 +5704,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 115,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     },
     {
       "id": "mosae-zorggroep",
@@ -7843,49 +5843,7 @@ const DATA = {
           "notitie": null
         }
       ],
-      "specialisten": [],
-      "crm": {
-        "pipedriveOrgId": 113,
-        "bron": "pipedrive",
-        "geimporteerd": "2026-04-29",
-        "matchKwaliteit": "zeker",
-        "accountOwner": "Jeff Lafranca",
-        "openDeals": 0,
-        "gewonnenDeals": 0,
-        "verlorenDeals": 0,
-        "emailVolume": 0,
-        "laatsteActiviteit": null,
-        "volgendeActiviteit": null,
-        "deals": [],
-        "leads": [],
-        "contacten": [
-          {
-            "naam": "Ivonne van Loon",
-            "functie": null,
-            "email": null,
-            "telefoonWerk": null,
-            "telefoonMobiel": null,
-            "eigenaar": "Jeff Lafranca",
-            "laatsteActiviteit": null,
-            "emailVolume": 0
-          }
-        ],
-        "notities": [],
-        "activiteiten": [],
-        "bijlagenSamenvatting": {
-          "aantal": 0,
-          "laatsteUpload": null,
-          "types": {
-            "offerte": 0,
-            "overeenkomst": 0,
-            "brochure": 0,
-            "anders": 0
-          },
-          "laatsteBestand": null
-        },
-        "crmStatus": "geen-pipeline",
-        "engagement": 0
-      }
+      "specialisten": []
     }
   ],
   "signalen": [
@@ -9122,963 +7080,7 @@ const DATA = {
         }
       }
     }
-  ],
-  "producten": [
-    {
-      "id": "001",
-      "productcode": "001",
-      "naam": "ANW Dienst (Bereikbaarheid)",
-      "categorie": "GeriCall ANW",
-      "prijs": 2.5,
-      "eenheid": "EUR",
-      "frequentie": "Per maand",
-      "eenheidType": "Aantal clienten",
-      "beschrijving": null
-    },
-    {
-      "id": "010",
-      "productcode": "010",
-      "naam": "Medische Dienst",
-      "categorie": "GeriCall Medical",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": "Aantal clienten",
-      "beschrijving": null
-    },
-    {
-      "id": "020",
-      "productcode": "020",
-      "naam": "Consultenlijn",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": "Aantal consulten per jaar",
-      "beschrijving": null
-    },
-    {
-      "id": "030",
-      "productcode": "030",
-      "naam": "GeriForce",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": "Aantal clienten",
-      "beschrijving": null
-    },
-    {
-      "id": "021",
-      "productcode": "021",
-      "naam": "IBS dienstverlening",
-      "categorie": "GeriCall Home",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Per maand",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "022",
-      "productcode": "022",
-      "naam": "RM Dienstverlening",
-      "categorie": "GeriCall Home",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "011",
-      "productcode": "011",
-      "naam": "Psychologische Dienst",
-      "categorie": "GeriCall Medical",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "012",
-      "productcode": "012",
-      "naam": "Medische Prestaties",
-      "categorie": "GeriCall Medical",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "002",
-      "productcode": "002",
-      "naam": "ANW - GeriForce Implementatie",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "023",
-      "productcode": "023",
-      "naam": "WzD Dienstverlening",
-      "categorie": "GeriCall Home",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "003.A",
-      "productcode": "003.A",
-      "naam": "CT-arts",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "001.B",
-      "productcode": "001.B",
-      "naam": "ANW Dienst (Consulten)",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Per maand",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "110",
-      "productcode": "110",
-      "naam": "WZD inventarisatie per locatie per uur",
-      "categorie": "GeriCall Home",
-      "prijs": 210,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": "uur",
-      "beschrijving": "WZD 0 meting"
-    },
-    {
-      "id": "111",
-      "productcode": "111",
-      "naam": "ANW Consultenlijn SO",
-      "categorie": "GeriCall Home",
-      "prijs": 136,
-      "eenheid": "EUR",
-      "frequentie": "Per maand",
-      "eenheidType": "maand",
-      "beschrijving": "0,25 ct bereikbaarheid per huisartsenpraktijk per uur"
-    },
-    {
-      "id": "112",
-      "productcode": "112",
-      "naam": "ANW HAP telefonisch consult",
-      "categorie": "GeriCall Home",
-      "prijs": 50,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": "per kwartier",
-      "beschrijving": null
-    },
-    {
-      "id": "114",
-      "productcode": "114",
-      "naam": "ANW SEH consult",
-      "categorie": "GeriCall Home",
-      "prijs": 290,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": "uur",
-      "beschrijving": "NZA tarief per uur"
-    },
-    {
-      "id": "113",
-      "productcode": "113",
-      "naam": "SEH ANW telefonische bereikbaarheid",
-      "categorie": "GeriCall Home",
-      "prijs": 5,
-      "eenheid": "EUR",
-      "frequentie": "Per maand",
-      "eenheidType": "uur",
-      "beschrijving": null
-    },
-    {
-      "id": "111.A",
-      "productcode": "111.A",
-      "naam": "ANW Consultenlijn SO (HAP)",
-      "categorie": "GeriCall Home",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "003.B",
-      "productcode": "003.B",
-      "naam": "CT-arts (Mix&Match)",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "002.A",
-      "productcode": "002.A",
-      "naam": "ANW - GeriForce Implementatie (Artsen)",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "002.B",
-      "productcode": "002.B",
-      "naam": "ANW - GeriForce Implementatie (Verpleging)",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "003.B1",
-      "productcode": "003.B1",
-      "naam": "CT-arts (Mix&Match - Nacht)",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "003.B2",
-      "productcode": "003.B2",
-      "naam": "CT-arts (Mix&Match - Avond)",
-      "categorie": "GeriCall ANW",
-      "prijs": 0,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": null,
-      "beschrijving": null
-    },
-    {
-      "id": "115",
-      "productcode": "115",
-      "naam": "WZD functionaris per 5 minuten digitaal",
-      "categorie": "GeriCall Home",
-      "prijs": 17.5,
-      "eenheid": "EUR",
-      "frequentie": "Eenmalig",
-      "eenheidType": "per 5 minuten",
-      "beschrijving": null
-    }
-  ],
-  "toevoegenVoorstel": [
-    {
-      "pipedriveOrgId": 14,
-      "naam": "Archipel Zorggroep",
-      "score": 70,
-      "redenen": [
-        "VVT-naam patroon",
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jelle Blok"
-    },
-    {
-      "pipedriveOrgId": 69,
-      "naam": "Horizon Zorcentrum",
-      "score": 70,
-      "redenen": [
-        "1 deal(s)",
-        "contact met RvB/SO functie"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 117,
-      "naam": "Lelie Zorggroep",
-      "score": 70,
-      "redenen": [
-        "VVT-naam patroon",
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 68,
-      "naam": "Stichting Salem",
-      "score": 70,
-      "redenen": [
-        "VVT-naam patroon",
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 2 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 61,
-      "naam": "WilgaerdenLeekerweideGroep",
-      "score": 70,
-      "redenen": [
-        "1 deal(s)",
-        "contact met RvB/SO functie"
-      ],
-      "snelleSamenvatting": "1 deals, 3 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 144,
-      "naam": "Woonzorgcentrum De Beyart",
-      "score": 70,
-      "redenen": [
-        "VVT-naam patroon",
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 57,
-      "naam": "Alkcare",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jelle Blok"
-    },
-    {
-      "pipedriveOrgId": 70,
-      "naam": "Annenborch",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 143,
-      "naam": "Antes",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 2 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 65,
-      "naam": "Basalt",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 151,
-      "naam": "Careyn Utrecht West",
-      "score": 40,
-      "redenen": [
-        "2 deal(s)"
-      ],
-      "snelleSamenvatting": "2 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 77,
-      "naam": "Conforte",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 145,
-      "naam": "Cura Mare",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 2 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 59,
-      "naam": "De Wever",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 102,
-      "naam": "De Zellingen",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 153,
-      "naam": "EZZ",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Famke de Wilde"
-    },
-    {
-      "pipedriveOrgId": 84,
-      "naam": "EerstelijnsZorg Zoetermeer",
-      "score": 40,
-      "redenen": [
-        "2 deal(s)"
-      ],
-      "snelleSamenvatting": "2 deals, 1 contacten, eigenaar Famke de Wilde"
-    },
-    {
-      "pipedriveOrgId": 63,
-      "naam": "Goudenhart",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 127,
-      "naam": "HOZO",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 126,
-      "naam": "Hadocs",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Famke de Wilde"
-    },
-    {
-      "pipedriveOrgId": 160,
-      "naam": "Herbergier",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 154,
-      "naam": "Herbergier Elst",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Famke de Wilde"
-    },
-    {
-      "pipedriveOrgId": 139,
-      "naam": "Herbergier Hellevoetsluis",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Famke de Wilde"
-    },
-    {
-      "pipedriveOrgId": 134,
-      "naam": "Herbergier Piershil",
-      "score": 40,
-      "redenen": [
-        "2 deal(s)"
-      ],
-      "snelleSamenvatting": "2 deals, 1 contacten, eigenaar Famke de Wilde"
-    },
-    {
-      "pipedriveOrgId": 82,
-      "naam": "KNO Medisch Centrum",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 162,
-      "naam": "Koninklijke Visio",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 62,
-      "naam": "MagentaZorg",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 141,
-      "naam": "Nobama Care",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 67,
-      "naam": "Novicare Brabant",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 0 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 135,
-      "naam": "Rivierenland",
-      "score": 40,
-      "redenen": [
-        "2 deal(s)"
-      ],
-      "snelleSamenvatting": "2 deals, 1 contacten, eigenaar Famke de Wilde"
-    },
-    {
-      "pipedriveOrgId": 146,
-      "naam": "Tante Louise",
-      "score": 40,
-      "redenen": [
-        "1 deal(s)"
-      ],
-      "snelleSamenvatting": "1 deals, 0 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 86,
-      "naam": "Transmuralis",
-      "score": 40,
-      "redenen": [
-        "3 deal(s)"
-      ],
-      "snelleSamenvatting": "3 deals, 2 contacten, eigenaar Famke de Wilde"
-    },
-    {
-      "pipedriveOrgId": 56,
-      "naam": "Archipel Zorggroep",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 123,
-      "naam": "Respect Zorggroep",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 2 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 22,
-      "naam": "Rijnwaal zorggroep",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 125,
-      "naam": "Stichting Niko",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 0 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 13,
-      "naam": "Valkenhof",
-      "score": 30,
-      "redenen": [
-        "contact met RvB/SO functie"
-      ],
-      "snelleSamenvatting": "0 deals, 1 contacten, eigenaar Jelle Blok"
-    },
-    {
-      "pipedriveOrgId": 110,
-      "naam": "Viva Zorggroep",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 0 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 51,
-      "naam": "Zorggroep Almere",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 0 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 41,
-      "naam": "Zorggroep Amsterdam Oost",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 48,
-      "naam": "Zorggroep Charim",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 0 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 32,
-      "naam": "Zorggroep Groningen",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 0 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 54,
-      "naam": "Zorggroep Groningen",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 1 contacten, eigenaar Jeff Lafranca"
-    },
-    {
-      "pipedriveOrgId": 26,
-      "naam": "Zorggroep Noorderboog",
-      "score": 30,
-      "redenen": [
-        "VVT-naam patroon"
-      ],
-      "snelleSamenvatting": "0 deals, 1 contacten, eigenaar Jeff Lafranca"
-    }
-  ],
-  "salesGap": [
-    {
-      "instellingId": "carintreggeland",
-      "naam": "Carintreggeland",
-      "gericallStatus": "klant",
-      "leadLens": "expansion",
-      "leadScore": 65,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "rijnstad",
-      "naam": "Rijnstad",
-      "gericallStatus": "prospect",
-      "leadLens": "acquisitie",
-      "leadScore": 55,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "kwadrantgroep",
-      "naam": "KwadrantGroep",
-      "gericallStatus": "klant",
-      "leadLens": "expansion",
-      "leadScore": 50,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "zuidoostzorg",
-      "naam": "ZuidOostZorg",
-      "gericallStatus": "klant",
-      "leadLens": "expansion",
-      "leadScore": 50,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "vivent",
-      "naam": "Vivent",
-      "gericallStatus": "prospect",
-      "leadLens": "expansion",
-      "leadScore": 45,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "interzorg",
-      "naam": "Interzorg",
-      "gericallStatus": "lead",
-      "leadLens": "acquisitie",
-      "leadScore": 43,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "de-waalboog",
-      "naam": "De Waalboog",
-      "gericallStatus": "klant",
-      "leadLens": "expansion",
-      "leadScore": 35,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "de-zorgboog",
-      "naam": "De Zorgboog",
-      "gericallStatus": "lead",
-      "leadLens": "acquisitie",
-      "leadScore": 30,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "icare",
-      "naam": "Icare",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 15,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "proteion",
-      "naam": "Proteion",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 15,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "sherpa",
-      "naam": "Sherpa",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 15,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "zzg-zorggroep",
-      "naam": "ZZG Zorggroep",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 10,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "stichting-svrz",
-      "naam": "Stichting SVRZ",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 10,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "pantein",
-      "naam": "Pantein",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 10,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "sante-partners",
-      "naam": "Sante Partners",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 10,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "opella",
-      "naam": "Opella",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 10,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "cedrah",
-      "naam": "Cedrah",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 10,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "zorggroep-drenthe",
-      "naam": "Zorggroep Drenthe",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 10,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "mosae-zorggroep",
-      "naam": "Mosae Zorggroep",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 5,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "zorggroep-sint-maarten",
-      "naam": "Zorggroep Sint Maarten",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 3,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "brabantzorg",
-      "naam": "BrabantZorg",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 0,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "thebe",
-      "naam": "Thebe",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 0,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "vitalis-woonzorg",
-      "naam": "Vitalis WoonZorg",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 0,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "evean",
-      "naam": "Evean",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 0,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "triviummeulenbeltzorg",
-      "naam": "TriviumMeulenbeltZorg",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 0,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "livio",
-      "naam": "Livio",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 0,
-      "reden": "geen pipedrive-aanwezigheid"
-    },
-    {
-      "instellingId": "zorgaccent",
-      "naam": "ZorgAccent",
-      "gericallStatus": "cold",
-      "leadLens": "acquisitie",
-      "leadScore": 0,
-      "reden": "geen pipedrive-aanwezigheid"
-    }
-  ],
-  "matchingDiagnose": {
-    "importDatum": "2026-04-29",
-    "bron": "pipedrive",
-    "totaalOrgs": 139,
-    "zekereMatches": 44,
-    "kandidaatMatches": 0,
-    "unmatched": 95,
-    "uniqueInstellingenMatched": 37,
-    "totalInstellingen": 64,
-    "dubbel": [
-      {
-        "instId": "amstelring",
-        "instNaam": "Amstelring",
-        "pipedriveOrgIds": [
-          15,
-          40
-        ],
-        "gekozen": 40
-      },
-      {
-        "instId": "careyn-zhe",
-        "instNaam": "Careyn ZHE",
-        "pipedriveOrgIds": [
-          150,
-          98,
-          155
-        ],
-        "gekozen": 155
-      },
-      {
-        "instId": "laurens",
-        "instNaam": "Laurens",
-        "pipedriveOrgIds": [
-          128,
-          88
-        ],
-        "gekozen": 88
-      },
-      {
-        "instId": "markenheem",
-        "instNaam": "Markenheem",
-        "pipedriveOrgIds": [
-          85,
-          20
-        ],
-        "gekozen": 85
-      },
-      {
-        "instId": "pieter-van-foreest",
-        "instNaam": "Pieter van Foreest",
-        "pipedriveOrgIds": [
-          129,
-          120
-        ],
-        "gekozen": 120
-      },
-      {
-        "instId": "pleyade",
-        "instNaam": "Pleyade",
-        "pipedriveOrgIds": [
-          27,
-          76
-        ],
-        "gekozen": 76
-      }
-    ],
-    "statusverschillen": []
-  }
+  ]
 };
 DATA.meta.totalInstellingen = DATA.instellingen.length;
 DATA.meta.totalSignalen = DATA.signalen.length;
@@ -10971,7 +7973,6 @@ function initApp(){
   bindScopeBar();
   bindPasswordModal();
   renderUserBadge();
-  renderBottomSections();
   if(currentUser && currentUser.mustChangePassword) openPasswordModal({ forced: true });
   checkKvHealth().then(h => toggleKvBanner(!h.ok));
   const logoutBtn = document.getElementById('logoutBtn');
@@ -10980,40 +7981,6 @@ function initApp(){
       if(confirm('Uitloggen en de onthouden sessie wissen op dit apparaat?')) logout();
     });
   }
-}
-
-function renderBottomSections(){
-  const wrap = document.getElementById('bottomSections');
-  if(!wrap) return;
-  const tv = (DATA.toevoegenVoorstel || []);
-  const sg = (DATA.salesGap || []);
-  if(tv.length === 0 && sg.length === 0){ wrap.style.display = 'none'; return; }
-  wrap.style.display = 'block';
-  document.getElementById('toevoegCount').textContent = tv.length + (tv.length === 1 ? ' kandidaat' : ' kandidaten');
-  document.getElementById('toevoegList').innerHTML = tv.length === 0
-    ? '<div class="no-data">Geen kandidaten.</div>'
-    : tv.slice(0, 30).map(t => `
-      <div class="gap-row">
-        <div><div class="gap-naam">${escapeHtml(t.naam)}</div>
-          <div class="gap-meta">PD #${t.pipedriveOrgId} &middot; ${escapeHtml(t.snelleSamenvatting||'')}${t.redenen && t.redenen.length ? ' &middot; ' + t.redenen.map(escapeHtml).join(', ') : ''}</div>
-        </div>
-        <div></div>
-        <div class="gap-score">${t.score}</div>
-      </div>`).join('');
-  document.getElementById('salesGapCount').textContent = sg.length + (sg.length === 1 ? ' instelling' : ' instellingen');
-  document.getElementById('salesGapList').innerHTML = sg.length === 0
-    ? '<div class="no-data">Alle instellingen hebben CRM-data.</div>'
-    : sg.map(s => `
-      <div class="gap-row" data-inst-id="${s.instellingId}" style="cursor:pointer">
-        <div><div class="gap-naam">${escapeHtml(s.naam)}</div>
-          <div class="gap-meta">${escapeHtml(s.gericallStatus)} &middot; ${escapeHtml(s.leadLens||'')} &middot; ${escapeHtml(s.reden||'')}</div>
-        </div>
-        <div></div>
-        <div class="gap-score">${s.leadScore}</div>
-      </div>`).join('');
-  document.querySelectorAll('#salesGapList .gap-row[data-inst-id]').forEach(r => {
-    r.addEventListener('click', () => openInstelling(r.dataset.instId));
-  });
 }
 
 function renderKpiRow(){
@@ -11034,7 +8001,6 @@ function renderKpiRow(){
     <div class="kpi kpi-primary"><div class="kpi-label">GeriCall klanten</div><div class="kpi-value">${klanten} <small>van ${totalInst}</small></div></div>
     <div class="kpi kpi-primary"><div class="kpi-label">Marktdekking (bedden)</div><div class="kpi-value">${dekkingPct}<small>%</small></div></div>
     <div class="kpi kpi-secondary"><div class="kpi-label">Signalen</div><div class="kpi-value-small">${sigDezeWeek} nieuw<small>${sigDezeWeek === 1 ? ' deze week' : ' deze week'}</small> &middot; ${sigCount} totaal${sigHoog ? ', ' + sigHoog + ' hoog' : ''}</div></div>
-    <div class="kpi kpi-secondary"><div class="kpi-label">CRM</div><div class="kpi-value-small">${DATA.instellingen.filter(i=>i.crm).length} <small>van ${totalInst} met PipeDrive-data</small></div></div>
   `;
   document.querySelectorAll('#kpiRow [data-goto]').forEach(el => {
     el.addEventListener('click', () => {
@@ -12093,52 +9059,6 @@ function renderSignalenBody(sigs){
 
 function renderTodosBody(inst){ return renderTodosBodyOnly(inst); }
 
-const CRM_STATUS_LABEL = {
-  'actieve-klant':'Actieve klant',
-  'warm-prospect':'Warm prospect',
-  'warm-lead':'Warm lead',
-  'koel-prospect':'Koel prospect',
-  'verloren':'Verloren',
-  'lead-onbewerkt':'Lead onbewerkt',
-  'geen-pipeline':'Geen pipeline'
-};
-function renderCrmBody(i){
-  const c = i.crm;
-  if(!c){
-    return '<div class="dmu-empty">Geen CRM-data uit PipeDrive voor deze instelling.</div>';
-  }
-  const dealsHtml = c.deals.length === 0 ? '<div class="no-data">Geen deals.</div>' :
-    `<div class="crm-deals">${c.deals.map(d => `
-      <div class="crm-deal">
-        <div class="crm-deal-head">
-          <span class="crm-deal-titel">${escapeHtml(d.titel||'')}</span>
-          <span class="crm-deal-status status-${(d.status||'').toLowerCase()}">${escapeHtml(d.status||'')}</span>
-        </div>
-        <div class="crm-deal-meta">${escapeHtml(d.pijplijn||'')} &middot; ${escapeHtml(d.stadium||'')}${d.waarde ? ' &middot; ' + d.waarde.toLocaleString('nl-NL') + ' EUR' : ''}${d.bijgewerkt ? ' &middot; bijgewerkt ' + d.bijgewerkt : ''}</div>
-        ${(d.labels||[]).length ? `<div class="crm-deal-labels">${d.labels.map(l => `<span class="crm-label">${escapeHtml(l)}</span>`).join('')}</div>` : ''}
-      </div>`).join('')}</div>`;
-  const actHtml = c.activiteiten.length === 0 ? '<div class="no-data">Geen activiteiten.</div>' :
-    `<div class="crm-list">${c.activiteiten.slice(0,5).map(a => `
-      <div class="crm-row"><strong>${escapeHtml(a.datum||'')}</strong> &middot; ${escapeHtml(a.type||'')}: ${escapeHtml(a.onderwerp||'')}</div>`).join('')}</div>`;
-  const notHtml = c.notities.length === 0 ? '<div class="no-data">Geen notities.</div>' :
-    `<div class="crm-list">${c.notities.slice(0,3).map(n => `
-      <div class="crm-row"><strong>${escapeHtml(n.datum||'')}</strong> ${escapeHtml(n.gebruiker||'')}: ${escapeHtml((n.tekst||'').slice(0,200))}${(n.tekst||'').length > 200 ? '&hellip;' : ''}</div>`).join('')}</div>`;
-  const bs = c.bijlagenSamenvatting || {};
-  const bsHtml = (bs.aantal||0) === 0 ? '<div class="no-data">Geen bijlagen.</div>' :
-    `<div class="crm-row"><strong>${bs.aantal}</strong> bestanden &middot; offerte ${bs.types.offerte||0}, overeenkomst ${bs.types.overeenkomst||0}, brochure ${bs.types.brochure||0}, anders ${bs.types.anders||0} &middot; laatste: ${escapeHtml(bs.laatsteBestand||'-')} (${escapeHtml(bs.laatsteUpload||'-')})</div>`;
-  return `
-    <div class="crm-header">
-      <span class="crm-status-pill crm-status-${c.crmStatus}">${escapeHtml(CRM_STATUS_LABEL[c.crmStatus]||c.crmStatus)}</span>
-      <span class="crm-engagement">engagement ${c.engagement}</span>
-      ${c.accountOwner ? `<span class="crm-owner">eigenaar ${escapeHtml(c.accountOwner)}</span>` : ''}
-      <span class="crm-pdid">PD #${c.pipedriveOrgId}</span>
-    </div>
-    <div><div class="acc-sub-title">Pipeline (${c.deals.length})</div>${dealsHtml}</div>
-    <div><div class="acc-sub-title">Recente activiteit</div>${actHtml}</div>
-    <div><div class="acc-sub-title">Notities</div>${notHtml}</div>
-    <div><div class="acc-sub-title">Bijlagen</div>${bsHtml}</div>`;
-}
-
 function openInstelling(id){
   const i = getInstelling(id);
   if(!i) return;
@@ -12211,11 +9131,6 @@ function openInstelling(id){
         icon: '&#9758;', title: 'Mensen',
         meta: dmuCount + ' personen',
         body: renderMensenBody(i)
-      })}
-      ${accordion({
-        icon: '&#9745;', title: 'CRM (PipeDrive)',
-        meta: i.crm ? (i.crm.crmStatus + ' · engagement ' + i.crm.engagement) : 'geen data',
-        body: renderCrmBody(i)
       })}
       ${accordion({
         icon: '&#9889;', title: 'Recente signalen',

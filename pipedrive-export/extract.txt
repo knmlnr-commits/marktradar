@@ -1,0 +1,2469 @@
+================================================================================
+PIPEDRIVE-EXTRACT VOOR MARKTRADAR-IMPORT
+================================================================================
+Geexporteerd: 2026-04-29
+Bron: PipeDrive CSV-export GeriCall
+
+================================================================================
+SECTIE 1 - ORGANISATIES
+================================================================================
+
+--- ORG #80: Aafje ---
+Eigenaar: Jeff Lafranca
+Open deals: 0
+Gewonnen deals: 0
+Verloren deals: 0
+Aangemaakt: 2025-09-26
+
+--- ORG #47: Accolade Zorg ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Accolade Zorg deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+  NOTITIES (1):
+  · [2025-02-11] Jeff Lafranca
+    Deze deal is omgezet in een lead. Alle aantekeningen, e-mailconversaties, bestanden en geplande activiteiten zijn nu gekoppeld aan de nieuwe lead.
+
+--- ORG #94: Activite ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 35
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Alice van Leur | email=a.v.Leur@activite.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 35
+
+--- ORG #57: Alkcare ---
+Eigenaar: Jelle Blok
+Open deals: 1
+Aantal personen: 1
+Email volume: 35
+Laatste activiteit: 2024-06-14
+Adres: Herenweg 91, 1829 AC Oudorp, Alkmaar, Nederland
+Plaats: Alkmaar
+Provincie: Noord-Holland
+Postcode: 1829 AC
+Website: https://www.alkcare.nl/
+Aangemaakt: 2024-06-17
+
+  DEALS (1):
+  · #54 "Alkcare deal"
+    Pijplijn: @Emergency
+    Stadium: On Hold
+    Status: Open
+    Eigenaar: Jelle Blok
+    Waarde EUR: 0
+    Aangemaakt: 2024-06-17
+    Bijgewerkt: 2026-03-06
+    Contactpersoon: Mark Prinsen
+
+  CONTACTEN (1):
+  · Mark Prinsen | email=mprinsen@alkcare.nl
+    Eigenaar: Jelle Blok
+    Email volume: 35
+    Laatste activiteit: 2024-06-14
+
+  ACTIVITEITEN (1):
+  · [2024-06-14] Bellen: "Bellen"
+
+--- ORG #12: Allevo ---
+Eigenaar: Jelle Blok
+Aantal personen: 1
+Adres: Hollandiaplein 1, Goes, Nederland
+Plaats: Goes
+Provincie: Zeeland
+Postcode: 4461 GT
+Aangemaakt: 2024-03-28
+
+  LEADS (1):
+  · "Esmeralda Hoondert lead"
+    Bekeken: Bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Manually created
+    Aangemaakt: 2024-03-28
+    Contactpersoon: Esmeralda Hoondert
+    Labels: Warm
+
+  CONTACTEN (1):
+  · Esmeralda Hoondert | functie=HR Adviseur | email=e.hoondert@allevo.nl | tel-werk=0113 249 170 | tel-mobiel=06 22 05 49 50
+    Eigenaar: Jelle Blok
+
+--- ORG #58: Alliade ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 360
+Aangemaakt: 2024-07-09
+
+  DEALS (1):
+  · #56 "Alliade lead"
+    Pijplijn: @Emergency
+    Stadium: Lead: afspraak gemaakt
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Regionaal samenwerken
+    Aangemaakt: 2025-02-05
+    Bijgewerkt: 2025-10-17
+    Contactpersoon: Lodewijk Oostra
+
+  CONTACTEN (1):
+  · Lodewijk Oostra | email=lodewijk.oostra@kwadrantgroep.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 360
+
+--- ORG #96: Alrijne ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 20
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Sylvia Stegeman | email=sastegeman@alrijne.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 20
+
+--- ORG #52: Amadazorg ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Amadazorg deal"
+    Bekeken: Bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+--- ORG #79: Amsta ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 3
+Laatste activiteit: 2025-11-25
+Aangemaakt: 2025-09-26
+
+  DEALS (1):
+  · #75 "GeriForce voor Verpleging"
+    Pijplijn: @Emergency
+    Stadium: Deal
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2025-09-26
+    Bijgewerkt: 2026-03-06
+    Contactpersoon: Aimee Mesker
+
+  CONTACTEN (3):
+  · Aimee Mesker
+    Eigenaar: Jeff Lafranca
+  · Willemijn Montijn
+    Eigenaar: Jeff Lafranca
+  · Fabian de Jong
+    Eigenaar: Jeff Lafranca
+    Laatste activiteit: 2025-11-25
+
+--- ORG #15: Amstelring ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-11
+
+  LEADS (1):
+  · "Amstelring deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Alice Veen (manager behandeling)
+
+--- ORG #40: Amstelring ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Amstelring deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+  CONTACTEN (1):
+  · Alice Veen (manager behandeling)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #70: Annenborch ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Laatste activiteit: 2023-12-19
+Aangemaakt: 2025-06-19
+
+  DEALS (1):
+  · #68 "Annenborch deal"
+    Pijplijn: @Emergency
+    Stadium: Qualified (contact opnemen)
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 1
+    Labels: CT-arts
+    Aangemaakt: 2025-06-19
+    Bijgewerkt: 2025-07-08
+    Contactpersoon: Dorina de Haan
+
+  CONTACTEN (1):
+  · Dorina de Haan | email=dorina.dhaan@annenborch.nl | tel-werk=073-8519600
+    Eigenaar: Jeff Lafranca
+    Laatste activiteit: 2023-12-19
+
+  ACTIVITEITEN (1):
+  · [2023-12-19] E-mail: "E-mail"
+
+--- ORG #143: Antes ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 2
+Laatste activiteit: 2026-01-12
+Aangemaakt: 2026-01-12
+
+  DEALS (1):
+  · #94 "Antes"
+    Pijplijn: @Emergency
+    Stadium: On Hold
+    Status: Open
+    Eigenaar: René van Hattem
+    Waarde EUR: 0
+    Labels: GGZ
+    Aangemaakt: 2026-01-12
+    Bijgewerkt: 2026-03-16
+    Contactpersoon: Els de Bock
+
+  CONTACTEN (2):
+  · Els de Bock | email=e.debock@anteszorg.nl | tel-werk=(06) 50 40 87 43
+    Eigenaar: Jeff Lafranca
+  · Joost Spuijbroek
+    Eigenaar: Jeff Lafranca
+    Laatste activiteit: 2026-01-12
+
+  ACTIVITEITEN (1):
+  · [2026-01-12] Afspraak op locatie: "Gesprek met Joost"
+
+--- ORG #14: Archipel Zorggroep ---
+Eigenaar: Jelle Blok
+Open deals: 1
+Aantal personen: 1
+Email volume: 2
+Adres: Parklaan 97, Eindhoven, Nederland
+Plaats: Eindhoven
+Provincie: Noord-Brabant
+Postcode: 5613 BC
+Website: https://www.archipelzorggroep.nl/
+Aangemaakt: 2024-03-28
+
+  DEALS (1):
+  · #96 "Archipel Zorggroep deal"
+    Pijplijn: @Emergency
+    Stadium: Lead: afspraak gemaakt
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: CT-arts
+    Aangemaakt: 2026-01-27
+    Bijgewerkt: 2026-01-27
+    Contactpersoon: Junior van der Kruijs
+
+  CONTACTEN (1):
+  · Junior van der Kruijs | email=junior.van.der.kruijs@archipelzorggroep.nl | tel-mobiel=06 135 468 05
+    Eigenaar: Jelle Blok
+    Email volume: 2
+
+--- ORG #56: Archipel Zorggroep ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-17
+
+  CONTACTEN (1):
+  · Junior van der Kruijs | email=junior.van.der.kruijs@archipelzorggroep.nl
+    Eigenaar: Jeff Lafranca
+
+--- ORG #97: Argos ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 155
+Laatste activiteit: 2026-04-15
+Volgende activiteit: 2026-10-15
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Nicoline van der Hagen | email=n.vanderhagen@argoszorggroep.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 155
+    Laatste activiteit: 2026-04-15
+
+--- ORG #29: Attent Zorg en Behandeling ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Attent Zorg en Behandeling deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Simone Hartjes (manager zorg)
+
+  CONTACTEN (1):
+  · Simone Hartjes (manager zorg)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #44: AxionContinu ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "AxionContinu deal"
+    Bekeken: Bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Margreet van Dokkum (manager behandel)
+
+  CONTACTEN (1):
+  · Margreet van Dokkum (manager behandel)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #65: Basalt ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 155
+Volgende activiteit: 2025-09-05
+Aangemaakt: 2025-02-28
+
+  DEALS (1):
+  · #62 "Basalt deal"
+    Pijplijn: @Emergency
+    Stadium: Beheer
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Verwachte sluiting: 2025-04-01
+    Aangemaakt: 2025-02-28
+    Bijgewerkt: 2025-10-14
+    Contactpersoon: Jorge Heynen
+
+  CONTACTEN (1):
+  · Jorge Heynen | email=j.heynen@basaltrevalidatie.nl | tel-werk=+31 6 55 77 25 41
+    Eigenaar: Jeff Lafranca
+    Email volume: 155
+
+--- ORG #19: Careaz ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-11
+
+  LEADS (1):
+  · "Careaz deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Ingrid Wolbert
+
+  CONTACTEN (1):
+  · Ingrid Wolbert
+    Eigenaar: Jeff Lafranca
+
+--- ORG #150: Careyn ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 2
+Email volume: 64
+Aangemaakt: 2026-03-16
+
+  CONTACTEN (2):
+  · Noortje Molenaar
+    Eigenaar: Jeff Lafranca
+  · Martijn Moerman | email=m.moerman@careyn.nl | tel-werk=(06) 22 98 91 67
+    Eigenaar: Jeff Lafranca
+    Email volume: 64
+
+--- ORG #98: Careyn ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-10-14
+
+--- ORG #64: Careyn Utrecht Stad ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-02-28
+
+--- ORG #151: Careyn Utrecht West ---
+Eigenaar: Jeff Lafranca
+Open deals: 2
+Aantal personen: 1
+Email volume: 103
+Volgende activiteit: 2026-03-20
+Aangemaakt: 2026-03-16
+
+  DEALS (2):
+  · #61 "Careyn Utrecht West deal"
+    Pijplijn: @Emergency
+    Stadium: Lead: afspraak gemaakt
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Regionaal samenwerken
+    Aangemaakt: 2025-02-28
+    Bijgewerkt: 2026-03-16
+    Contactpersoon: Noortje Molenaar
+  · #108 "Careyn Utrecht West"
+    Pijplijn: @Home
+    Stadium: Offerte gestuurd
+    Status: Open
+    Eigenaar: Raymond
+    Waarde EUR: 0
+    Verwachte sluiting: 2026-03-24
+    Aangemaakt: 2026-03-26
+    Bijgewerkt: 2026-04-23
+    Contactpersoon: Molenaar - Peters Noortje
+
+  CONTACTEN (1):
+  · Noortje Molenaar Peters | email=n.molenaar@careyn.nl | tel-werk=+31657080631
+    Eigenaar: Raymond
+    Email volume: 103
+
+--- ORG #155: Careyn ZHE ---
+Eigenaar: nlanghout@gericall.nl
+Open deals: 2
+Aantal personen: 1
+Email volume: 21
+Aangemaakt: 2026-04-03
+
+  DEALS (2):
+  · #110 "Careyn ZHE"
+    Pijplijn: @Home
+    Stadium: Afspraak gepland
+    Status: Open
+    Eigenaar: nlanghout@gericall.nl
+    Waarde EUR: 0
+    Aangemaakt: 2026-04-03
+    Bijgewerkt: 2026-04-13
+    Contactpersoon: Suzanne Dekker
+  · #118 "Careyn ZHE"
+    Pijplijn: @Emergency
+    Stadium: Prospect: voorstel gedaan
+    Status: Open
+    Eigenaar: Raymond
+    Waarde EUR: 0
+    Aangemaakt: 2026-04-21
+    Bijgewerkt: 2026-04-21
+    Contactpersoon: Suzanne Dekker
+
+  CONTACTEN (1):
+  · Suzanne Dekker | email=S.dekker@careyn.nl | tel-werk=0622293233
+    Eigenaar: nlanghout@gericall.nl
+    Email volume: 21
+
+--- ORG #23: Carinova ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Carinova deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Annemarlies Huizinga (manager behandeling)
+
+  CONTACTEN (1):
+  · Annemarlies Huizinga (manager behandeling)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #93: Catharina thuis op Voorne ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Wiebe-Jan Stuursma | email=wiebejan.stuursm@catharina.nl
+    Eigenaar: Jeff Lafranca
+
+--- ORG #99: Cicero ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 12
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Noortje Mies | email=n.mies@cicerozorggroep.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 12
+
+--- ORG #77: Conforte ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Aangemaakt: 2025-09-19
+
+  DEALS (1):
+  · #74 "Conforte"
+    Pijplijn: @Emergency
+    Stadium: Qualified (contact opnemen)
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Cross-border
+    Aangemaakt: 2025-09-19
+    Bijgewerkt: 2025-09-19
+    Contactpersoon: Anneloes Vlasblom
+
+  CONTACTEN (1):
+  · Anneloes Vlasblom
+    Eigenaar: Jeff Lafranca
+
+--- ORG #39: Cordaan ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Cordaan deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Trudy des Bouvrie (manager ouderenzorg)
+
+  CONTACTEN (1):
+  · Trudy des Bouvrie (manager ouderenzorg)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #145: Cura Mare ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 2
+Email volume: 84
+Aangemaakt: 2026-01-19
+
+  DEALS (1):
+  · #95 "Cura Mare"
+    Pijplijn: @Emergency
+    Stadium: Prospect: voorstel gedaan
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: CT-arts, GeriForce Standalone
+    Aangemaakt: 2026-01-19
+    Bijgewerkt: 2026-03-26
+    Contactpersoon: Wiltine Flier
+
+  CONTACTEN (2):
+  · Wiltine Flier | email=w.flier@curamare.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 58
+  · Bram Graafland | email=b.graafland@curamare.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 26
+
+--- ORG #161: De Drie Notenboomen ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 4
+Aangemaakt: 2026-04-20
+
+  CONTACTEN (1):
+  · Mariette du Croix | email=mariette.ducroix@dedrienotenboomen.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 4
+
+--- ORG #34: De Hoven ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "De Hoven deal"
+    Bekeken: Bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Nienke van der Meulen (manager behandeldienst)
+
+  CONTACTEN (1):
+  · Nienke van der Meulen (manager behandeldienst)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #100: De Rijnhoven ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-10-14
+
+--- ORG #101: De Vijverhof ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 29
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Monique Ultee | email=m.ultee@hsbdevijverhof.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 29
+
+--- ORG #59: De Wever ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 3
+Aangemaakt: 2025-02-05
+
+  DEALS (1):
+  · #55 "De Wever deal"
+    Pijplijn: @Emergency
+    Stadium: Lead: afspraak gemaakt
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 10
+    Labels: CT-arts, Regionaal samenwerken
+    Aangemaakt: 2025-02-05
+    Bijgewerkt: 2025-02-21
+    Contactpersoon: Anneclaire Griffioen
+
+  CONTACTEN (1):
+  · Anneclaire Griffioen | email=a.griffioen@dewever.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 3
+
+--- ORG #102: De Zellingen ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Volgende activiteit: 2026-01-09
+Aangemaakt: 2025-10-14
+
+  DEALS (1):
+  · #87 "De Zellingen: VPT in de ANW"
+    Pijplijn: @Home
+    Stadium: Contact opgenomen
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Emergency in VPT
+    Aangemaakt: 2025-11-19
+    Bijgewerkt: 2026-01-09
+    Contactpersoon: Guus Willard
+
+  CONTACTEN (1):
+  · Guus Willard
+    Eigenaar: Jeff Lafranca
+
+--- ORG #36: Dignis ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Dignis deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Niessette Ridder (manager behandeldienst)
+
+  CONTACTEN (1):
+  · Niessette Ridder (manager behandeldienst)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #30: Driezorg ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Driezorg deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+--- ORG #153: EZZ ---
+Eigenaar: Famke de Wilde
+Open deals: 1
+Aantal personen: 1
+Email volume: 195
+Aangemaakt: 2026-03-25
+
+  DEALS (1):
+  · #107 "NPO door GZ Psych bij Meso"
+    Pijplijn: @Home
+    Stadium: Gekwalificeerd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-25
+    Bijgewerkt: 2026-04-23
+    Contactpersoon: Matty Teerds
+
+  CONTACTEN (1):
+  · Matty Teerds | email=m.teerds@eerstelijnszorgzoetermeer.nl | tel-werk=06 16413071
+    Eigenaar: Famke de Wilde
+    Email volume: 195
+
+--- ORG #84: EerstelijnsZorg Zoetermeer ---
+Eigenaar: Famke de Wilde
+Open deals: 2
+Aantal personen: 1
+Email volume: 12
+Volgende activiteit: 2025-11-25
+Aangemaakt: 2025-10-01
+
+  DEALS (2):
+  · #77 "EerstelijnsZorg Zoetermeer"
+    Pijplijn: @Home
+    Stadium: Offerte gestuurd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2025-10-01
+    Bijgewerkt: 2026-01-09
+    Contactpersoon: Monique Hugens
+  · #78 "EerstelijnsZorg Zoetermeer"
+    Pijplijn: @Home
+    Stadium: Afspraak gepland
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2025-10-01
+    Bijgewerkt: 2025-11-24
+    Contactpersoon: Monique Hugens
+
+  CONTACTEN (1):
+  · Monique Hugens | email=m.hugens@eerstelijnszorgzoetermeer.nl | tel-mobiel=06 42 33 10 21
+    Eigenaar: Famke de Wilde
+    Email volume: 12
+
+--- ORG #75: Envida ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 126
+Laatste activiteit: 2025-07-22
+Aangemaakt: 2025-08-07
+
+  DEALS (1):
+  · #71 "GeriForce voor verpleging"
+    Pijplijn: @Emergency
+    Stadium: Hot Prospect: onderhandelen
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 38539.2
+    Labels: GeriForce Standalone
+    Verwachte sluiting: 2025-10-01
+    Aangemaakt: 2025-08-07
+    Bijgewerkt: 2026-03-06
+    Contactpersoon: Gildy Hertogs
+
+  CONTACTEN (1):
+  · Gildy Hertogs | email=gildy.hertogs@envida.nl | tel-werk=(06) 25 04 01 96
+    Eigenaar: Jeff Lafranca
+    Email volume: 126
+    Laatste activiteit: 2025-07-22
+
+  ACTIVITEITEN (1):
+  · [2025-07-22] Afspraak op locatie: "Presentatie GeriForce"
+
+--- ORG #43: Florence ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Florence deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Kees Fellinger (manager behandeldienst)
+
+  CONTACTEN (1):
+  · Kees Fellinger (manager behandeldienst)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #103: Frankelandgroep ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Els Nauta
+    Eigenaar: Jeff Lafranca
+
+--- ORG #138: Gezondheids regio Zoetermeer ---
+Eigenaar: Famke de Wilde
+Aantal personen: 1
+Aangemaakt: 2025-11-19
+
+  CONTACTEN (1):
+  · Linda Gottenkieny
+    Eigenaar: Famke de Wilde
+
+--- ORG #63: Goudenhart ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 202
+Laatste activiteit: 2025-11-28
+Aangemaakt: 2025-02-21
+
+  DEALS (1):
+  · #60 "Goudenhart deal"
+    Pijplijn: @Emergency
+    Stadium: Suspect: Contact opgenomen
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Cross-border
+    Aangemaakt: 2025-02-21
+    Bijgewerkt: 2025-10-10
+    Regionaal verband: ZorgScala
+    Contactpersoon: Siri Straathof
+
+  CONTACTEN (1):
+  · Siri Straathof | email=s.straathof@goudenhart.nu | tel-werk=(06) 46 36 11 74
+    Eigenaar: Jeff Lafranca
+    Email volume: 202
+    Laatste activiteit: 2025-11-28
+
+--- ORG #127: HOZO ---
+Eigenaar: Jeff Lafranca
+Verloren deals: 1
+Aantal personen: 1
+Volgende activiteit: 2025-10-31
+Aangemaakt: 2025-10-17
+
+  DEALS (1):
+  · #83 "HOZO"
+    Pijplijn: @Medical
+    Stadium: Prospect
+    Status: Verloren
+    Eigenaar: René van Hattem
+    Waarde EUR: 1059960
+    Verwachte sluiting: 2025-10-31
+    Aangemaakt: 2025-10-20
+    Bijgewerkt: 2026-01-09
+    Gesloten: 2026-01-09
+    Reden verlies: Klant niet geinteresseerd
+    Contactpersoon: Daniëlle van Veen
+
+  CONTACTEN (1):
+  · Daniëlle van Veen
+    Eigenaar: Jeff Lafranca
+
+--- ORG #105: HWW Zorg ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Sandra Geerlings
+    Eigenaar: Jeff Lafranca
+
+--- ORG #126: Hadocs ---
+Eigenaar: Famke de Wilde
+Open deals: 1
+Aantal personen: 1
+Aangemaakt: 2025-10-16
+
+  DEALS (1):
+  · #103 "ANW bereikbaarheid Haaglanden"
+    Pijplijn: @Home
+    Stadium: Gekwalificeerd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-16
+    Bijgewerkt: 2026-03-16
+    Contactpersoon: Ingrid Kroon
+
+  CONTACTEN (1):
+  · Ingrid Kroon
+    Eigenaar: Famke de Wilde
+
+--- ORG #104: Heliomare ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Willemijn Faber
+    Eigenaar: Jeff Lafranca
+
+--- ORG #160: Herbergier ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 5
+Aangemaakt: 2026-04-20
+
+  DEALS (1):
+  · #116 "Herbergier Dodewaard (VPT)"
+    Pijplijn: @Home
+    Stadium: Afspraak gepland
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2026-04-20
+    Bijgewerkt: 2026-04-20
+    Contactpersoon: Anna van Straalen
+
+  CONTACTEN (1):
+  · Anna van Straalen | email=anna@dodewaard.herbergier.nl | tel-werk=0614388216
+    Eigenaar: Jeff Lafranca
+    Email volume: 5
+
+--- ORG #154: Herbergier Elst ---
+Eigenaar: Famke de Wilde
+Open deals: 1
+Aantal personen: 1
+Email volume: 2
+Aangemaakt: 2026-03-31
+
+  DEALS (1):
+  · #109 "Herbergier Elst"
+    Pijplijn: @Home
+    Stadium: Offerte gestuurd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-31
+    Bijgewerkt: 2026-03-31
+    Contactpersoon: Huub & Marloes Tacke
+
+  CONTACTEN (1):
+  · Huub & Marloes Tacke | email=info@elst.herbergier.nl | tel-werk=06-1744 9720
+    Eigenaar: Famke de Wilde
+    Email volume: 2
+
+--- ORG #139: Herbergier Hellevoetsluis ---
+Eigenaar: Famke de Wilde
+Open deals: 1
+Aantal personen: 1
+Volgende activiteit: 2025-11-28
+Aangemaakt: 2025-11-21
+
+  DEALS (1):
+  · #104 "Herbergier Hellevoetsluis"
+    Pijplijn: @Home
+    Stadium: Gekwalificeerd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Verwachte sluiting: 2025-11-28
+    Aangemaakt: 2026-03-16
+    Bijgewerkt: 2026-03-16
+    Contactpersoon: Marlies Leusing
+
+  CONTACTEN (1):
+  · Marlies Leusing | email=Leusinmarlies@hellevoetsluis.herbergier.nl | tel-werk=0181-745832
+    Eigenaar: Famke de Wilde
+
+--- ORG #134: Herbergier Piershil ---
+Eigenaar: Famke de Wilde
+Open deals: 1
+Gewonnen deals: 1
+Aantal personen: 1
+Email volume: 18
+Laatste activiteit: 2026-03-17
+Volgende activiteit: 2026-03-25
+Adres: Voorstraat 20, 3265 BV Piershil, Nederland
+Plaats: Piershil
+Provincie: Zuid-Holland
+Postcode: 3265 BV
+Aangemaakt: 2025-11-17
+
+  DEALS (2):
+  · #85 "Herbergier Piershil WZD functionaris"
+    Pijplijn: @Home
+    Stadium: Offerte gestuurd
+    Status: Gewonnen
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2025-11-17
+    Bijgewerkt: 2025-11-20
+    Gesloten: 2025-11-20
+    Contactpersoon: Matthijs Bakker
+  · #100 "WZD Herbergier Piershil"
+    Pijplijn: @Home
+    Stadium: Offerte gestuurd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-13
+    Bijgewerkt: 2026-03-19
+    Contactpersoon: Matthijs Bakker
+
+  CONTACTEN (1):
+  · Matthijs Bakker | functie=eigenaar | email=info@piershil.herbergier.nl | tel-werk=0186-840184
+    Eigenaar: Famke de Wilde
+    Email volume: 18
+    Laatste activiteit: 2026-03-17
+
+  ACTIVITEITEN (1):
+  · [2026-03-17] Bellen: "offerte maken piershil"
+
+--- ORG #142: Herbergier Piershill ---
+Eigenaar: Famke de Wilde
+Aantal personen: 1
+Aangemaakt: 2025-12-19
+
+  CONTACTEN (1):
+  · Matthijs Bakker | email=Ininfo@piershil.herbergier.nl | tel-werk=0186-840184
+    Eigenaar: Famke de Wilde
+
+--- ORG #78: Herstelzorg ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-09-26
+
+--- ORG #31: Het Zand ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Het Zand deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Esther Zagers (directeur zorg en behandeling)
+
+  CONTACTEN (1):
+  · Esther Zagers (directeur zorg en behandeling)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #69: Horizon Zorcentrum ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 109
+Website: https://horizonzorgcentrum.nl/
+Aangemaakt: 2025-03-20
+
+  DEALS (1):
+  · #66 "Regio Alkmaar Centrale Telefonie"
+    Pijplijn: @Emergency
+    Stadium: Deal
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2025-03-20
+    Bijgewerkt: 2026-04-17
+    Contactpersoon: Sjanie Koedoot
+
+  CONTACTEN (1):
+  · Sjanie Koedoot | functie=Bestuurder | email=S.Koedoot@horizonzorgcentrum.nl | tel-werk=0683027150
+    Eigenaar: Jeff Lafranca
+    Email volume: 109
+
+--- ORG #42: Humanitas ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Humanitas deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Merel Boon-van Maren (directeur behandeling)
+
+  CONTACTEN (1):
+  · Merel Boon-van Maren (directeur behandeling)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #25: Ijsselheem ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Ijsselheem deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Gerda Veldman (manager behandeling)
+
+  CONTACTEN (1):
+  · Gerda Veldman (manager behandeling)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #50: Inovum ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Inovum deal"
+    Bekeken: Bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+--- ORG #82: KNO Medisch Centrum ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Website: https://www.knomc.nl/
+Aangemaakt: 2025-09-26
+
+  DEALS (1):
+  · #101 "KNO Medisch Centrum"
+    Pijplijn: @Home
+    Stadium: Gekwalificeerd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-16
+    Bijgewerkt: 2026-03-16
+    Contactpersoon: Bas op de Coul
+
+  CONTACTEN (1):
+  · Bas op de Coul
+    Eigenaar: Jeff Lafranca
+
+--- ORG #66: KennemerHart ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Aangemaakt: 2025-02-28
+
+  DEALS (1):
+  · #63 "KennemerHart deal"
+    Pijplijn: @Emergency
+    Stadium: On Hold
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Regionaal samenwerken
+    Aangemaakt: 2025-02-28
+    Bijgewerkt: 2026-03-06
+    Contactpersoon: Marijke Bol
+
+  CONTACTEN (1):
+  · Marijke Bol
+    Eigenaar: Jeff Lafranca
+
+--- ORG #162: Koninklijke Visio ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 14
+Aangemaakt: 2026-04-21
+
+  DEALS (1):
+  · #117 "Koninklijke Visio"
+    Pijplijn: @Emergency
+    Stadium: Prospect: voorstel gedaan
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2026-04-21
+    Bijgewerkt: 2026-04-28
+    Contactpersoon: Remko Berendsen
+
+  CONTACTEN (1):
+  · Remko Berendsen | email=remkoberendsen@visio.org | tel-werk=06 29 69 99 60
+    Eigenaar: Jeff Lafranca
+    Email volume: 14
+
+--- ORG #106: Koraal ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-10-14
+
+--- ORG #128: Laurens ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 31
+Aangemaakt: 2025-10-28
+
+  CONTACTEN (1):
+  · Cor van Baarle | email=c.vanbaarle@laurens.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 31
+
+--- ORG #88: Laurens ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 140
+Laatste activiteit: 2025-11-28
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Robert Sio | email=r.sio@laurens.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 140
+    Laatste activiteit: 2025-11-28
+
+--- ORG #117: Lelie Zorggroep ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 31
+Aangemaakt: 2025-10-14
+
+  DEALS (1):
+  · #97 "Lelie Zorggroep"
+    Pijplijn: @Emergency
+    Stadium: Suspect: Contact opgenomen
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-06
+    Bijgewerkt: 2026-03-06
+    Contactpersoon: Cora Treuren
+
+  CONTACTEN (1):
+  · Cora Treuren | email=c.treuren@leliezorggroep.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 31
+
+--- ORG #24: Liberein ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Liberein deal"
+    Bekeken: Bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Heidi Pot-Witbreuk (raad van bestuur)
+
+  CONTACTEN (1):
+  · Heidi Pot-Witbreuk (raad van bestuur)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #62: MagentaZorg ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Aangemaakt: 2025-02-18
+
+  DEALS (1):
+  · #59 "MagentaZorg deal"
+    Pijplijn: @Emergency
+    Stadium: Lead: afspraak gemaakt
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2025-02-18
+    Bijgewerkt: 2025-03-20
+    Contactpersoon: Marielle Teesseling
+
+  CONTACTEN (1):
+  · Marielle Teesseling
+    Eigenaar: Jeff Lafranca
+
+--- ORG #89: Marente ---
+Eigenaar: Jeff Lafranca
+Open deals: 2
+Aantal personen: 4
+Email volume: 117
+Laatste activiteit: 2025-10-14
+Aangemaakt: 2025-10-14
+
+  DEALS (1):
+  · #82 "IBS ANW Marente"
+    Pijplijn: @Home
+    Stadium: Afspraak gepland
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 3
+    Aangemaakt: 2025-10-17
+    Bijgewerkt: 2026-01-09
+    Contactpersoon: Karin Nijboer
+
+  CONTACTEN (4):
+  · Susanne Groot | email=susanne.groot@marente.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 70
+    Laatste activiteit: 2025-10-14
+  · Karin Nijboer | email=karin.nijboer@marente.nl | tel-werk=+31623735481
+    Eigenaar: Jeff Lafranca
+    Email volume: 40
+    Laatste activiteit: 2025-10-14
+  · Richard Siere | email=Richard.Siere@marente.nl
+    Eigenaar: Famke de Wilde
+    Email volume: 4
+  · Carola v/d Oever | email=c.vd.oever-vd.plas@activite.nl
+    Eigenaar: Famke de Wilde
+    Email volume: 3
+
+--- ORG #21: Marga Klompé ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-11
+
+  LEADS (1):
+  · "Marga Klompé deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Marcel Duvigneau (Raad van Bestuur)
+
+--- ORG #53: Marga Klompé ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  CONTACTEN (1):
+  · Marcel Duvigneau (Raad van Bestuur)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #85: Markenheem ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Aangemaakt: 2025-10-03
+
+  DEALS (1):
+  · #79 "Markenheem"
+    Pijplijn: @Emergency
+    Stadium: Suspect: Contact opgenomen
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Regionaal samenwerken, GeriForce Standalone
+    Aangemaakt: 2025-10-03
+    Bijgewerkt: 2025-10-03
+    Contactpersoon: Riona Zevenhuizen
+
+  CONTACTEN (1):
+  · Riona Zevenhuizen
+    Eigenaar: Jeff Lafranca
+
+--- ORG #20: Markenheem ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-11
+
+  LEADS (1):
+  · "Markenheem deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Christel Welling
+
+  CONTACTEN (1):
+  · Christel Welling
+    Eigenaar: Jeff Lafranca
+
+--- ORG #91: MeanderGroep ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 3
+Email volume: 136
+Laatste activiteit: 2025-11-24
+Volgende activiteit: 2025-11-26
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (3):
+  · Yvonne Machiels | email=yvonnemachiels@mgzl.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 88
+    Laatste activiteit: 2025-11-24
+  · Karin Maassen | email=karinmaassen@mgzl.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 45
+  · Hub Schoenmaekers | email=hubschoenmaekers@mgzl.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 3
+
+--- ORG #140: Met zorg voor Zorg ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 51
+Aangemaakt: 2025-11-25
+
+  CONTACTEN (1):
+  · Lianne van Goch | email=info@metzorgvoorzorg.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 51
+
+--- ORG #118: Middin ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 33
+Laatste activiteit: 2025-12-02
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Willem Lemmens | email=w.lemmens@middin.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 33
+    Laatste activiteit: 2025-12-02
+
+--- ORG #92: Mijzo ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-10-14
+
+--- ORG #35: NNCZ ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "NNCZ deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Heidy Haandrikman (directeur zorg)
+
+  CONTACTEN (1):
+  · Heidy Haandrikman (directeur zorg)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #95: Nieuw Unicum ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 45
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Eveline Haandrikman | email=ehaandrikman@nieuwunicum.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 45
+
+--- ORG #141: Nobama Care ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 10
+Aangemaakt: 2025-12-05
+
+  DEALS (1):
+  · #89 "Zuid-Limburg (VPT)"
+    Pijplijn: @Home
+    Stadium: Deal gesloten
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Consultenlijn (ANW)
+    Aangemaakt: 2025-12-05
+    Bijgewerkt: 2026-04-02
+    Contactpersoon: Lianne van Goch
+
+  CONTACTEN (1):
+  · Noor Nezami | email=n.nezami@nobamacare.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 10
+
+--- ORG #147: Noorderbreedte ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2026-03-06
+
+--- ORG #72: Novicare ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 3
+Email volume: 131
+Aangemaakt: 2025-07-08
+
+  CONTACTEN (3):
+  · Jet Wiechers | email=jwiechers@novicare.nl | tel-werk=+31 6 52 33 22 90
+    Eigenaar: Jeff Lafranca
+    Email volume: 68
+  · Paula Boot | email=PBoot@novicare.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 31
+  · Liz de Vroome | email=ldevroome@novicare.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 32
+
+--- ORG #67: Novicare Brabant ---
+Eigenaar: Jeff Lafranca
+Verloren deals: 1
+Aangemaakt: 2025-02-28
+
+  DEALS (1):
+  · #64 "Novicare Brabant deal"
+    Pijplijn: @Emergency
+    Stadium: Lead: afspraak gemaakt
+    Status: Verloren
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Regionaal samenwerken
+    Aangemaakt: 2025-02-28
+    Bijgewerkt: 2026-03-06
+    Gesloten: 2026-03-06
+    Reden verlies: Klant niet geinteresseerd
+    Contactpersoon: Jet Wiechers
+
+--- ORG #119: Ons Tweede Thuis ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-10-14
+
+--- ORG #121: PZC Dordrecht ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 44
+Laatste activiteit: 2025-11-17
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Eduard Simonis | email=eduard.simonis@pzcdordrecht.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 44
+    Laatste activiteit: 2025-11-17
+
+--- ORG #81: Parnassia ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-09-26
+
+--- ORG #149: Patyna ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2026-03-06
+
+--- ORG #129: Pieter van Foreest ---
+Eigenaar: Famke de Wilde
+Aantal personen: 1
+Aangemaakt: 2025-10-29
+
+  CONTACTEN (1):
+  · Marion Verhaar
+    Eigenaar: Famke de Wilde
+
+--- ORG #120: Pieter van Foreest ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 41
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Gert van Empel | email=g.van.empel@pietervanforeest.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 41
+
+--- ORG #27: Pleyade ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Pleyade deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+--- ORG #76: Pleyade ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Email volume: 18
+Aangemaakt: 2025-09-19
+
+  DEALS (1):
+  · #72 "Pleyade"
+    Pijplijn: @Emergency
+    Stadium: Qualified (contact opnemen)
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Regionaal samenwerken
+    Aangemaakt: 2025-09-19
+    Bijgewerkt: 2025-12-05
+    Contactpersoon: Landja Hamamurad
+
+  CONTACTEN (1):
+  · Landja Hamamurad | email=lhamamurad@gericall.nl | tel-werk=31 6 41 99 76 04
+    Eigenaar: Jeff Lafranca
+    Email volume: 18
+
+--- ORG #45: QuaRijn ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "QuaRijn deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+--- ORG #122: Reade ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Jacinthe Adriaanse
+    Eigenaar: Jeff Lafranca
+
+--- ORG #123: Respect Zorggroep ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 2
+Email volume: 13
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (2):
+  · Bert Timmerman | email=b.timmerman@respectzorg.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 10
+  · Klaas Smilde | email=k.smilde@respectzorg.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 3
+
+--- ORG #22: Rijnwaal zorggroep ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Rijnwaal zorggroep deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Emilienne 't Hart (Manager Zorg)
+
+  CONTACTEN (1):
+  · Emilienne 't Hart (Manager Zorg)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #87: Rivas ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 2
+Email volume: 30
+Laatste activiteit: 2025-11-25
+Aangemaakt: 2025-10-10
+
+  CONTACTEN (2):
+  · Katja Smitskamp | email=k.smitskamp@rivas.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 11
+  · Johan Bor | email=Johan.Bor@rivas.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 19
+
+--- ORG #135: Rivierenland ---
+Eigenaar: Famke de Wilde
+Open deals: 2
+Aantal personen: 1
+Email volume: 9
+Laatste activiteit: 2025-12-04
+Volgende activiteit: 2026-04-08
+Aangemaakt: 2025-11-18
+
+  DEALS (2):
+  · #99 "Rivierenland"
+    Pijplijn: @Home
+    Stadium: Contact opgenomen
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-13
+    Bijgewerkt: 2026-03-13
+    Contactpersoon: Petra Huijzer
+  · #105 "Rivierenland"
+    Pijplijn: @Home
+    Stadium: Gekwalificeerd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-16
+    Bijgewerkt: 2026-03-19
+    Contactpersoon: Petra Huijzer
+
+  CONTACTEN (1):
+  · Petra Huijzer | email=phuijzer@szr.nl
+    Eigenaar: Famke de Wilde
+    Email volume: 9
+    Laatste activiteit: 2025-12-04
+
+  ACTIVITEITEN (1):
+  · [2025-12-04] Bellen: "afspraak maken"
+
+--- ORG #107: Saffier ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Jelma Tazelaar
+    Eigenaar: Jeff Lafranca
+
+--- ORG #90: Salios ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 35
+Laatste activiteit: 2025-11-05
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Arjan Heijblom | email=a.heijblom@salios.nl | tel-werk=+31 6 50 18 35 14
+    Eigenaar: Jeff Lafranca
+    Email volume: 35
+    Laatste activiteit: 2025-11-05
+
+  ACTIVITEITEN (1):
+  · [2025-10-14] Bellen: "Uitgaande oproep"
+
+--- ORG #18: Sensire ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 3
+Aangemaakt: 2024-04-11
+
+  DEALS (1):
+  · #73 "Sensire"
+    Pijplijn: @Emergency
+    Stadium: Qualified (contact opnemen)
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Labels: Regionaal samenwerken
+    Aangemaakt: 2025-09-19
+    Bijgewerkt: 2025-09-19
+    Contactpersoon: Marco Repko
+
+  LEADS (1):
+  · "Sensire deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Marco Repko
+
+  CONTACTEN (3):
+  · Margje Mahler
+    Eigenaar: Jeff Lafranca
+  · Saskia Prins (manager zorg)
+    Eigenaar: Jeff Lafranca
+  · Marco Repko
+    Eigenaar: Jeff Lafranca
+
+--- ORG #108: Sevagram ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Marceline Misere
+    Eigenaar: Jeff Lafranca
+
+--- ORG #49: Silverein ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Silverein deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+--- ORG #109: Sonneburgh ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Henriette van Woudenbergh
+    Eigenaar: Jeff Lafranca
+
+--- ORG #16: Stichting Azora ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 3
+Laatste activiteit: 2023-12-20
+Aangemaakt: 2024-04-11
+
+  DEALS (1):
+  · #67 "Stichting Azora deal"
+    Pijplijn: @Emergency
+    Stadium: Qualified (contact opnemen)
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2025-06-19
+    Bijgewerkt: 2025-06-19
+    Contactpersoon: Lusi Rachmat
+
+  LEADS (1):
+  · "Stichting Azora deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Bram Wassink (manager behandel)
+
+  CONTACTEN (3):
+  · Mieke Zemmelink
+    Eigenaar: Jeff Lafranca
+  · Bram Wassink (manager behandel)
+    Eigenaar: Jeff Lafranca
+  · Lusi Rachmat | email=L.Rachmat@azora.nl | tel-werk=0315 338164
+    Eigenaar: Jeff Lafranca
+    Laatste activiteit: 2023-12-20
+
+  ACTIVITEITEN (1):
+  · [2023-12-20] Afspraak op locatie: "Meeting gehad"
+
+--- ORG #125: Stichting Niko ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-10-14
+
+--- ORG #68: Stichting Salem ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 2
+Email volume: 104
+Laatste activiteit: 2025-11-18
+Volgende activiteit: 2025-09-04
+Aangemaakt: 2025-03-06
+
+  DEALS (1):
+  · #65 "Stichting Salem deal"
+    Pijplijn: @Emergency
+    Stadium: Beheer
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 229548
+    MRR: 19129
+    ARR: 229548
+    Aangemaakt: 2025-03-06
+    Bijgewerkt: 2025-09-19
+    Contactpersoon: Adriaan Wisse
+
+  CONTACTEN (2):
+  · Adriaan Wisse | email=wisse.a@salem.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 47
+  · Joelle van Gent | email=gent.j@salem.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 57
+    Laatste activiteit: 2025-11-18
+
+--- ORG #37: TSN Zorg ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "TSN Zorg deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Inge Bakker (manager zorgbeleid)
+
+--- ORG #55: TSN Zorg ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-17
+
+  CONTACTEN (1):
+  · Inge Bakker (manager zorgbeleid)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #146: Tante Louise ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aangemaakt: 2026-03-06
+
+  DEALS (1):
+  · #98 "Tante Louise"
+    Pijplijn: @Emergency
+    Stadium: Qualified (contact opnemen)
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-06
+    Bijgewerkt: 2026-03-06
+
+--- ORG #124: Topaz ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Clasien de Graaf
+    Eigenaar: Jeff Lafranca
+
+--- ORG #86: Transmuralis ---
+Eigenaar: Famke de Wilde
+Open deals: 3
+Aantal personen: 2
+Email volume: 41
+Laatste activiteit: 2025-11-26
+Volgende activiteit: 2025-11-25
+Aangemaakt: 2025-10-08
+
+  DEALS (3):
+  · #80 "Transmuralis huisartsenlijn"
+    Pijplijn: @Home
+    Stadium: Offerte gestuurd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2025-10-10
+    Bijgewerkt: 2026-01-09
+    Contactpersoon: Dineke Noort
+  · #90 "Transmuralis (SEH)"
+    Pijplijn: @Home
+    Stadium: Offerte gestuurd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2026-01-09
+    Bijgewerkt: 2026-04-10
+    Contactpersoon: Dineke Noort
+  · #102 "Transmuralis Smart triage SEH LUMC"
+    Pijplijn: @Home
+    Stadium: Gekwalificeerd
+    Status: Open
+    Eigenaar: Famke de Wilde
+    Waarde EUR: 0
+    Aangemaakt: 2026-03-16
+    Bijgewerkt: 2026-03-16
+    Contactpersoon: Dineke Noort
+
+  CONTACTEN (2):
+  · Thessa Groen | email=thessagroen@transmuralis.nl
+    Eigenaar: Famke de Wilde
+    Email volume: 12
+  · Dineke Noort | email=dinekenoort@transmuralis.nl
+    Eigenaar: Famke de Wilde
+    Email volume: 29
+    Laatste activiteit: 2025-11-26
+
+  ACTIVITEITEN (1):
+  · [2025-11-26] E-mail: "E-mail"
+
+--- ORG #60: Treant ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 1
+Aangemaakt: 2025-02-11
+
+  DEALS (1):
+  · #57 "Treant lead"
+    Pijplijn: @Emergency
+    Stadium: Qualified (contact opnemen)
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2025-02-11
+    Bijgewerkt: 2025-02-11
+    Contactpersoon: Sjoukje Galama
+
+  CONTACTEN (1):
+  · Sjoukje Galama
+    Eigenaar: Jeff Lafranca
+
+--- ORG #13: Valkenhof ---
+Eigenaar: Jelle Blok
+Aantal personen: 1
+Adres: John F. Kennedylaan 3, Valkenswaard, Nederland
+Plaats: Valkenswaard
+Provincie: Noord-Brabant
+Postcode: 5555 XC
+Aangemaakt: 2024-03-28
+
+  LEADS (1):
+  · "Frans van de Vranden lead"
+    Bekeken: Bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Manually created
+    Aangemaakt: 2024-03-28
+    Contactpersoon: Frans van de Vranden
+
+  CONTACTEN (1):
+  · Frans van de Vranden | functie=Raad van Bestuur | email=Frans.van.de.Vranden@valkenhof.nl | tel-werk=040-2014035
+    Eigenaar: Jelle Blok
+
+--- ORG #17: Viattence ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 2
+Aangemaakt: 2024-04-11
+
+  LEADS (1):
+  · "Viattence deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Jeroen Vos (manager behandeling)
+
+  CONTACTEN (2):
+  · Wiesje Heeringa
+    Eigenaar: Jeff Lafranca
+  · Jeroen Vos (manager behandeling)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #110: Viva Zorggroep ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-10-14
+
+--- ORG #111: Vivantes ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Edwin Tijssen
+    Eigenaar: Jeff Lafranca
+
+--- ORG #83: Waardeburgh ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 78
+Laatste activiteit: 2025-11-24
+Volgende activiteit: 2025-10-30
+Aangemaakt: 2025-09-29
+
+  CONTACTEN (1):
+  · Adriaan Wisse | email=A.Wisse@waardeburgh.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 78
+    Laatste activiteit: 2025-11-24
+
+--- ORG #112: Wijdezorg ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 21
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Marit van Dorp | email=mvandorp@wijdezorg.com
+    Eigenaar: Jeff Lafranca
+    Email volume: 21
+
+--- ORG #61: WilgaerdenLeekerweideGroep ---
+Eigenaar: Jeff Lafranca
+Open deals: 1
+Aantal personen: 3
+Aangemaakt: 2025-02-18
+
+  DEALS (1):
+  · #58 "WilgaerdenLeekerweideGroep deal"
+    Pijplijn: @Emergency
+    Stadium: On Hold
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2025-02-18
+    Bijgewerkt: 2026-03-06
+    Contactpersoon: Dennis Bloemraad
+
+  CONTACTEN (3):
+  · Vivian Bongers | functie=P&O
+    Eigenaar: Jeff Lafranca
+  · Dennis Bloemraad | functie=Specialist Ouderengeneeskunde
+    Eigenaar: Jeff Lafranca
+  · Tootje Hoovers
+    Eigenaar: Jeff Lafranca
+
+--- ORG #144: Woonzorgcentrum De Beyart ---
+Eigenaar: Jeff Lafranca
+Gewonnen deals: 1
+Aantal personen: 1
+Aangemaakt: 2026-01-13
+
+  DEALS (1):
+  · #88 "De Beyart"
+    Pijplijn: @Emergency
+    Stadium: Beheer
+    Status: Gewonnen
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2025-11-25
+    Bijgewerkt: 2026-01-13
+    Gesloten: 2026-01-13
+    Contactpersoon: Guido Kerckhoffs
+
+  CONTACTEN (1):
+  · Guido Kerckhoffs
+    Eigenaar: Jeff Lafranca
+
+--- ORG #38: ZINN Groningen ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "ZINN Groningen deal"
+    Bekeken: Bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Roland de Leeuw (manager zorg)
+
+  CONTACTEN (1):
+  · Roland de Leeuw (manager zorg)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #28: Zinzia Zorggroep ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Zinzia Zorggroep deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Mireille Prins (directeur zorg en behandeling)
+
+  CONTACTEN (1):
+  · Mireille Prins (directeur zorg en behandeling)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #113: Zonnehuisgroep ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Ivonne van Loon
+    Eigenaar: Jeff Lafranca
+
+--- ORG #33: Zonnehuisgroep Noord ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Zonnehuisgroep Noord deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Hamke Korthuis (directeur zorg en behandeling)
+
+  CONTACTEN (1):
+  · Hamke Korthuis (directeur zorg en behandeling)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #114: Zorg in Oktober ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-10-14
+
+--- ORG #73: ZorgSaam ---
+Eigenaar: Jelle Blok
+Open deals: 1
+Aantal personen: 1
+Adres: Wielingenlaan 2, Terneuzen, Nederland
+Plaats: Terneuzen
+Provincie: Zeeland
+Postcode: 4535 PA
+Website: https://www.zorgsaam.org/
+Aangemaakt: 2025-07-15
+
+  DEALS (1):
+  · #70 "ZorgSaam deal"
+    Pijplijn: @Emergency
+    Stadium: Qualified (contact opnemen)
+    Status: Open
+    Eigenaar: Jeff Lafranca
+    Waarde EUR: 0
+    Aangemaakt: 2025-07-15
+    Bijgewerkt: 2025-07-15
+    Contactpersoon: Tiffany Aksu - Bonne
+
+  CONTACTEN (1):
+  · Tiffany Aksu - Bonne | email=t.aksu@zzv.nl | tel-werk=06-57944201
+    Eigenaar: Jelle Blok
+
+--- ORG #115: Zorgbalans ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2025-10-14
+
+--- ORG #51: Zorggroep Almere ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Zorggroep Almere deal"
+    Bekeken: Bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+--- ORG #41: Zorggroep Amsterdam Oost ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Zorggroep Amsterdam Oost deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Froukje Hamaker-Taat (manager behandeling)
+
+  CONTACTEN (1):
+  · Froukje Hamaker-Taat (manager behandeling)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #48: Zorggroep Charim ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Zorggroep Charim deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+--- ORG #32: Zorggroep Groningen ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Zorggroep Groningen deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Carolien Hamburger (manager zorg)
+
+--- ORG #54: Zorggroep Groningen ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-17
+
+  CONTACTEN (1):
+  · Carolien Hamburger (manager zorg)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #26: Zorggroep Noorderboog ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Zorggroep Noorderboog deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+    Contactpersoon: Jan Blaauw (manager zorg)
+
+  CONTACTEN (1):
+  · Jan Blaauw (manager zorg)
+    Eigenaar: Jeff Lafranca
+
+--- ORG #46: Zorgspectrum ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Aangemaakt: 2024-04-15
+
+  LEADS (1):
+  · "Zorgspectrum deal"
+    Bekeken: Niet bekeken
+    Eigenaar: Jeff Lafranca
+    Bron: Deal
+    Aangemaakt: 2025-02-11
+
+  CONTACTEN (1):
+  · Marieke van Gilsdonk
+    Eigenaar: Jeff Lafranca
+
+--- ORG #116: Zorgwaard ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 123
+Laatste activiteit: 2025-11-18
+Volgende activiteit: 2025-11-18
+Aangemaakt: 2025-10-14
+
+  CONTACTEN (1):
+  · Maroesjka Radder | email=maroesjka.radder@zorg-waard.nl
+    Eigenaar: Jeff Lafranca
+    Email volume: 123
+    Laatste activiteit: 2025-11-18
+
+--- ORG #148: Zuid-Oost Zorg ---
+Eigenaar: Jeff Lafranca
+Aangemaakt: 2026-03-06
+
+--- ORG #74: Zuyderland ---
+Eigenaar: Jeff Lafranca
+Aantal personen: 1
+Email volume: 21
+Aangemaakt: 2025-08-07
+
+  CONTACTEN (1):
+  · Alesha D Elfant | email=a.soumokil@zuyderland.nl | tel-werk=(06) 15 56 74 17
+    Eigenaar: Jeff Lafranca
+    Email volume: 21
+
+
+================================================================================
+SECTIE 2 - PRODUCTEN
+================================================================================
+
+  · [001] ANW Dienst (Bereikbaarheid)
+    Categorie: GeriCall ANW
+    Prijs: 2.5 EUR | Frequentie: Per maand
+    Eenheid: Aantal clienten
+    Eigenaar: René van Hattem
+
+  · [010] Medische Dienst
+    Categorie: GeriCall Medical
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eenheid: Aantal clienten
+    Eigenaar: René van Hattem
+
+  · [020] Consultenlijn
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eenheid: Aantal consulten per jaar
+    Eigenaar: René van Hattem
+
+  · [030] GeriForce
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eenheid: Aantal clienten
+    Eigenaar: René van Hattem
+
+  · [021] IBS dienstverlening
+    Categorie: GeriCall Home
+    Prijs: 0 EUR | Frequentie: Per maand
+    Eigenaar: René van Hattem
+
+  · [022] RM Dienstverlening
+    Categorie: GeriCall Home
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: René van Hattem
+
+  · [011] Psychologische Dienst
+    Categorie: GeriCall Medical
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: René van Hattem
+
+  · [012] Medische Prestaties
+    Categorie: GeriCall Medical
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: René van Hattem
+
+  · [002] ANW - GeriForce Implementatie
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: René van Hattem
+
+  · [023] WzD Dienstverlening
+    Categorie: GeriCall Home
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: René van Hattem
+
+  · [003.A] CT-arts
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: Jeff Lafranca
+
+  · [001.B] ANW Dienst (Consulten)
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Per maand
+    Eigenaar: Jeff Lafranca
+
+  · [110] WZD inventarisatie per locatie per uur
+    Categorie: GeriCall Home
+    Prijs: 210 EUR | Frequentie: Eenmalig
+    Eenheid: uur
+    Beschrijving: WZD 0 meting
+    Eigenaar: Famke de Wilde
+
+  · [111] ANW Consultenlijn SO
+    Categorie: GeriCall Home
+    Prijs: 136 EUR | Frequentie: Per maand
+    Eenheid: maand
+    Beschrijving: 0,25 ct bereikbaarheid per huisartsenpraktijk per uur
+    Eigenaar: Famke de Wilde
+
+  · [112] ANW HAP telefonisch consult
+    Categorie: GeriCall Home
+    Prijs: 50 EUR | Frequentie: Eenmalig
+    Eenheid: per kwartier
+    Eigenaar: Famke de Wilde
+
+  · [114] ANW SEH consult
+    Categorie: GeriCall Home
+    Prijs: 290 EUR | Frequentie: Eenmalig
+    Eenheid: uur
+    Beschrijving: NZA tarief per uur
+    Eigenaar: Famke de Wilde
+
+  · [113] SEH ANW telefonische bereikbaarheid
+    Categorie: GeriCall Home
+    Prijs: 5 EUR | Frequentie: Per maand
+    Eenheid: uur
+    Eigenaar: Famke de Wilde
+
+  · [111.A] ANW Consultenlijn SO (HAP)
+    Categorie: GeriCall Home
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: Jeff Lafranca
+
+  · [003.B] CT-arts (Mix&Match)
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: Jeff Lafranca
+
+  · [002.A] ANW - GeriForce Implementatie (Artsen)
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: Jeff Lafranca
+
+  · [002.B] ANW - GeriForce Implementatie (Verpleging)
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: Jeff Lafranca
+
+  · [003.B1] CT-arts (Mix&Match - Nacht)
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: Jeff Lafranca
+
+  · [003.B2] CT-arts (Mix&Match - Avond)
+    Categorie: GeriCall ANW
+    Prijs: 0 EUR | Frequentie: Eenmalig
+    Eigenaar: Jeff Lafranca
+
+  · [115] WZD functionaris per 5 minuten digitaal
+    Categorie: GeriCall Home
+    Prijs: 17.5 EUR | Frequentie: Eenmalig
+    Eenheid: per 5 minuten
+    Eigenaar: Famke de Wilde
+
+================================================================================
+SECTIE 3 - ONGEKOPPELDE RECORDS
+================================================================================
+
+CONTACTEN ZONDER ORGANISATIE (14):
+  · Info
+  · Robbert Huijsman
+  · Irma Elzinga
+  · Sandra Harsveldt | email=s.harsveldt@rivas.nl
+  · Marije Hoogduin | email=mhoogduin@novicare.nl
+  · Claudia Burger | email=c.burger@vivazorggroep.nl
+  · Bert Strijker | email=b.strijker@onstweedethuis.nl
+  · Jenny Ploeg | email=j.ploeg@stichtingniko.nl
+  · Jacinthe Adriaansen | email=j.adriaansen@reade.nl
+  · Sarah Priems | email=sarah.priems@mijzo.nl
+  · Judith van Hal | email=judith.vanhal@activite.nl
+  · Annemarie Moll
+  · Mirjam van Roer
+  · Bianca de Jong
+
+ACTIVITEITEN ZONDER ORG EN ZONDER DEAL: 174
+

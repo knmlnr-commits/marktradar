@@ -1,0 +1,975 @@
+{
+  "matches": [
+    {
+      "orgId": 80,
+      "orgNaam": "Aafje",
+      "instId": "aafje",
+      "instNaam": "Aafje",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 58,
+      "orgNaam": "Alliade",
+      "instId": "alliade",
+      "instNaam": "Alliade",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 79,
+      "orgNaam": "Amsta",
+      "instId": "amsta",
+      "instNaam": "Amsta",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 15,
+      "orgNaam": "Amstelring",
+      "instId": "amstelring",
+      "instNaam": "Amstelring",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 40,
+      "orgNaam": "Amstelring",
+      "instId": "amstelring",
+      "instNaam": "Amstelring",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 97,
+      "orgNaam": "Argos",
+      "instId": "argos-zorggroep",
+      "instNaam": "Argos Zorggroep",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 44,
+      "orgNaam": "AxionContinu",
+      "instId": "axioncontinu-utrecht",
+      "instNaam": "AxionContinu Utrecht",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 150,
+      "orgNaam": "Careyn",
+      "instId": "careyn-zhe",
+      "instNaam": "Careyn ZHE",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 98,
+      "orgNaam": "Careyn",
+      "instId": "careyn-zhe",
+      "instNaam": "Careyn ZHE",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 155,
+      "orgNaam": "Careyn ZHE",
+      "instId": "careyn-zhe",
+      "instNaam": "Careyn ZHE",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 99,
+      "orgNaam": "Cicero",
+      "instId": "cicero-zorggroep",
+      "instNaam": "Cicero Zorggroep",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 39,
+      "orgNaam": "Cordaan",
+      "instId": "cordaan",
+      "instNaam": "Cordaan",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 100,
+      "orgNaam": "De Rijnhoven",
+      "instId": "de-rijnhoven",
+      "instNaam": "De Rijnhoven",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 36,
+      "orgNaam": "Dignis",
+      "instId": "dignis",
+      "instNaam": "Dignis",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 75,
+      "orgNaam": "Envida",
+      "instId": "envida",
+      "instNaam": "Envida",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 103,
+      "orgNaam": "Frankelandgroep",
+      "instId": "frankelandgroep",
+      "instNaam": "Frankelandgroep",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 42,
+      "orgNaam": "Humanitas",
+      "instId": "humanitas-rotterdam",
+      "instNaam": "Humanitas Rotterdam",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 25,
+      "orgNaam": "Ijsselheem",
+      "instId": "ijsselheem",
+      "instNaam": "IJsselheem",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 66,
+      "orgNaam": "KennemerHart",
+      "instId": "kennemerhart",
+      "instNaam": "Kennemerhart",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 128,
+      "orgNaam": "Laurens",
+      "instId": "laurens",
+      "instNaam": "Laurens",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 88,
+      "orgNaam": "Laurens",
+      "instId": "laurens",
+      "instNaam": "Laurens",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 89,
+      "orgNaam": "Marente",
+      "instId": "marente",
+      "instNaam": "Marente",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 85,
+      "orgNaam": "Markenheem",
+      "instId": "markenheem",
+      "instNaam": "Markenheem",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 20,
+      "orgNaam": "Markenheem",
+      "instId": "markenheem",
+      "instNaam": "Markenheem",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 92,
+      "orgNaam": "Mijzo",
+      "instId": "mijzo-zh",
+      "instNaam": "Mijzo ZH",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 147,
+      "orgNaam": "Noorderbreedte",
+      "instId": "noorderbreedte",
+      "instNaam": "Noorderbreedte",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 72,
+      "orgNaam": "Novicare",
+      "instId": "novicare-west",
+      "instNaam": "Novicare West",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 149,
+      "orgNaam": "Patyna",
+      "instId": "patyna",
+      "instNaam": "Patyna",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 129,
+      "orgNaam": "Pieter van Foreest",
+      "instId": "pieter-van-foreest",
+      "instNaam": "Pieter van Foreest",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 120,
+      "orgNaam": "Pieter van Foreest",
+      "instId": "pieter-van-foreest",
+      "instNaam": "Pieter van Foreest",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 27,
+      "orgNaam": "Pleyade",
+      "instId": "pleyade",
+      "instNaam": "Pleyade",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 76,
+      "orgNaam": "Pleyade",
+      "instId": "pleyade",
+      "instNaam": "Pleyade",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 18,
+      "orgNaam": "Sensire",
+      "instId": "sensire",
+      "instNaam": "Sensire",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 108,
+      "orgNaam": "Sevagram",
+      "instId": "sevagram",
+      "instNaam": "Sevagram",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 16,
+      "orgNaam": "Stichting Azora",
+      "instId": "azora",
+      "instNaam": "Azora",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 124,
+      "orgNaam": "Topaz",
+      "instId": "topaz",
+      "instNaam": "Topaz",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 60,
+      "orgNaam": "Treant",
+      "instId": "treant-zorggroep",
+      "instNaam": "Treant Zorggroep",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 111,
+      "orgNaam": "Vivantes",
+      "instId": "vivantes",
+      "instNaam": "Vivantes",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 28,
+      "orgNaam": "Zinzia Zorggroep",
+      "instId": "zinzia-zorggroep",
+      "instNaam": "Zinzia Zorggroep",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 113,
+      "orgNaam": "Zonnehuisgroep",
+      "instId": "zonnehuisgroep-amstelland",
+      "instNaam": "Zonnehuisgroep Amstelland",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 73,
+      "orgNaam": "ZorgSaam",
+      "instId": "zorgsaam-limburg",
+      "instNaam": "ZorgSaam Limburg",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 115,
+      "orgNaam": "Zorgbalans",
+      "instId": "zorgbalans",
+      "instNaam": "Zorgbalans",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 46,
+      "orgNaam": "Zorgspectrum",
+      "instId": "zorgspectrum",
+      "instNaam": "Zorgspectrum",
+      "score": 100,
+      "kwaliteit": "zeker"
+    },
+    {
+      "orgId": 74,
+      "orgNaam": "Zuyderland",
+      "instId": "zuyderland-zorgcentra",
+      "instNaam": "Zuyderland Zorgcentra",
+      "score": 100,
+      "kwaliteit": "zeker"
+    }
+  ],
+  "unmatched": [
+    {
+      "orgId": 47,
+      "orgNaam": "Accolade Zorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 94,
+      "orgNaam": "Activite",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 57,
+      "orgNaam": "Alkcare",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 12,
+      "orgNaam": "Allevo",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 96,
+      "orgNaam": "Alrijne",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 52,
+      "orgNaam": "Amadazorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 70,
+      "orgNaam": "Annenborch",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 143,
+      "orgNaam": "Antes",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 14,
+      "orgNaam": "Archipel Zorggroep",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 56,
+      "orgNaam": "Archipel Zorggroep",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 29,
+      "orgNaam": "Attent Zorg en Behandeling",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 65,
+      "orgNaam": "Basalt",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 19,
+      "orgNaam": "Careaz",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 64,
+      "orgNaam": "Careyn Utrecht Stad",
+      "bestKandidaat": "Careyn ZHE",
+      "bestScore": 50
+    },
+    {
+      "orgId": 151,
+      "orgNaam": "Careyn Utrecht West",
+      "bestKandidaat": "Careyn ZHE",
+      "bestScore": 50
+    },
+    {
+      "orgId": 23,
+      "orgNaam": "Carinova",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 93,
+      "orgNaam": "Catharina thuis op Voorne",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 77,
+      "orgNaam": "Conforte",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 145,
+      "orgNaam": "Cura Mare",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 161,
+      "orgNaam": "De Drie Notenboomen",
+      "bestKandidaat": "De Zorgboog",
+      "bestScore": 50
+    },
+    {
+      "orgId": 34,
+      "orgNaam": "De Hoven",
+      "bestKandidaat": "De Zorgboog",
+      "bestScore": 50
+    },
+    {
+      "orgId": 101,
+      "orgNaam": "De Vijverhof",
+      "bestKandidaat": "De Zorgboog",
+      "bestScore": 50
+    },
+    {
+      "orgId": 59,
+      "orgNaam": "De Wever",
+      "bestKandidaat": "De Zorgboog",
+      "bestScore": 50
+    },
+    {
+      "orgId": 102,
+      "orgNaam": "De Zellingen",
+      "bestKandidaat": "De Zorgboog",
+      "bestScore": 50
+    },
+    {
+      "orgId": 30,
+      "orgNaam": "Driezorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 153,
+      "orgNaam": "EZZ",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 84,
+      "orgNaam": "EerstelijnsZorg Zoetermeer",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 43,
+      "orgNaam": "Florence",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 138,
+      "orgNaam": "Gezondheids regio Zoetermeer",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 63,
+      "orgNaam": "Goudenhart",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 127,
+      "orgNaam": "HOZO",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 105,
+      "orgNaam": "HWW Zorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 126,
+      "orgNaam": "Hadocs",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 104,
+      "orgNaam": "Heliomare",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 160,
+      "orgNaam": "Herbergier",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 154,
+      "orgNaam": "Herbergier Elst",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 139,
+      "orgNaam": "Herbergier Hellevoetsluis",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 134,
+      "orgNaam": "Herbergier Piershil",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 142,
+      "orgNaam": "Herbergier Piershill",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 78,
+      "orgNaam": "Herstelzorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 31,
+      "orgNaam": "Het Zand",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 69,
+      "orgNaam": "Horizon Zorcentrum",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 50,
+      "orgNaam": "Inovum",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 82,
+      "orgNaam": "KNO Medisch Centrum",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 162,
+      "orgNaam": "Koninklijke Visio",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 106,
+      "orgNaam": "Koraal",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 117,
+      "orgNaam": "Lelie Zorggroep",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 24,
+      "orgNaam": "Liberein",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 62,
+      "orgNaam": "MagentaZorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 21,
+      "orgNaam": "Marga Klompé",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 53,
+      "orgNaam": "Marga Klompé",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 91,
+      "orgNaam": "MeanderGroep",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 140,
+      "orgNaam": "Met zorg voor Zorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 118,
+      "orgNaam": "Middin",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 35,
+      "orgNaam": "NNCZ",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 95,
+      "orgNaam": "Nieuw Unicum",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 141,
+      "orgNaam": "Nobama Care",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 67,
+      "orgNaam": "Novicare Brabant",
+      "bestKandidaat": "Novicare West",
+      "bestScore": 50
+    },
+    {
+      "orgId": 119,
+      "orgNaam": "Ons Tweede Thuis",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 121,
+      "orgNaam": "PZC Dordrecht",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 81,
+      "orgNaam": "Parnassia",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 45,
+      "orgNaam": "QuaRijn",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 122,
+      "orgNaam": "Reade",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 123,
+      "orgNaam": "Respect Zorggroep",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 22,
+      "orgNaam": "Rijnwaal zorggroep",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 87,
+      "orgNaam": "Rivas",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 135,
+      "orgNaam": "Rivierenland",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 107,
+      "orgNaam": "Saffier",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 90,
+      "orgNaam": "Salios",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 49,
+      "orgNaam": "Silverein",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 109,
+      "orgNaam": "Sonneburgh",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 125,
+      "orgNaam": "Stichting Niko",
+      "bestKandidaat": "Stichting SVRZ",
+      "bestScore": 50
+    },
+    {
+      "orgId": 68,
+      "orgNaam": "Stichting Salem",
+      "bestKandidaat": "Stichting SVRZ",
+      "bestScore": 50
+    },
+    {
+      "orgId": 37,
+      "orgNaam": "TSN Zorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 55,
+      "orgNaam": "TSN Zorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 146,
+      "orgNaam": "Tante Louise",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 86,
+      "orgNaam": "Transmuralis",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 13,
+      "orgNaam": "Valkenhof",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 17,
+      "orgNaam": "Viattence",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 110,
+      "orgNaam": "Viva Zorggroep",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 83,
+      "orgNaam": "Waardeburgh",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 112,
+      "orgNaam": "Wijdezorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 61,
+      "orgNaam": "WilgaerdenLeekerweideGroep",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 144,
+      "orgNaam": "Woonzorgcentrum De Beyart",
+      "bestKandidaat": "De Zorgboog",
+      "bestScore": 50
+    },
+    {
+      "orgId": 38,
+      "orgNaam": "ZINN Groningen",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 33,
+      "orgNaam": "Zonnehuisgroep Noord",
+      "bestKandidaat": "Zonnehuisgroep Amstelland",
+      "bestScore": 50
+    },
+    {
+      "orgId": 114,
+      "orgNaam": "Zorg in Oktober",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 51,
+      "orgNaam": "Zorggroep Almere",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 41,
+      "orgNaam": "Zorggroep Amsterdam Oost",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 48,
+      "orgNaam": "Zorggroep Charim",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 32,
+      "orgNaam": "Zorggroep Groningen",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 54,
+      "orgNaam": "Zorggroep Groningen",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 26,
+      "orgNaam": "Zorggroep Noorderboog",
+      "bestKandidaat": "ZZG Zorggroep",
+      "bestScore": 50
+    },
+    {
+      "orgId": 116,
+      "orgNaam": "Zorgwaard",
+      "bestKandidaat": null,
+      "bestScore": 0
+    },
+    {
+      "orgId": 148,
+      "orgNaam": "Zuid-Oost Zorg",
+      "bestKandidaat": null,
+      "bestScore": 0
+    }
+  ],
+  "dubbel": [
+    {
+      "instId": "amstelring",
+      "orgIds": [
+        15,
+        40
+      ]
+    },
+    {
+      "instId": "careyn-zhe",
+      "orgIds": [
+        150,
+        98,
+        155
+      ]
+    },
+    {
+      "instId": "laurens",
+      "orgIds": [
+        128,
+        88
+      ]
+    },
+    {
+      "instId": "markenheem",
+      "orgIds": [
+        85,
+        20
+      ]
+    },
+    {
+      "instId": "pieter-van-foreest",
+      "orgIds": [
+        129,
+        120
+      ]
+    },
+    {
+      "instId": "pleyade",
+      "orgIds": [
+        27,
+        76
+      ]
+    }
+  ],
+  "instellingenMatched": 37,
+  "totaalInstellingen": 64
+}

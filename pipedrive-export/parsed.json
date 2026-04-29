@@ -1,0 +1,5917 @@
+{
+  "orgs": [
+    {
+      "id": 80,
+      "naam": "Aafje",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "0",
+        "Gewonnen deals": "0",
+        "Verloren deals": "0",
+        "Aangemaakt": "2025-09-26"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 47,
+      "naam": "Accolade Zorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Accolade Zorg deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Accolade Zorg deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [],
+      "notities": [
+        {
+          "raw_first_line": "[2025-02-11] Jeff Lafranca",
+          "raw_lines": [
+            "Deze deal is omgezet in een lead. Alle aantekeningen, e-mailconversaties, bestanden en geplande activiteiten zijn nu gekoppeld aan de nieuwe lead."
+          ],
+          "datum": "2025-02-11",
+          "gebruiker": "Jeff Lafranca",
+          "tekst": "Deze deal is omgezet in een lead. Alle aantekeningen, e-mailconversaties, bestanden en geplande activiteiten zijn nu gekoppeld aan de nieuwe lead."
+        }
+      ],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 94,
+      "naam": "Activite",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "35",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Alice van Leur | email=a.v.Leur@activite.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 35"
+          ],
+          "naam": "Alice van Leur",
+          "email": "a.v.Leur@activite.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "35"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 57,
+      "naam": "Alkcare",
+      "header": {
+        "Eigenaar": "Jelle Blok",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "35",
+        "Laatste activiteit": "2024-06-14",
+        "Adres": "Herenweg 91, 1829 AC Oudorp, Alkmaar, Nederland",
+        "Plaats": "Alkmaar",
+        "Provincie": "Noord-Holland",
+        "Postcode": "1829 AC",
+        "Website": "https://www.alkcare.nl/",
+        "Aangemaakt": "2024-06-17"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#54 \"Alkcare deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: On Hold",
+            "Status: Open",
+            "Eigenaar: Jelle Blok",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2024-06-17",
+            "Bijgewerkt: 2026-03-06",
+            "Contactpersoon: Mark Prinsen"
+          ],
+          "dealId": 54,
+          "titel": "Alkcare deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "On Hold",
+          "Status": "Open",
+          "Eigenaar": "Jelle Blok",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2024-06-17",
+          "Bijgewerkt": "2026-03-06",
+          "Contactpersoon": "Mark Prinsen"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Mark Prinsen | email=mprinsen@alkcare.nl",
+          "raw_lines": [
+            "Eigenaar: Jelle Blok",
+            "Email volume: 35",
+            "Laatste activiteit: 2024-06-14"
+          ],
+          "naam": "Mark Prinsen",
+          "email": "mprinsen@alkcare.nl",
+          "Eigenaar": "Jelle Blok",
+          "Email volume": "35",
+          "Laatste activiteit": "2024-06-14"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [
+        {
+          "raw_first_line": "[2024-06-14] Bellen: \"Bellen\"",
+          "datum": "2024-06-14",
+          "type": "Bellen",
+          "onderwerp": "Bellen",
+          "beschrijving": ""
+        }
+      ],
+      "bestanden": []
+    },
+    {
+      "id": 12,
+      "naam": "Allevo",
+      "header": {
+        "Eigenaar": "Jelle Blok",
+        "Aantal personen": "1",
+        "Adres": "Hollandiaplein 1, Goes, Nederland",
+        "Plaats": "Goes",
+        "Provincie": "Zeeland",
+        "Postcode": "4461 GT",
+        "Aangemaakt": "2024-03-28"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Esmeralda Hoondert lead\"",
+          "raw_lines": [
+            "Bekeken: Bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Manually created",
+            "Aangemaakt: 2024-03-28",
+            "Contactpersoon: Esmeralda Hoondert",
+            "Labels: Warm"
+          ],
+          "titel": "Esmeralda Hoondert lead",
+          "Bekeken": "Bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Manually created",
+          "Aangemaakt": "2024-03-28",
+          "Contactpersoon": "Esmeralda Hoondert",
+          "Labels": "Warm"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Esmeralda Hoondert | functie=HR Adviseur | email=e.hoondert@allevo.nl | tel-werk=0113 249 170 | tel-mobiel=06 22 05 49 50",
+          "raw_lines": [
+            "Eigenaar: Jelle Blok"
+          ],
+          "naam": "Esmeralda Hoondert",
+          "functie": "HR Adviseur",
+          "email": "e.hoondert@allevo.nl",
+          "tel-werk": "0113 249 170",
+          "tel-mobiel": "06 22 05 49 50",
+          "Eigenaar": "Jelle Blok"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 58,
+      "naam": "Alliade",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "360",
+        "Aangemaakt": "2024-07-09"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#56 \"Alliade lead\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Lead: afspraak gemaakt",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Regionaal samenwerken",
+            "Aangemaakt: 2025-02-05",
+            "Bijgewerkt: 2025-10-17",
+            "Contactpersoon: Lodewijk Oostra"
+          ],
+          "dealId": 56,
+          "titel": "Alliade lead",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Lead: afspraak gemaakt",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Regionaal samenwerken",
+          "Aangemaakt": "2025-02-05",
+          "Bijgewerkt": "2025-10-17",
+          "Contactpersoon": "Lodewijk Oostra"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Lodewijk Oostra | email=lodewijk.oostra@kwadrantgroep.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 360"
+          ],
+          "naam": "Lodewijk Oostra",
+          "email": "lodewijk.oostra@kwadrantgroep.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "360"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 96,
+      "naam": "Alrijne",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "20",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Sylvia Stegeman | email=sastegeman@alrijne.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 20"
+          ],
+          "naam": "Sylvia Stegeman",
+          "email": "sastegeman@alrijne.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "20"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 52,
+      "naam": "Amadazorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Amadazorg deal\"",
+          "raw_lines": [
+            "Bekeken: Bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Amadazorg deal",
+          "Bekeken": "Bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 79,
+      "naam": "Amsta",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "3",
+        "Laatste activiteit": "2025-11-25",
+        "Aangemaakt": "2025-09-26"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#75 \"GeriForce voor Verpleging\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Deal",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-09-26",
+            "Bijgewerkt: 2026-03-06",
+            "Contactpersoon: Aimee Mesker"
+          ],
+          "dealId": 75,
+          "titel": "GeriForce voor Verpleging",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Deal",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-09-26",
+          "Bijgewerkt": "2026-03-06",
+          "Contactpersoon": "Aimee Mesker"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Aimee Mesker",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Aimee Mesker",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Willemijn Montijn",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Willemijn Montijn",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Fabian de Jong",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Laatste activiteit: 2025-11-25"
+          ],
+          "naam": "Fabian de Jong",
+          "Eigenaar": "Jeff Lafranca",
+          "Laatste activiteit": "2025-11-25"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 15,
+      "naam": "Amstelring",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-11"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Amstelring deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Alice Veen (manager behandeling)"
+          ],
+          "titel": "Amstelring deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Alice Veen (manager behandeling)"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 40,
+      "naam": "Amstelring",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Amstelring deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Amstelring deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Alice Veen (manager behandeling)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Alice Veen (manager behandeling)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 70,
+      "naam": "Annenborch",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Laatste activiteit": "2023-12-19",
+        "Aangemaakt": "2025-06-19"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#68 \"Annenborch deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Qualified (contact opnemen)",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 1",
+            "Labels: CT-arts",
+            "Aangemaakt: 2025-06-19",
+            "Bijgewerkt: 2025-07-08",
+            "Contactpersoon: Dorina de Haan"
+          ],
+          "dealId": 68,
+          "titel": "Annenborch deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Qualified (contact opnemen)",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "1",
+          "Labels": "CT-arts",
+          "Aangemaakt": "2025-06-19",
+          "Bijgewerkt": "2025-07-08",
+          "Contactpersoon": "Dorina de Haan"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Dorina de Haan | email=dorina.dhaan@annenborch.nl | tel-werk=073-8519600",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Laatste activiteit: 2023-12-19"
+          ],
+          "naam": "Dorina de Haan",
+          "email": "dorina.dhaan@annenborch.nl",
+          "tel-werk": "073-8519600",
+          "Eigenaar": "Jeff Lafranca",
+          "Laatste activiteit": "2023-12-19"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [
+        {
+          "raw_first_line": "[2023-12-19] E-mail: \"E-mail\"",
+          "datum": "2023-12-19",
+          "type": "E-mail",
+          "onderwerp": "E-mail",
+          "beschrijving": ""
+        }
+      ],
+      "bestanden": []
+    },
+    {
+      "id": 143,
+      "naam": "Antes",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "2",
+        "Laatste activiteit": "2026-01-12",
+        "Aangemaakt": "2026-01-12"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#94 \"Antes\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: On Hold",
+            "Status: Open",
+            "Eigenaar: René van Hattem",
+            "Waarde EUR: 0",
+            "Labels: GGZ",
+            "Aangemaakt: 2026-01-12",
+            "Bijgewerkt: 2026-03-16",
+            "Contactpersoon: Els de Bock"
+          ],
+          "dealId": 94,
+          "titel": "Antes",
+          "Pijplijn": "@Emergency",
+          "Stadium": "On Hold",
+          "Status": "Open",
+          "Eigenaar": "René van Hattem",
+          "Waarde EUR": "0",
+          "Labels": "GGZ",
+          "Aangemaakt": "2026-01-12",
+          "Bijgewerkt": "2026-03-16",
+          "Contactpersoon": "Els de Bock"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Els de Bock | email=e.debock@anteszorg.nl | tel-werk=(06) 50 40 87 43",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Els de Bock",
+          "email": "e.debock@anteszorg.nl",
+          "tel-werk": "(06) 50 40 87 43",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Joost Spuijbroek",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Laatste activiteit: 2026-01-12"
+          ],
+          "naam": "Joost Spuijbroek",
+          "Eigenaar": "Jeff Lafranca",
+          "Laatste activiteit": "2026-01-12"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [
+        {
+          "raw_first_line": "[2026-01-12] Afspraak op locatie: \"Gesprek met Joost\"",
+          "datum": "2026-01-12",
+          "type": "Afspraak op locatie",
+          "onderwerp": "Gesprek met Joost",
+          "beschrijving": ""
+        }
+      ],
+      "bestanden": []
+    },
+    {
+      "id": 14,
+      "naam": "Archipel Zorggroep",
+      "header": {
+        "Eigenaar": "Jelle Blok",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "2",
+        "Adres": "Parklaan 97, Eindhoven, Nederland",
+        "Plaats": "Eindhoven",
+        "Provincie": "Noord-Brabant",
+        "Postcode": "5613 BC",
+        "Website": "https://www.archipelzorggroep.nl/",
+        "Aangemaakt": "2024-03-28"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#96 \"Archipel Zorggroep deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Lead: afspraak gemaakt",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: CT-arts",
+            "Aangemaakt: 2026-01-27",
+            "Bijgewerkt: 2026-01-27",
+            "Contactpersoon: Junior van der Kruijs"
+          ],
+          "dealId": 96,
+          "titel": "Archipel Zorggroep deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Lead: afspraak gemaakt",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "CT-arts",
+          "Aangemaakt": "2026-01-27",
+          "Bijgewerkt": "2026-01-27",
+          "Contactpersoon": "Junior van der Kruijs"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Junior van der Kruijs | email=junior.van.der.kruijs@archipelzorggroep.nl | tel-mobiel=06 135 468 05",
+          "raw_lines": [
+            "Eigenaar: Jelle Blok",
+            "Email volume: 2"
+          ],
+          "naam": "Junior van der Kruijs",
+          "email": "junior.van.der.kruijs@archipelzorggroep.nl",
+          "tel-mobiel": "06 135 468 05",
+          "Eigenaar": "Jelle Blok",
+          "Email volume": "2"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 56,
+      "naam": "Archipel Zorggroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-17"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Junior van der Kruijs | email=junior.van.der.kruijs@archipelzorggroep.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Junior van der Kruijs",
+          "email": "junior.van.der.kruijs@archipelzorggroep.nl",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 97,
+      "naam": "Argos",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "155",
+        "Laatste activiteit": "2026-04-15",
+        "Volgende activiteit": "2026-10-15",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Nicoline van der Hagen | email=n.vanderhagen@argoszorggroep.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 155",
+            "Laatste activiteit: 2026-04-15"
+          ],
+          "naam": "Nicoline van der Hagen",
+          "email": "n.vanderhagen@argoszorggroep.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "155",
+          "Laatste activiteit": "2026-04-15"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 29,
+      "naam": "Attent Zorg en Behandeling",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Attent Zorg en Behandeling deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Simone Hartjes (manager zorg)"
+          ],
+          "titel": "Attent Zorg en Behandeling deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Simone Hartjes (manager zorg)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Simone Hartjes (manager zorg)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Simone Hartjes (manager zorg)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 44,
+      "naam": "AxionContinu",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"AxionContinu deal\"",
+          "raw_lines": [
+            "Bekeken: Bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Margreet van Dokkum (manager behandel)"
+          ],
+          "titel": "AxionContinu deal",
+          "Bekeken": "Bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Margreet van Dokkum (manager behandel)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Margreet van Dokkum (manager behandel)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Margreet van Dokkum (manager behandel)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 65,
+      "naam": "Basalt",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "155",
+        "Volgende activiteit": "2025-09-05",
+        "Aangemaakt": "2025-02-28"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#62 \"Basalt deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Beheer",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Verwachte sluiting: 2025-04-01",
+            "Aangemaakt: 2025-02-28",
+            "Bijgewerkt: 2025-10-14",
+            "Contactpersoon: Jorge Heynen"
+          ],
+          "dealId": 62,
+          "titel": "Basalt deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Beheer",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Verwachte sluiting": "2025-04-01",
+          "Aangemaakt": "2025-02-28",
+          "Bijgewerkt": "2025-10-14",
+          "Contactpersoon": "Jorge Heynen"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Jorge Heynen | email=j.heynen@basaltrevalidatie.nl | tel-werk=+31 6 55 77 25 41",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 155"
+          ],
+          "naam": "Jorge Heynen",
+          "email": "j.heynen@basaltrevalidatie.nl",
+          "tel-werk": "+31 6 55 77 25 41",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "155"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 19,
+      "naam": "Careaz",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-11"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Careaz deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Ingrid Wolbert"
+          ],
+          "titel": "Careaz deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Ingrid Wolbert"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Ingrid Wolbert",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Ingrid Wolbert",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 150,
+      "naam": "Careyn",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "2",
+        "Email volume": "64",
+        "Aangemaakt": "2026-03-16"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Noortje Molenaar",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Noortje Molenaar",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Martijn Moerman | email=m.moerman@careyn.nl | tel-werk=(06) 22 98 91 67",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 64"
+          ],
+          "naam": "Martijn Moerman",
+          "email": "m.moerman@careyn.nl",
+          "tel-werk": "(06) 22 98 91 67",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "64"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 98,
+      "naam": "Careyn",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 64,
+      "naam": "Careyn Utrecht Stad",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-02-28"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 151,
+      "naam": "Careyn Utrecht West",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "2",
+        "Aantal personen": "1",
+        "Email volume": "103",
+        "Volgende activiteit": "2026-03-20",
+        "Aangemaakt": "2026-03-16"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#61 \"Careyn Utrecht West deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Lead: afspraak gemaakt",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Regionaal samenwerken",
+            "Aangemaakt: 2025-02-28",
+            "Bijgewerkt: 2026-03-16",
+            "Contactpersoon: Noortje Molenaar"
+          ],
+          "dealId": 61,
+          "titel": "Careyn Utrecht West deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Lead: afspraak gemaakt",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Regionaal samenwerken",
+          "Aangemaakt": "2025-02-28",
+          "Bijgewerkt": "2026-03-16",
+          "Contactpersoon": "Noortje Molenaar"
+        },
+        {
+          "raw_first_line": "#108 \"Careyn Utrecht West\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Offerte gestuurd",
+            "Status: Open",
+            "Eigenaar: Raymond",
+            "Waarde EUR: 0",
+            "Verwachte sluiting: 2026-03-24",
+            "Aangemaakt: 2026-03-26",
+            "Bijgewerkt: 2026-04-23",
+            "Contactpersoon: Molenaar - Peters Noortje"
+          ],
+          "dealId": 108,
+          "titel": "Careyn Utrecht West",
+          "Pijplijn": "@Home",
+          "Stadium": "Offerte gestuurd",
+          "Status": "Open",
+          "Eigenaar": "Raymond",
+          "Waarde EUR": "0",
+          "Verwachte sluiting": "2026-03-24",
+          "Aangemaakt": "2026-03-26",
+          "Bijgewerkt": "2026-04-23",
+          "Contactpersoon": "Molenaar - Peters Noortje"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Noortje Molenaar Peters | email=n.molenaar@careyn.nl | tel-werk=+31657080631",
+          "raw_lines": [
+            "Eigenaar: Raymond",
+            "Email volume: 103"
+          ],
+          "naam": "Noortje Molenaar Peters",
+          "email": "n.molenaar@careyn.nl",
+          "tel-werk": "+31657080631",
+          "Eigenaar": "Raymond",
+          "Email volume": "103"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 155,
+      "naam": "Careyn ZHE",
+      "header": {
+        "Eigenaar": "nlanghout@gericall.nl",
+        "Open deals": "2",
+        "Aantal personen": "1",
+        "Email volume": "21",
+        "Aangemaakt": "2026-04-03"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#110 \"Careyn ZHE\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Afspraak gepland",
+            "Status: Open",
+            "Eigenaar: nlanghout@gericall.nl",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-04-03",
+            "Bijgewerkt: 2026-04-13",
+            "Contactpersoon: Suzanne Dekker"
+          ],
+          "dealId": 110,
+          "titel": "Careyn ZHE",
+          "Pijplijn": "@Home",
+          "Stadium": "Afspraak gepland",
+          "Status": "Open",
+          "Eigenaar": "nlanghout@gericall.nl",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-04-03",
+          "Bijgewerkt": "2026-04-13",
+          "Contactpersoon": "Suzanne Dekker"
+        },
+        {
+          "raw_first_line": "#118 \"Careyn ZHE\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Prospect: voorstel gedaan",
+            "Status: Open",
+            "Eigenaar: Raymond",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-04-21",
+            "Bijgewerkt: 2026-04-21",
+            "Contactpersoon: Suzanne Dekker"
+          ],
+          "dealId": 118,
+          "titel": "Careyn ZHE",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Prospect: voorstel gedaan",
+          "Status": "Open",
+          "Eigenaar": "Raymond",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-04-21",
+          "Bijgewerkt": "2026-04-21",
+          "Contactpersoon": "Suzanne Dekker"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Suzanne Dekker | email=S.dekker@careyn.nl | tel-werk=0622293233",
+          "raw_lines": [
+            "Eigenaar: nlanghout@gericall.nl",
+            "Email volume: 21"
+          ],
+          "naam": "Suzanne Dekker",
+          "email": "S.dekker@careyn.nl",
+          "tel-werk": "0622293233",
+          "Eigenaar": "nlanghout@gericall.nl",
+          "Email volume": "21"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 23,
+      "naam": "Carinova",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Carinova deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Annemarlies Huizinga (manager behandeling)"
+          ],
+          "titel": "Carinova deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Annemarlies Huizinga (manager behandeling)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Annemarlies Huizinga (manager behandeling)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Annemarlies Huizinga (manager behandeling)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 93,
+      "naam": "Catharina thuis op Voorne",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Wiebe-Jan Stuursma | email=wiebejan.stuursm@catharina.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Wiebe-Jan Stuursma",
+          "email": "wiebejan.stuursm@catharina.nl",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 99,
+      "naam": "Cicero",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "12",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Noortje Mies | email=n.mies@cicerozorggroep.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 12"
+          ],
+          "naam": "Noortje Mies",
+          "email": "n.mies@cicerozorggroep.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "12"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 77,
+      "naam": "Conforte",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-09-19"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#74 \"Conforte\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Qualified (contact opnemen)",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Cross-border",
+            "Aangemaakt: 2025-09-19",
+            "Bijgewerkt: 2025-09-19",
+            "Contactpersoon: Anneloes Vlasblom"
+          ],
+          "dealId": 74,
+          "titel": "Conforte",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Qualified (contact opnemen)",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Cross-border",
+          "Aangemaakt": "2025-09-19",
+          "Bijgewerkt": "2025-09-19",
+          "Contactpersoon": "Anneloes Vlasblom"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Anneloes Vlasblom",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Anneloes Vlasblom",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 39,
+      "naam": "Cordaan",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Cordaan deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Trudy des Bouvrie (manager ouderenzorg)"
+          ],
+          "titel": "Cordaan deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Trudy des Bouvrie (manager ouderenzorg)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Trudy des Bouvrie (manager ouderenzorg)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Trudy des Bouvrie (manager ouderenzorg)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 145,
+      "naam": "Cura Mare",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "2",
+        "Email volume": "84",
+        "Aangemaakt": "2026-01-19"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#95 \"Cura Mare\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Prospect: voorstel gedaan",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: CT-arts, GeriForce Standalone",
+            "Aangemaakt: 2026-01-19",
+            "Bijgewerkt: 2026-03-26",
+            "Contactpersoon: Wiltine Flier"
+          ],
+          "dealId": 95,
+          "titel": "Cura Mare",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Prospect: voorstel gedaan",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "CT-arts, GeriForce Standalone",
+          "Aangemaakt": "2026-01-19",
+          "Bijgewerkt": "2026-03-26",
+          "Contactpersoon": "Wiltine Flier"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Wiltine Flier | email=w.flier@curamare.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 58"
+          ],
+          "naam": "Wiltine Flier",
+          "email": "w.flier@curamare.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "58"
+        },
+        {
+          "raw_first_line": "Bram Graafland | email=b.graafland@curamare.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 26"
+          ],
+          "naam": "Bram Graafland",
+          "email": "b.graafland@curamare.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "26"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 161,
+      "naam": "De Drie Notenboomen",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "4",
+        "Aangemaakt": "2026-04-20"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Mariette du Croix | email=mariette.ducroix@dedrienotenboomen.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 4"
+          ],
+          "naam": "Mariette du Croix",
+          "email": "mariette.ducroix@dedrienotenboomen.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "4"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 34,
+      "naam": "De Hoven",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"De Hoven deal\"",
+          "raw_lines": [
+            "Bekeken: Bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Nienke van der Meulen (manager behandeldienst)"
+          ],
+          "titel": "De Hoven deal",
+          "Bekeken": "Bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Nienke van der Meulen (manager behandeldienst)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Nienke van der Meulen (manager behandeldienst)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Nienke van der Meulen (manager behandeldienst)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 100,
+      "naam": "De Rijnhoven",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 101,
+      "naam": "De Vijverhof",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "29",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Monique Ultee | email=m.ultee@hsbdevijverhof.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 29"
+          ],
+          "naam": "Monique Ultee",
+          "email": "m.ultee@hsbdevijverhof.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "29"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 59,
+      "naam": "De Wever",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "3",
+        "Aangemaakt": "2025-02-05"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#55 \"De Wever deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Lead: afspraak gemaakt",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 10",
+            "Labels: CT-arts, Regionaal samenwerken",
+            "Aangemaakt: 2025-02-05",
+            "Bijgewerkt: 2025-02-21",
+            "Contactpersoon: Anneclaire Griffioen"
+          ],
+          "dealId": 55,
+          "titel": "De Wever deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Lead: afspraak gemaakt",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "10",
+          "Labels": "CT-arts, Regionaal samenwerken",
+          "Aangemaakt": "2025-02-05",
+          "Bijgewerkt": "2025-02-21",
+          "Contactpersoon": "Anneclaire Griffioen"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Anneclaire Griffioen | email=a.griffioen@dewever.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 3"
+          ],
+          "naam": "Anneclaire Griffioen",
+          "email": "a.griffioen@dewever.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "3"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 102,
+      "naam": "De Zellingen",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Volgende activiteit": "2026-01-09",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#87 \"De Zellingen: VPT in de ANW\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Contact opgenomen",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Emergency in VPT",
+            "Aangemaakt: 2025-11-19",
+            "Bijgewerkt: 2026-01-09",
+            "Contactpersoon: Guus Willard"
+          ],
+          "dealId": 87,
+          "titel": "De Zellingen: VPT in de ANW",
+          "Pijplijn": "@Home",
+          "Stadium": "Contact opgenomen",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Emergency in VPT",
+          "Aangemaakt": "2025-11-19",
+          "Bijgewerkt": "2026-01-09",
+          "Contactpersoon": "Guus Willard"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Guus Willard",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Guus Willard",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 36,
+      "naam": "Dignis",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Dignis deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Niessette Ridder (manager behandeldienst)"
+          ],
+          "titel": "Dignis deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Niessette Ridder (manager behandeldienst)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Niessette Ridder (manager behandeldienst)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Niessette Ridder (manager behandeldienst)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 30,
+      "naam": "Driezorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Driezorg deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Driezorg deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 153,
+      "naam": "EZZ",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "195",
+        "Aangemaakt": "2026-03-25"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#107 \"NPO door GZ Psych bij Meso\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Gekwalificeerd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-25",
+            "Bijgewerkt: 2026-04-23",
+            "Contactpersoon: Matty Teerds"
+          ],
+          "dealId": 107,
+          "titel": "NPO door GZ Psych bij Meso",
+          "Pijplijn": "@Home",
+          "Stadium": "Gekwalificeerd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-25",
+          "Bijgewerkt": "2026-04-23",
+          "Contactpersoon": "Matty Teerds"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Matty Teerds | email=m.teerds@eerstelijnszorgzoetermeer.nl | tel-werk=06 16413071",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde",
+            "Email volume: 195"
+          ],
+          "naam": "Matty Teerds",
+          "email": "m.teerds@eerstelijnszorgzoetermeer.nl",
+          "tel-werk": "06 16413071",
+          "Eigenaar": "Famke de Wilde",
+          "Email volume": "195"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 84,
+      "naam": "EerstelijnsZorg Zoetermeer",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Open deals": "2",
+        "Aantal personen": "1",
+        "Email volume": "12",
+        "Volgende activiteit": "2025-11-25",
+        "Aangemaakt": "2025-10-01"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#77 \"EerstelijnsZorg Zoetermeer\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Offerte gestuurd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-10-01",
+            "Bijgewerkt: 2026-01-09",
+            "Contactpersoon: Monique Hugens"
+          ],
+          "dealId": 77,
+          "titel": "EerstelijnsZorg Zoetermeer",
+          "Pijplijn": "@Home",
+          "Stadium": "Offerte gestuurd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-10-01",
+          "Bijgewerkt": "2026-01-09",
+          "Contactpersoon": "Monique Hugens"
+        },
+        {
+          "raw_first_line": "#78 \"EerstelijnsZorg Zoetermeer\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Afspraak gepland",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-10-01",
+            "Bijgewerkt: 2025-11-24",
+            "Contactpersoon: Monique Hugens"
+          ],
+          "dealId": 78,
+          "titel": "EerstelijnsZorg Zoetermeer",
+          "Pijplijn": "@Home",
+          "Stadium": "Afspraak gepland",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-10-01",
+          "Bijgewerkt": "2025-11-24",
+          "Contactpersoon": "Monique Hugens"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Monique Hugens | email=m.hugens@eerstelijnszorgzoetermeer.nl | tel-mobiel=06 42 33 10 21",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde",
+            "Email volume: 12"
+          ],
+          "naam": "Monique Hugens",
+          "email": "m.hugens@eerstelijnszorgzoetermeer.nl",
+          "tel-mobiel": "06 42 33 10 21",
+          "Eigenaar": "Famke de Wilde",
+          "Email volume": "12"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 75,
+      "naam": "Envida",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "126",
+        "Laatste activiteit": "2025-07-22",
+        "Aangemaakt": "2025-08-07"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#71 \"GeriForce voor verpleging\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Hot Prospect: onderhandelen",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 38539.2",
+            "Labels: GeriForce Standalone",
+            "Verwachte sluiting: 2025-10-01",
+            "Aangemaakt: 2025-08-07",
+            "Bijgewerkt: 2026-03-06",
+            "Contactpersoon: Gildy Hertogs"
+          ],
+          "dealId": 71,
+          "titel": "GeriForce voor verpleging",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Hot Prospect: onderhandelen",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "38539.2",
+          "Labels": "GeriForce Standalone",
+          "Verwachte sluiting": "2025-10-01",
+          "Aangemaakt": "2025-08-07",
+          "Bijgewerkt": "2026-03-06",
+          "Contactpersoon": "Gildy Hertogs"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Gildy Hertogs | email=gildy.hertogs@envida.nl | tel-werk=(06) 25 04 01 96",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 126",
+            "Laatste activiteit: 2025-07-22"
+          ],
+          "naam": "Gildy Hertogs",
+          "email": "gildy.hertogs@envida.nl",
+          "tel-werk": "(06) 25 04 01 96",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "126",
+          "Laatste activiteit": "2025-07-22"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [
+        {
+          "raw_first_line": "[2025-07-22] Afspraak op locatie: \"Presentatie GeriForce\"",
+          "datum": "2025-07-22",
+          "type": "Afspraak op locatie",
+          "onderwerp": "Presentatie GeriForce",
+          "beschrijving": ""
+        }
+      ],
+      "bestanden": []
+    },
+    {
+      "id": 43,
+      "naam": "Florence",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Florence deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Kees Fellinger (manager behandeldienst)"
+          ],
+          "titel": "Florence deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Kees Fellinger (manager behandeldienst)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Kees Fellinger (manager behandeldienst)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Kees Fellinger (manager behandeldienst)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 103,
+      "naam": "Frankelandgroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Els Nauta",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Els Nauta",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 138,
+      "naam": "Gezondheids regio Zoetermeer",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-11-19"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Linda Gottenkieny",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde"
+          ],
+          "naam": "Linda Gottenkieny",
+          "Eigenaar": "Famke de Wilde"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 63,
+      "naam": "Goudenhart",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "202",
+        "Laatste activiteit": "2025-11-28",
+        "Aangemaakt": "2025-02-21"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#60 \"Goudenhart deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Suspect: Contact opgenomen",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Cross-border",
+            "Aangemaakt: 2025-02-21",
+            "Bijgewerkt: 2025-10-10",
+            "Regionaal verband: ZorgScala",
+            "Contactpersoon: Siri Straathof"
+          ],
+          "dealId": 60,
+          "titel": "Goudenhart deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Suspect: Contact opgenomen",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Cross-border",
+          "Aangemaakt": "2025-02-21",
+          "Bijgewerkt": "2025-10-10",
+          "Regionaal verband": "ZorgScala",
+          "Contactpersoon": "Siri Straathof"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Siri Straathof | email=s.straathof@goudenhart.nu | tel-werk=(06) 46 36 11 74",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 202",
+            "Laatste activiteit: 2025-11-28"
+          ],
+          "naam": "Siri Straathof",
+          "email": "s.straathof@goudenhart.nu",
+          "tel-werk": "(06) 46 36 11 74",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "202",
+          "Laatste activiteit": "2025-11-28"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 127,
+      "naam": "HOZO",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Verloren deals": "1",
+        "Aantal personen": "1",
+        "Volgende activiteit": "2025-10-31",
+        "Aangemaakt": "2025-10-17"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#83 \"HOZO\"",
+          "raw_lines": [
+            "Pijplijn: @Medical",
+            "Stadium: Prospect",
+            "Status: Verloren",
+            "Eigenaar: René van Hattem",
+            "Waarde EUR: 1059960",
+            "Verwachte sluiting: 2025-10-31",
+            "Aangemaakt: 2025-10-20",
+            "Bijgewerkt: 2026-01-09",
+            "Gesloten: 2026-01-09",
+            "Reden verlies: Klant niet geinteresseerd",
+            "Contactpersoon: Daniëlle van Veen"
+          ],
+          "dealId": 83,
+          "titel": "HOZO",
+          "Pijplijn": "@Medical",
+          "Stadium": "Prospect",
+          "Status": "Verloren",
+          "Eigenaar": "René van Hattem",
+          "Waarde EUR": "1059960",
+          "Verwachte sluiting": "2025-10-31",
+          "Aangemaakt": "2025-10-20",
+          "Bijgewerkt": "2026-01-09",
+          "Gesloten": "2026-01-09",
+          "Reden verlies": "Klant niet geinteresseerd",
+          "Contactpersoon": "Daniëlle van Veen"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Daniëlle van Veen",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Daniëlle van Veen",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 105,
+      "naam": "HWW Zorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Sandra Geerlings",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Sandra Geerlings",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 126,
+      "naam": "Hadocs",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-16"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#103 \"ANW bereikbaarheid Haaglanden\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Gekwalificeerd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-16",
+            "Bijgewerkt: 2026-03-16",
+            "Contactpersoon: Ingrid Kroon"
+          ],
+          "dealId": 103,
+          "titel": "ANW bereikbaarheid Haaglanden",
+          "Pijplijn": "@Home",
+          "Stadium": "Gekwalificeerd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-16",
+          "Bijgewerkt": "2026-03-16",
+          "Contactpersoon": "Ingrid Kroon"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Ingrid Kroon",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde"
+          ],
+          "naam": "Ingrid Kroon",
+          "Eigenaar": "Famke de Wilde"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 104,
+      "naam": "Heliomare",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Willemijn Faber",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Willemijn Faber",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 160,
+      "naam": "Herbergier",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "5",
+        "Aangemaakt": "2026-04-20"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#116 \"Herbergier Dodewaard (VPT)\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Afspraak gepland",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-04-20",
+            "Bijgewerkt: 2026-04-20",
+            "Contactpersoon: Anna van Straalen"
+          ],
+          "dealId": 116,
+          "titel": "Herbergier Dodewaard (VPT)",
+          "Pijplijn": "@Home",
+          "Stadium": "Afspraak gepland",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-04-20",
+          "Bijgewerkt": "2026-04-20",
+          "Contactpersoon": "Anna van Straalen"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Anna van Straalen | email=anna@dodewaard.herbergier.nl | tel-werk=0614388216",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 5"
+          ],
+          "naam": "Anna van Straalen",
+          "email": "anna@dodewaard.herbergier.nl",
+          "tel-werk": "0614388216",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "5"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 154,
+      "naam": "Herbergier Elst",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "2",
+        "Aangemaakt": "2026-03-31"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#109 \"Herbergier Elst\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Offerte gestuurd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-31",
+            "Bijgewerkt: 2026-03-31",
+            "Contactpersoon: Huub & Marloes Tacke"
+          ],
+          "dealId": 109,
+          "titel": "Herbergier Elst",
+          "Pijplijn": "@Home",
+          "Stadium": "Offerte gestuurd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-31",
+          "Bijgewerkt": "2026-03-31",
+          "Contactpersoon": "Huub & Marloes Tacke"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Huub & Marloes Tacke | email=info@elst.herbergier.nl | tel-werk=06-1744 9720",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde",
+            "Email volume: 2"
+          ],
+          "naam": "Huub & Marloes Tacke",
+          "email": "info@elst.herbergier.nl",
+          "tel-werk": "06-1744 9720",
+          "Eigenaar": "Famke de Wilde",
+          "Email volume": "2"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 139,
+      "naam": "Herbergier Hellevoetsluis",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Volgende activiteit": "2025-11-28",
+        "Aangemaakt": "2025-11-21"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#104 \"Herbergier Hellevoetsluis\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Gekwalificeerd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Verwachte sluiting: 2025-11-28",
+            "Aangemaakt: 2026-03-16",
+            "Bijgewerkt: 2026-03-16",
+            "Contactpersoon: Marlies Leusing"
+          ],
+          "dealId": 104,
+          "titel": "Herbergier Hellevoetsluis",
+          "Pijplijn": "@Home",
+          "Stadium": "Gekwalificeerd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Verwachte sluiting": "2025-11-28",
+          "Aangemaakt": "2026-03-16",
+          "Bijgewerkt": "2026-03-16",
+          "Contactpersoon": "Marlies Leusing"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Marlies Leusing | email=Leusinmarlies@hellevoetsluis.herbergier.nl | tel-werk=0181-745832",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde"
+          ],
+          "naam": "Marlies Leusing",
+          "email": "Leusinmarlies@hellevoetsluis.herbergier.nl",
+          "tel-werk": "0181-745832",
+          "Eigenaar": "Famke de Wilde"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 134,
+      "naam": "Herbergier Piershil",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Open deals": "1",
+        "Gewonnen deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "18",
+        "Laatste activiteit": "2026-03-17",
+        "Volgende activiteit": "2026-03-25",
+        "Adres": "Voorstraat 20, 3265 BV Piershil, Nederland",
+        "Plaats": "Piershil",
+        "Provincie": "Zuid-Holland",
+        "Postcode": "3265 BV",
+        "Aangemaakt": "2025-11-17"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#85 \"Herbergier Piershil WZD functionaris\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Offerte gestuurd",
+            "Status: Gewonnen",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-11-17",
+            "Bijgewerkt: 2025-11-20",
+            "Gesloten: 2025-11-20",
+            "Contactpersoon: Matthijs Bakker"
+          ],
+          "dealId": 85,
+          "titel": "Herbergier Piershil WZD functionaris",
+          "Pijplijn": "@Home",
+          "Stadium": "Offerte gestuurd",
+          "Status": "Gewonnen",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-11-17",
+          "Bijgewerkt": "2025-11-20",
+          "Gesloten": "2025-11-20",
+          "Contactpersoon": "Matthijs Bakker"
+        },
+        {
+          "raw_first_line": "#100 \"WZD Herbergier Piershil\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Offerte gestuurd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-13",
+            "Bijgewerkt: 2026-03-19",
+            "Contactpersoon: Matthijs Bakker"
+          ],
+          "dealId": 100,
+          "titel": "WZD Herbergier Piershil",
+          "Pijplijn": "@Home",
+          "Stadium": "Offerte gestuurd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-13",
+          "Bijgewerkt": "2026-03-19",
+          "Contactpersoon": "Matthijs Bakker"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Matthijs Bakker | functie=eigenaar | email=info@piershil.herbergier.nl | tel-werk=0186-840184",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde",
+            "Email volume: 18",
+            "Laatste activiteit: 2026-03-17"
+          ],
+          "naam": "Matthijs Bakker",
+          "functie": "eigenaar",
+          "email": "info@piershil.herbergier.nl",
+          "tel-werk": "0186-840184",
+          "Eigenaar": "Famke de Wilde",
+          "Email volume": "18",
+          "Laatste activiteit": "2026-03-17"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [
+        {
+          "raw_first_line": "[2026-03-17] Bellen: \"offerte maken piershil\"",
+          "datum": "2026-03-17",
+          "type": "Bellen",
+          "onderwerp": "offerte maken piershil",
+          "beschrijving": ""
+        }
+      ],
+      "bestanden": []
+    },
+    {
+      "id": 142,
+      "naam": "Herbergier Piershill",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-12-19"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Matthijs Bakker | email=Ininfo@piershil.herbergier.nl | tel-werk=0186-840184",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde"
+          ],
+          "naam": "Matthijs Bakker",
+          "email": "Ininfo@piershil.herbergier.nl",
+          "tel-werk": "0186-840184",
+          "Eigenaar": "Famke de Wilde"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 78,
+      "naam": "Herstelzorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-09-26"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 31,
+      "naam": "Het Zand",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Het Zand deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Esther Zagers (directeur zorg en behandeling)"
+          ],
+          "titel": "Het Zand deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Esther Zagers (directeur zorg en behandeling)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Esther Zagers (directeur zorg en behandeling)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Esther Zagers (directeur zorg en behandeling)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 69,
+      "naam": "Horizon Zorcentrum",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "109",
+        "Website": "https://horizonzorgcentrum.nl/",
+        "Aangemaakt": "2025-03-20"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#66 \"Regio Alkmaar Centrale Telefonie\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Deal",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-03-20",
+            "Bijgewerkt: 2026-04-17",
+            "Contactpersoon: Sjanie Koedoot"
+          ],
+          "dealId": 66,
+          "titel": "Regio Alkmaar Centrale Telefonie",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Deal",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-03-20",
+          "Bijgewerkt": "2026-04-17",
+          "Contactpersoon": "Sjanie Koedoot"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Sjanie Koedoot | functie=Bestuurder | email=S.Koedoot@horizonzorgcentrum.nl | tel-werk=0683027150",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 109"
+          ],
+          "naam": "Sjanie Koedoot",
+          "functie": "Bestuurder",
+          "email": "S.Koedoot@horizonzorgcentrum.nl",
+          "tel-werk": "0683027150",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "109"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 42,
+      "naam": "Humanitas",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Humanitas deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Merel Boon-van Maren (directeur behandeling)"
+          ],
+          "titel": "Humanitas deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Merel Boon-van Maren (directeur behandeling)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Merel Boon-van Maren (directeur behandeling)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Merel Boon-van Maren (directeur behandeling)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 25,
+      "naam": "Ijsselheem",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Ijsselheem deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Gerda Veldman (manager behandeling)"
+          ],
+          "titel": "Ijsselheem deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Gerda Veldman (manager behandeling)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Gerda Veldman (manager behandeling)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Gerda Veldman (manager behandeling)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 50,
+      "naam": "Inovum",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Inovum deal\"",
+          "raw_lines": [
+            "Bekeken: Bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Inovum deal",
+          "Bekeken": "Bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 82,
+      "naam": "KNO Medisch Centrum",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Website": "https://www.knomc.nl/",
+        "Aangemaakt": "2025-09-26"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#101 \"KNO Medisch Centrum\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Gekwalificeerd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-16",
+            "Bijgewerkt: 2026-03-16",
+            "Contactpersoon: Bas op de Coul"
+          ],
+          "dealId": 101,
+          "titel": "KNO Medisch Centrum",
+          "Pijplijn": "@Home",
+          "Stadium": "Gekwalificeerd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-16",
+          "Bijgewerkt": "2026-03-16",
+          "Contactpersoon": "Bas op de Coul"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Bas op de Coul",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Bas op de Coul",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 66,
+      "naam": "KennemerHart",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-02-28"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#63 \"KennemerHart deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: On Hold",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Regionaal samenwerken",
+            "Aangemaakt: 2025-02-28",
+            "Bijgewerkt: 2026-03-06",
+            "Contactpersoon: Marijke Bol"
+          ],
+          "dealId": 63,
+          "titel": "KennemerHart deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "On Hold",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Regionaal samenwerken",
+          "Aangemaakt": "2025-02-28",
+          "Bijgewerkt": "2026-03-06",
+          "Contactpersoon": "Marijke Bol"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Marijke Bol",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Marijke Bol",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 162,
+      "naam": "Koninklijke Visio",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "14",
+        "Aangemaakt": "2026-04-21"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#117 \"Koninklijke Visio\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Prospect: voorstel gedaan",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-04-21",
+            "Bijgewerkt: 2026-04-28",
+            "Contactpersoon: Remko Berendsen"
+          ],
+          "dealId": 117,
+          "titel": "Koninklijke Visio",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Prospect: voorstel gedaan",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-04-21",
+          "Bijgewerkt": "2026-04-28",
+          "Contactpersoon": "Remko Berendsen"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Remko Berendsen | email=remkoberendsen@visio.org | tel-werk=06 29 69 99 60",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 14"
+          ],
+          "naam": "Remko Berendsen",
+          "email": "remkoberendsen@visio.org",
+          "tel-werk": "06 29 69 99 60",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "14"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 106,
+      "naam": "Koraal",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 128,
+      "naam": "Laurens",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "31",
+        "Aangemaakt": "2025-10-28"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Cor van Baarle | email=c.vanbaarle@laurens.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 31"
+          ],
+          "naam": "Cor van Baarle",
+          "email": "c.vanbaarle@laurens.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "31"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 88,
+      "naam": "Laurens",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "140",
+        "Laatste activiteit": "2025-11-28",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Robert Sio | email=r.sio@laurens.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 140",
+            "Laatste activiteit: 2025-11-28"
+          ],
+          "naam": "Robert Sio",
+          "email": "r.sio@laurens.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "140",
+          "Laatste activiteit": "2025-11-28"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 117,
+      "naam": "Lelie Zorggroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "31",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#97 \"Lelie Zorggroep\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Suspect: Contact opgenomen",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-06",
+            "Bijgewerkt: 2026-03-06",
+            "Contactpersoon: Cora Treuren"
+          ],
+          "dealId": 97,
+          "titel": "Lelie Zorggroep",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Suspect: Contact opgenomen",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-06",
+          "Bijgewerkt": "2026-03-06",
+          "Contactpersoon": "Cora Treuren"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Cora Treuren | email=c.treuren@leliezorggroep.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 31"
+          ],
+          "naam": "Cora Treuren",
+          "email": "c.treuren@leliezorggroep.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "31"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 24,
+      "naam": "Liberein",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Liberein deal\"",
+          "raw_lines": [
+            "Bekeken: Bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Heidi Pot-Witbreuk (raad van bestuur)"
+          ],
+          "titel": "Liberein deal",
+          "Bekeken": "Bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Heidi Pot-Witbreuk (raad van bestuur)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Heidi Pot-Witbreuk (raad van bestuur)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Heidi Pot-Witbreuk (raad van bestuur)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 62,
+      "naam": "MagentaZorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-02-18"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#59 \"MagentaZorg deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Lead: afspraak gemaakt",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-02-18",
+            "Bijgewerkt: 2025-03-20",
+            "Contactpersoon: Marielle Teesseling"
+          ],
+          "dealId": 59,
+          "titel": "MagentaZorg deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Lead: afspraak gemaakt",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-02-18",
+          "Bijgewerkt": "2025-03-20",
+          "Contactpersoon": "Marielle Teesseling"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Marielle Teesseling",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Marielle Teesseling",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 89,
+      "naam": "Marente",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "2",
+        "Aantal personen": "4",
+        "Email volume": "117",
+        "Laatste activiteit": "2025-10-14",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#82 \"IBS ANW Marente\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Afspraak gepland",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 3",
+            "Aangemaakt: 2025-10-17",
+            "Bijgewerkt: 2026-01-09",
+            "Contactpersoon: Karin Nijboer"
+          ],
+          "dealId": 82,
+          "titel": "IBS ANW Marente",
+          "Pijplijn": "@Home",
+          "Stadium": "Afspraak gepland",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "3",
+          "Aangemaakt": "2025-10-17",
+          "Bijgewerkt": "2026-01-09",
+          "Contactpersoon": "Karin Nijboer"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Susanne Groot | email=susanne.groot@marente.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 70",
+            "Laatste activiteit: 2025-10-14"
+          ],
+          "naam": "Susanne Groot",
+          "email": "susanne.groot@marente.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "70",
+          "Laatste activiteit": "2025-10-14"
+        },
+        {
+          "raw_first_line": "Karin Nijboer | email=karin.nijboer@marente.nl | tel-werk=+31623735481",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 40",
+            "Laatste activiteit: 2025-10-14"
+          ],
+          "naam": "Karin Nijboer",
+          "email": "karin.nijboer@marente.nl",
+          "tel-werk": "+31623735481",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "40",
+          "Laatste activiteit": "2025-10-14"
+        },
+        {
+          "raw_first_line": "Richard Siere | email=Richard.Siere@marente.nl",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde",
+            "Email volume: 4"
+          ],
+          "naam": "Richard Siere",
+          "email": "Richard.Siere@marente.nl",
+          "Eigenaar": "Famke de Wilde",
+          "Email volume": "4"
+        },
+        {
+          "raw_first_line": "Carola v/d Oever | email=c.vd.oever-vd.plas@activite.nl",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde",
+            "Email volume: 3"
+          ],
+          "naam": "Carola v/d Oever",
+          "email": "c.vd.oever-vd.plas@activite.nl",
+          "Eigenaar": "Famke de Wilde",
+          "Email volume": "3"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 21,
+      "naam": "Marga Klompé",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-11"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Marga Klompé deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Marcel Duvigneau (Raad van Bestuur)"
+          ],
+          "titel": "Marga Klompé deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Marcel Duvigneau (Raad van Bestuur)"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 53,
+      "naam": "Marga Klompé",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Marcel Duvigneau (Raad van Bestuur)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Marcel Duvigneau (Raad van Bestuur)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 85,
+      "naam": "Markenheem",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-03"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#79 \"Markenheem\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Suspect: Contact opgenomen",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Regionaal samenwerken, GeriForce Standalone",
+            "Aangemaakt: 2025-10-03",
+            "Bijgewerkt: 2025-10-03",
+            "Contactpersoon: Riona Zevenhuizen"
+          ],
+          "dealId": 79,
+          "titel": "Markenheem",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Suspect: Contact opgenomen",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Regionaal samenwerken, GeriForce Standalone",
+          "Aangemaakt": "2025-10-03",
+          "Bijgewerkt": "2025-10-03",
+          "Contactpersoon": "Riona Zevenhuizen"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Riona Zevenhuizen",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Riona Zevenhuizen",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 20,
+      "naam": "Markenheem",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-11"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Markenheem deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Christel Welling"
+          ],
+          "titel": "Markenheem deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Christel Welling"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Christel Welling",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Christel Welling",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 91,
+      "naam": "MeanderGroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "3",
+        "Email volume": "136",
+        "Laatste activiteit": "2025-11-24",
+        "Volgende activiteit": "2025-11-26",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Yvonne Machiels | email=yvonnemachiels@mgzl.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 88",
+            "Laatste activiteit: 2025-11-24"
+          ],
+          "naam": "Yvonne Machiels",
+          "email": "yvonnemachiels@mgzl.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "88",
+          "Laatste activiteit": "2025-11-24"
+        },
+        {
+          "raw_first_line": "Karin Maassen | email=karinmaassen@mgzl.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 45"
+          ],
+          "naam": "Karin Maassen",
+          "email": "karinmaassen@mgzl.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "45"
+        },
+        {
+          "raw_first_line": "Hub Schoenmaekers | email=hubschoenmaekers@mgzl.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 3"
+          ],
+          "naam": "Hub Schoenmaekers",
+          "email": "hubschoenmaekers@mgzl.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "3"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 140,
+      "naam": "Met zorg voor Zorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "51",
+        "Aangemaakt": "2025-11-25"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Lianne van Goch | email=info@metzorgvoorzorg.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 51"
+          ],
+          "naam": "Lianne van Goch",
+          "email": "info@metzorgvoorzorg.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "51"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 118,
+      "naam": "Middin",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "33",
+        "Laatste activiteit": "2025-12-02",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Willem Lemmens | email=w.lemmens@middin.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 33",
+            "Laatste activiteit: 2025-12-02"
+          ],
+          "naam": "Willem Lemmens",
+          "email": "w.lemmens@middin.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "33",
+          "Laatste activiteit": "2025-12-02"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 92,
+      "naam": "Mijzo",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 35,
+      "naam": "NNCZ",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"NNCZ deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Heidy Haandrikman (directeur zorg)"
+          ],
+          "titel": "NNCZ deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Heidy Haandrikman (directeur zorg)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Heidy Haandrikman (directeur zorg)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Heidy Haandrikman (directeur zorg)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 95,
+      "naam": "Nieuw Unicum",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "45",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Eveline Haandrikman | email=ehaandrikman@nieuwunicum.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 45"
+          ],
+          "naam": "Eveline Haandrikman",
+          "email": "ehaandrikman@nieuwunicum.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "45"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 141,
+      "naam": "Nobama Care",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "10",
+        "Aangemaakt": "2025-12-05"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#89 \"Zuid-Limburg (VPT)\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Deal gesloten",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Consultenlijn (ANW)",
+            "Aangemaakt: 2025-12-05",
+            "Bijgewerkt: 2026-04-02",
+            "Contactpersoon: Lianne van Goch"
+          ],
+          "dealId": 89,
+          "titel": "Zuid-Limburg (VPT)",
+          "Pijplijn": "@Home",
+          "Stadium": "Deal gesloten",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Consultenlijn (ANW)",
+          "Aangemaakt": "2025-12-05",
+          "Bijgewerkt": "2026-04-02",
+          "Contactpersoon": "Lianne van Goch"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Noor Nezami | email=n.nezami@nobamacare.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 10"
+          ],
+          "naam": "Noor Nezami",
+          "email": "n.nezami@nobamacare.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "10"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 147,
+      "naam": "Noorderbreedte",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2026-03-06"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 72,
+      "naam": "Novicare",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "3",
+        "Email volume": "131",
+        "Aangemaakt": "2025-07-08"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Jet Wiechers | email=jwiechers@novicare.nl | tel-werk=+31 6 52 33 22 90",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 68"
+          ],
+          "naam": "Jet Wiechers",
+          "email": "jwiechers@novicare.nl",
+          "tel-werk": "+31 6 52 33 22 90",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "68"
+        },
+        {
+          "raw_first_line": "Paula Boot | email=PBoot@novicare.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 31"
+          ],
+          "naam": "Paula Boot",
+          "email": "PBoot@novicare.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "31"
+        },
+        {
+          "raw_first_line": "Liz de Vroome | email=ldevroome@novicare.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 32"
+          ],
+          "naam": "Liz de Vroome",
+          "email": "ldevroome@novicare.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "32"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 67,
+      "naam": "Novicare Brabant",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Verloren deals": "1",
+        "Aangemaakt": "2025-02-28"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#64 \"Novicare Brabant deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Lead: afspraak gemaakt",
+            "Status: Verloren",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Regionaal samenwerken",
+            "Aangemaakt: 2025-02-28",
+            "Bijgewerkt: 2026-03-06",
+            "Gesloten: 2026-03-06",
+            "Reden verlies: Klant niet geinteresseerd",
+            "Contactpersoon: Jet Wiechers"
+          ],
+          "dealId": 64,
+          "titel": "Novicare Brabant deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Lead: afspraak gemaakt",
+          "Status": "Verloren",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Regionaal samenwerken",
+          "Aangemaakt": "2025-02-28",
+          "Bijgewerkt": "2026-03-06",
+          "Gesloten": "2026-03-06",
+          "Reden verlies": "Klant niet geinteresseerd",
+          "Contactpersoon": "Jet Wiechers"
+        }
+      ],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 119,
+      "naam": "Ons Tweede Thuis",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 121,
+      "naam": "PZC Dordrecht",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "44",
+        "Laatste activiteit": "2025-11-17",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Eduard Simonis | email=eduard.simonis@pzcdordrecht.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 44",
+            "Laatste activiteit: 2025-11-17"
+          ],
+          "naam": "Eduard Simonis",
+          "email": "eduard.simonis@pzcdordrecht.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "44",
+          "Laatste activiteit": "2025-11-17"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 81,
+      "naam": "Parnassia",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-09-26"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 149,
+      "naam": "Patyna",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2026-03-06"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 129,
+      "naam": "Pieter van Foreest",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-29"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Marion Verhaar",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde"
+          ],
+          "naam": "Marion Verhaar",
+          "Eigenaar": "Famke de Wilde"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 120,
+      "naam": "Pieter van Foreest",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "41",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Gert van Empel | email=g.van.empel@pietervanforeest.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 41"
+          ],
+          "naam": "Gert van Empel",
+          "email": "g.van.empel@pietervanforeest.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "41"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 27,
+      "naam": "Pleyade",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Pleyade deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Pleyade deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 76,
+      "naam": "Pleyade",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Email volume": "18",
+        "Aangemaakt": "2025-09-19"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#72 \"Pleyade\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Qualified (contact opnemen)",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Regionaal samenwerken",
+            "Aangemaakt: 2025-09-19",
+            "Bijgewerkt: 2025-12-05",
+            "Contactpersoon: Landja Hamamurad"
+          ],
+          "dealId": 72,
+          "titel": "Pleyade",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Qualified (contact opnemen)",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Regionaal samenwerken",
+          "Aangemaakt": "2025-09-19",
+          "Bijgewerkt": "2025-12-05",
+          "Contactpersoon": "Landja Hamamurad"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Landja Hamamurad | email=lhamamurad@gericall.nl | tel-werk=31 6 41 99 76 04",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 18"
+          ],
+          "naam": "Landja Hamamurad",
+          "email": "lhamamurad@gericall.nl",
+          "tel-werk": "31 6 41 99 76 04",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "18"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 45,
+      "naam": "QuaRijn",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"QuaRijn deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "QuaRijn deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 122,
+      "naam": "Reade",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Jacinthe Adriaanse",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Jacinthe Adriaanse",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 123,
+      "naam": "Respect Zorggroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "2",
+        "Email volume": "13",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Bert Timmerman | email=b.timmerman@respectzorg.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 10"
+          ],
+          "naam": "Bert Timmerman",
+          "email": "b.timmerman@respectzorg.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "10"
+        },
+        {
+          "raw_first_line": "Klaas Smilde | email=k.smilde@respectzorg.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 3"
+          ],
+          "naam": "Klaas Smilde",
+          "email": "k.smilde@respectzorg.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "3"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 22,
+      "naam": "Rijnwaal zorggroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Rijnwaal zorggroep deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Emilienne 't Hart (Manager Zorg)"
+          ],
+          "titel": "Rijnwaal zorggroep deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Emilienne 't Hart (Manager Zorg)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Emilienne 't Hart (Manager Zorg)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Emilienne 't Hart (Manager Zorg)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 87,
+      "naam": "Rivas",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "2",
+        "Email volume": "30",
+        "Laatste activiteit": "2025-11-25",
+        "Aangemaakt": "2025-10-10"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Katja Smitskamp | email=k.smitskamp@rivas.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 11"
+          ],
+          "naam": "Katja Smitskamp",
+          "email": "k.smitskamp@rivas.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "11"
+        },
+        {
+          "raw_first_line": "Johan Bor | email=Johan.Bor@rivas.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 19"
+          ],
+          "naam": "Johan Bor",
+          "email": "Johan.Bor@rivas.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "19"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 135,
+      "naam": "Rivierenland",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Open deals": "2",
+        "Aantal personen": "1",
+        "Email volume": "9",
+        "Laatste activiteit": "2025-12-04",
+        "Volgende activiteit": "2026-04-08",
+        "Aangemaakt": "2025-11-18"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#99 \"Rivierenland\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Contact opgenomen",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-13",
+            "Bijgewerkt: 2026-03-13",
+            "Contactpersoon: Petra Huijzer"
+          ],
+          "dealId": 99,
+          "titel": "Rivierenland",
+          "Pijplijn": "@Home",
+          "Stadium": "Contact opgenomen",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-13",
+          "Bijgewerkt": "2026-03-13",
+          "Contactpersoon": "Petra Huijzer"
+        },
+        {
+          "raw_first_line": "#105 \"Rivierenland\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Gekwalificeerd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-16",
+            "Bijgewerkt: 2026-03-19",
+            "Contactpersoon: Petra Huijzer"
+          ],
+          "dealId": 105,
+          "titel": "Rivierenland",
+          "Pijplijn": "@Home",
+          "Stadium": "Gekwalificeerd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-16",
+          "Bijgewerkt": "2026-03-19",
+          "Contactpersoon": "Petra Huijzer"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Petra Huijzer | email=phuijzer@szr.nl",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde",
+            "Email volume: 9",
+            "Laatste activiteit: 2025-12-04"
+          ],
+          "naam": "Petra Huijzer",
+          "email": "phuijzer@szr.nl",
+          "Eigenaar": "Famke de Wilde",
+          "Email volume": "9",
+          "Laatste activiteit": "2025-12-04"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [
+        {
+          "raw_first_line": "[2025-12-04] Bellen: \"afspraak maken\"",
+          "datum": "2025-12-04",
+          "type": "Bellen",
+          "onderwerp": "afspraak maken",
+          "beschrijving": ""
+        }
+      ],
+      "bestanden": []
+    },
+    {
+      "id": 107,
+      "naam": "Saffier",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Jelma Tazelaar",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Jelma Tazelaar",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 90,
+      "naam": "Salios",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "35",
+        "Laatste activiteit": "2025-11-05",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Arjan Heijblom | email=a.heijblom@salios.nl | tel-werk=+31 6 50 18 35 14",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 35",
+            "Laatste activiteit: 2025-11-05"
+          ],
+          "naam": "Arjan Heijblom",
+          "email": "a.heijblom@salios.nl",
+          "tel-werk": "+31 6 50 18 35 14",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "35",
+          "Laatste activiteit": "2025-11-05"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [
+        {
+          "raw_first_line": "[2025-10-14] Bellen: \"Uitgaande oproep\"",
+          "datum": "2025-10-14",
+          "type": "Bellen",
+          "onderwerp": "Uitgaande oproep",
+          "beschrijving": ""
+        }
+      ],
+      "bestanden": []
+    },
+    {
+      "id": 18,
+      "naam": "Sensire",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "3",
+        "Aangemaakt": "2024-04-11"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#73 \"Sensire\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Qualified (contact opnemen)",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Labels: Regionaal samenwerken",
+            "Aangemaakt: 2025-09-19",
+            "Bijgewerkt: 2025-09-19",
+            "Contactpersoon: Marco Repko"
+          ],
+          "dealId": 73,
+          "titel": "Sensire",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Qualified (contact opnemen)",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Labels": "Regionaal samenwerken",
+          "Aangemaakt": "2025-09-19",
+          "Bijgewerkt": "2025-09-19",
+          "Contactpersoon": "Marco Repko"
+        }
+      ],
+      "leads": [
+        {
+          "raw_first_line": "\"Sensire deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Marco Repko"
+          ],
+          "titel": "Sensire deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Marco Repko"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Margje Mahler",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Margje Mahler",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Saskia Prins (manager zorg)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Saskia Prins (manager zorg)",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Marco Repko",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Marco Repko",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 108,
+      "naam": "Sevagram",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Marceline Misere",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Marceline Misere",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 49,
+      "naam": "Silverein",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Silverein deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Silverein deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 109,
+      "naam": "Sonneburgh",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Henriette van Woudenbergh",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Henriette van Woudenbergh",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 16,
+      "naam": "Stichting Azora",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "3",
+        "Laatste activiteit": "2023-12-20",
+        "Aangemaakt": "2024-04-11"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#67 \"Stichting Azora deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Qualified (contact opnemen)",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-06-19",
+            "Bijgewerkt: 2025-06-19",
+            "Contactpersoon: Lusi Rachmat"
+          ],
+          "dealId": 67,
+          "titel": "Stichting Azora deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Qualified (contact opnemen)",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-06-19",
+          "Bijgewerkt": "2025-06-19",
+          "Contactpersoon": "Lusi Rachmat"
+        }
+      ],
+      "leads": [
+        {
+          "raw_first_line": "\"Stichting Azora deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Bram Wassink (manager behandel)"
+          ],
+          "titel": "Stichting Azora deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Bram Wassink (manager behandel)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Mieke Zemmelink",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Mieke Zemmelink",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Bram Wassink (manager behandel)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Bram Wassink (manager behandel)",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Lusi Rachmat | email=L.Rachmat@azora.nl | tel-werk=0315 338164",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Laatste activiteit: 2023-12-20"
+          ],
+          "naam": "Lusi Rachmat",
+          "email": "L.Rachmat@azora.nl",
+          "tel-werk": "0315 338164",
+          "Eigenaar": "Jeff Lafranca",
+          "Laatste activiteit": "2023-12-20"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [
+        {
+          "raw_first_line": "[2023-12-20] Afspraak op locatie: \"Meeting gehad\"",
+          "datum": "2023-12-20",
+          "type": "Afspraak op locatie",
+          "onderwerp": "Meeting gehad",
+          "beschrijving": ""
+        }
+      ],
+      "bestanden": []
+    },
+    {
+      "id": 125,
+      "naam": "Stichting Niko",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 68,
+      "naam": "Stichting Salem",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "2",
+        "Email volume": "104",
+        "Laatste activiteit": "2025-11-18",
+        "Volgende activiteit": "2025-09-04",
+        "Aangemaakt": "2025-03-06"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#65 \"Stichting Salem deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Beheer",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 229548",
+            "MRR: 19129",
+            "ARR: 229548",
+            "Aangemaakt: 2025-03-06",
+            "Bijgewerkt: 2025-09-19",
+            "Contactpersoon: Adriaan Wisse"
+          ],
+          "dealId": 65,
+          "titel": "Stichting Salem deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Beheer",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "229548",
+          "MRR": "19129",
+          "ARR": "229548",
+          "Aangemaakt": "2025-03-06",
+          "Bijgewerkt": "2025-09-19",
+          "Contactpersoon": "Adriaan Wisse"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Adriaan Wisse | email=wisse.a@salem.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 47"
+          ],
+          "naam": "Adriaan Wisse",
+          "email": "wisse.a@salem.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "47"
+        },
+        {
+          "raw_first_line": "Joelle van Gent | email=gent.j@salem.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 57",
+            "Laatste activiteit: 2025-11-18"
+          ],
+          "naam": "Joelle van Gent",
+          "email": "gent.j@salem.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "57",
+          "Laatste activiteit": "2025-11-18"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 37,
+      "naam": "TSN Zorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"TSN Zorg deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Inge Bakker (manager zorgbeleid)"
+          ],
+          "titel": "TSN Zorg deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Inge Bakker (manager zorgbeleid)"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 55,
+      "naam": "TSN Zorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-17"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Inge Bakker (manager zorgbeleid)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Inge Bakker (manager zorgbeleid)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 146,
+      "naam": "Tante Louise",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aangemaakt": "2026-03-06"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#98 \"Tante Louise\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Qualified (contact opnemen)",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-06",
+            "Bijgewerkt: 2026-03-06"
+          ],
+          "dealId": 98,
+          "titel": "Tante Louise",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Qualified (contact opnemen)",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-06",
+          "Bijgewerkt": "2026-03-06"
+        }
+      ],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 124,
+      "naam": "Topaz",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Clasien de Graaf",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Clasien de Graaf",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 86,
+      "naam": "Transmuralis",
+      "header": {
+        "Eigenaar": "Famke de Wilde",
+        "Open deals": "3",
+        "Aantal personen": "2",
+        "Email volume": "41",
+        "Laatste activiteit": "2025-11-26",
+        "Volgende activiteit": "2025-11-25",
+        "Aangemaakt": "2025-10-08"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#80 \"Transmuralis huisartsenlijn\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Offerte gestuurd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-10-10",
+            "Bijgewerkt: 2026-01-09",
+            "Contactpersoon: Dineke Noort"
+          ],
+          "dealId": 80,
+          "titel": "Transmuralis huisartsenlijn",
+          "Pijplijn": "@Home",
+          "Stadium": "Offerte gestuurd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-10-10",
+          "Bijgewerkt": "2026-01-09",
+          "Contactpersoon": "Dineke Noort"
+        },
+        {
+          "raw_first_line": "#90 \"Transmuralis (SEH)\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Offerte gestuurd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-01-09",
+            "Bijgewerkt: 2026-04-10",
+            "Contactpersoon: Dineke Noort"
+          ],
+          "dealId": 90,
+          "titel": "Transmuralis (SEH)",
+          "Pijplijn": "@Home",
+          "Stadium": "Offerte gestuurd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-01-09",
+          "Bijgewerkt": "2026-04-10",
+          "Contactpersoon": "Dineke Noort"
+        },
+        {
+          "raw_first_line": "#102 \"Transmuralis Smart triage SEH LUMC\"",
+          "raw_lines": [
+            "Pijplijn: @Home",
+            "Stadium: Gekwalificeerd",
+            "Status: Open",
+            "Eigenaar: Famke de Wilde",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2026-03-16",
+            "Bijgewerkt: 2026-03-16",
+            "Contactpersoon: Dineke Noort"
+          ],
+          "dealId": 102,
+          "titel": "Transmuralis Smart triage SEH LUMC",
+          "Pijplijn": "@Home",
+          "Stadium": "Gekwalificeerd",
+          "Status": "Open",
+          "Eigenaar": "Famke de Wilde",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2026-03-16",
+          "Bijgewerkt": "2026-03-16",
+          "Contactpersoon": "Dineke Noort"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Thessa Groen | email=thessagroen@transmuralis.nl",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde",
+            "Email volume: 12"
+          ],
+          "naam": "Thessa Groen",
+          "email": "thessagroen@transmuralis.nl",
+          "Eigenaar": "Famke de Wilde",
+          "Email volume": "12"
+        },
+        {
+          "raw_first_line": "Dineke Noort | email=dinekenoort@transmuralis.nl",
+          "raw_lines": [
+            "Eigenaar: Famke de Wilde",
+            "Email volume: 29",
+            "Laatste activiteit: 2025-11-26"
+          ],
+          "naam": "Dineke Noort",
+          "email": "dinekenoort@transmuralis.nl",
+          "Eigenaar": "Famke de Wilde",
+          "Email volume": "29",
+          "Laatste activiteit": "2025-11-26"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [
+        {
+          "raw_first_line": "[2025-11-26] E-mail: \"E-mail\"",
+          "datum": "2025-11-26",
+          "type": "E-mail",
+          "onderwerp": "E-mail",
+          "beschrijving": ""
+        }
+      ],
+      "bestanden": []
+    },
+    {
+      "id": 60,
+      "naam": "Treant",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-02-11"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#57 \"Treant lead\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Qualified (contact opnemen)",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-02-11",
+            "Bijgewerkt: 2025-02-11",
+            "Contactpersoon: Sjoukje Galama"
+          ],
+          "dealId": 57,
+          "titel": "Treant lead",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Qualified (contact opnemen)",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-02-11",
+          "Bijgewerkt": "2025-02-11",
+          "Contactpersoon": "Sjoukje Galama"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Sjoukje Galama",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Sjoukje Galama",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 13,
+      "naam": "Valkenhof",
+      "header": {
+        "Eigenaar": "Jelle Blok",
+        "Aantal personen": "1",
+        "Adres": "John F. Kennedylaan 3, Valkenswaard, Nederland",
+        "Plaats": "Valkenswaard",
+        "Provincie": "Noord-Brabant",
+        "Postcode": "5555 XC",
+        "Aangemaakt": "2024-03-28"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Frans van de Vranden lead\"",
+          "raw_lines": [
+            "Bekeken: Bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Manually created",
+            "Aangemaakt: 2024-03-28",
+            "Contactpersoon: Frans van de Vranden"
+          ],
+          "titel": "Frans van de Vranden lead",
+          "Bekeken": "Bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Manually created",
+          "Aangemaakt": "2024-03-28",
+          "Contactpersoon": "Frans van de Vranden"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Frans van de Vranden | functie=Raad van Bestuur | email=Frans.van.de.Vranden@valkenhof.nl | tel-werk=040-2014035",
+          "raw_lines": [
+            "Eigenaar: Jelle Blok"
+          ],
+          "naam": "Frans van de Vranden",
+          "functie": "Raad van Bestuur",
+          "email": "Frans.van.de.Vranden@valkenhof.nl",
+          "tel-werk": "040-2014035",
+          "Eigenaar": "Jelle Blok"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 17,
+      "naam": "Viattence",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "2",
+        "Aangemaakt": "2024-04-11"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Viattence deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Jeroen Vos (manager behandeling)"
+          ],
+          "titel": "Viattence deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Jeroen Vos (manager behandeling)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Wiesje Heeringa",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Wiesje Heeringa",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Jeroen Vos (manager behandeling)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Jeroen Vos (manager behandeling)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 110,
+      "naam": "Viva Zorggroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 111,
+      "naam": "Vivantes",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Edwin Tijssen",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Edwin Tijssen",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 83,
+      "naam": "Waardeburgh",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "78",
+        "Laatste activiteit": "2025-11-24",
+        "Volgende activiteit": "2025-10-30",
+        "Aangemaakt": "2025-09-29"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Adriaan Wisse | email=A.Wisse@waardeburgh.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 78",
+            "Laatste activiteit: 2025-11-24"
+          ],
+          "naam": "Adriaan Wisse",
+          "email": "A.Wisse@waardeburgh.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "78",
+          "Laatste activiteit": "2025-11-24"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 112,
+      "naam": "Wijdezorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "21",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Marit van Dorp | email=mvandorp@wijdezorg.com",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 21"
+          ],
+          "naam": "Marit van Dorp",
+          "email": "mvandorp@wijdezorg.com",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "21"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 61,
+      "naam": "WilgaerdenLeekerweideGroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Open deals": "1",
+        "Aantal personen": "3",
+        "Aangemaakt": "2025-02-18"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#58 \"WilgaerdenLeekerweideGroep deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: On Hold",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-02-18",
+            "Bijgewerkt: 2026-03-06",
+            "Contactpersoon: Dennis Bloemraad"
+          ],
+          "dealId": 58,
+          "titel": "WilgaerdenLeekerweideGroep deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "On Hold",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-02-18",
+          "Bijgewerkt": "2026-03-06",
+          "Contactpersoon": "Dennis Bloemraad"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Vivian Bongers | functie=P&O",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Vivian Bongers",
+          "functie": "P&O",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Dennis Bloemraad | functie=Specialist Ouderengeneeskunde",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Dennis Bloemraad",
+          "functie": "Specialist Ouderengeneeskunde",
+          "Eigenaar": "Jeff Lafranca"
+        },
+        {
+          "raw_first_line": "Tootje Hoovers",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Tootje Hoovers",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 144,
+      "naam": "Woonzorgcentrum De Beyart",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Gewonnen deals": "1",
+        "Aantal personen": "1",
+        "Aangemaakt": "2026-01-13"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#88 \"De Beyart\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Beheer",
+            "Status: Gewonnen",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-11-25",
+            "Bijgewerkt: 2026-01-13",
+            "Gesloten: 2026-01-13",
+            "Contactpersoon: Guido Kerckhoffs"
+          ],
+          "dealId": 88,
+          "titel": "De Beyart",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Beheer",
+          "Status": "Gewonnen",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-11-25",
+          "Bijgewerkt": "2026-01-13",
+          "Gesloten": "2026-01-13",
+          "Contactpersoon": "Guido Kerckhoffs"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Guido Kerckhoffs",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Guido Kerckhoffs",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 38,
+      "naam": "ZINN Groningen",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"ZINN Groningen deal\"",
+          "raw_lines": [
+            "Bekeken: Bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Roland de Leeuw (manager zorg)"
+          ],
+          "titel": "ZINN Groningen deal",
+          "Bekeken": "Bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Roland de Leeuw (manager zorg)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Roland de Leeuw (manager zorg)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Roland de Leeuw (manager zorg)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 28,
+      "naam": "Zinzia Zorggroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Zinzia Zorggroep deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Mireille Prins (directeur zorg en behandeling)"
+          ],
+          "titel": "Zinzia Zorggroep deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Mireille Prins (directeur zorg en behandeling)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Mireille Prins (directeur zorg en behandeling)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Mireille Prins (directeur zorg en behandeling)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 113,
+      "naam": "Zonnehuisgroep",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Ivonne van Loon",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Ivonne van Loon",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 33,
+      "naam": "Zonnehuisgroep Noord",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Zonnehuisgroep Noord deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Hamke Korthuis (directeur zorg en behandeling)"
+          ],
+          "titel": "Zonnehuisgroep Noord deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Hamke Korthuis (directeur zorg en behandeling)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Hamke Korthuis (directeur zorg en behandeling)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Hamke Korthuis (directeur zorg en behandeling)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 114,
+      "naam": "Zorg in Oktober",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 73,
+      "naam": "ZorgSaam",
+      "header": {
+        "Eigenaar": "Jelle Blok",
+        "Open deals": "1",
+        "Aantal personen": "1",
+        "Adres": "Wielingenlaan 2, Terneuzen, Nederland",
+        "Plaats": "Terneuzen",
+        "Provincie": "Zeeland",
+        "Postcode": "4535 PA",
+        "Website": "https://www.zorgsaam.org/",
+        "Aangemaakt": "2025-07-15"
+      },
+      "deals": [
+        {
+          "raw_first_line": "#70 \"ZorgSaam deal\"",
+          "raw_lines": [
+            "Pijplijn: @Emergency",
+            "Stadium: Qualified (contact opnemen)",
+            "Status: Open",
+            "Eigenaar: Jeff Lafranca",
+            "Waarde EUR: 0",
+            "Aangemaakt: 2025-07-15",
+            "Bijgewerkt: 2025-07-15",
+            "Contactpersoon: Tiffany Aksu - Bonne"
+          ],
+          "dealId": 70,
+          "titel": "ZorgSaam deal",
+          "Pijplijn": "@Emergency",
+          "Stadium": "Qualified (contact opnemen)",
+          "Status": "Open",
+          "Eigenaar": "Jeff Lafranca",
+          "Waarde EUR": "0",
+          "Aangemaakt": "2025-07-15",
+          "Bijgewerkt": "2025-07-15",
+          "Contactpersoon": "Tiffany Aksu - Bonne"
+        }
+      ],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Tiffany Aksu - Bonne | email=t.aksu@zzv.nl | tel-werk=06-57944201",
+          "raw_lines": [
+            "Eigenaar: Jelle Blok"
+          ],
+          "naam": "Tiffany Aksu - Bonne",
+          "email": "t.aksu@zzv.nl",
+          "tel-werk": "06-57944201",
+          "Eigenaar": "Jelle Blok"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 115,
+      "naam": "Zorgbalans",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 51,
+      "naam": "Zorggroep Almere",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Zorggroep Almere deal\"",
+          "raw_lines": [
+            "Bekeken: Bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Zorggroep Almere deal",
+          "Bekeken": "Bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 41,
+      "naam": "Zorggroep Amsterdam Oost",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Zorggroep Amsterdam Oost deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Froukje Hamaker-Taat (manager behandeling)"
+          ],
+          "titel": "Zorggroep Amsterdam Oost deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Froukje Hamaker-Taat (manager behandeling)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Froukje Hamaker-Taat (manager behandeling)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Froukje Hamaker-Taat (manager behandeling)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 48,
+      "naam": "Zorggroep Charim",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Zorggroep Charim deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Zorggroep Charim deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 32,
+      "naam": "Zorggroep Groningen",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Zorggroep Groningen deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Carolien Hamburger (manager zorg)"
+          ],
+          "titel": "Zorggroep Groningen deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Carolien Hamburger (manager zorg)"
+        }
+      ],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 54,
+      "naam": "Zorggroep Groningen",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-17"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Carolien Hamburger (manager zorg)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Carolien Hamburger (manager zorg)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 26,
+      "naam": "Zorggroep Noorderboog",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Zorggroep Noorderboog deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11",
+            "Contactpersoon: Jan Blaauw (manager zorg)"
+          ],
+          "titel": "Zorggroep Noorderboog deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11",
+          "Contactpersoon": "Jan Blaauw (manager zorg)"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Jan Blaauw (manager zorg)",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Jan Blaauw (manager zorg)",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 46,
+      "naam": "Zorgspectrum",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Aangemaakt": "2024-04-15"
+      },
+      "deals": [],
+      "leads": [
+        {
+          "raw_first_line": "\"Zorgspectrum deal\"",
+          "raw_lines": [
+            "Bekeken: Niet bekeken",
+            "Eigenaar: Jeff Lafranca",
+            "Bron: Deal",
+            "Aangemaakt: 2025-02-11"
+          ],
+          "titel": "Zorgspectrum deal",
+          "Bekeken": "Niet bekeken",
+          "Eigenaar": "Jeff Lafranca",
+          "Bron": "Deal",
+          "Aangemaakt": "2025-02-11"
+        }
+      ],
+      "contacten": [
+        {
+          "raw_first_line": "Marieke van Gilsdonk",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca"
+          ],
+          "naam": "Marieke van Gilsdonk",
+          "Eigenaar": "Jeff Lafranca"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 116,
+      "naam": "Zorgwaard",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "123",
+        "Laatste activiteit": "2025-11-18",
+        "Volgende activiteit": "2025-11-18",
+        "Aangemaakt": "2025-10-14"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Maroesjka Radder | email=maroesjka.radder@zorg-waard.nl",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 123",
+            "Laatste activiteit: 2025-11-18"
+          ],
+          "naam": "Maroesjka Radder",
+          "email": "maroesjka.radder@zorg-waard.nl",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "123",
+          "Laatste activiteit": "2025-11-18"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 148,
+      "naam": "Zuid-Oost Zorg",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aangemaakt": "2026-03-06"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    },
+    {
+      "id": 74,
+      "naam": "Zuyderland",
+      "header": {
+        "Eigenaar": "Jeff Lafranca",
+        "Aantal personen": "1",
+        "Email volume": "21",
+        "Aangemaakt": "2025-08-07"
+      },
+      "deals": [],
+      "leads": [],
+      "contacten": [
+        {
+          "raw_first_line": "Alesha D Elfant | email=a.soumokil@zuyderland.nl | tel-werk=(06) 15 56 74 17",
+          "raw_lines": [
+            "Eigenaar: Jeff Lafranca",
+            "Email volume: 21"
+          ],
+          "naam": "Alesha D Elfant",
+          "email": "a.soumokil@zuyderland.nl",
+          "tel-werk": "(06) 15 56 74 17",
+          "Eigenaar": "Jeff Lafranca",
+          "Email volume": "21"
+        }
+      ],
+      "notities": [],
+      "activiteiten": [],
+      "bestanden": []
+    }
+  ],
+  "products": [
+    {
+      "productcode": "001",
+      "naam": "ANW Dienst (Bereikbaarheid)",
+      "categorie": "GeriCall ANW",
+      "prijs": 2.5,
+      "frequentie": "Per maand",
+      "eenheid": "Aantal clienten",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "010",
+      "naam": "Medische Dienst",
+      "categorie": "GeriCall Medical",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eenheid": "Aantal clienten",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "020",
+      "naam": "Consultenlijn",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eenheid": "Aantal consulten per jaar",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "030",
+      "naam": "GeriForce",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eenheid": "Aantal clienten",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "021",
+      "naam": "IBS dienstverlening",
+      "categorie": "GeriCall Home",
+      "prijs": 0.0,
+      "frequentie": "Per maand",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "022",
+      "naam": "RM Dienstverlening",
+      "categorie": "GeriCall Home",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "011",
+      "naam": "Psychologische Dienst",
+      "categorie": "GeriCall Medical",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "012",
+      "naam": "Medische Prestaties",
+      "categorie": "GeriCall Medical",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "002",
+      "naam": "ANW - GeriForce Implementatie",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "023",
+      "naam": "WzD Dienstverlening",
+      "categorie": "GeriCall Home",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "René van Hattem"
+    },
+    {
+      "productcode": "003.A",
+      "naam": "CT-arts",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "Jeff Lafranca"
+    },
+    {
+      "productcode": "001.B",
+      "naam": "ANW Dienst (Consulten)",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Per maand",
+      "eigenaar": "Jeff Lafranca"
+    },
+    {
+      "productcode": "110",
+      "naam": "WZD inventarisatie per locatie per uur",
+      "categorie": "GeriCall Home",
+      "prijs": 210.0,
+      "frequentie": "Eenmalig",
+      "eenheid": "uur",
+      "beschrijving": "WZD 0 meting",
+      "eigenaar": "Famke de Wilde"
+    },
+    {
+      "productcode": "111",
+      "naam": "ANW Consultenlijn SO",
+      "categorie": "GeriCall Home",
+      "prijs": 136.0,
+      "frequentie": "Per maand",
+      "eenheid": "maand",
+      "beschrijving": "0,25 ct bereikbaarheid per huisartsenpraktijk per uur",
+      "eigenaar": "Famke de Wilde"
+    },
+    {
+      "productcode": "112",
+      "naam": "ANW HAP telefonisch consult",
+      "categorie": "GeriCall Home",
+      "prijs": 50.0,
+      "frequentie": "Eenmalig",
+      "eenheid": "per kwartier",
+      "eigenaar": "Famke de Wilde"
+    },
+    {
+      "productcode": "114",
+      "naam": "ANW SEH consult",
+      "categorie": "GeriCall Home",
+      "prijs": 290.0,
+      "frequentie": "Eenmalig",
+      "eenheid": "uur",
+      "beschrijving": "NZA tarief per uur",
+      "eigenaar": "Famke de Wilde"
+    },
+    {
+      "productcode": "113",
+      "naam": "SEH ANW telefonische bereikbaarheid",
+      "categorie": "GeriCall Home",
+      "prijs": 5.0,
+      "frequentie": "Per maand",
+      "eenheid": "uur",
+      "eigenaar": "Famke de Wilde"
+    },
+    {
+      "productcode": "111.A",
+      "naam": "ANW Consultenlijn SO (HAP)",
+      "categorie": "GeriCall Home",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "Jeff Lafranca"
+    },
+    {
+      "productcode": "003.B",
+      "naam": "CT-arts (Mix&Match)",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "Jeff Lafranca"
+    },
+    {
+      "productcode": "002.A",
+      "naam": "ANW - GeriForce Implementatie (Artsen)",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "Jeff Lafranca"
+    },
+    {
+      "productcode": "002.B",
+      "naam": "ANW - GeriForce Implementatie (Verpleging)",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "Jeff Lafranca"
+    },
+    {
+      "productcode": "003.B1",
+      "naam": "CT-arts (Mix&Match - Nacht)",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "Jeff Lafranca"
+    },
+    {
+      "productcode": "003.B2",
+      "naam": "CT-arts (Mix&Match - Avond)",
+      "categorie": "GeriCall ANW",
+      "prijs": 0.0,
+      "frequentie": "Eenmalig",
+      "eigenaar": "Jeff Lafranca"
+    },
+    {
+      "productcode": "115",
+      "naam": "WZD functionaris per 5 minuten digitaal",
+      "categorie": "GeriCall Home",
+      "prijs": 17.5,
+      "frequentie": "Eenmalig",
+      "eenheid": "per 5 minuten",
+      "eigenaar": "Famke de Wilde"
+    }
+  ],
+  "ungrouped": {
+    "contacten": [
+      {
+        "naam": "Info"
+      },
+      {
+        "naam": "Robbert Huijsman"
+      },
+      {
+        "naam": "Irma Elzinga"
+      },
+      {
+        "naam": "Sandra Harsveldt",
+        "email": "s.harsveldt@rivas.nl"
+      },
+      {
+        "naam": "Marije Hoogduin",
+        "email": "mhoogduin@novicare.nl"
+      },
+      {
+        "naam": "Claudia Burger",
+        "email": "c.burger@vivazorggroep.nl"
+      },
+      {
+        "naam": "Bert Strijker",
+        "email": "b.strijker@onstweedethuis.nl"
+      },
+      {
+        "naam": "Jenny Ploeg",
+        "email": "j.ploeg@stichtingniko.nl"
+      },
+      {
+        "naam": "Jacinthe Adriaansen",
+        "email": "j.adriaansen@reade.nl"
+      },
+      {
+        "naam": "Sarah Priems",
+        "email": "sarah.priems@mijzo.nl"
+      },
+      {
+        "naam": "Judith van Hal",
+        "email": "judith.vanhal@activite.nl"
+      },
+      {
+        "naam": "Annemarie Moll"
+      },
+      {
+        "naam": "Mirjam van Roer"
+      },
+      {
+        "naam": "Bianca de Jong"
+      }
+    ],
+    "activiteiten_zonder_org": 174
+  }
+}
