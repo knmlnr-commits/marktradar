@@ -66,9 +66,11 @@ async function register(req, res) {
   await appendUserIndex(email);
 
   const token = auth.makeToken();
-  await auth.kvSet(auth.KV_SESSION_PREFIX + token, {
-    userId: user.id, email, expires: Date.now() + auth.SESSION_TTL_MS,
-  });
+  await auth.kvSet(
+    auth.KV_SESSION_PREFIX + token,
+    { userId: user.id, email, expires: Date.now() + auth.SESSION_TTL_MS },
+    { ttlSec: auth.SESSION_TTL_SEC }
+  );
   return res.status(200).json({ user: publicUser(user), token });
 }
 
@@ -82,9 +84,11 @@ async function login(req, res) {
   const ok = await auth.verifyPassword(password, user.salt, user.passwordHash);
   if (!ok) return res.status(401).json({ error: 'Onjuiste inloggegevens' });
   const token = auth.makeToken();
-  await auth.kvSet(auth.KV_SESSION_PREFIX + token, {
-    userId: user.id, email, expires: Date.now() + auth.SESSION_TTL_MS,
-  });
+  await auth.kvSet(
+    auth.KV_SESSION_PREFIX + token,
+    { userId: user.id, email, expires: Date.now() + auth.SESSION_TTL_MS },
+    { ttlSec: auth.SESSION_TTL_SEC }
+  );
   return res.status(200).json({ user: publicUser(user), token });
 }
 

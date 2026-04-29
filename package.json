@@ -1,0 +1,9 @@
+{
+  "name": "marktradar",
+  "private": true,
+  "version": "1.7.1",
+  "description": "GeriCall MarktRadar - VVT intelligence portal (statische HTML + Vercel serverless functions)",
+  "dependencies": {
+    "redis": "4.7.0"
+  }
+}
