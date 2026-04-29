@@ -1,19 +1,22 @@
 // Email + wachtwoord-authenticatie + gebruikersbeheer voor MarktRadar.
 //
+// Multi-tenant vanaf v1.12: elke email-registratie creëert een eigen tenant.
+// Een ingelogde admin kan binnen zijn eigen tenant collega's uitnodigen.
+//
 // Endpoints (allemaal via ?action=…):
 //   GET  /api/auth?action=needs-bootstrap          -> { needs: bool }
-//   POST /api/auth?action=bootstrap                body: { email, naam, password }  (alleen als geen users)
-//   POST /api/auth?action=login                    body: { email, password }       -> { user, token }
-//   GET  /api/auth?action=me                                                       -> { user } | 401
+//   POST /api/auth?action=bootstrap                body: { email, naam, password, tenantNaam? }  (alleen als geen users)
+//   POST /api/auth?action=register                 body: { email, naam, password, tenantNaam? }  (open per email)
+//   POST /api/auth?action=login                    body: { email, password }       -> { user, token, tenant }
+//   GET  /api/auth?action=me                                                       -> { user, tenant } | 401
 //   POST /api/auth?action=logout                                                   -> { ok }
 //   POST /api/auth?action=change-password          body: { oldPassword, newPassword }
-//   GET  /api/auth?action=list-users               -> { users }                    (auth required)
-//   POST /api/auth?action=create-user              body: { email, naam, password? } (auth)
-//   POST /api/auth?action=reset-password           body: { email }                 (auth) -> { password }
-//   POST /api/auth?action=delete-user              body: { email }                 (auth)
+//   GET  /api/auth?action=list-users               -> { users }                    (auth required, scope=tenant)
+//   POST /api/auth?action=create-user              body: { email, naam, password? } (auth, voegt toe aan eigen tenant)
+//   POST /api/auth?action=reset-password           body: { email }                 (auth, alleen eigen tenant)
+//   POST /api/auth?action=delete-user              body: { email }                 (auth, alleen eigen tenant)
 //
-// Vereist Vercel KV / Redis. Open registratie is uitgeschakeld; nieuwe accounts
-// worden alleen via een ingelogde gebruiker (admin) aangemaakt.
+// Vereist Vercel KV / Redis.
 
 const auth = require('./_lib/auth');
 const { randomBytes } = require('crypto');
@@ -24,8 +27,21 @@ function publicUser(u) {
     id: u.id,
     email: u.email,
     naam: u.naam,
+    tenantId: u.tenantId,
+    role: u.role || 'admin',
     createdAt: u.createdAt,
     mustChangePassword: !!u.mustChangePassword,
+  };
+}
+
+function publicTenant(t) {
+  if (!t) return null;
+  return {
+    id: t.id,
+    naam: t.naam || 'MarktRadar',
+    createdAt: t.createdAt,
+    market: Array.isArray(t.market) ? t.market : null,
+    marketDefined: !!t.marketDefined,
   };
 }
 
@@ -44,19 +60,45 @@ async function readJsonBody(req) {
   });
 }
 
-async function getUsersIndex() {
+async function getGlobalUsersIndex() {
   return (await auth.kvGet(auth.KV_USERS_INDEX)) || [];
 }
-async function appendUserIndex(email) {
-  const list = await getUsersIndex();
+async function appendGlobalUserIndex(email) {
+  const list = await getGlobalUsersIndex();
   if (!list.includes(email)) {
     list.push(email);
     await auth.kvSet(auth.KV_USERS_INDEX, list);
   }
 }
-async function removeUserIndex(email) {
-  const list = await getUsersIndex();
+async function removeGlobalUserIndex(email) {
+  const list = await getGlobalUsersIndex();
   await auth.kvSet(auth.KV_USERS_INDEX, list.filter((e) => e !== email));
+}
+
+async function getTenantUsersIndex(tenantId) {
+  return (await auth.kvGet(auth.tenantUsersIndexKey(tenantId))) || [];
+}
+async function appendTenantUserIndex(tenantId, email) {
+  const list = await getTenantUsersIndex(tenantId);
+  if (!list.includes(email)) {
+    list.push(email);
+    await auth.kvSet(auth.tenantUsersIndexKey(tenantId), list);
+  }
+}
+async function removeTenantUserIndex(tenantId, email) {
+  const list = await getTenantUsersIndex(tenantId);
+  await auth.kvSet(auth.tenantUsersIndexKey(tenantId), list.filter((e) => e !== email));
+}
+
+async function getTenantsIndex() {
+  return (await auth.kvGet(auth.KV_TENANTS_INDEX)) || [];
+}
+async function appendTenantIndex(tenantId) {
+  const list = await getTenantsIndex();
+  if (!list.includes(tenantId)) {
+    list.push(tenantId);
+    await auth.kvSet(auth.KV_TENANTS_INDEX, list);
+  }
 }
 
 function generateTempPassword(len) {
@@ -74,6 +116,8 @@ async function newUserRecord(email, naam, password, opts) {
     id: auth.makeId('u_'),
     email,
     naam,
+    tenantId: (opts && opts.tenantId) || null,
+    role: (opts && opts.role) || 'admin',
     salt,
     passwordHash,
     createdAt: Date.now(),
@@ -82,40 +126,118 @@ async function newUserRecord(email, naam, password, opts) {
   };
 }
 
-async function createSession(email, userId) {
+async function createSession(email, userId, tenantId) {
   const token = auth.makeToken();
   await auth.kvSet(
     auth.KV_SESSION_PREFIX + token,
-    { userId, email, expires: Date.now() + auth.SESSION_TTL_MS },
+    { userId, email, tenantId, expires: Date.now() + auth.SESSION_TTL_MS },
     { ttlSec: auth.SESSION_TTL_SEC }
   );
   return token;
 }
 
-async function needsBootstrap(req, res) {
-  const list = await getUsersIndex();
-  return res.status(200).json({ needs: list.length === 0 });
+async function loadTenant(tenantId) {
+  if (!tenantId) return null;
+  const t = await auth.kvGet(auth.tenantMetaKey(tenantId));
+  if (t) return t;
+  // Migratie: legacy-tenant zonder meta-record → on-the-fly aanmaken
+  if (tenantId === auth.LEGACY_TENANT_ID) {
+    const legacy = {
+      id: auth.LEGACY_TENANT_ID,
+      naam: 'GeriCall',
+      createdAt: Date.now(),
+      market: null,
+      marketDefined: false,
+      legacy: true,
+    };
+    await auth.kvSet(auth.tenantMetaKey(tenantId), legacy);
+    await appendTenantIndex(tenantId);
+    return legacy;
+  }
+  return null;
 }
 
-async function bootstrap(req, res) {
-  const list = await getUsersIndex();
-  if (list.length > 0) {
-    return res.status(403).json({
-      error: 'Bootstrap niet meer mogelijk; gebruikers bestaan al. Vraag een collega om je een account aan te maken.',
-    });
+async function ensureUserHasTenant(user) {
+  // Migratie: pre-multi-tenant users zonder tenantId krijgen LEGACY_TENANT_ID
+  if (user && !user.tenantId) {
+    user.tenantId = auth.LEGACY_TENANT_ID;
+    user.role = user.role || 'admin';
+    await auth.kvSet(auth.KV_USER_PREFIX + user.email, user);
+    await appendTenantUserIndex(auth.LEGACY_TENANT_ID, user.email);
   }
+  return user;
+}
+
+async function createTenant(tenantId, naam, founderEmail) {
+  const tenant = {
+    id: tenantId,
+    naam: naam || 'MarktRadar',
+    createdAt: Date.now(),
+    createdBy: founderEmail,
+    market: null,            // null = volledige baseline; array = subset instelling-IDs
+    marketDefined: false,
+  };
+  await auth.kvSet(auth.tenantMetaKey(tenantId), tenant);
+  await appendTenantIndex(tenantId);
+  return tenant;
+}
+
+// Gemeenschappelijke flow voor bootstrap + register: maak tenant + admin-user.
+async function registerNewTenant(req, res) {
   const body = await readJsonBody(req);
   const email = String(body.email || '').trim().toLowerCase();
   const naam = String(body.naam || '').trim();
   const password = String(body.password || '');
+  const tenantNaam = String(body.tenantNaam || '').trim() || naam || 'MarktRadar';
   if (!email || !email.includes('@')) return res.status(400).json({ error: 'Ongeldig email-adres' });
   if (!naam) return res.status(400).json({ error: 'Naam is verplicht' });
   if (password.length < 8) return res.status(400).json({ error: 'Wachtwoord moet minimaal 8 tekens zijn' });
-  const user = await newUserRecord(email, naam, password, { mustChangePassword: false });
+
+  const existing = await auth.kvGet(auth.KV_USER_PREFIX + email);
+  if (existing) return res.status(409).json({ error: 'Er bestaat al een account voor dit email-adres. Log in of gebruik een ander adres.' });
+
+  const tenantId = auth.slugifyEmailForTenant(email);
+  // Voorkom collision: als de tenant al bestaat (extreem onwaarschijnlijk),
+  // hang er een random suffix aan.
+  let finalTenantId = tenantId;
+  const tenantsList = await getTenantsIndex();
+  if (tenantsList.includes(tenantId)) {
+    finalTenantId = tenantId + '_' + auth.makeId('').slice(0, 6);
+  }
+  const tenant = await createTenant(finalTenantId, tenantNaam, email);
+  const user = await newUserRecord(email, naam, password, {
+    tenantId: finalTenantId,
+    role: 'admin',
+    mustChangePassword: false,
+  });
   await auth.kvSet(auth.KV_USER_PREFIX + email, user);
-  await appendUserIndex(email);
-  const token = await createSession(email, user.id);
-  return res.status(200).json({ user: publicUser(user), token });
+  await appendGlobalUserIndex(email);
+  await appendTenantUserIndex(finalTenantId, email);
+  const token = await createSession(email, user.id, finalTenantId);
+  return res.status(200).json({ user: publicUser(user), tenant: publicTenant(tenant), token });
+}
+
+async function needsBootstrap(req, res) {
+  // 'needs-bootstrap' blijft true totdat er minstens één tenant + user bestaat.
+  // Daarna toont de gate 'login + registreer' modus, waarbij registreer
+  // een nieuwe tenant per email aanmaakt.
+  const list = await getGlobalUsersIndex();
+  return res.status(200).json({ needs: list.length === 0 });
+}
+
+async function bootstrap(req, res) {
+  const list = await getGlobalUsersIndex();
+  if (list.length > 0) {
+    return res.status(403).json({
+      error: 'Bootstrap niet meer mogelijk; gebruikers bestaan al. Gebruik /api/auth?action=register voor een nieuwe tenant.',
+    });
+  }
+  return registerNewTenant(req, res);
+}
+
+async function register(req, res) {
+  // Open registratie: elk nieuw email-adres krijgt een eigen tenant.
+  return registerNewTenant(req, res);
 }
 
 async function login(req, res) {
@@ -123,20 +245,24 @@ async function login(req, res) {
   const email = String(body.email || '').trim().toLowerCase();
   const password = String(body.password || '');
   if (!email || !password) return res.status(400).json({ error: 'Email en wachtwoord verplicht' });
-  const user = await auth.kvGet(auth.KV_USER_PREFIX + email);
+  let user = await auth.kvGet(auth.KV_USER_PREFIX + email);
   if (!user) return res.status(401).json({ error: 'Onjuiste inloggegevens' });
   const ok = await auth.verifyPassword(password, user.salt, user.passwordHash);
   if (!ok) return res.status(401).json({ error: 'Onjuiste inloggegevens' });
-  const token = await createSession(email, user.id);
-  return res.status(200).json({ user: publicUser(user), token });
+  user = await ensureUserHasTenant(user);
+  const tenant = await loadTenant(user.tenantId);
+  const token = await createSession(email, user.id, user.tenantId);
+  return res.status(200).json({ user: publicUser(user), tenant: publicTenant(tenant), token });
 }
 
 async function me(req, res) {
   const session = await auth.getSession(req);
   if (!session) return res.status(401).json({ error: 'Niet ingelogd' });
-  const user = await auth.kvGet(auth.KV_USER_PREFIX + session.email);
+  let user = await auth.kvGet(auth.KV_USER_PREFIX + session.email);
   if (!user) return res.status(401).json({ error: 'Account niet gevonden' });
-  return res.status(200).json({ user: publicUser(user) });
+  user = await ensureUserHasTenant(user);
+  const tenant = await loadTenant(user.tenantId);
+  return res.status(200).json({ user: publicUser(user), tenant: publicTenant(tenant) });
 }
 
 async function logout(req, res) {
@@ -179,11 +305,14 @@ async function createUser(req, res) {
   const existing = await auth.kvGet(auth.KV_USER_PREFIX + email);
   if (existing) return res.status(409).json({ error: 'Er bestaat al een account voor dit email-adres' });
   const user = await newUserRecord(email, naam, password, {
+    tenantId: session.tenantId,
+    role: 'member',
     createdBy: session.email,
     mustChangePassword: true,
   });
   await auth.kvSet(auth.KV_USER_PREFIX + email, user);
-  await appendUserIndex(email);
+  await appendGlobalUserIndex(email);
+  await appendTenantUserIndex(session.tenantId, email);
   return res.status(200).json({
     user: publicUser(user),
     password: generated ? password : undefined,
@@ -196,11 +325,22 @@ async function createUser(req, res) {
 async function listUsers(req, res) {
   const session = await auth.requireAuth(req, res);
   if (session === false) return;
-  const emails = await getUsersIndex();
+  const emails = await getTenantUsersIndex(session.tenantId);
+  // Migratie: als de tenant-index nog leeg is maar deze user wel in de
+  // legacy-tenant zit, bouw de tenant-index op uit de globale index.
+  if (emails.length === 0 && session.tenantId === auth.LEGACY_TENANT_ID) {
+    const all = await getGlobalUsersIndex();
+    for (const e of all) {
+      let u = await auth.kvGet(auth.KV_USER_PREFIX + e);
+      if (!u) continue;
+      u = await ensureUserHasTenant(u);
+      if (u.tenantId === auth.LEGACY_TENANT_ID) emails.push(e);
+    }
+  }
   const users = [];
   for (const e of emails) {
     const u = await auth.kvGet(auth.KV_USER_PREFIX + e);
-    if (u) users.push(publicUser(u));
+    if (u && u.tenantId === session.tenantId) users.push(publicUser(u));
   }
   return res.status(200).json({ users });
 }
@@ -212,10 +352,16 @@ async function deleteUser(req, res) {
   const email = String(body.email || '').trim().toLowerCase();
   if (!email) return res.status(400).json({ error: 'Email verplicht' });
   if (email === session.email) return res.status(400).json({ error: 'Je kunt je eigen account niet verwijderen' });
-  const count = (await getUsersIndex()).length;
-  if (count <= 1) return res.status(400).json({ error: 'Kan niet de laatste gebruiker verwijderen' });
+  const target = await auth.kvGet(auth.KV_USER_PREFIX + email);
+  if (!target) return res.status(404).json({ error: 'Account niet gevonden' });
+  if (target.tenantId !== session.tenantId) {
+    return res.status(403).json({ error: 'Account hoort niet bij jouw tenant' });
+  }
+  const count = (await getTenantUsersIndex(session.tenantId)).length;
+  if (count <= 1) return res.status(400).json({ error: 'Kan niet de laatste gebruiker van je tenant verwijderen' });
   await auth.kvDel(auth.KV_USER_PREFIX + email);
-  await removeUserIndex(email);
+  await removeGlobalUserIndex(email);
+  await removeTenantUserIndex(session.tenantId, email);
   return res.status(200).json({ ok: true });
 }
 
@@ -227,6 +373,9 @@ async function resetPassword(req, res) {
   if (!email) return res.status(400).json({ error: 'Email verplicht' });
   const user = await auth.kvGet(auth.KV_USER_PREFIX + email);
   if (!user) return res.status(404).json({ error: 'Account niet gevonden' });
+  if (user.tenantId !== session.tenantId) {
+    return res.status(403).json({ error: 'Account hoort niet bij jouw tenant' });
+  }
   const newPw = generateTempPassword(12);
   user.salt = auth.makeSalt();
   user.passwordHash = await auth.hashPassword(newPw, user.salt);
@@ -250,6 +399,7 @@ module.exports = async function handler(req, res) {
   try {
     if (action === 'needs-bootstrap' && (req.method === 'GET' || req.method === 'POST')) return needsBootstrap(req, res);
     if (action === 'bootstrap' && req.method === 'POST') return bootstrap(req, res);
+    if (action === 'register' && req.method === 'POST') return register(req, res);
     if (action === 'login' && req.method === 'POST') return login(req, res);
     if (action === 'me' && (req.method === 'GET' || req.method === 'POST')) return me(req, res);
     if (action === 'logout' && req.method === 'POST') return logout(req, res);

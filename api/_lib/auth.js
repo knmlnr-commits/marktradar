@@ -1,19 +1,41 @@
-// Gedeelde helpers voor api/auth.js, api/state.js en api/assignments.js.
+// Gedeelde helpers voor api/auth.js, api/state.js, api/assignments.js, api/tenant.js.
 //
 // Backend wordt automatisch gekozen:
 //   - REDIS_URL (TCP via 'redis' npm) - Vercel "Redis" marketplace, Redis Cloud
 //   - KV_REST_API_URL + KV_REST_API_TOKEN (HTTPS REST) - Vercel KV / Upstash
 // Eerstgenoemde voorkeur als beide aanwezig zijn (lagere latency na warme start).
+//
+// Vanaf v1.12 is de omgeving multi-tenant: elke email krijgt bij registratie
+// een eigen tenant. State, assignments en gebruikers zijn per-tenant gescoped.
+// Tenants kunnen hun eigen markt-scope (subset van instellingen) definieren.
 
-const { scrypt: scryptCb, randomBytes, timingSafeEqual } = require('crypto');
+const { scrypt: scryptCb, randomBytes, timingSafeEqual, createHash } = require('crypto');
 const { promisify } = require('util');
 const scrypt = promisify(scryptCb);
 
 const KV_USER_PREFIX = 'marktradar:user:';
 const KV_SESSION_PREFIX = 'marktradar:session:';
 const KV_USERS_INDEX = 'marktradar:users:index';
+const KV_TENANTS_INDEX = 'marktradar:tenants:index';
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const SESSION_TTL_SEC = 30 * 24 * 60 * 60;
+
+// Default-tenant voor pre-multi-tenant data. Bestaande state/assignments/users
+// zonder tenantId worden hieronder ingelezen tijdens migratie.
+const LEGACY_TENANT_ID = 'gericall';
+
+function tenantMetaKey(tenantId) { return 'marktradar:tenant:' + tenantId + ':meta'; }
+function tenantUsersIndexKey(tenantId) { return 'marktradar:tenant:' + tenantId + ':users:index'; }
+function tenantStateKey(tenantId, name) { return 'marktradar:tenant:' + tenantId + ':state:v1:' + name; }
+function tenantAssignmentsKey(tenantId) { return 'marktradar:tenant:' + tenantId + ':assignments:v1'; }
+
+function slugifyEmailForTenant(email) {
+  const e = String(email || '').toLowerCase().trim();
+  // 8-byte hash (16 hex tekens) is uniek genoeg voor onze schaal en geeft
+  // korte, voorspelbare keys zonder de email zelf in de key te hebben.
+  const hash = createHash('sha256').update(e).digest('hex').slice(0, 16);
+  return 't_' + hash;
+}
 
 function hasRedisUrl() { return !!process.env.REDIS_URL; }
 function hasRestKv() { return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN); }
@@ -151,6 +173,8 @@ async function getSession(req) {
       await kvDel(KV_SESSION_PREFIX + token).catch(() => {});
       return null;
     }
+    // Migratie: oude sessies zonder tenantId krijgen LEGACY_TENANT_ID
+    if (!session.tenantId) session.tenantId = LEGACY_TENANT_ID;
     return { ...session, token };
   } catch (e) {
     if (e.code === 'NO_KV') return null;
@@ -171,8 +195,15 @@ module.exports = {
   KV_USER_PREFIX,
   KV_SESSION_PREFIX,
   KV_USERS_INDEX,
+  KV_TENANTS_INDEX,
   SESSION_TTL_MS,
   SESSION_TTL_SEC,
+  LEGACY_TENANT_ID,
+  tenantMetaKey,
+  tenantUsersIndexKey,
+  tenantStateKey,
+  tenantAssignmentsKey,
+  slugifyEmailForTenant,
   kvConfigured,
   kvGet,
   kvSet,

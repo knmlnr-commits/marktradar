@@ -1,10 +1,9 @@
-// Eigenaar-toewijzingen per instelling. Auth vereist zodra Vercel KV
-// geconfigureerd is; zonder KV werkt deze endpoint niet en valt de client
-// terug op localStorage + de statische data/assignments.json baseline.
+// Eigenaar-toewijzingen per instelling, per-tenant gescoped. Auth vereist
+// zodra Vercel KV geconfigureerd is; zonder KV werkt deze endpoint niet
+// en valt de client terug op localStorage + de statische
+// data/assignments.json baseline.
 
 const auth = require('./_lib/auth');
-
-const KEY = 'marktradar:assignments:v1';
 
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
@@ -14,6 +13,7 @@ module.exports = async function handler(req, res) {
     }
     const session = await auth.requireAuth(req, res);
     if (session === false) return;
+    const KEY = auth.tenantAssignmentsKey(session.tenantId);
 
     if (req.method === 'GET') {
       const value = (await auth.kvGet(KEY)) || {};
