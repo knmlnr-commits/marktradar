@@ -228,6 +228,18 @@ body{
 .signal-type.contract{background:var(--green-light);color:var(--green)}
 .signal-type.uitbreiding{background:var(--green-light);color:var(--green)}
 .signal-type.attentie{background:var(--red-light);color:#9c2f2f}
+.overlay-owner-strip{padding:10px 18px;background:var(--grey-50);border-bottom:1px solid var(--grey-150)}
+.overlay-owner-strip .owner-block{margin:0;padding:0;background:transparent;border:none}
+.activity-timeline{display:flex;flex-direction:column;gap:0}
+.activity-row{display:grid;grid-template-columns:90px 26px 1fr;gap:10px;padding:10px 12px;border-bottom:1px solid var(--grey-150);align-items:start}
+.activity-row:last-child{border-bottom:none}
+.activity-row.urg-hoog{background:rgba(196,61,61,.04)}
+.activity-row.urg-middel{background:rgba(232,119,34,.04)}
+.activity-date{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--grey-700)}
+.activity-icon{font-size:.95rem;text-align:center}
+.activity-titel{font-weight:600;font-size:.86rem;color:var(--grey-900);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.activity-sub{font-size:.78rem;color:var(--grey-700);margin-top:3px;line-height:1.45}
+.activity-bron{font-size:.7rem;color:var(--grey-500);margin-top:4px;font-family:'DM Mono',monospace}
 .signal-urgency{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   display:inline-flex;align-items:center;gap:4px;color:var(--grey-600);}
 .signal-urgency .dot{width:6px;height:6px;border-radius:50%}
@@ -13271,6 +13283,97 @@ function renderCrmBody(i){
     <div><div class="acc-sub-title">Bijlagen</div>${bsHtml}</div>`;
 }
 
+// ============== CRM-best-practice klantbeeld (v1.14.2) ==============
+// 5 secties + header (i.p.v. 7 accordions met overlap):
+//   Acties | Pipeline & opportunity | Mensen | Activiteit | Bedrijfsinfo
+// Header toont owner + status + lead-score (CRM-standaard: kerngegevens
+// altijd zichtbaar, niet weggestopt in een accordion).
+
+function renderPipelineBody(i){
+  // Opportunity-tekst + 4-lens scoring + (indien aanwezig) PipeDrive deals/leads.
+  let crmPipelineHtml = '';
+  if(i.crm){
+    const c = i.crm;
+    const dealsHtml = c.deals.length === 0 ? '<div class="no-data">Geen deals.</div>' :
+      `<div class="crm-deals">${c.deals.map(d => `
+        <div class="crm-deal">
+          <div class="crm-deal-head">
+            <span class="crm-deal-titel">${escapeHtml(d.titel||'')}</span>
+            <span class="crm-deal-status status-${(d.status||'').toLowerCase()}">${escapeHtml(d.status||'')}</span>
+          </div>
+          <div class="crm-deal-meta">${escapeHtml(d.pijplijn||'')} &middot; ${escapeHtml(d.stadium||'')}${d.waarde ? ' &middot; ' + d.waarde.toLocaleString('nl-NL') + ' EUR' : ''}${d.bijgewerkt ? ' &middot; bijgewerkt ' + d.bijgewerkt : ''}</div>
+          ${(d.labels||[]).length ? `<div class="crm-deal-labels">${d.labels.map(l => `<span class="crm-label">${escapeHtml(l)}</span>`).join('')}</div>` : ''}
+        </div>`).join('')}</div>`;
+    const leadsHtml = (c.leads || []).length === 0 ? '' :
+      `<div style="margin-top:10px"><div class="acc-sub-title">Leads (${c.leads.length})</div><div class="crm-deals">${c.leads.map(l => `
+        <div class="crm-deal">
+          <div class="crm-deal-head"><span class="crm-deal-titel">${escapeHtml(l.titel||'')}</span></div>
+          <div class="crm-deal-meta">${escapeHtml(l.bron||'')}${l.waarde ? ' &middot; ' + l.waarde.toLocaleString('nl-NL') + ' EUR' : ''}</div>
+        </div>`).join('')}</div></div>`;
+    crmPipelineHtml = `
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)">
+        <div class="crm-header" style="margin-bottom:10px">
+          <span class="crm-status-pill crm-status-${c.crmStatus}">${escapeHtml(CRM_STATUS_LABEL[c.crmStatus]||c.crmStatus)}</span>
+          <span class="crm-engagement">engagement ${c.engagement}</span>
+          ${c.accountOwner ? `<span class="crm-owner">PD-eigenaar ${escapeHtml(c.accountOwner)}</span>` : ''}
+          <span class="crm-pdid">PD #${c.pipedriveOrgId}</span>
+        </div>
+        <div class="acc-sub-title">CRM pipeline (${c.deals.length})</div>${dealsHtml}${leadsHtml}
+      </div>`;
+  }
+  return renderGericallContextBody(i) + renderScoringPanel(i) + crmPipelineHtml;
+}
+
+function renderActivityBody(i, sigs){
+  // Chronologische tijdlijn van markt-signalen + CRM-notities + CRM-activiteiten.
+  const items = [];
+  (sigs || []).forEach(s => items.push({
+    datum: s.datum, kind: 'signal', urg: s.urgentie,
+    titel: s.headline || '',
+    sub: (s.type ? s.type + ' · ' : '') + (s.summary || '').slice(0, 220),
+    bron: s.bron || '',
+  }));
+  if(i.crm){
+    (i.crm.notities || []).forEach(n => items.push({
+      datum: n.datum, kind: 'notitie',
+      titel: 'Notitie' + (n.gebruiker ? ' · ' + n.gebruiker : ''),
+      sub: (n.tekst || '').slice(0, 240) + ((n.tekst||'').length > 240 ? '…' : ''),
+    }));
+    (i.crm.activiteiten || []).forEach(a => items.push({
+      datum: a.datum, kind: 'activiteit',
+      titel: (a.type || 'Activiteit') + (a.onderwerp ? ': ' + a.onderwerp : ''),
+      sub: '',
+    }));
+  }
+  if(items.length === 0) return '<div class="dmu-empty">Geen recente activiteit. Voeg een actie toe of wacht op een marktsignaal.</div>';
+  items.sort((a, b) => (b.datum || '').localeCompare(a.datum || ''));
+  const kindIcon = { signal: '⚡', notitie: '📝', activiteit: '📞' };
+  return `<div class="activity-timeline">${items.slice(0, 25).map(it => `
+    <div class="activity-row activity-${it.kind}${it.urg ? ' urg-' + it.urg : ''}">
+      <div class="activity-date"><strong>${escapeHtml(it.datum || '?')}</strong></div>
+      <div class="activity-icon">${kindIcon[it.kind] || '•'}</div>
+      <div class="activity-body">
+        <div class="activity-titel">${escapeHtml(it.titel)}${it.urg ? ` <span class="signal-urgency ${it.urg}" style="font-size:.62rem"><span class="dot"></span>${it.urg}</span>` : ''}</div>
+        ${it.sub ? `<div class="activity-sub">${escapeHtml(it.sub)}</div>` : ''}
+        ${it.bron ? `<div class="activity-bron">bron: ${escapeHtml(it.bron)}</div>` : ''}
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function renderBedrijfsinfoBody(i){
+  // Organisatie-statics + ANW/IT + verbanden + CRM-bijlagen samenvatting.
+  let bijlagenHtml = '';
+  if(i.crm && i.crm.bijlagenSamenvatting){
+    const bs = i.crm.bijlagenSamenvatting;
+    bijlagenHtml = (bs.aantal||0) === 0 ? '' : `
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)">
+        <div class="acc-sub-title">CRM bijlagen</div>
+        <div class="crm-row"><strong>${bs.aantal}</strong> bestanden &middot; offerte ${bs.types?.offerte||0}, overeenkomst ${bs.types?.overeenkomst||0}, brochure ${bs.types?.brochure||0}, anders ${bs.types?.anders||0}${bs.laatsteBestand ? ' &middot; laatste: ' + escapeHtml(bs.laatsteBestand) + ' (' + escapeHtml(bs.laatsteUpload || '-') + ')' : ''}</div>
+      </div>`;
+  }
+  return renderKerngetallenBody(i) + renderAnwItBody(i) + bijlagenHtml;
+}
+
 function openInstelling(id){
   const i = getInstelling(id);
   if(!i) return;
@@ -13314,30 +13417,24 @@ function openInstelling(id){
   const tc = todoCounts(i.id);
   const dmuMerged = combinedDmu(i);
   const dmuCount = dmuMerged.length + (i.specialisten || []).length + (i.directie || []).length;
+  const activityCount = sigs.length + (i.crm ? (i.crm.notities||[]).length + (i.crm.activiteiten||[]).length : 0);
+  const dealsCount = i.crm ? (i.crm.deals||[]).length : 0;
   const websiteHtml = i.website ? `<div style="padding:10px 18px 16px"><a href="${escapeHtml(i.website)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--orange-dark);font-weight:600;text-decoration:none">${escapeHtml(i.website.replace('https://','').replace('http://',''))} &#x2197;</a></div>` : '';
-  const html = headHtml + `
+  // CRM best practice: eigenaar zit in de header, niet in een accordion.
+  const ownerBlockHtml = `<div class="overlay-owner-strip">${renderOwnerBlock(i)}</div>`;
+  const html = headHtml + ownerBlockHtml + `
     <div class="overlay-body">
       ${accordion({
-        icon: '&#9784;', title: 'Eigenaar &amp; acties',
+        icon: '&#9745;', title: 'Acties',
         meta: tc.open ? (tc.open + ' open') : (tc.done ? tc.done + ' afgerond' : 'geen acties'),
         open: true,
-        body: renderOwnerBlock(i) + renderTodosBody(i)
+        body: renderTodosBody(i)
       })}
       ${accordion({
-        icon: '&#9733;', title: 'Scoring &amp; opportunity',
-        meta: 'lead-score ' + (i.leadScore || 0),
+        icon: '&#9733;', title: 'Pipeline &amp; opportunity',
+        meta: 'lead-score ' + (i.leadScore || 0) + (dealsCount ? ' · ' + dealsCount + ' deal' + (dealsCount === 1 ? '' : 's') : ''),
         open: true,
-        body: renderScoringPanel(i) + renderGericallContextBody(i)
-      })}
-      ${accordion({
-        icon: '&#9636;', title: 'Organisatie',
-        meta: (i.aantalBedden ? i.aantalBedden.toLocaleString('nl-NL') + ' bedden' : '') + (i.locaties ? ' &middot; ' + i.locaties + ' loc.' : ''),
-        body: renderKerngetallenBody(i)
-      })}
-      ${accordion({
-        icon: '&#9881;', title: 'ANW &amp; IT',
-        meta: i.anwLeverancier || i.anwModelKort || 'onbekend',
-        body: renderAnwItBody(i)
+        body: renderPipelineBody(i)
       })}
       ${accordion({
         icon: '&#9758;', title: 'Mensen',
@@ -13345,14 +13442,14 @@ function openInstelling(id){
         body: renderMensenBody(i)
       })}
       ${accordion({
-        icon: '&#9745;', title: 'CRM (PipeDrive)',
-        meta: i.crm ? (i.crm.crmStatus + ' · engagement ' + i.crm.engagement) : 'geen data',
-        body: renderCrmBody(i)
+        icon: '&#9889;', title: 'Activiteit',
+        meta: activityCount + (activityCount === 1 ? ' item' : ' items'),
+        body: renderActivityBody(i, sigs)
       })}
       ${accordion({
-        icon: '&#9889;', title: 'Recente signalen',
-        meta: sigs.length + (sigs.length === 1 ? ' signaal' : ' signalen'),
-        body: renderSignalenBody(sigs)
+        icon: '&#9636;', title: 'Bedrijfsinfo',
+        meta: (i.aantalBedden ? i.aantalBedden.toLocaleString('nl-NL') + ' bedden' : '') + (i.locaties ? ' &middot; ' + i.locaties + ' loc.' : '') + (i.anwLeverancier ? ' &middot; ' + i.anwLeverancier : ''),
+        body: renderBedrijfsinfoBody(i)
       })}
       ${websiteHtml}
     </div>`;
