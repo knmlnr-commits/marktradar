@@ -898,8 +898,10 @@ body{
   .refresh-modal .btn-row{flex-wrap:wrap}
   .refresh-modal button{flex:1 1 45%}
   .topbar-meta{display:none}
-  .refresh-btn{padding:6px 10px;font-size:.7rem}
-  .refresh-btn svg{display:none}
+  .refresh-btn{padding:6px 8px;font-size:.7rem;min-width:0}
+  /* Tandwiel-icoon mag op klein scherm juist wél zichtbaar blijven —
+     v1.14.x: tekst 'Beheer' wordt al verborgen via .btn-label, dus we
+     houden de svg zodat het een herkenbare icon-button is. */
   .topbar-title{font-size:.95rem}
   .topbar-sub{display:none}
   .version-pill{margin-left:6px;font-size:.62rem}
