@@ -13247,13 +13247,13 @@ function diffAgainstBase(instId, formValues){
 }
 
 function accordion({ icon, title, meta, body, open, editable }){
-  // Wanneer editable=true tonen we een ✎-knop in de summary die de
-  // edit-modus van de instelling start. Knop heeft data-acc-edit zodat
-  // bindOverlayChrome er een handler op kan zetten.
+  // <details name="klantbeeld-acc"> zorgt dat openen van één accordion
+  // alle andere in dezelfde groep dichtklapt (HTML5 exclusive-accordion-
+  // gedrag, native browser-feature). Resultaat: altijd 1 sectie zichtbaar.
   const editBtn = editable
     ? `<button type="button" class="acc-edit-btn" data-acc-edit="1" title="Bewerk velden" aria-label="Bewerk">&#9998;</button>`
     : '';
-  return `<details class="acc"${open ? ' open' : ''}>
+  return `<details class="acc" name="klantbeeld-acc"${open ? ' open' : ''}>
     <summary>
       <span class="acc-icon">${icon}</span>
       <span class="acc-title">${title}${meta ? ` <span class="acc-meta">${meta}</span>` : ''}</span>
@@ -13631,25 +13631,25 @@ function openInstelling(id, ctx){
       ${accordion({
         icon: '&#9745;', title: 'Todo',
         meta: tc.open ? (tc.open + ' open') : (tc.done ? tc.done + ' afgerond' : 'geen todo\'s'),
-        open: ctxCfg.open.includes('acties'),
+        open: ctxCfg.open[0] === 'acties',
         body: renderTodosBody(i)
       })}
       ${accordion({
         icon: '&#9733;', title: 'Pipeline &amp; opportunity',
         meta: 'lead-score ' + (i.leadScore || 0) + (dealsCount ? ' · ' + dealsCount + ' deal' + (dealsCount === 1 ? '' : 's') : ''),
-        open: ctxCfg.open.includes('pipeline'),
+        open: ctxCfg.open[0] === 'pipeline',
         body: renderPipelineBody(i)
       })}
       ${accordion({
         icon: '&#9758;', title: 'Mensen',
         meta: dmuCount + ' personen',
-        open: ctxCfg.open.includes('mensen'),
+        open: ctxCfg.open[0] === 'mensen',
         body: renderMensenBody(i)
       })}
       ${accordion({
         icon: '&#9889;', title: 'Activiteit',
         meta: activityCount + (activityCount === 1 ? ' item' : ' items'),
-        open: ctxCfg.open.includes('activiteit'),
+        open: ctxCfg.open[0] === 'activiteit',
         body: renderActivityBody(i, sigs)
       })}
       ${accordion({
