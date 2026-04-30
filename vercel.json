@@ -4,5 +4,8 @@
     { "source": "/app/", "destination": "/marktradar.html" },
     { "source": "/app/:slug", "destination": "/marktradar.html" },
     { "source": "/app/:slug/", "destination": "/marktradar.html" }
+  ],
+  "crons": [
+    { "path": "/api/signals/refresh", "schedule": "0 6 * * 1" }
   ]
 }

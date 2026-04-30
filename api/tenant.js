@@ -37,11 +37,23 @@ function publicTenant(t) {
     marktBeschrijving: t.marktBeschrijving || null,
     entiteiten: Array.isArray(t.entiteiten) ? t.entiteiten : null,
     klanten: Array.isArray(t.klanten) ? t.klanten : [],
+    feeds: Array.isArray(t.feeds) ? t.feeds : [],
     onboardingDone: !!t.onboardingDone,
     market: Array.isArray(t.market) ? t.market : null,
     marketDefined: !!t.marketDefined,
   };
 }
+
+// Default feed-set voor de GeriCall seed-tenant. URL's verifieer je
+// handmatig in Beheer > Werkomgeving voordat de eerste cron-run draait;
+// publieke RSS-URL's kunnen verschuiven en niet alle bronnen exposen
+// een feed (TenderNed bv. niet — die heeft een aparte API).
+const GERICALL_DEFAULT_FEEDS = [
+  { url: 'https://www.skipr.nl/feed/', label: 'Skipr', type: 'rss' },
+  { url: 'https://www.zorgvisie.nl/feed/', label: 'Zorgvisie', type: 'rss' },
+  { url: 'https://www.icthealth.nl/feed/', label: 'ICTHealth', type: 'rss' },
+  { url: 'https://www.nationalezorggids.nl/rss-nieuws.xml', label: 'NationaleZorggids', type: 'rss' },
+];
 
 // Versie zonder gevoelige velden voor publieke (unauth) lookup: alleen
 // brandings-informatie zodat /app/<slug> de juiste naam kan tonen.
@@ -72,6 +84,10 @@ async function loadOrCreate(tenantId) {
       t.onboardingDone = true;
       t.propositie = 'GeriCall · ANW-zorg & VVT-marktintelligentie voor zorgleveranciers';
       t.marktNaam = 'VVT (verpleeg-, verzorgings- en thuiszorg)';
+      // Seed met een default feed-set zodat de wekelijkse cron meteen
+      // werkt voor de GeriCall-tenant. Beheer > Werkomgeving kan ze later
+      // aanvullen of verwijderen.
+      t.feeds = GERICALL_DEFAULT_FEEDS.slice();
       await auth.kvSet(auth.tenantSlugKey(auth.LEGACY_TENANT_SLUG), tenantId);
     }
     await auth.kvSet(auth.tenantMetaKey(tenantId), t);
@@ -238,6 +254,34 @@ module.exports = async function handler(req, res) {
       t.updatedAt = Date.now(); t.updatedBy = session.email;
       await auth.kvSet(auth.tenantMetaKey(session.tenantId), t);
       return res.status(200).json({ tenant: publicTenant(t) });
+    }
+    if (action === 'set-feeds' && req.method === 'POST') {
+      const body = await readJsonBody(req);
+      const feeds = Array.isArray(body.feeds) ? body.feeds : null;
+      if (!feeds) return res.status(400).json({ error: 'feeds-array verplicht' });
+      // Normaliseer + valideer URL's lichtjes
+      const cleaned = [];
+      for (const f of feeds.slice(0, 50)) {
+        if (!f || typeof f !== 'object') continue;
+        const url = String(f.url || '').trim();
+        if (!url || !/^https?:\/\//i.test(url)) continue;
+        cleaned.push({
+          url: url.slice(0, 500),
+          label: String(f.label || '').slice(0, 100).trim() || new URL(url).hostname,
+          type: ['rss','atom'].includes(f.type) ? f.type : 'rss',
+        });
+      }
+      const t = await loadOrCreate(session.tenantId);
+      t.feeds = cleaned;
+      t.updatedAt = Date.now(); t.updatedBy = session.email;
+      await auth.kvSet(auth.tenantMetaKey(session.tenantId), t);
+      return res.status(200).json({ tenant: publicTenant(t), aantal: cleaned.length });
+    }
+    if (action === 'last-refresh' && (req.method === 'GET' || req.method === 'POST')) {
+      // Geeft het log-record van de laatste cron-run terug (of null als nog niet
+      // gedraaid). Wordt door de Beheer-UI gebruikt om status te tonen.
+      const log = await auth.kvGet('marktradar:tenant:' + session.tenantId + ':signals:lastRun');
+      return res.status(200).json({ lastRun: log || null });
     }
     if (action === 'set-onboarding-done' && req.method === 'POST') {
       const t = await loadOrCreate(session.tenantId);
