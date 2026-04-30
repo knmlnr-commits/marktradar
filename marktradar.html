@@ -484,6 +484,8 @@ body{
 .acc summary::-webkit-details-marker{display:none}
 .acc summary:hover{background:var(--orange-pale);color:var(--orange-dark)}
 .acc[open] summary{background:var(--orange-pale);color:var(--orange-dark);border-bottom:1px solid var(--orange)}
+.acc-edit-btn{margin-left:auto;margin-right:8px;width:26px;height:26px;border-radius:6px;border:1px solid var(--grey-200);background:var(--white);color:var(--grey-600);font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.acc-edit-btn:hover{background:var(--orange-pale);color:var(--orange-dark);border-color:var(--orange)}
 .acc-icon{display:inline-flex;align-items:center;justify-content:center;
   width:28px;height:28px;border-radius:8px;background:var(--orange-pale);color:var(--orange-dark);
   font-size:.95rem;flex-shrink:0;border:1px solid rgba(232,119,34,.2)}
@@ -1046,15 +1048,15 @@ body{
 
   <div class="scope-bar" id="scopeBar" style="display:none">
     <span class="scope-label">Toon:</span>
-    <button class="scope-pill" data-scope="mine">Mijn acties</button>
+    <button class="scope-pill" data-scope="mine">Mijn todo</button>
     <button class="scope-pill active" data-scope="all">Alles</button>
-    <span class="scope-help">Filtert acties, instellingen en signalen op jouw eigenaarschap.</span>
+    <span class="scope-help">Filtert todo's, instellingen en signalen op jouw eigenaarschap.</span>
   </div>
 
   <div class="tabs">
     <button class="tab active" data-tab="acties">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Acties <span class="tab-count" id="tabCountActies">0</span>
+      Todo <span class="tab-count" id="tabCountActies">0</span>
     </button>
     <button class="tab" data-tab="signalen">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h2"/><path d="M20 12h2"/><path d="M12 2v2"/><path d="M12 20v2"/><circle cx="12" cy="12" r="4"/></svg>
@@ -1125,7 +1127,7 @@ body{
         <div class="chip-row" id="actiesOwnerChips"></div>
         <div class="toolbar-spacer"></div>
         <select class="sort-select" id="actiesFilter">
-          <option value="open">Alleen open acties</option>
+          <option value="open">Alleen open todo's</option>
           <option value="all">Open + afgerond</option>
           <option value="done">Alleen afgerond</option>
         </select>
@@ -12813,14 +12815,14 @@ function renderTodosBodyOnly(inst){
     })).join('');
   return `
     <div>
-      <div class="acc-sub-title">Acties / todos</div>
+      <div class="acc-sub-title">Todo's</div>
       <div class="todo-add">
-        <input type="text" class="todo-input" id="todoInput-${inst.id}" placeholder="Nieuwe actie&hellip; (Enter om toe te voegen)" maxlength="200">
-        <select class="todo-owner-select" id="todoOwner-${inst.id}" title="Eigenaar van deze actie">${ownerOptions}</select>
+        <input type="text" class="todo-input" id="todoInput-${inst.id}" placeholder="Nieuwe todo&hellip; (Enter om toe te voegen)" maxlength="200">
+        <select class="todo-owner-select" id="todoOwner-${inst.id}" title="Eigenaar van deze todo">${ownerOptions}</select>
         <button class="todo-add-btn" type="button" id="todoAddBtn-${inst.id}">Toevoegen</button>
       </div>
       <div class="todo-list" style="margin-top:10px">
-        ${open.length === 0 && done.length === 0 ? '<div class="dmu-empty">Geen acties; voeg er een toe.</div>' : ''}
+        ${open.length === 0 && done.length === 0 ? '<div class="dmu-empty">Geen todo\'s; voeg er een toe.</div>' : ''}
         ${open.map(renderOne).join('')}
         ${done.length ? `<div class="todo-divider">Afgerond (${done.length})</div>${done.map(renderOne).join('')}` : ''}
       </div>
@@ -13157,11 +13159,18 @@ function diffAgainstBase(instId, formValues){
   return diff;
 }
 
-function accordion({ icon, title, meta, body, open }){
+function accordion({ icon, title, meta, body, open, editable }){
+  // Wanneer editable=true tonen we een ✎-knop in de summary die de
+  // edit-modus van de instelling start. Knop heeft data-acc-edit zodat
+  // bindOverlayChrome er een handler op kan zetten.
+  const editBtn = editable
+    ? `<button type="button" class="acc-edit-btn" data-acc-edit="1" title="Bewerk velden" aria-label="Bewerk">&#9998;</button>`
+    : '';
   return `<details class="acc"${open ? ' open' : ''}>
     <summary>
       <span class="acc-icon">${icon}</span>
       <span class="acc-title">${title}${meta ? ` <span class="acc-meta">${meta}</span>` : ''}</span>
+      ${editBtn}
       <span class="acc-chev">&#9662;</span>
     </summary>
     <div class="acc-body">${body}</div>
@@ -13395,7 +13404,7 @@ function renderActivityBody(i, sigs){
       sub: '',
     }));
   }
-  if(items.length === 0) return '<div class="dmu-empty">Geen recente activiteit. Voeg een actie toe of wacht op een marktsignaal.</div>';
+  if(items.length === 0) return '<div class="dmu-empty">Geen recente activiteit. Voeg een todo toe of wacht op een marktsignaal.</div>';
   items.sort((a, b) => (b.datum || '').localeCompare(a.datum || ''));
   const kindIcon = { signal: '⚡', notitie: '📝', activiteit: '📞' };
   return `<div class="activity-timeline">${items.slice(0, 25).map(it => `
@@ -13435,7 +13444,7 @@ const OVERLAY_CTX = {
   instelling:  { label: 'Klantbeeld',          icon: '&#9636;', open: ['acties', 'pipeline'], color: 'var(--grey-600)' },
   signaal:     { label: 'Vanuit signaal',      icon: '&#9889;', open: ['activiteit', 'acties'], color: '#b94a3c' },
   opportunity: { label: 'Vanuit opportunity',  icon: '&#9733;', open: ['pipeline'], color: 'var(--orange)' },
-  actie:       { label: 'Vanuit actie',        icon: '&#9745;', open: ['acties'], color: '#5a8a5a' },
+  actie:       { label: 'Vanuit todo',         icon: '&#9745;', open: ['acties'], color: '#5a8a5a' },
 };
 
 function openInstelling(id, ctx){
@@ -13493,8 +13502,8 @@ function openInstelling(id, ctx){
   const html = headHtml + ownerBlockHtml + `
     <div class="overlay-body">
       ${accordion({
-        icon: '&#9745;', title: 'Acties',
-        meta: tc.open ? (tc.open + ' open') : (tc.done ? tc.done + ' afgerond' : 'geen acties'),
+        icon: '&#9745;', title: 'Todo',
+        meta: tc.open ? (tc.open + ' open') : (tc.done ? tc.done + ' afgerond' : 'geen todo\'s'),
         open: ctxCfg.open.includes('acties'),
         body: renderTodosBody(i)
       })}
@@ -13502,12 +13511,14 @@ function openInstelling(id, ctx){
         icon: '&#9733;', title: 'Pipeline &amp; opportunity',
         meta: 'lead-score ' + (i.leadScore || 0) + (dealsCount ? ' · ' + dealsCount + ' deal' + (dealsCount === 1 ? '' : 's') : ''),
         open: ctxCfg.open.includes('pipeline'),
+        editable: true,
         body: renderPipelineBody(i)
       })}
       ${accordion({
         icon: '&#9758;', title: 'Mensen',
         meta: dmuCount + ' personen',
         open: ctxCfg.open.includes('mensen'),
+        editable: true,
         body: renderMensenBody(i)
       })}
       ${accordion({
@@ -13519,6 +13530,7 @@ function openInstelling(id, ctx){
       ${accordion({
         icon: '&#9636;', title: 'Bedrijfsinfo',
         meta: (i.aantalBedden ? i.aantalBedden.toLocaleString('nl-NL') + ' bedden' : '') + (i.locaties ? ' &middot; ' + i.locaties + ' loc.' : '') + (i.anwLeverancier ? ' &middot; ' + i.anwLeverancier : ''),
+        editable: true,
         body: renderBedrijfsinfoBody(i)
       })}
       ${websiteHtml}
@@ -13563,6 +13575,17 @@ function bindOverlayChrome(i){
       openInstelling(i.id);
     });
   }
+  // Edit-knoppen in accordion-headers (per sectie discoverable).
+  // Click op de ✎ voorkomen dat het de <details> open/dicht klapt en
+  // start in plaats daarvan de edit-modus voor de hele instelling.
+  document.querySelectorAll('#overlayPanel .acc-edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      editingInstId = i.id;
+      openInstelling(i.id);
+    });
+  });
 }
 function bindDmuClickHandlers(i){
   const merged = combinedDmu(i);
@@ -13718,7 +13741,7 @@ async function checkKvHealth(){
 function stateResources(){
   return [
     { key: 'assignments',     label: 'Eigenaar-toewijzingen',  size: Object.keys(assignments).length,           remote: assignmentsRemoteAvailable },
-    { key: 'todos',           label: 'Acties / todos',          size: Object.values(todos).reduce((s,v)=>s+v.length,0), remote: todosRemoteAvailable },
+    { key: 'todos',           label: 'Todo\'s',                 size: Object.values(todos).reduce((s,v)=>s+v.length,0), remote: todosRemoteAvailable },
     { key: 'dmu-overrides',   label: 'Geimporteerde contacten', size: Object.values(dmuOverrides).reduce((s,v)=>s+v.length,0), remote: dmuOverridesRemoteAvailable },
     { key: 'overrides',       label: 'Bewerkte instellingen',   size: Object.keys(overrides).length,             remote: overridesRemoteAvailable },
     { key: 'dropdowns',       label: 'Custom dropdown-waarden', size: Object.values(dropdowns).reduce((s,v)=>s+v.length,0), remote: dropdownsRemoteAvailable },
