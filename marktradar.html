@@ -145,7 +145,8 @@ body{
 .user-badge .user-avatar{display:inline-flex;align-items:center;justify-content:center;
   width:22px;height:22px;border-radius:50%;background:var(--orange);color:white;
   font-size:.62rem;font-weight:700;font-family:'DM Mono',monospace}
-.user-badge .user-name{letter-spacing:0;text-transform:none}
+.user-badge .user-name{letter-spacing:0;text-transform:none;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:880px){.user-badge .user-name{max-width:90px}}
 .scope-bar{background:var(--orange-pale);border-bottom:1px solid var(--orange);
   padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--orange-dark);flex-wrap:wrap}
 .scope-label{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.66rem}
@@ -13554,7 +13555,10 @@ function renderUserBadge(){
     const initials = (currentUser.naam || '?').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
     document.getElementById('userBadgeAvatar').textContent = initials;
     const tNaam = currentTenant && currentTenant.naam ? currentTenant.naam : '';
-    document.getElementById('userBadgeName').textContent = tNaam ? (currentUser.naam + ' · ' + tNaam) : currentUser.naam;
+    // Alleen voornaam tonen in de badge (volledige naam + tenant via tooltip).
+    // Werkomgeving staat al in de topbar-sub naast het Radi-logo.
+    const voornaam = (currentUser.naam || '').split(' ')[0] || currentUser.naam || '';
+    document.getElementById('userBadgeName').textContent = voornaam;
     badge.style.display = '';
     badge.title = (tNaam ? ('Werkomgeving: ' + tNaam + ' — ') : '') + 'Klik voor wachtwoord wijzigen';
     // Topbar-branding: laat het Radi-logo (SVG) staan en update alleen de sub-tekst.
