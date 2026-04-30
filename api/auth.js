@@ -165,7 +165,7 @@ async function createSession(email, userId, tenantId) {
 
 async function loadTenant(tenantId) {
   if (!tenantId) return null;
-  const t = await auth.kvGet(auth.tenantMetaKey(tenantId));
+  let t = await auth.kvGet(auth.tenantMetaKey(tenantId));
   if (t) {
     // Migratie: tenants zonder slug krijgen on-the-fly een slug
     if (!t.slug) {
@@ -176,6 +176,9 @@ async function loadTenant(tenantId) {
         await auth.kvSet(auth.tenantMetaKey(tenantId), t);
       }
     }
+    // GeriCall canonical backfill (propositie / marktNaam / marktBeschrijving
+    // / feeds) zodat oude KV-records ook automatisch op nieuwe schema komen.
+    t = await auth.backfillGericallTenant(t);
     return t;
   }
   // Migratie: legacy-tenant zonder meta-record → on-the-fly aanmaken met
@@ -193,7 +196,7 @@ async function loadTenant(tenantId) {
     await auth.kvSet(auth.tenantMetaKey(tenantId), legacy);
     await auth.kvSet(auth.tenantSlugKey(auth.LEGACY_TENANT_SLUG), auth.LEGACY_TENANT_ID);
     await appendTenantIndex(tenantId);
-    return legacy;
+    return await auth.backfillGericallTenant(legacy);
   }
   return null;
 }

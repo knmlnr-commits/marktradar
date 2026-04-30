@@ -206,6 +206,45 @@ async function requireAuth(req, res) {
   return session;
 }
 
+// Canonical backfill voor de GeriCall seed-tenant. Hier centraal zodat
+// zowel api/auth.js (login + me) als api/tenant.js (info-endpoint)
+// dezelfde upgrade-paden volgen voor bestaande KV-records.
+const GERICALL_BACKFILL = {
+  naam: 'GeriCall',
+  propositie: 'GeriCall biedt VVT-organisaties 24/7 ANW-bereikbaarheid van specialisten ouderengeneeskunde, zodat hun eigen artsen geen avond-, nacht- en weekenddiensten hoeven te draaien.',
+  marktNaam: 'VVT — verpleeg-, verzorgings- en thuiszorg Nederland',
+  marktBeschrijving: 'Nederlandse VVT-instellingen met intramurale capaciteit (verpleeghuiszorg, GRZ, ELV) waar specialisten ouderengeneeskunde nodig zijn voor avond-, nacht- en weekendzorg. Focus op organisaties met 200+ cliënten waar eigen SO-capaciteit ontoereikend is voor 24/7 dekking; secundair de thuiszorg- en VPT-segmenten waar ANW-bereikbaarheid via samenwerkingsverbanden loopt (ThoeZ, AWIZ, NOB Green Deal).',
+  feeds: [
+    { url: 'https://www.skipr.nl/feed/', label: 'Skipr', type: 'rss' },
+    { url: 'https://www.zorgvisie.nl/feed/', label: 'Zorgvisie', type: 'rss' },
+    { url: 'https://www.icthealth.nl/feed/', label: 'ICTHealth', type: 'rss' },
+    { url: 'https://www.nationalezorggids.nl/rss-nieuws.xml', label: 'NationaleZorggids', type: 'rss' },
+  ],
+};
+const GERICALL_OLD_PROPOSITIES = ['GeriCall · ANW-zorg & VVT-marktintelligentie voor zorgleveranciers'];
+const GERICALL_OLD_MARKTNAAMEN = ['VVT (verpleeg-, verzorgings- en thuiszorg)'];
+
+async function backfillGericallTenant(t) {
+  if (!t || t.id !== LEGACY_TENANT_ID) return t;
+  let dirty = false;
+  if (!t.naam || t.naam === 'MarktRadar') { t.naam = GERICALL_BACKFILL.naam; dirty = true; }
+  if (!t.slug) { t.slug = LEGACY_TENANT_SLUG; dirty = true; await kvSet(tenantSlugKey(LEGACY_TENANT_SLUG), t.id).catch(() => {}); }
+  if (!t.onboardingDone) { t.onboardingDone = true; dirty = true; }
+  if (!t.propositie || GERICALL_OLD_PROPOSITIES.includes(t.propositie)) {
+    t.propositie = GERICALL_BACKFILL.propositie; dirty = true;
+  }
+  if (!t.marktNaam || GERICALL_OLD_MARKTNAAMEN.includes(t.marktNaam)) {
+    t.marktNaam = GERICALL_BACKFILL.marktNaam; dirty = true;
+  }
+  if (!t.marktBeschrijving) { t.marktBeschrijving = GERICALL_BACKFILL.marktBeschrijving; dirty = true; }
+  if (!Array.isArray(t.feeds) || t.feeds.length === 0) { t.feeds = GERICALL_BACKFILL.feeds.slice(); dirty = true; }
+  if (dirty) {
+    t.backfilledAt = Date.now();
+    await kvSet(tenantMetaKey(t.id), t).catch(() => {});
+  }
+  return t;
+}
+
 module.exports = {
   KV_USER_PREFIX,
   KV_SESSION_PREFIX,
@@ -235,4 +274,5 @@ module.exports = {
   bearerToken,
   getSession,
   requireAuth,
+  backfillGericallTenant,
 };

@@ -104,28 +104,8 @@ async function loadOrCreate(tenantId) {
     await auth.kvSet(auth.tenantMetaKey(tenantId), t);
     return t;
   }
-  // Backfill voor bestaande GeriCall-record: vul ontbrekende velden of
-  // upgrade oude default-waarden naar de nieuwe canonical waarden.
-  // Door alleen op LEEG of op een EXACTE oude default te checken blijven
-  // handmatige edits gerespecteerd.
-  if (tenantId === auth.LEGACY_TENANT_ID) {
-    let dirty = false;
-    if (!t.naam || t.naam === 'MarktRadar') { t.naam = 'GeriCall'; dirty = true; }
-    if (!t.slug) { t.slug = auth.LEGACY_TENANT_SLUG; dirty = true; await auth.kvSet(auth.tenantSlugKey(auth.LEGACY_TENANT_SLUG), tenantId); }
-    if (!t.onboardingDone) { t.onboardingDone = true; dirty = true; }
-    if (!t.propositie || GERICALL_OLD_PROPOSITIES.includes(t.propositie)) {
-      t.propositie = GERICALL_PROPOSITIE; dirty = true;
-    }
-    if (!t.marktNaam || GERICALL_OLD_MARKTNAAMEN.includes(t.marktNaam)) {
-      t.marktNaam = GERICALL_MARKTNAAM; dirty = true;
-    }
-    if (!t.marktBeschrijving) { t.marktBeschrijving = GERICALL_MARKTBESCHRIJVING; dirty = true; }
-    if (!Array.isArray(t.feeds) || t.feeds.length === 0) { t.feeds = GERICALL_DEFAULT_FEEDS.slice(); dirty = true; }
-    if (dirty) {
-      t.backfilledAt = Date.now();
-      await auth.kvSet(auth.tenantMetaKey(tenantId), t);
-    }
-  }
+  // Centrale GeriCall-backfill (zelfde helper die /api/auth ook gebruikt).
+  t = await auth.backfillGericallTenant(t);
   return t;
 }
 
