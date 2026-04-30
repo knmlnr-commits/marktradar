@@ -491,6 +491,23 @@ body{
 .acc[open] summary{background:var(--orange-pale);color:var(--orange-dark);border-bottom:1px solid var(--orange)}
 .acc-edit-btn{margin-left:auto;margin-right:8px;width:26px;height:26px;border-radius:6px;border:1px solid var(--grey-200);background:var(--white);color:var(--grey-600);font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
 .acc-edit-btn:hover{background:var(--orange-pale);color:var(--orange-dark);border-color:var(--orange)}
+/* Inline-edit widgets in het klantbeeld — overlay is altijd in edit-modus,
+   geen aparte toggle meer. Velden tonen als input/select/textarea, autosave
+   on blur/change. Visueel discreet (subtle border) zodat de overlay leesbaar
+   blijft, focus geeft oranje accent. */
+.inline-edit-input{width:100%;padding:6px 8px;font-family:inherit;font-size:inherit;color:inherit;
+  background:var(--white);border:1px solid transparent;border-radius:6px;outline:none;
+  transition:border-color .12s,background .12s;box-sizing:border-box}
+.inline-edit-input:hover{border-color:var(--grey-200);background:var(--grey-50)}
+.inline-edit-input:focus{border-color:var(--orange);background:var(--white);box-shadow:0 0 0 3px rgba(232,119,34,.12)}
+textarea.inline-edit-input{min-height:54px;resize:vertical;line-height:1.45}
+select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
+.inline-edit-saved-flash{animation:inlineEditFlash .8s ease}
+@keyframes inlineEditFlash{0%{background:rgba(45,157,120,.15)}100%{background:transparent}}
+.add-people-btn{padding:6px 12px;border-radius:6px;border:1px dashed var(--grey-300);background:var(--white);
+  color:var(--grey-700);font:inherit;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .12s;
+  display:inline-flex;align-items:center;gap:4px}
+.add-people-btn:hover{border-color:var(--orange);color:var(--orange-dark);background:var(--orange-pale)}
 .acc-icon{display:inline-flex;align-items:center;justify-content:center;
   width:28px;height:28px;border-radius:8px;background:var(--orange-pale);color:var(--orange-dark);
   font-size:.95rem;flex-shrink:0;border:1px solid rgba(232,119,34,.2)}
@@ -12801,11 +12818,12 @@ function renderDmuCard(p){
 
 function renderDmuSection(i){
   const dmu = combinedDmu(i);
+  const addBtn = `<button type="button" class="add-people-btn" data-add-people="dmu" data-inst-id="${escapeHtml(i.id)}">+ Contactpersoon</button>`;
   if(dmu.length === 0){
     return `
       <div class="overlay-section">
-        <div class="section-title">DMU &middot; Decision Making Unit</div>
-        <div class="dmu-empty">Geen DMU-data; voeg toe via wekelijkse verrijking.</div>
+        <div class="section-title" style="display:flex;align-items:center;gap:10px">DMU &middot; Decision Making Unit ${addBtn}</div>
+        <div class="dmu-empty">Geen contactpersonen; klik <strong>+ Contactpersoon</strong> om er een toe te voegen.</div>
       </div>`;
   }
   const groups = {};
@@ -12823,7 +12841,7 @@ function renderDmuSection(i){
       </div>`).join('');
   return `
     <div class="overlay-section">
-      <div class="section-title">DMU &middot; Decision Making Unit <span class="dmu-progress">${dmu.length} ${dmu.length === 1 ? 'persoon' : 'personen'}</span></div>
+      <div class="section-title" style="display:flex;align-items:center;gap:10px">DMU &middot; Decision Making Unit <span class="dmu-progress">${dmu.length} ${dmu.length === 1 ? 'persoon' : 'personen'}</span> ${addBtn}</div>
       ${groupHtml}
     </div>`;
 }
@@ -12896,11 +12914,12 @@ function renderTodosBodyOnly(inst){
 
 function renderSpecSection(i){
   const specs = i.specialisten || [];
+  const addBtn = `<button type="button" class="add-people-btn" data-add-people="spec" data-inst-id="${escapeHtml(i.id)}">+ Specialist</button>`;
   if(specs.length === 0){
     return `
       <div class="overlay-section">
-        <div class="section-title">Specialisten Ouderengeneeskunde</div>
-        <div class="dmu-empty">Geen SO-data; voeg toe via wekelijkse verrijking.</div>
+        <div class="section-title" style="display:flex;align-items:center;gap:10px">Specialisten Ouderengeneeskunde ${addBtn}</div>
+        <div class="dmu-empty">Geen specialisten bekend; klik <strong>+ Specialist</strong> om er een toe te voegen.</div>
       </div>`;
   }
   const byVak = {};
@@ -12915,7 +12934,7 @@ function renderSpecSection(i){
     </div>`).join('');
   return `
     <div class="overlay-section">
-      <div class="section-title">Specialisten Ouderengeneeskunde <span class="dmu-progress">${specs.length}</span></div>
+      <div class="section-title" style="display:flex;align-items:center;gap:10px">Specialisten Ouderengeneeskunde <span class="dmu-progress">${specs.length}</span> ${addBtn}</div>
       ${groupHtml}
     </div>`;
 }
@@ -13263,32 +13282,54 @@ function renderOwnerBlock(i){
     </div>`;
 }
 
+// Inline-edit helpers — alle widgets schrijven naar overrides via
+// data-inst-id/data-field. Save gebeurt op blur/change in saveInlineEdit().
+function ieNum(instId, field, value, attrs){
+  const a = attrs ? Object.entries(attrs).map(([k,v])=>`${k}="${escapeHtml(v)}"`).join(' ') : '';
+  return `<input type="number" class="inline-edit-input ie" data-inst-id="${escapeHtml(instId)}" data-field="${escapeHtml(field)}" data-type="number" value="${value === 0 || value ? value : ''}" ${a}>`;
+}
+function ieText(instId, field, value, ph){
+  return `<input type="text" class="inline-edit-input ie" data-inst-id="${escapeHtml(instId)}" data-field="${escapeHtml(field)}" value="${escapeHtml(value || '')}" placeholder="${escapeHtml(ph || '')}">`;
+}
+function ieTextarea(instId, field, value, ph){
+  return `<textarea class="inline-edit-input ie" data-inst-id="${escapeHtml(instId)}" data-field="${escapeHtml(field)}" placeholder="${escapeHtml(ph || '')}">${escapeHtml(value || '')}</textarea>`;
+}
+function ieDropdown(instId, field, ddKey, value){
+  return ddSelectHtml(ddKey, value, { 'class': 'dd-managed inline-edit-input ie', 'data-inst-id': instId, 'data-field': field });
+}
+function ieSegment(instId, segKey, on, label){
+  return `<label class="segment-tag ${on ? 'has' : ''}" style="cursor:pointer;display:inline-flex;align-items:center;gap:4px">
+    <input type="checkbox" class="ie ie-segment" data-inst-id="${escapeHtml(instId)}" data-seg="${escapeHtml(segKey)}" ${on ? 'checked' : ''} style="margin:0">
+    <span>${escapeHtml(label)}</span>
+  </label>`;
+}
+
 function renderKerngetallenBody(i){
   const segLabels = [{key:'vvt',label:'VVT'},{key:'vpt',label:'VPT'},{key:'thuiszorg',label:'Thuiszorg'},{key:'elv',label:'ELV'},{key:'grz',label:'GRZ'}];
   return `
     <div>
       <div class="acc-sub-title">Kerngetallen</div>
       <div class="stat-grid">
-        <div class="stat"><div class="stat-label">Bedden</div><div class="stat-value">${(i.aantalBedden||0).toLocaleString('nl-NL')}</div></div>
-        <div class="stat"><div class="stat-label">Medewerkers <small>(est.)</small></div><div class="stat-value">${(i.aantalMedewerkersEst||0).toLocaleString('nl-NL')}</div></div>
-        <div class="stat"><div class="stat-label">Locaties</div><div class="stat-value">${i.locaties || '&mdash;'}</div></div>
-        <div class="stat"><div class="stat-label">Omzet <small>(est.)</small></div><div class="stat-value">${(i.omzetMlnEst||0)} <small>mln &euro;</small></div></div>
+        <div class="stat"><div class="stat-label">Bedden</div>${ieNum(i.id, 'aantalBedden', i.aantalBedden)}</div>
+        <div class="stat"><div class="stat-label">Medewerkers <small>(est.)</small></div>${ieNum(i.id, 'aantalMedewerkersEst', i.aantalMedewerkersEst)}</div>
+        <div class="stat"><div class="stat-label">Locaties</div>${ieNum(i.id, 'locaties', i.locaties)}</div>
+        <div class="stat"><div class="stat-label">Omzet <small>(mln &euro;, est.)</small></div>${ieNum(i.id, 'omzetMlnEst', i.omzetMlnEst)}</div>
       </div>
     </div>
     <div>
       <div class="acc-sub-title">Segmenten</div>
-      <div class="segments">
-        ${segLabels.map(s => `<span class="segment-tag ${i.segmenten && i.segmenten[s.key] ? 'has' : ''}">${s.label}</span>`).join('')}
+      <div class="segments" style="gap:8px">
+        ${segLabels.map(s => ieSegment(i.id, s.key, !!(i.segmenten && i.segmenten[s.key]), s.label)).join('')}
       </div>
     </div>
-    ${(i.tags||[]).length > 0 ? `<div>
-      <div class="acc-sub-title">Tags</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        ${i.tags.map(t => `<span style="font-size:.7rem;padding:3px 9px;background:var(--orange-pale);color:var(--orange-dark);border-radius:10px;font-weight:600">${escapeHtml(t)}</span>`).join('')}
-      </div>
-    </div>` : ''}
-    ${i.fusie ? `<div style="font-size:.78rem;color:var(--grey-700);padding:8px 10px;background:var(--grey-50);border-left:3px solid var(--orange);border-radius:4px"><strong>Verband / fusie:</strong> ${escapeHtml(i.fusie)}</div>` : ''}
-    ${i.recenteUitbreiding ? `<div style="font-size:.78rem;color:var(--grey-700);padding:8px 10px;background:var(--grey-50);border-left:3px solid var(--orange);border-radius:4px"><strong>Recente uitbreiding (${i.recenteUitbreidingJaar||''}):</strong> ${escapeHtml(i.recenteUitbreiding)}</div>` : ''}`;
+    <div>
+      <div class="acc-sub-title">Verband / fusie</div>
+      ${ieText(i.id, 'fusie', i.fusie, 'bv. onderdeel van groep, fusie 2025')}
+    </div>
+    <div>
+      <div class="acc-sub-title">Recente uitbreiding</div>
+      ${ieText(i.id, 'recenteUitbreiding', i.recenteUitbreiding, 'beschrijving recente locatie/dienst')}
+    </div>`;
 }
 
 function renderAnwItBody(i){
@@ -13296,15 +13337,19 @@ function renderAnwItBody(i){
     <div class="it-stack">
       <div class="it-block">
         <div class="it-block-title">ANW &middot; Avond/Nacht/Weekend</div>
-        <div class="it-leverancier">${escapeHtml(i.anwLeverancier || 'Onbekend')}</div>
-        <div class="it-systeem">${escapeHtml(i.anwModel || '')}</div>
-        ${i.anwDetail ? `<div style="margin-top:6px;font-size:.75rem;color:var(--grey-600);line-height:1.5">${escapeHtml(i.anwDetail)}</div>` : ''}
+        <div style="display:grid;gap:6px">
+          ${ieDropdown(i.id, 'anwLeverancier', 'anwLeverancier', i.anwLeverancier)}
+          ${ieDropdown(i.id, 'anwModelKort', 'anwModelKort', i.anwModelKort)}
+        </div>
+        ${ieTextarea(i.id, 'anwDetail', i.anwDetail, 'Detail / opmerkingen ANW-regeling')}
       </div>
       <div class="it-block">
         <div class="it-block-title">ECD &middot; Cli&euml;ntdossier</div>
-        <div class="it-leverancier">${escapeHtml(i.ecdLeverancier || 'Onbekend')}</div>
-        <div class="it-systeem">${i.ecdSysteem && i.ecdSysteem !== 'Onbekend' ? escapeHtml(i.ecdSysteem) : ''}</div>
-        ${(i.andereItLeveranciers||[]).length > 0 ? `<div class="it-list">
+        <div style="display:grid;gap:6px">
+          ${ieDropdown(i.id, 'ecdLeverancier', 'ecdLeverancier', i.ecdLeverancier)}
+          ${ieText(i.id, 'ecdSysteem', i.ecdSysteem === 'Onbekend' ? '' : i.ecdSysteem, 'systeem-versie / variant (optioneel)')}
+        </div>
+        ${(i.andereItLeveranciers||[]).length > 0 ? `<div class="it-list" style="margin-top:8px">
           ${i.andereItLeveranciers.map(l => `<div class="it-list-item"><span><strong>${escapeHtml(l.naam)}</strong></span><span>${escapeHtml(l.domein)}</span></div>`).join('')}
         </div>` : ''}
       </div>
@@ -13314,7 +13359,10 @@ function renderAnwItBody(i){
 function renderMensenBody(i){
   const dirHtml = `
     <div>
-      <div class="acc-sub-title">Directie / Raad van Bestuur</div>
+      <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px">
+        Directie / Raad van Bestuur
+        <button type="button" class="add-people-btn" data-add-people="directie" data-inst-id="${escapeHtml(i.id)}">+ Bestuurder</button>
+      </div>
       <div class="directie-list">
         ${(i.directie||[]).map(d => `
           <div class="directie-item ${d.recent ? 'recent' : ''}">
@@ -13329,11 +13377,19 @@ function renderMensenBody(i){
 
 function renderGericallContextBody(i){
   return `
-    <div class="opportunity-block">
-      <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">GeriCall-status</div>
-      <div style="margin-bottom:12px"><span class="status-pill status-${i.gericallStatus}" style="margin-right:8px">${i.gericallStatus}</span>${escapeHtml(i.gericallNote || '') || '<span class="muted">Geen notities.</span>'}</div>
-      <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Opportunity</div>
-      <div><strong>${escapeHtml(i.opportunity || '')}</strong></div>
+    <div class="opportunity-block" style="display:grid;gap:14px">
+      <div>
+        <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Status</div>
+        ${ieDropdown(i.id, 'gericallStatus', 'gericallStatus', i.gericallStatus)}
+      </div>
+      <div>
+        <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Status-notitie</div>
+        ${ieTextarea(i.id, 'gericallNote', i.gericallNote, 'Korte notitie over de huidige status')}
+      </div>
+      <div>
+        <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Opportunity</div>
+        ${ieTextarea(i.id, 'opportunity', i.opportunity, 'Wat is de zakelijke kans bij deze instelling?')}
+      </div>
     </div>`;
 }
 
@@ -13541,21 +13597,17 @@ function openInstelling(id, ctx){
         </div>
       </div>
       <div class="overlay-nav">
-        <button class="overlay-nav-btn overlay-edit-btn ${isEditing ? 'active' : ''}" id="overlayEdit" title="Bewerk velden" aria-label="Bewerk">&#9998;</button>
         <button class="overlay-nav-btn" id="overlayPrev" title="Vorige instelling (←)" aria-label="Vorige">&lsaquo;</button>
         <span class="overlay-nav-pos" id="overlayNavPos"></span>
         <button class="overlay-nav-btn" id="overlayNext" title="Volgende instelling (→)" aria-label="Volgende">&rsaquo;</button>
         <button class="overlay-close" id="overlayClose" title="Sluiten (Esc)">&times;</button>
       </div>
     </div>`;
-  if(isEditing){
-    document.getElementById('overlayPanel').innerHTML = headHtml +
-      `<div class="overlay-body"><div class="overlay-section"><div class="section-title">Bewerk gegevens</div>${renderEditForm(i)}</div></div>`;
-    document.getElementById('overlay').classList.add('show');
-    bindOverlayChrome(i);
-    bindEditFormHandlers(i);
-    return;
-  }
+  // v1.14.x: geen view/edit-toggle meer. Het klantbeeld is altijd in
+  // edit-modus — scalar-velden zijn inline-editable, contactpersonen +
+  // specialisten + bestuurders kunnen via +-knoppen worden toegevoegd.
+  // De oude renderEditForm-flow is bewaard voor mogelijke fallback maar
+  // wordt niet meer gerenderd vanuit openInstelling.
   const tc = todoCounts(i.id);
   const dmuMerged = combinedDmu(i);
   const dmuCount = dmuMerged.length + (i.specialisten || []).length + (i.directie || []).length;
@@ -13576,14 +13628,12 @@ function openInstelling(id, ctx){
         icon: '&#9733;', title: 'Pipeline &amp; opportunity',
         meta: 'lead-score ' + (i.leadScore || 0) + (dealsCount ? ' · ' + dealsCount + ' deal' + (dealsCount === 1 ? '' : 's') : ''),
         open: ctxCfg.open.includes('pipeline'),
-        editable: true,
         body: renderPipelineBody(i)
       })}
       ${accordion({
         icon: '&#9758;', title: 'Mensen',
         meta: dmuCount + ' personen',
         open: ctxCfg.open.includes('mensen'),
-        editable: true,
         body: renderMensenBody(i)
       })}
       ${accordion({
@@ -13595,7 +13645,6 @@ function openInstelling(id, ctx){
       ${accordion({
         icon: '&#9636;', title: 'Bedrijfsinfo',
         meta: (i.aantalBedden ? i.aantalBedden.toLocaleString('nl-NL') + ' bedden' : '') + (i.locaties ? ' &middot; ' + i.locaties + ' loc.' : '') + (i.anwLeverancier ? ' &middot; ' + i.anwLeverancier : ''),
-        editable: true,
         body: renderBedrijfsinfoBody(i)
       })}
       ${websiteHtml}
@@ -13633,24 +13682,98 @@ function bindOverlayChrome(i){
     nextBtn.disabled = !nextId;
     if(nextId) nextBtn.addEventListener('click', () => { editingInstId = null; openInstelling(nextId); });
   }
-  const editBtn = document.getElementById('overlayEdit');
-  if(editBtn){
-    editBtn.addEventListener('click', () => {
-      editingInstId = editingInstId === i.id ? null : i.id;
-      openInstelling(i.id);
-    });
-  }
-  // Edit-knoppen in accordion-headers (per sectie discoverable).
-  // Click op de ✎ voorkomen dat het de <details> open/dicht klapt en
-  // start in plaats daarvan de edit-modus voor de hele instelling.
-  document.querySelectorAll('#overlayPanel .acc-edit-btn').forEach(btn => {
+  // Inline-edit save: alle .ie-elementen in de overlay schrijven hun
+  // change/blur naar overrides via setOverrides(). Re-render is niet
+  // nodig — we tonen alleen een korte highlight zodat de gebruiker
+  // weet dat het is opgeslagen.
+  const onIeChange = (el) => saveInlineEdit(i.id, el);
+  document.querySelectorAll('#overlayPanel .ie').forEach(el => {
+    if(el.tagName === 'SELECT' || el.type === 'checkbox'){
+      el.addEventListener('change', () => onIeChange(el));
+    } else {
+      el.addEventListener('change', () => onIeChange(el));
+      el.addEventListener('blur', () => onIeChange(el));
+    }
+  });
+  // Add-people knoppen (DMU / spec / directie).
+  document.querySelectorAll('#overlayPanel [data-add-people]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      editingInstId = i.id;
-      openInstelling(i.id);
+      addPersonToOverlay(btn.dataset.instId, btn.dataset.addPeople);
     });
   });
+}
+
+function saveInlineEdit(instId, el){
+  const field = el.dataset.field;
+  if(el.classList.contains('ie-segment')){
+    const seg = el.dataset.seg;
+    const inst = getInstellingRaw(instId);
+    const cur = (overrides[instId] && overrides[instId].segmenten) || (inst && inst.segmenten) || {};
+    const next = { ...cur, [seg]: !!el.checked };
+    setOverrides(instId, { segmenten: next });
+    flashInlineSaved(el.closest('.segment-tag'));
+    return;
+  }
+  if(!field) return;
+  let v = el.value;
+  if(el.dataset.type === 'number'){
+    if(v === '' || v === null){ v = null; }
+    else { const n = Number(v); v = isNaN(n) ? null : n; }
+  } else {
+    if(v === '') v = null;
+  }
+  if(el.tagName === 'SELECT' && v === '__add__'){
+    // Dropdown 'nieuwe waarde toevoegen' wordt elders al afgehandeld; skip.
+    return;
+  }
+  setOverrides(instId, { [field]: v });
+  flashInlineSaved(el);
+}
+
+function flashInlineSaved(el){
+  if(!el) return;
+  el.classList.remove('inline-edit-saved-flash');
+  // Force reflow zodat de animatie opnieuw start
+  void el.offsetWidth;
+  el.classList.add('inline-edit-saved-flash');
+}
+
+function addPersonToOverlay(instId, kind){
+  if(kind === 'dmu'){
+    if(typeof openContactEdit === 'function'){
+      openContactEdit(instId, { naam: '', functie: '', rol: 'influencer', vertrouwen: 'middel', email: '', telefoon: '', linkedin: '', bron: '', bronType: 'website', notitie: '' });
+    }
+    return;
+  }
+  if(kind === 'spec'){
+    const naam = prompt('Naam specialist:');
+    if(!naam) return;
+    const functie = prompt('Functie / vakgebied:', 'Specialist Ouderengeneeskunde') || '';
+    const inst = getInstellingRaw(instId);
+    const arr = (overrides[instId] && Array.isArray(overrides[instId].specialisten))
+      ? overrides[instId].specialisten.slice()
+      : (inst && Array.isArray(inst.specialisten) ? inst.specialisten.slice() : []);
+    arr.push({ naam: naam.trim(), functie: functie.trim(), vakgebied: functie.trim() || 'Algemeen', vertrouwen: 'middel' });
+    setOverrides(instId, { specialisten: arr });
+    openInstelling(instId);
+    return;
+  }
+  if(kind === 'directie'){
+    const naam = prompt('Naam bestuurder:');
+    if(!naam) return;
+    const functie = prompt('Functie:', 'Lid RvB') || '';
+    const sinds = prompt('Sinds (YYYY-MM-DD), optioneel:', '') || null;
+    const inst = getInstellingRaw(instId);
+    const arr = (overrides[instId] && Array.isArray(overrides[instId].directie))
+      ? overrides[instId].directie.slice()
+      : (inst && Array.isArray(inst.directie) ? inst.directie.slice() : []);
+    arr.push({ naam: naam.trim(), functie: functie.trim(), sinds, recent: !!sinds && sinds >= new Date(Date.now() - 90*86400000).toISOString().slice(0,10) });
+    setOverrides(instId, { directie: arr });
+    openInstelling(instId);
+    return;
+  }
 }
 function bindDmuClickHandlers(i){
   const merged = combinedDmu(i);
