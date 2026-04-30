@@ -147,6 +147,13 @@ body{
   font-size:.62rem;font-weight:700;font-family:'DM Mono',monospace}
 .user-badge .user-name{letter-spacing:0;text-transform:none;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:880px){.user-badge .user-name{max-width:90px}}
+@media(max-width:720px){
+  .refresh-btn .btn-label{display:none}
+  .refresh-btn{padding:6px 8px;min-width:0}
+  .user-badge .user-name{display:none}
+  .user-badge{padding:3px 3px 3px 3px;gap:0}
+  .user-menu-chev{display:none}
+}
 .scope-bar{background:var(--orange-pale);border-bottom:1px solid var(--orange);
   padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--orange-dark);flex-wrap:wrap}
 .scope-label{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.66rem}
@@ -1015,9 +1022,9 @@ body{
       <span class="topbar-meta-dot"></span>
       <span>Bijgewerkt <strong id="lastUpdated">&mdash;</strong></span>
     </div>
-    <button class="refresh-btn" id="adminBtn" style="margin-right:8px" title="Beheer: gebruikers, toewijzingen, contacten, dropdowns, weekupdate, data">
+    <button class="refresh-btn" id="adminBtn" style="margin-right:8px" title="Beheer: gebruikers, toewijzingen, contacten, dropdowns, weekupdate, data" aria-label="Beheer">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Beheer
+      <span class="btn-label">Beheer</span>
     </button>
     <span class="user-menu-wrap" id="userMenuWrap">
       <span class="user-badge" id="userBadge" style="display:none">
