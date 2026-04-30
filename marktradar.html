@@ -116,6 +116,9 @@ body{
 .topbar{background:var(--white);border-bottom:1px solid var(--grey-200);padding:14px 24px;
   display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:50;}
 .topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-home-btn{display:inline-flex;align-items:center;gap:10px;padding:4px 8px;border:0;background:transparent;color:inherit;cursor:pointer;font:inherit;border-radius:8px;transition:background .12s}
+.topbar-home-btn:hover{background:var(--grey-100)}
+.topbar-home-btn:active{background:var(--orange-pale)}
 .topbar-title{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;color:var(--grey-900);}
 .topbar-title em{color:var(--orange);font-style:normal;font-weight:700}
 .topbar-sub{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.22em;color:var(--grey-500);
@@ -1028,20 +1031,22 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   </div>
   <div class="topbar">
     <div class="topbar-brand">
-      <div class="brand-mark" id="topbarBrandMark" style="background:transparent;padding:0">
-        <svg viewBox="0 0 100 100" width="30" height="30" xmlns="http://www.w3.org/2000/svg" aria-label="MarktRadar">
-          <circle cx="50" cy="50" r="46" fill="#fafafb" stroke="#1a1a1f" stroke-width="3"/>
-          <circle cx="50" cy="50" r="32" fill="none" stroke="#c7c7ce" stroke-width="1.5"/>
-          <circle cx="50" cy="50" r="18" fill="none" stroke="#c7c7ce" stroke-width="1.5"/>
-          <path d="M 50 50 L 50 4 A 46 46 0 0 1 90 27 Z" fill="#e87722" fill-opacity=".22"/>
-          <line x1="50" y1="50" x2="90" y2="27" stroke="#e87722" stroke-width="2.4" stroke-linecap="round"/>
-          <circle cx="76" cy="28" r="3.6" fill="#e87722"/>
-          <circle cx="76" cy="28" r="7" fill="none" stroke="#e87722" stroke-width="1.2" stroke-opacity=".5"/>
-          <circle cx="50" cy="50" r="3" fill="#1a1a1f"/>
-        </svg>
-      </div>
-      <div class="topbar-title">Markt<em>Radar</em></div>
-      <div class="topbar-sub" id="topbarBrandSub">SalesDay</div>
+      <button type="button" class="topbar-home-btn" id="topbarHomeBtn" title="Home (Acties)" aria-label="Naar home">
+        <span class="brand-mark" id="topbarBrandMark" style="background:transparent;padding:0">
+          <svg viewBox="0 0 100 100" width="30" height="30" xmlns="http://www.w3.org/2000/svg" aria-label="MarktRadar">
+            <circle cx="50" cy="50" r="46" fill="#fafafb" stroke="#1a1a1f" stroke-width="3"/>
+            <circle cx="50" cy="50" r="32" fill="none" stroke="#c7c7ce" stroke-width="1.5"/>
+            <circle cx="50" cy="50" r="18" fill="none" stroke="#c7c7ce" stroke-width="1.5"/>
+            <path d="M 50 50 L 50 4 A 46 46 0 0 1 90 27 Z" fill="#e87722" fill-opacity=".22"/>
+            <line x1="50" y1="50" x2="90" y2="27" stroke="#e87722" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="76" cy="28" r="3.6" fill="#e87722"/>
+            <circle cx="76" cy="28" r="7" fill="none" stroke="#e87722" stroke-width="1.2" stroke-opacity=".5"/>
+            <circle cx="50" cy="50" r="3" fill="#1a1a1f"/>
+          </svg>
+        </span>
+        <span class="topbar-title">Markt<em>Radar</em></span>
+        <span class="topbar-sub" id="topbarBrandSub">SalesDay</span>
+      </button>
       <button class="version-pill" id="versionPill" title="Klik voor release-historie">
         <span id="versionNumber">v1.0.0</span>
         <span class="version-codename" id="versionCodename">Aldebaran</span>
@@ -11991,6 +11996,7 @@ function initApp(){
   bindScopeBar();
   bindPasswordModal();
   bindOnboarding();
+  bindHomeBtn();
   renderUserBadge();
   renderBottomSections();
   if(currentUser && currentUser.mustChangePassword) openPasswordModal({ forced: true });
@@ -12175,6 +12181,21 @@ async function obSaveAll(){
   } catch(err){
     out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message || String(err)) + '</span>';
   }
+}
+
+function goHome(){
+  // Sluit alles wat over de hoofdpagina heen ligt en navigeer naar de
+  // default-tab (Acties / Todo). Zonder reload — snappy.
+  try { closeOverlay && closeOverlay(); } catch(e){}
+  ['adminModal','versionModal','contactEditModal','passwordModal','signalDetailModal','onboardingModal','ddDeleteModal']
+    .forEach(id => { const m = document.getElementById(id); if(m) m.classList.remove('show'); });
+  const home = document.querySelector('.tab[data-tab="acties"]');
+  if(home) home.click();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function bindHomeBtn(){
+  const btn = document.getElementById('topbarHomeBtn');
+  if(btn) btn.addEventListener('click', goHome);
 }
 
 function bindOnboarding(){
