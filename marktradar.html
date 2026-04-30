@@ -980,7 +980,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <span class="pill pill-meta" id="gate-pill-segment">Markt-intelligence</span>
     </div>
     <h1>Markt<em>Radar</em> · Intelligence Portal</h1>
-    <p class="sub" id="gate-sub">Live overzicht van entiteiten, signalen en opportunities in jouw markt. Voor intern gebruik.</p>
+    <p class="sub" id="gate-sub">Live overzicht van organisaties, signalen en opportunities in jouw markt. Voor intern gebruik.</p>
     <form id="gate-form-auth" autocomplete="off" style="display:none">
       <div id="gate-naam-row" style="display:none">
         <label for="gate-naam">Volledige naam</label>
@@ -12063,16 +12063,16 @@ function obRender(){
       </div>`;
   } else if(_obStep === 3){
     body.innerHTML = `
-      <div class="ob-step-h">Stap 3 · Voeg je entiteiten toe</div>
-      <div class="ob-step-sub">Plak hieronder de bedrijven of organisaties die in jouw markt vallen. Eén per regel werkt het snelst. Je kunt later importeren via CSV/JSON of vanuit je CRM.</div>
+      <div class="ob-step-h">Stap 3 · Voeg je organisaties toe</div>
+      <div class="ob-step-sub">Plak hieronder de organisaties die in jouw markt vallen — bedrijven, instellingen, accounts. Eén per regel werkt het snelst. Je kunt later importeren via CSV/JSON of vanuit je CRM.</div>
       <div class="ob-field">
-        <label>Entiteiten (1 per regel — optioneel met komma's: <code>naam, regio, segment</code>)</label>
+        <label>Organisaties (1 per regel — optioneel met komma's: <code>naam, regio, segment</code>)</label>
         <textarea id="ob-entiteiten" placeholder="Cordaan
 Carintreggeland, Twente, VVT
 Surplus, West-Brabant
 Bemoeizorg Amsterdam">${escapeHtml((_obData.entiteiten || []).map(e => [e.naam, e.regio, e.segment].filter(Boolean).join(', ')).join('\n'))}</textarea>
       </div>
-      <div style="font-size:.74rem;color:var(--grey-600)">Tip: heb je al een Excel/CSV? Sluit deze stap af, log in en ga naar Beheer → Entiteiten voor een paste-import.</div>`;
+      <div style="font-size:.74rem;color:var(--grey-600)">Tip: heb je al een Excel/CSV? Sluit deze stap af, log in en ga naar Beheer voor een paste-import.</div>`;
   } else if(_obStep === 4){
     // Eerst entiteiten parsen uit stap 3 als ze nog niet bestaan
     if(_obData.entiteiten.length === 0){
@@ -12082,11 +12082,11 @@ Bemoeizorg Amsterdam">${escapeHtml((_obData.entiteiten || []).map(e => [e.naam, 
     if(ents.length === 0){
       body.innerHTML = `
         <div class="ob-step-h">Stap 4 · Markeer je huidige klanten</div>
-        <div class="ob-step-sub">Je hebt nog geen entiteiten opgegeven. Geen probleem — sla deze stap over en voeg ze later toe via Beheer → Entiteiten.</div>`;
+        <div class="ob-step-sub">Je hebt nog geen organisaties opgegeven. Geen probleem — sla deze stap over en voeg ze later toe via Beheer.</div>`;
     } else {
       body.innerHTML = `
         <div class="ob-step-h">Stap 4 · Markeer je huidige klanten</div>
-        <div class="ob-step-sub">Welke entiteiten zijn al klant van je? Je kunt dit later wijzigen of importeren vanuit je CRM.</div>
+        <div class="ob-step-sub">Welke organisaties zijn al klant van je? Je kunt dit later wijzigen of importeren vanuit je CRM.</div>
         <div class="ob-klant-list" id="ob-klant-list">
           ${ents.map(e => `
             <label class="ob-klant-row">
@@ -14189,8 +14189,8 @@ async function refreshTenantPane(){
     const n = (currentTenant && Array.isArray(currentTenant.market) && currentTenant.marketDefined)
       ? currentTenant.market.length : baseN;
     const marketLabel = (currentTenant && currentTenant.marketDefined && Array.isArray(currentTenant.market))
-      ? `Markt-scope: <strong>${n} / ${baseN}</strong> entiteiten geselecteerd`
-      : `Markt-scope: <strong>volledige set</strong> (${baseN} entiteiten)`;
+      ? `Markt-scope: <strong>${n} / ${baseN}</strong> organisaties geselecteerd`
+      : `Markt-scope: <strong>volledige set</strong> (${baseN} organisaties)`;
     const klantenN = (currentTenant?.klanten || []).length;
     const klantenLabel = klantenN > 0 ? ` &middot; <strong>${klantenN}</strong> als klant gemarkeerd` : '';
     const created = currentTenant?.createdAt ? new Date(currentTenant.createdAt).toLocaleDateString('nl-NL') : '—';
