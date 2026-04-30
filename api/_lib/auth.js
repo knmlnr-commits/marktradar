@@ -224,6 +224,22 @@ const GERICALL_BACKFILL = {
 const GERICALL_OLD_PROPOSITIES = ['GeriCall · ANW-zorg & VVT-marktintelligentie voor zorgleveranciers'];
 const GERICALL_OLD_MARKTNAAMEN = ['VVT (verpleeg-, verzorgings- en thuiszorg)'];
 
+// Lazy-load van de 64 VVT-instellingen die als seed in tenant.entiteiten
+// worden gepopuleerd. Voorheen bestonden ze alleen in DATA.instellingen
+// (frontend); door ze ook backend-zijde aan tenant.entiteiten te koppelen
+// kan de signal-cron artikel-titels matchen op deze namen.
+let _gericallEntiteitenCache = null;
+function loadGericallEntiteitenSeed() {
+  if (_gericallEntiteitenCache) return _gericallEntiteitenCache;
+  try {
+    const path = require('path').join(__dirname, 'gericall-entiteiten.json');
+    _gericallEntiteitenCache = JSON.parse(require('fs').readFileSync(path, 'utf8'));
+  } catch (e) {
+    _gericallEntiteitenCache = [];
+  }
+  return _gericallEntiteitenCache;
+}
+
 async function backfillGericallTenant(t) {
   if (!t || t.id !== LEGACY_TENANT_ID) return t;
   let dirty = false;
@@ -238,6 +254,19 @@ async function backfillGericallTenant(t) {
   }
   if (!t.marktBeschrijving) { t.marktBeschrijving = GERICALL_BACKFILL.marktBeschrijving; dirty = true; }
   if (!Array.isArray(t.feeds) || t.feeds.length === 0) { t.feeds = GERICALL_BACKFILL.feeds.slice(); dirty = true; }
+  // Entiteiten-seed: vul met de 64 VVT-instellingen-namen zodat de
+  // signal-cron artikel-titels kan matchen. Alleen seeden als nog leeg
+  // — als de gebruiker later via Beheer eigen lijst aanmaakt blijft
+  // die staan.
+  if (!Array.isArray(t.entiteiten) || t.entiteiten.length === 0) {
+    const seed = loadGericallEntiteitenSeed();
+    if (seed.length > 0) {
+      t.entiteiten = seed.slice();
+      // Sync klanten[] uit entiteiten.klant
+      t.klanten = seed.filter(e => e.klant).map(e => e.id);
+      dirty = true;
+    }
+  }
   if (dirty) {
     t.backfilledAt = Date.now();
     await kvSet(tenantMetaKey(t.id), t).catch(() => {});

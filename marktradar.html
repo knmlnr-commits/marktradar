@@ -11015,12 +11015,44 @@ function getMarketInstellingen(){
   if(!MARKET_DEFINED || !MARKET_SET) return universe;
   return universe.filter(i => MARKET_SET.has(String(i.id)));
 }
+// Auto-gegenereerde signalen uit /api/signals/list (door wekelijkse cron
+// geschreven). Worden samengevoegd met DATA.signalen baseline + dedupliceerd
+// op id of sourceUrl. Voor non-GeriCall tenants is dit de enige bron.
+let remoteSignals = [];
+let remoteSignalsLastRun = null;
+let remoteSignalsAvailable = false;
+async function syncRemoteSignals(){
+  try {
+    const r = await apiFetch('/api/signals/list');
+    if(!r.ok) return;
+    const j = await r.json();
+    remoteSignals = Array.isArray(j.signals) ? j.signals : [];
+    remoteSignalsLastRun = j.lastRun || null;
+    remoteSignalsAvailable = true;
+  } catch(e){}
+}
 function getMarketSignalen(){
-  // Signalen: voor GeriCall uit baseline DATA, voor andere tenants
-  // (vooralsnog) leeg tot ze handmatig signalen toevoegen.
-  const sig = tenantHasOwnEntities() ? [] : DATA.signalen;
-  if(!MARKET_DEFINED || !MARKET_SET) return sig;
-  return sig.filter(s => !s.instellingId || MARKET_SET.has(String(s.instellingId)));
+  // Combineer baseline (DATA.signalen voor GeriCall, [] voor andere tenants)
+  // met de auto-cron-resultaten uit tenant-state. Dedupliceer op id en op
+  // sourceUrl zodat een handmatig signaal niet dubbel verschijnt naast de
+  // auto-versie.
+  const base = tenantHasOwnEntities() ? [] : (Array.isArray(DATA.signalen) ? DATA.signalen : []);
+  const combined = [];
+  const seenIds = new Set();
+  const seenUrls = new Set();
+  const push = (s) => {
+    if(!s) return;
+    if(s.id && seenIds.has(s.id)) return;
+    if(s.sourceUrl && seenUrls.has(s.sourceUrl)) return;
+    if(s.id) seenIds.add(s.id);
+    if(s.sourceUrl) seenUrls.add(s.sourceUrl);
+    combined.push(s);
+  };
+  remoteSignals.forEach(push);
+  base.forEach(push);
+  combined.sort((a,b) => (b.datum || '').localeCompare(a.datum || ''));
+  if(!MARKET_DEFINED || !MARKET_SET) return combined;
+  return combined.filter(s => !s.instellingId || MARKET_SET.has(String(s.instellingId)));
 }
 
 function loadAuthFromStorage(){
@@ -12000,6 +12032,11 @@ function initApp(){
   syncDmuOverrides();
   syncOverrides();
   syncDropdowns();
+  syncRemoteSignals().then(() => {
+    try { if(typeof renderSignals === 'function') renderSignals(); } catch(e){}
+    try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+    try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
+  });
   bindContactEditModal();
   bindSignalDetailModal();
   bindDropdownAddHandler();

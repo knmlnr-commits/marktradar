@@ -1,0 +1,514 @@
+[
+  {
+    "id": "cordaan",
+    "naam": "Cordaan",
+    "regio": "West",
+    "provincie": "Noord-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "carintreggeland",
+    "naam": "Carintreggeland",
+    "regio": "Oost",
+    "provincie": "Overijssel",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "laurens",
+    "naam": "Laurens",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "aafje",
+    "naam": "Aafje",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "amsta",
+    "naam": "Amsta",
+    "regio": "West",
+    "provincie": "Noord-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "brabantzorg",
+    "naam": "BrabantZorg",
+    "regio": "Zuid",
+    "provincie": "Noord-Brabant",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "alliade",
+    "naam": "Alliade",
+    "regio": "Noord",
+    "provincie": "Friesland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "pieter-van-foreest",
+    "naam": "Pieter van Foreest",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "envida",
+    "naam": "Envida",
+    "regio": "Zuid",
+    "provincie": "Limburg",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "zzg-zorggroep",
+    "naam": "ZZG Zorggroep",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "amstelring",
+    "naam": "Amstelring",
+    "regio": "West",
+    "provincie": "Noord-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "sevagram",
+    "naam": "Sevagram",
+    "regio": "Zuid",
+    "provincie": "Limburg",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "sensire",
+    "naam": "Sensire",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "thebe",
+    "naam": "Thebe",
+    "regio": "Zuid",
+    "provincie": "Noord-Brabant",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "stichting-svrz",
+    "naam": "Stichting SVRZ",
+    "regio": "Zuid",
+    "provincie": "Zeeland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "noorderbreedte",
+    "naam": "Noorderbreedte",
+    "regio": "Noord",
+    "provincie": "Friesland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "kwadrantgroep",
+    "naam": "KwadrantGroep",
+    "regio": "Noord",
+    "provincie": "Friesland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "argos-zorggroep",
+    "naam": "Argos Zorggroep",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "icare",
+    "naam": "Icare",
+    "regio": "Oost",
+    "provincie": "Overijssel",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "vitalis-woonzorg",
+    "naam": "Vitalis WoonZorg",
+    "regio": "Zuid",
+    "provincie": "Noord-Brabant",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "proteion",
+    "naam": "Proteion",
+    "regio": "Zuid",
+    "provincie": "Limburg",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "evean",
+    "naam": "Evean",
+    "regio": "West",
+    "provincie": "Noord-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "humanitas-rotterdam",
+    "naam": "Humanitas Rotterdam",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "pleyade",
+    "naam": "Pleyade",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "patyna",
+    "naam": "Patyna",
+    "regio": "Noord",
+    "provincie": "Friesland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "zuidoostzorg",
+    "naam": "ZuidOostZorg",
+    "regio": "Noord",
+    "provincie": "Friesland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "pantein",
+    "naam": "Pantein",
+    "regio": "Zuid",
+    "provincie": "Noord-Brabant",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "sante-partners",
+    "naam": "Sante Partners",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "opella",
+    "naam": "Opella",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "treant-zorggroep",
+    "naam": "Treant Zorggroep",
+    "regio": "Noord",
+    "provincie": "Drenthe",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "dignis",
+    "naam": "Dignis",
+    "regio": "Noord",
+    "provincie": "Groningen",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "markenheem",
+    "naam": "Markenheem",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "azora",
+    "naam": "Azora",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "mijzo-zh",
+    "naam": "Mijzo ZH",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "de-zorgboog",
+    "naam": "De Zorgboog",
+    "regio": "Zuid",
+    "provincie": "Noord-Brabant",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "topaz",
+    "naam": "Topaz",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "kennemerhart",
+    "naam": "Kennemerhart",
+    "regio": "West",
+    "provincie": "Noord-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "marente",
+    "naam": "Marente",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "careyn-zhe",
+    "naam": "Careyn ZHE",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "zinzia-zorggroep",
+    "naam": "Zinzia Zorggroep",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "novicare-west",
+    "naam": "Novicare West",
+    "regio": "West",
+    "provincie": "Noord-Holland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "rijnstad",
+    "naam": "Rijnstad",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "interzorg",
+    "naam": "Interzorg",
+    "regio": "Noord",
+    "provincie": "Groningen",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "vivent",
+    "naam": "Vivent",
+    "regio": "Zuid",
+    "provincie": "Noord-Brabant",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "de-rijnhoven",
+    "naam": "De Rijnhoven",
+    "regio": "West",
+    "provincie": "Utrecht",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "de-waalboog",
+    "naam": "De Waalboog",
+    "regio": "Oost",
+    "provincie": "Gelderland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "zuyderland-zorgcentra",
+    "naam": "Zuyderland Zorgcentra",
+    "regio": "Zuid",
+    "provincie": "Limburg",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "cicero-zorggroep",
+    "naam": "Cicero Zorggroep",
+    "regio": "Zuid",
+    "provincie": "Limburg",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "frankelandgroep",
+    "naam": "Frankelandgroep",
+    "regio": "West",
+    "provincie": "Zuid-Holland",
+    "segment": "VVT",
+    "klant": true
+  },
+  {
+    "id": "zorgspectrum",
+    "naam": "Zorgspectrum",
+    "regio": "West",
+    "provincie": "Utrecht",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "vivantes",
+    "naam": "Vivantes",
+    "regio": "Zuid",
+    "provincie": "Limburg",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "zorgsaam-limburg",
+    "naam": "ZorgSaam Limburg",
+    "regio": "Zuid",
+    "provincie": "Limburg",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "zorggroep-sint-maarten",
+    "naam": "Zorggroep Sint Maarten",
+    "regio": "Oost",
+    "provincie": "Overijssel",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "triviummeulenbeltzorg",
+    "naam": "TriviumMeulenbeltZorg",
+    "regio": "Oost",
+    "provincie": "Overijssel",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "livio",
+    "naam": "Livio",
+    "regio": "Oost",
+    "provincie": "Overijssel",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "zorgaccent",
+    "naam": "ZorgAccent",
+    "regio": "Oost",
+    "provincie": "Overijssel",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "ijsselheem",
+    "naam": "IJsselheem",
+    "regio": "Oost",
+    "provincie": "Overijssel",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "cedrah",
+    "naam": "Cedrah",
+    "regio": "Zuid",
+    "provincie": "Zeeland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "zorggroep-drenthe",
+    "naam": "Zorggroep Drenthe",
+    "regio": "Noord",
+    "provincie": "Drenthe",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "sherpa",
+    "naam": "Sherpa",
+    "regio": "West",
+    "provincie": "Utrecht",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "axioncontinu-utrecht",
+    "naam": "AxionContinu Utrecht",
+    "regio": "West",
+    "provincie": "Utrecht",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "zorgbalans",
+    "naam": "Zorgbalans",
+    "regio": "West",
+    "provincie": "Noord-Holland",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "mosae-zorggroep",
+    "naam": "Mosae Zorggroep",
+    "regio": "Zuid",
+    "provincie": "Limburg",
+    "segment": "VVT",
+    "klant": false
+  },
+  {
+    "id": "zonnehuisgroep-amstelland",
+    "naam": "Zonnehuisgroep Amstelland",
+    "regio": "West",
+    "provincie": "Noord-Holland",
+    "segment": "VVT",
+    "klant": false
+  }
+]
