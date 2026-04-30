@@ -10686,28 +10686,13 @@ document.getElementById('gate-form').addEventListener('submit', async (e) => {
   }
 })();
 
-async function ensureOwnerInList(owner){
-  try {
-    const r = await apiFetch('/api/state?key=owners');
-    if(!r.ok) return;
-    const j = await r.json();
-    let list = Array.isArray(j.value) ? j.value.slice() : [];
-    const lowerNaam = (owner.naam || '').toLowerCase().trim();
-    const idx = list.findIndex(o => o && (
-      o.id === owner.id ||
-      (owner.email && o.email && o.email === owner.email) ||
-      (lowerNaam && o.naam && o.naam.toLowerCase().trim() === lowerNaam)
-    ));
-    if(idx >= 0){
-      list[idx] = { id: owner.id, naam: owner.naam, email: owner.email || null };
-    } else {
-      list.push({ id: owner.id, naam: owner.naam, email: owner.email || null });
-    }
-    await apiFetch('/api/state', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key: 'owners', value: list })
-    });
-  } catch(e){}
+// Eigenaars zijn vanaf v1.13.1 strikt = de geregistreerde gebruikers van
+// deze tenant (uit /api/auth?action=list-users). De vroegere KV-key
+// 'owners' wordt niet meer geschreven; alleen gelezen voor migratie.
+async function ensureOwnerInList(_owner){
+  // No-op: een nieuwe gebruiker komt automatisch in OWNERS via syncOwnersList()
+  // zodra deze in de tenant-users-index staat.
+  return;
 }
 
 (function(){
@@ -10733,41 +10718,31 @@ let searchQuery = '';
 let trendsLens = 'auto';
 let trendsSort = 'delta-abs';
 
-const OWNERS_DEFAULT = [
-  {id: 'koen',     naam: 'Koen Molenaar'},
-  {id: 'rene',     naam: 'René van Hattem'},
-  {id: 'laurina',  naam: 'Laurina Nieukerke'},
-  {id: 'jeff',     naam: 'Jeff Lafranca'},
-  {id: 'niels',    naam: 'Niels Langhout'},
-  {id: 'famke',    naam: 'Famke'},
-  {id: 'irma',     naam: 'Irma Elzinga'},
-];
-let OWNERS = OWNERS_DEFAULT.slice();
+// OWNERS = strikt de tenant-gebruikers. Geen hardcoded defaults meer;
+// een hardcoded lijstje vervuilde de dropdown met namen die niet
+// (meer) corresponderen met echte accounts.
+let OWNERS = [];
 let ownersRemoteAvailable = false;
 async function syncOwnersList(){
   try {
-    const r = await apiFetch('/api/state?key=owners');
-    if(r.ok){
+    const users = await authListUsers();
+    if(Array.isArray(users)){
       ownersRemoteAvailable = true;
-      const j = await r.json();
-      const remote = Array.isArray(j.value) ? j.value : null;
-      if(remote && remote.length > 0){
-        OWNERS = remote.map(o => ({ id: o.id, naam: o.naam, email: o.email || null }));
-      } else {
-        await apiFetch('/api/state', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key: 'owners', value: OWNERS_DEFAULT })
-        });
-      }
+      OWNERS = users.map(u => ({ id: u.id, naam: u.naam, email: u.email || null }));
+      // Garandeer dat de huidige user ook in de lijst zit (b.v. tijdens
+      // bootstrap voordat de users-index een refresh heeft gehad).
       if(currentUser){
-        const exists = OWNERS.some(o => o.id === currentUser.id || (currentUser.email && o.email === currentUser.email));
-        if(!exists){
-          await ensureOwnerInList({ id: currentUser.id, naam: currentUser.naam, email: currentUser.email });
-          OWNERS.push({ id: currentUser.id, naam: currentUser.naam, email: currentUser.email });
-        }
+        const has = OWNERS.some(o => o.id === currentUser.id || (currentUser.email && o.email === currentUser.email));
+        if(!has) OWNERS.push({ id: currentUser.id, naam: currentUser.naam, email: currentUser.email || null });
       }
     }
-  } catch(e){}
+  } catch(e){
+    // Fallback: als de users-list-call faalt, toon alleen de huidige user
+    // i.p.v. een leeg dropdownlijstje.
+    if(currentUser){
+      OWNERS = [{ id: currentUser.id, naam: currentUser.naam, email: currentUser.email || null }];
+    }
+  }
 }
 
 const STORAGE_KEY = 'marktradar.assignments.v1';
