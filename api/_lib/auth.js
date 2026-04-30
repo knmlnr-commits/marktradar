@@ -17,17 +17,20 @@ const KV_USER_PREFIX = 'marktradar:user:';
 const KV_SESSION_PREFIX = 'marktradar:session:';
 const KV_USERS_INDEX = 'marktradar:users:index';
 const KV_TENANTS_INDEX = 'marktradar:tenants:index';
+const KV_TENANT_SLUG_PREFIX = 'marktradar:tenant-slug:';
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const SESSION_TTL_SEC = 30 * 24 * 60 * 60;
 
 // Default-tenant voor pre-multi-tenant data. Bestaande state/assignments/users
 // zonder tenantId worden hieronder ingelezen tijdens migratie.
 const LEGACY_TENANT_ID = 'gericall';
+const LEGACY_TENANT_SLUG = 'gericall';
 
 function tenantMetaKey(tenantId) { return 'marktradar:tenant:' + tenantId + ':meta'; }
 function tenantUsersIndexKey(tenantId) { return 'marktradar:tenant:' + tenantId + ':users:index'; }
 function tenantStateKey(tenantId, name) { return 'marktradar:tenant:' + tenantId + ':state:v1:' + name; }
 function tenantAssignmentsKey(tenantId) { return 'marktradar:tenant:' + tenantId + ':assignments:v1'; }
+function tenantSlugKey(slug) { return KV_TENANT_SLUG_PREFIX + slug; }
 
 function slugifyEmailForTenant(email) {
   const e = String(email || '').toLowerCase().trim();
@@ -35,6 +38,18 @@ function slugifyEmailForTenant(email) {
   // korte, voorspelbare keys zonder de email zelf in de key te hebben.
   const hash = createHash('sha256').update(e).digest('hex').slice(0, 16);
   return 't_' + hash;
+}
+
+// Vanity-slug uit een vrije naam afleiden: lowercase, alleen [a-z0-9-],
+// max 40 tekens. Wordt gebruikt voor de URL /app/<slug>.
+function slugifyName(naam) {
+  const s = String(naam || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+  return s || '';
 }
 
 function hasRedisUrl() { return !!process.env.REDIS_URL; }
@@ -196,14 +211,18 @@ module.exports = {
   KV_SESSION_PREFIX,
   KV_USERS_INDEX,
   KV_TENANTS_INDEX,
+  KV_TENANT_SLUG_PREFIX,
   SESSION_TTL_MS,
   SESSION_TTL_SEC,
   LEGACY_TENANT_ID,
+  LEGACY_TENANT_SLUG,
   tenantMetaKey,
   tenantUsersIndexKey,
   tenantStateKey,
   tenantAssignmentsKey,
+  tenantSlugKey,
   slugifyEmailForTenant,
+  slugifyName,
   kvConfigured,
   kvGet,
   kvSet,

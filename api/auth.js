@@ -39,10 +39,37 @@ function publicTenant(t) {
   return {
     id: t.id,
     naam: t.naam || 'MarktRadar',
+    slug: t.slug || null,
     createdAt: t.createdAt,
+    propositie: t.propositie || null,
+    marktNaam: t.marktNaam || null,
+    marktBeschrijving: t.marktBeschrijving || null,
+    entiteiten: Array.isArray(t.entiteiten) ? t.entiteiten : null,
+    klanten: Array.isArray(t.klanten) ? t.klanten : [],
+    onboardingDone: !!t.onboardingDone,
     market: Array.isArray(t.market) ? t.market : null,
     marketDefined: !!t.marketDefined,
   };
+}
+
+async function ensureUniqueSlug(base, ownTenantId) {
+  const cleaned = auth.slugifyName(base);
+  if (!cleaned) return null;
+  let candidate = cleaned;
+  for (let i = 0; i < 50; i++) {
+    const existing = await auth.kvGet(auth.tenantSlugKey(candidate));
+    if (!existing || existing === ownTenantId) return candidate;
+    candidate = cleaned + '-' + (i + 2);
+  }
+  return cleaned + '-' + Math.random().toString(36).slice(2, 6);
+}
+
+async function setTenantSlug(tenant, newSlug) {
+  if (tenant.slug && tenant.slug !== newSlug) {
+    await auth.kvDel(auth.tenantSlugKey(tenant.slug)).catch(() => {});
+  }
+  tenant.slug = newSlug;
+  await auth.kvSet(auth.tenantSlugKey(newSlug), tenant.id);
 }
 
 async function readJsonBody(req) {
@@ -139,18 +166,32 @@ async function createSession(email, userId, tenantId) {
 async function loadTenant(tenantId) {
   if (!tenantId) return null;
   const t = await auth.kvGet(auth.tenantMetaKey(tenantId));
-  if (t) return t;
-  // Migratie: legacy-tenant zonder meta-record → on-the-fly aanmaken
+  if (t) {
+    // Migratie: tenants zonder slug krijgen on-the-fly een slug
+    if (!t.slug) {
+      const slugBase = t.naam || tenantId;
+      const newSlug = await ensureUniqueSlug(slugBase, tenantId);
+      if (newSlug) {
+        await setTenantSlug(t, newSlug);
+        await auth.kvSet(auth.tenantMetaKey(tenantId), t);
+      }
+    }
+    return t;
+  }
+  // Migratie: legacy-tenant zonder meta-record → on-the-fly aanmaken met
+  // gereserveerde slug 'gericall'.
   if (tenantId === auth.LEGACY_TENANT_ID) {
     const legacy = {
       id: auth.LEGACY_TENANT_ID,
       naam: 'GeriCall',
+      slug: auth.LEGACY_TENANT_SLUG,
       createdAt: Date.now(),
       market: null,
       marketDefined: false,
       legacy: true,
     };
     await auth.kvSet(auth.tenantMetaKey(tenantId), legacy);
+    await auth.kvSet(auth.tenantSlugKey(auth.LEGACY_TENANT_SLUG), auth.LEGACY_TENANT_ID);
     await appendTenantIndex(tenantId);
     return legacy;
   }
@@ -168,15 +209,26 @@ async function ensureUserHasTenant(user) {
   return user;
 }
 
-async function createTenant(tenantId, naam, founderEmail) {
+async function createTenant(tenantId, naam, founderEmail, requestedSlug) {
   const tenant = {
     id: tenantId,
     naam: naam || 'MarktRadar',
+    slug: null,
     createdAt: Date.now(),
     createdBy: founderEmail,
     market: null,            // null = volledige baseline; array = subset instelling-IDs
     marketDefined: false,
   };
+  // Slug bepalen: gevraagde slug → tenantNaam → email-prefix
+  const baseSlug = (requestedSlug && auth.slugifyName(requestedSlug))
+    || auth.slugifyName(naam)
+    || auth.slugifyName((founderEmail || '').split('@')[0])
+    || 'workspace';
+  const slug = await ensureUniqueSlug(baseSlug, tenantId);
+  if (slug) {
+    tenant.slug = slug;
+    await auth.kvSet(auth.tenantSlugKey(slug), tenantId);
+  }
   await auth.kvSet(auth.tenantMetaKey(tenantId), tenant);
   await appendTenantIndex(tenantId);
   return tenant;
@@ -188,7 +240,8 @@ async function registerNewTenant(req, res) {
   const email = String(body.email || '').trim().toLowerCase();
   const naam = String(body.naam || '').trim();
   const password = String(body.password || '');
-  const tenantNaam = String(body.tenantNaam || '').trim() || naam || 'MarktRadar';
+  const tenantNaam = String(body.tenantNaam || '').trim() || naam || 'Mijn werkomgeving';
+  const requestedSlug = String(body.slug || body.tenantSlug || '').trim();
   if (!email || !email.includes('@')) return res.status(400).json({ error: 'Ongeldig email-adres' });
   if (!naam) return res.status(400).json({ error: 'Naam is verplicht' });
   if (password.length < 8) return res.status(400).json({ error: 'Wachtwoord moet minimaal 8 tekens zijn' });
@@ -204,7 +257,7 @@ async function registerNewTenant(req, res) {
   if (tenantsList.includes(tenantId)) {
     finalTenantId = tenantId + '_' + auth.makeId('').slice(0, 6);
   }
-  const tenant = await createTenant(finalTenantId, tenantNaam, email);
+  const tenant = await createTenant(finalTenantId, tenantNaam, email, requestedSlug);
   const user = await newUserRecord(email, naam, password, {
     tenantId: finalTenantId,
     role: 'admin',

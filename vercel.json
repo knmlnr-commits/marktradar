@@ -1,6 +1,8 @@
 {
   "rewrites": [
     { "source": "/app", "destination": "/marktradar.html" },
-    { "source": "/app/", "destination": "/marktradar.html" }
+    { "source": "/app/", "destination": "/marktradar.html" },
+    { "source": "/app/:slug", "destination": "/marktradar.html" },
+    { "source": "/app/:slug/", "destination": "/marktradar.html" }
   ]
 }
