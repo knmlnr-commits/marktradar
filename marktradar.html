@@ -1335,6 +1335,24 @@ body{
   </div>
 </div>
 
+<div class="refresh-modal" id="signalDetailModal">
+  <div class="refresh-modal-panel" style="max-width:640px">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+      <span id="sdmDate" style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--grey-700);font-weight:600"></span>
+      <span id="sdmUrgency" class="signal-urgency"></span>
+      <span id="sdmType" style="font-size:.7rem;padding:2px 8px;border-radius:999px;background:var(--grey-100);color:var(--grey-700);font-weight:600;text-transform:uppercase;letter-spacing:.06em"></span>
+    </div>
+    <h3 id="sdmHeadline" style="font-size:1.1rem;line-height:1.35;margin-bottom:10px;font-weight:700;letter-spacing:-.01em"></h3>
+    <div id="sdmSummary" style="font-size:.9rem;color:var(--grey-700);line-height:1.55;margin-bottom:14px"></div>
+    <div id="sdmSource" style="font-size:.78rem;color:var(--grey-600);margin-bottom:16px"></div>
+    <div class="btn-row">
+      <button class="btn-secondary" id="sdmCloseBtn">Sluiten</button>
+      <a id="sdmInstellingBtn" class="btn-secondary" style="display:none" href="#">Open instelling &rarr;</a>
+      <a id="sdmSourceBtn" class="btn-primary" style="display:none" target="_blank" rel="noopener" href="#">Open bron &nearr;</a>
+    </div>
+  </div>
+</div>
+
 <div class="refresh-modal" id="passwordModal">
   <div class="refresh-modal-panel" style="max-width:520px">
     <h3 id="passwordModalTitle">Wachtwoord wijzigen</h3>
@@ -11937,6 +11955,7 @@ function initApp(){
   syncOverrides();
   syncDropdowns();
   bindContactEditModal();
+  bindSignalDetailModal();
   bindDropdownAddHandler();
   bindDropdownDeleteModal();
   bindAdminModal();
@@ -12392,14 +12411,59 @@ function renderSignals(){
   document.querySelectorAll('.signal').forEach(el => {
     const sid = el.dataset.signalId;
     const sig = DATA.signalen.find(x => x.id === sid);
-    if(sig && sig.instellingId){
-      el.style.cursor = 'pointer';
-      el.addEventListener('click', () => openInstelling(sig.instellingId, 'signaal'));
-    } else {
-      // Sector-signaal zonder gekoppelde instelling: geen drill-down.
-      el.style.cursor = 'default';
-    }
+    if(!sig) return;
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', (e) => {
+      // Klik op bestaande source-link buiten de detail-modal om laat doorgaan.
+      if(e.target.closest('.signal-source')) return;
+      if(sig.instellingId){
+        openInstelling(sig.instellingId, 'signaal');
+      } else {
+        openSignalDetail(sig);
+      }
+    });
   });
+}
+
+function openSignalDetail(sig){
+  if(!sig) return;
+  document.getElementById('sdmDate').textContent = fmtFullDate(sig.datum) + ' · ' + fmtRelative(sig.datum);
+  const urg = document.getElementById('sdmUrgency');
+  urg.className = 'signal-urgency ' + (sig.urgentie || 'middel');
+  urg.innerHTML = `<span class="dot"></span>${escapeHtml(sig.urgentie || 'middel')}`;
+  document.getElementById('sdmType').textContent = sig.type || 'signaal';
+  document.getElementById('sdmHeadline').textContent = sig.headline || '';
+  document.getElementById('sdmSummary').textContent = sig.summary || '';
+  const srcEl = document.getElementById('sdmSource');
+  srcEl.innerHTML = sig.source ? '<strong>Bron:</strong> ' + escapeHtml(sig.source) : '';
+  const sourceBtn = document.getElementById('sdmSourceBtn');
+  if(sig.sourceUrl && sig.sourceUrl !== '#'){
+    sourceBtn.href = sig.sourceUrl;
+    sourceBtn.style.display = '';
+  } else {
+    sourceBtn.style.display = 'none';
+  }
+  const instBtn = document.getElementById('sdmInstellingBtn');
+  if(sig.instellingId){
+    instBtn.href = '#';
+    instBtn.style.display = '';
+    instBtn.onclick = (e) => {
+      e.preventDefault();
+      document.getElementById('signalDetailModal').classList.remove('show');
+      openInstelling(sig.instellingId, 'signaal');
+    };
+  } else {
+    instBtn.style.display = 'none';
+    instBtn.onclick = null;
+  }
+  document.getElementById('signalDetailModal').classList.add('show');
+}
+
+function bindSignalDetailModal(){
+  const m = document.getElementById('signalDetailModal');
+  if(!m) return;
+  document.getElementById('sdmCloseBtn').addEventListener('click', () => m.classList.remove('show'));
+  m.addEventListener('click', (e) => { if(e.target.id === 'signalDetailModal') m.classList.remove('show'); });
 }
 
 const INST_FILTERS = [
@@ -12438,18 +12502,10 @@ function renderInstFilters(){
   document.querySelectorAll('#instFilters .chip').forEach(c => {
     c.addEventListener('click', () => { instFilter = c.dataset.filter; renderInstFilters(); renderInstellingen(); });
   });
-  const dmuComplete = instellingenMerged().filter(i => (i.dmu||[]).length >= 3).length;
-  const tabCount = document.getElementById('tabCountInst');
-  if(tabCount && tabCount.parentElement){
-    let progressEl = document.getElementById('instDmuProgress');
-    if(!progressEl){
-      progressEl = document.createElement('span');
-      progressEl.id = 'instDmuProgress';
-      progressEl.className = 'dmu-progress';
-      tabCount.parentElement.appendChild(progressEl);
-    }
-    progressEl.textContent = `· ${dmuComplete} van ${instellingenMerged().length} met DMU ≥ 3`;
-  }
+  // DMU-progress label ('X van Y met DMU ≥ 3') is verwijderd — voegde niets
+  // toe naast de tab-count en kostte alleen verticale ruimte.
+  const stale = document.getElementById('instDmuProgress');
+  if(stale) stale.remove();
 }
 
 function renderProvinceFilter(){
