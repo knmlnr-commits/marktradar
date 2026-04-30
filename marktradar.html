@@ -14003,38 +14003,28 @@ function flashInlineSaved(el){
 }
 
 function addPersonToOverlay(instId, kind){
+  // Unified flow: één modal voor dmu / specialist / bestuurder met
+  // hetzelfde contactpersoon-schema. De kind bepaalt alleen de defaults
+  // voor rol, functie en vakgebied + naar welke array er wordt gesaved.
+  const today = new Date().toISOString().slice(0,10);
   if(kind === 'dmu'){
-    if(typeof openContactEdit === 'function'){
-      openContactEdit(instId, { naam: '', functie: '', rol: 'influencer', vertrouwen: 'middel', email: '', telefoon: '', linkedin: '', bron: '', bronType: 'website', notitie: '' });
-    }
-    return;
-  }
-  if(kind === 'spec'){
-    const naam = prompt('Naam specialist:');
-    if(!naam) return;
-    const functie = prompt('Functie / vakgebied:', 'Specialist Ouderengeneeskunde') || '';
-    const inst = getInstellingRaw(instId);
-    const arr = (overrides[instId] && Array.isArray(overrides[instId].specialisten))
-      ? overrides[instId].specialisten.slice()
-      : (inst && Array.isArray(inst.specialisten) ? inst.specialisten.slice() : []);
-    arr.push({ naam: naam.trim(), functie: functie.trim(), vakgebied: functie.trim() || 'Algemeen', vertrouwen: 'middel' });
-    setOverrides(instId, { specialisten: arr });
-    openInstelling(instId);
-    return;
-  }
-  if(kind === 'directie'){
-    const naam = prompt('Naam bestuurder:');
-    if(!naam) return;
-    const functie = prompt('Functie:', 'Lid RvB') || '';
-    const sinds = prompt('Sinds (YYYY-MM-DD), optioneel:', '') || null;
-    const inst = getInstellingRaw(instId);
-    const arr = (overrides[instId] && Array.isArray(overrides[instId].directie))
-      ? overrides[instId].directie.slice()
-      : (inst && Array.isArray(inst.directie) ? inst.directie.slice() : []);
-    arr.push({ naam: naam.trim(), functie: functie.trim(), sinds, recent: !!sinds && sinds >= new Date(Date.now() - 90*86400000).toISOString().slice(0,10) });
-    setOverrides(instId, { directie: arr });
-    openInstelling(instId);
-    return;
+    openContactEdit(instId, {
+      naam: '', functie: '', rol: 'influencer', vertrouwen: 'middel',
+      email: '', telefoon: '', linkedin: '', vakgebied: '', sinds: '',
+      recent: false, bron: '', bronType: 'website', notitie: ''
+    }, 'dmu');
+  } else if(kind === 'spec'){
+    openContactEdit(instId, {
+      naam: '', functie: 'Specialist', rol: 'influencer', vertrouwen: 'middel',
+      email: '', telefoon: '', linkedin: '', vakgebied: 'Algemeen',
+      sinds: '', recent: false, bron: '', bronType: 'website', notitie: ''
+    }, 'specialist');
+  } else if(kind === 'directie'){
+    openContactEdit(instId, {
+      naam: '', functie: 'Lid RvB', rol: 'decider', vertrouwen: 'middel',
+      email: '', telefoon: '', linkedin: '', vakgebied: '',
+      sinds: today, recent: true, bron: '', bronType: 'website', notitie: ''
+    }, 'directie');
   }
 }
 function bindDmuClickHandlers(i){
@@ -14042,38 +14032,59 @@ function bindDmuClickHandlers(i){
   document.querySelectorAll('#overlayPanel .dmu-card').forEach((el, idx) => {
     const contact = merged[idx];
     if(!contact) return;
+    el.style.cursor = 'pointer';
     el.addEventListener('click', (e) => {
       if(e.target.closest('a')) return;
-      openContactEdit(i.id, contact);
+      openContactEdit(i.id, contact, 'dmu');
+    });
+  });
+  // Specialist-cards op dezelfde manier klikbaar — opent unified modal.
+  const specs = i.specialisten || [];
+  document.querySelectorAll('#overlayPanel .spec-card').forEach((el, idx) => {
+    const contact = specs[idx];
+    if(!contact) return;
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', (e) => {
+      if(e.target.closest('a')) return;
+      openContactEdit(i.id, { ...contact, _idx: idx }, 'specialist');
     });
   });
 }
 
 let editingContactCtx = null;
-function openContactEdit(instId, contact){
-  editingContactCtx = { instId, original: contact };
+// Uniforme contactpersoon-definitie. Of het nu een DMU-contact, specialist
+// of bestuurder betreft — hetzelfde modal, hetzelfde schema. Optionele
+// velden (vakgebied / sinds / recent) zijn altijd zichtbaar; je vult in
+// wat van toepassing is. De `kind` (dmu / specialist / directie) bepaalt
+// alleen naar welke array de save schrijft.
+function openContactEdit(instId, contact, kind){
+  const k = kind || 'dmu';
+  editingContactCtx = { instId, original: contact, kind: k, originalIndex: contact && typeof contact._idx === 'number' ? contact._idx : null };
   const c = contact || {};
-  const opts = (list, val) => list.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('');
+  const titlePrefix = k === 'directie' ? 'Bestuurder' : (k === 'specialist' ? 'Specialist' : 'Contactpersoon');
   const body = `
     <div class="contact-edit-grid">
       <div class="edit-field"><label>Naam</label><input type="text" id="ce-naam" value="${escapeHtml(c.naam||'')}"></div>
       <div class="edit-field"><label>Functie</label><input type="text" id="ce-functie" value="${escapeHtml(c.functie||'')}"></div>
-      <div class="edit-field"><label>Rol</label>${ddSelectHtml('dmuRol', c.rol||'influencer', { id: 'ce-rol' })}</div>
+      <div class="edit-field"><label>Rol</label>${ddSelectHtml('dmuRol', c.rol||(k==='directie'?'decider':'influencer'), { id: 'ce-rol' })}</div>
       <div class="edit-field"><label>Vertrouwen</label>${ddSelectHtml('vertrouwen', c.vertrouwen||'middel', { id: 'ce-vertrouwen' })}</div>
       <div class="edit-field"><label>Email</label><input type="email" id="ce-email" value="${escapeHtml(c.email||'')}"></div>
       <div class="edit-field"><label>Telefoon</label><input type="tel" id="ce-telefoon" value="${escapeHtml(c.telefoon||'')}"></div>
       <div class="edit-field full"><label>LinkedIn</label><input type="url" id="ce-linkedin" value="${escapeHtml(c.linkedin||'')}"></div>
-      <div class="edit-field full"><label>Bron-URL</label><input type="url" id="ce-bron" value="${escapeHtml(c.bron||'')}"></div>
+      <div class="edit-field"><label>Vakgebied <small>(optioneel)</small></label><input type="text" id="ce-vakgebied" value="${escapeHtml(c.vakgebied||'')}" placeholder="bv. Specialist Ouderengeneeskunde"></div>
+      <div class="edit-field"><label>Sinds <small>(optioneel)</small></label><input type="date" id="ce-sinds" value="${escapeHtml(c.sinds||'')}"></div>
+      <div class="edit-field full"><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ce-recent" ${c.recent ? 'checked' : ''}> Recente wijziging (&lt;90 dagen) — zichtbaar als badge</label></div>
+      <div class="edit-field full"><label>Bron-URL <small>(optioneel)</small></label><input type="url" id="ce-bron" value="${escapeHtml(c.bron||'')}"></div>
       <div class="edit-field"><label>Bron-type</label>${ddSelectHtml('bronType', c.bronType||'website', { id: 'ce-bronType' })}</div>
       <div class="edit-field"><label>Geverifieerd</label><input type="date" id="ce-geverifieerd" value="${escapeHtml(c.geverifieerd|| new Date().toISOString().slice(0,10))}"></div>
       <div class="edit-field full"><label>Notitie</label><textarea id="ce-notitie">${escapeHtml(c.notitie||'')}</textarea></div>
     </div>
     <div style="font-size:.72rem;color:var(--grey-500);padding:8px 12px;background:var(--grey-50);border-radius:6px;border:1px solid var(--grey-150)">
-      Wijzigingen worden opgeslagen als override op deze instelling. Cross-device gesynchroniseerd via /api/state.
-      ${c._edited ? 'Dit is een eerder bewerkt record uit de baseline.' : c._imported ? 'Dit record komt uit een eerdere XLS-import.' : 'Dit record komt uit de baseline en wordt gemerged door je override.'}
+      Type: <strong>${titlePrefix}</strong> &middot; Wijzigingen worden cross-device gesynchroniseerd via tenant-state.
+      ${c._edited ? 'Dit is een eerder bewerkt record uit de baseline.' : c._imported ? 'Dit record komt uit een eerdere XLS-import.' : ''}
     </div>`;
   const inst = getInstellingRaw(instId);
-  document.getElementById('contactEditTitle').textContent = 'Contactpersoon bewerken: ' + (inst ? inst.naam : '');
+  document.getElementById('contactEditTitle').textContent = titlePrefix + ' bewerken: ' + (inst ? inst.naam : '');
   document.getElementById('contactEditBody').innerHTML = body;
   document.getElementById('contactEditModal').classList.add('show');
 }
@@ -14901,7 +14912,11 @@ function bindContactEditModal(){
   document.getElementById('contactEditSave').addEventListener('click', () => {
     if(!editingContactCtx) return;
     const get = (id) => document.getElementById(id)?.value?.trim() || '';
+    const getCheck = (id) => !!document.getElementById(id)?.checked;
     const orig = editingContactCtx.original || {};
+    const kind = editingContactCtx.kind || 'dmu';
+    const instId = editingContactCtx.instId;
+    // Uniforme contactpersoon-record — alle velden in één schema.
     const updated = {
       naam: get('ce-naam'),
       functie: get('ce-functie'),
@@ -14910,20 +14925,41 @@ function bindContactEditModal(){
       email: get('ce-email') || null,
       telefoon: get('ce-telefoon') || null,
       linkedin: get('ce-linkedin') || null,
+      vakgebied: get('ce-vakgebied') || null,
+      sinds: get('ce-sinds') || null,
+      recent: getCheck('ce-recent'),
       bron: get('ce-bron') || null,
       bronType: get('ce-bronType'),
       geverifieerd: get('ce-geverifieerd'),
       notitie: get('ce-notitie') || null,
     };
-    if(!updated.naam || !updated.functie){ alert('Naam en functie zijn verplicht.'); return; }
-    if(orig.naam && orig.functie && (orig.naam.toLowerCase() !== updated.naam.toLowerCase() || orig.functie.toLowerCase() !== updated.functie.toLowerCase())){
-      deleteDmuOverride(editingContactCtx.instId, orig);
+    if(!updated.naam){ alert('Naam is verplicht.'); return; }
+    if(kind === 'dmu'){
+      if(!updated.functie){ alert('Functie is verplicht voor een contactpersoon.'); return; }
+      if(orig.naam && orig.functie && (orig.naam.toLowerCase() !== updated.naam.toLowerCase() || orig.functie.toLowerCase() !== updated.functie.toLowerCase())){
+        deleteDmuOverride(instId, orig);
+      }
+      upsertDmuOverride(instId, updated);
+    } else if(kind === 'directie' || kind === 'specialist'){
+      // Schrijven naar overrides[instId].directie of .specialisten:
+      // we nemen de baseline-array als startpunt (of de bestaande
+      // override) en upserten op naam (case-insensitive) of op _idx
+      // wanneer doorgegeven via openContactEdit.
+      const arrField = kind === 'directie' ? 'directie' : 'specialisten';
+      const inst = getInstellingRaw(instId);
+      const arr = (overrides[instId] && Array.isArray(overrides[instId][arrField]))
+        ? overrides[instId][arrField].slice()
+        : (inst && Array.isArray(inst[arrField]) ? inst[arrField].map(x => ({ ...x })) : []);
+      const idx = (typeof editingContactCtx.originalIndex === 'number')
+        ? editingContactCtx.originalIndex
+        : arr.findIndex(x => x && (x.naam || '').toLowerCase().trim() === (orig.naam || '').toLowerCase().trim());
+      if(idx >= 0) arr[idx] = updated;
+      else arr.push(updated);
+      setOverrides(instId, { [arrField]: arr });
     }
-    upsertDmuOverride(editingContactCtx.instId, updated);
     document.getElementById('contactEditModal').classList.remove('show');
-    const id = editingContactCtx.instId;
     editingContactCtx = null;
-    openInstelling(id);
+    openInstelling(instId);
   });
   document.getElementById('contactEditDelete').addEventListener('click', () => {
     if(!editingContactCtx) return;

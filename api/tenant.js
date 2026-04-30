@@ -82,8 +82,9 @@ async function loadOrCreate(tenantId) {
       t.slug = auth.LEGACY_TENANT_SLUG;
       // GeriCall heeft een ingebouwde VVT-baseline, dus onboarding is af.
       t.onboardingDone = true;
-      t.propositie = 'GeriCall · ANW-zorg & VVT-marktintelligentie voor zorgleveranciers';
-      t.marktNaam = 'VVT (verpleeg-, verzorgings- en thuiszorg)';
+      t.propositie = 'GeriCall biedt VVT-organisaties 24/7 ANW-bereikbaarheid van specialisten ouderengeneeskunde, zodat hun eigen artsen geen avond-, nacht- en weekenddiensten hoeven te draaien.';
+      t.marktNaam = 'VVT — verpleeg-, verzorgings- en thuiszorg Nederland';
+      t.marktBeschrijving = 'Nederlandse VVT-instellingen met intramurale capaciteit (verpleeghuiszorg, GRZ, ELV) waar specialisten ouderengeneeskunde nodig zijn voor avond-, nacht- en weekendzorg. Focus op organisaties met 200+ cliënten waar eigen SO-capaciteit ontoereikend is voor 24/7 dekking; secundair de thuiszorg- en VPT-segmenten waar ANW-bereikbaarheid via samenwerkingsverbanden loopt (ThoeZ, AWIZ, NOB Green Deal).';
       // Seed met een default feed-set zodat de wekelijkse cron meteen
       // werkt voor de GeriCall-tenant. Beheer > Werkomgeving kan ze later
       // aanvullen of verwijderen.
