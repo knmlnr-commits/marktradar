@@ -1161,17 +1161,6 @@ body{
   </div>
 </div>
 
-<div id="bottomSections" style="margin:24px 24px 32px;display:none">
-  <div class="gap-section" id="toevoegSection">
-    <div class="gap-section-title">Toevoeg-voorstellen uit PipeDrive <span class="gap-count" id="toevoegCount"></span></div>
-    <div class="gap-list" id="toevoegList"></div>
-  </div>
-  <div class="gap-section" id="salesGapSection">
-    <div class="gap-section-title">Sales-gap (instellingen zonder PipeDrive-aanwezigheid) <span class="gap-count" id="salesGapCount"></span></div>
-    <div class="gap-list" id="salesGapList"></div>
-  </div>
-</div>
-
 <div class="overlay" id="overlay">
   <div class="overlay-panel" id="overlayPanel"></div>
 </div>
@@ -11515,37 +11504,11 @@ function bindOnboarding(){
 }
 
 function renderBottomSections(){
-  const wrap = document.getElementById('bottomSections');
-  if(!wrap) return;
-  const tv = (DATA.toevoegenVoorstel || []);
-  const sg = (DATA.salesGap || []);
-  if(tv.length === 0 && sg.length === 0){ wrap.style.display = 'none'; return; }
-  wrap.style.display = 'block';
-  document.getElementById('toevoegCount').textContent = tv.length + (tv.length === 1 ? ' kandidaat' : ' kandidaten');
-  document.getElementById('toevoegList').innerHTML = tv.length === 0
-    ? '<div class="no-data">Geen kandidaten.</div>'
-    : tv.slice(0, 30).map(t => `
-      <div class="gap-row">
-        <div><div class="gap-naam">${escapeHtml(t.naam)}</div>
-          <div class="gap-meta">PD #${t.pipedriveOrgId} &middot; ${escapeHtml(t.snelleSamenvatting||'')}${t.redenen && t.redenen.length ? ' &middot; ' + t.redenen.map(escapeHtml).join(', ') : ''}</div>
-        </div>
-        <div></div>
-        <div class="gap-score">${t.score}</div>
-      </div>`).join('');
-  document.getElementById('salesGapCount').textContent = sg.length + (sg.length === 1 ? ' instelling' : ' instellingen');
-  document.getElementById('salesGapList').innerHTML = sg.length === 0
-    ? '<div class="no-data">Alle instellingen hebben CRM-data.</div>'
-    : sg.map(s => `
-      <div class="gap-row" data-inst-id="${s.instellingId}" style="cursor:pointer">
-        <div><div class="gap-naam">${escapeHtml(s.naam)}</div>
-          <div class="gap-meta">${escapeHtml(s.gericallStatus)} &middot; ${escapeHtml(s.leadLens||'')} &middot; ${escapeHtml(s.reden||'')}</div>
-        </div>
-        <div></div>
-        <div class="gap-score">${s.leadScore}</div>
-      </div>`).join('');
-  document.querySelectorAll('#salesGapList .gap-row[data-inst-id]').forEach(r => {
-    r.addEventListener('click', () => openInstelling(r.dataset.instId));
-  });
+  // Verwijderd in v1.13.3: PipeDrive toevoeg-voorstellen + sales-gap waren
+  // eenmalige curatie-listings na de v1.11.0 import. De daadwerkelijke
+  // CRM-data zit per instelling in inst.crm; deze sectie had geen waarde
+  // meer voor de dagelijkse flow.
+  return;
 }
 
 function renderKpiRow(){
