@@ -1239,17 +1239,17 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
 
 <div class="refresh-modal" id="adminModal">
   <div class="refresh-modal-panel" style="max-width:880px">
-    <h3>Beheer</h3>
+    <h3 data-i18n="admin.title">Beheer</h3>
     <div id="adminSyncStatus" style="margin-bottom:14px"></div>
     <div class="admin-tabs">
-      <button class="admin-tab active" data-admin-tab="tenant">Werkomgeving</button>
-      <button class="admin-tab" data-admin-tab="market">Markt</button>
-      <button class="admin-tab" data-admin-tab="users">Gebruikers</button>
-      <button class="admin-tab" data-admin-tab="assignments">Toewijzingen</button>
-      <button class="admin-tab" data-admin-tab="contacts">Contacten</button>
-      <button class="admin-tab" data-admin-tab="dropdowns">Dropdowns</button>
-      <button class="admin-tab" data-admin-tab="weekly">Wekelijkse update</button>
-      <button class="admin-tab" data-admin-tab="data">Data &amp; sync</button>
+      <button class="admin-tab active" data-admin-tab="tenant" data-i18n="admin.tab.tenant">Werkomgeving</button>
+      <button class="admin-tab" data-admin-tab="market" data-i18n="admin.tab.market">Markt</button>
+      <button class="admin-tab" data-admin-tab="users" data-i18n="admin.tab.users">Gebruikers</button>
+      <button class="admin-tab" data-admin-tab="assignments" data-i18n="admin.tab.assignments">Toewijzingen</button>
+      <button class="admin-tab" data-admin-tab="contacts" data-i18n="admin.tab.contacts">Contacten</button>
+      <button class="admin-tab" data-admin-tab="dropdowns" data-i18n="admin.tab.dropdowns">Dropdowns</button>
+      <button class="admin-tab" data-admin-tab="weekly" data-i18n="admin.tab.weekly">Wekelijkse update</button>
+      <button class="admin-tab" data-admin-tab="data" data-i18n="admin.tab.data">Data &amp; sync</button>
     </div>
     <div id="adminPaneTenant" class="admin-pane active">
       <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Beheer je werkomgeving: naam, slug (URL), propositie en markt-context. Elke werkomgeving heeft eigen geïsoleerde data — eigenaren, contacten, acties en signalen.</p>
@@ -12209,28 +12209,146 @@ function goHome(){
 /* ============= i18n module — minimal NL/EN switch ============= */
 const I18N = {
   nl: {
+    // Gate / topbar
     'gate.h1': 'Markt<em>Radar</em> · Intelligence Portal',
     'gate.sub': 'Live overzicht van organisaties, signalen en opportunities in jouw markt. Voor intern gebruik.',
+    'gate.email': 'Email', 'gate.password': 'Wachtwoord', 'gate.naam': 'Volledige naam',
+    'gate.tenant': 'Naam van je werkomgeving', 'gate.remember': 'Onthoud mij op dit apparaat',
+    'gate.login': 'Inloggen →', 'gate.register': 'Werkomgeving aanmaken →',
+    'gate.bootstrap': 'Eerste account aanmaken →',
+    'gate.toggle.toRegister': 'Nog geen account? Maak je eigen werkomgeving aan',
+    'gate.toggle.toLogin': 'Ik heb al een account → inloggen',
     'topbar.admin': 'Beheer',
     'scope.label': 'Toon:', 'scope.mine': 'Mijn todo', 'scope.all': 'Alles',
     'scope.help': "Filtert todo's, instellingen en signalen op jouw eigenaarschap.",
+    // Tabs
     'tab.todo': 'Todo', 'tab.signals': 'Signalen', 'tab.orgs': 'Organisaties',
     'tab.suppliers': 'Leveranciers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends',
+    // User menu
     'menu.password': 'Wachtwoord wijzigen', 'menu.logout': 'Uitloggen',
+    // Beheer-modal
+    'admin.title': 'Beheer',
+    'admin.tab.tenant': 'Werkomgeving', 'admin.tab.market': 'Markt',
+    'admin.tab.users': 'Gebruikers', 'admin.tab.assignments': 'Toewijzingen',
+    'admin.tab.contacts': 'Contacten', 'admin.tab.dropdowns': 'Dropdowns',
+    'admin.tab.weekly': 'Wekelijkse update', 'admin.tab.data': 'Data & sync',
+    // Common buttons
+    'common.save': 'Opslaan', 'common.cancel': 'Annuleren', 'common.close': 'Sluiten',
+    'common.delete': 'Verwijderen', 'common.add': 'Toevoegen', 'common.back': 'Terug',
+    'common.next': 'Volgende', 'common.search': 'Zoeken',
+    // Overlay accordions
+    'ov.todo': 'Todo', 'ov.pipeline': 'Pipeline & opportunity',
+    'ov.people': 'Mensen', 'ov.activity': 'Activiteit', 'ov.company': 'Bedrijfsinfo',
+    // People section
+    'people.directors': 'Directie / Raad van Bestuur', 'people.dmu': 'DMU · Decision Making Unit',
+    'people.specialists': 'Specialisten',
+    // Add-people
+    'add.boardmember': '+ Bestuurder', 'add.contact': '+ Contactpersoon', 'add.specialist': '+ Specialist',
+    // Empty states
+    'empty.todo': "Geen todo's; voeg er een toe.",
+    'empty.activity': 'Geen recente activiteit. Voeg een todo toe of wacht op een marktsignaal.',
+    'empty.boardmembers': 'Geen bestuurders. Klik + Bestuurder om er een toe te voegen.',
+    'empty.contacts': 'Geen contactpersonen. Klik + Contactpersoon om er een toe te voegen.',
+    'empty.specialists': 'Geen specialisten bekend. Klik + Specialist om er een toe te voegen.',
+    'empty.signals': 'Geen recente signalen.',
+    // Filters
+    'filter.allProv': 'Alle provincies', 'filter.allRegions': "Alle regio's",
+    'filter.allOwners': 'Alle eigenaren', 'filter.unassigned': 'Niet toegewezen',
+    'sort.score': 'Score', 'sort.acquisitie': 'Acquisitie', 'sort.retention': 'Retention',
+    'sort.expansion': 'Expansion', 'sort.consolidatie': 'Consolidatie',
+    'sort.signals': 'Signalen', 'sort.size': 'Grootte', 'sort.az': 'A-Z',
+    'todoFilter.open': "Alleen open todo's", 'todoFilter.all': 'Open + afgerond',
+    'todoFilter.done': 'Alleen afgerond',
+    // Onboarding wizard
     'ob.welcome': 'Welkom bij MarktRadar', 'ob.later': 'Later doen',
     'ob.next': 'Volgende →', 'ob.prev': '← Vorige', 'ob.finish': 'Klaar — start verkopen 🎯',
+    'ob.s1.h': 'Stap 1 · Wat is je propositie?',
+    'ob.s1.sub': 'In één zin: wat verkoop je en aan wie? Dit helpt MarktRadar om signalen te scoren op relevantie voor jouw aanbod.',
+    'ob.s1.label': 'Propositie',
+    'ob.s2.h': 'Stap 2 · Wat is je markt?',
+    'ob.s2.sub': 'Geef je markt een naam en beschrijf hem kort. Dit wordt zichtbaar in je werkomgeving en als context voor signalen-scoring.',
+    'ob.s2.name': 'Naam van je markt', 'ob.s2.desc': 'Korte beschrijving (optioneel)',
+    'ob.s3.h': 'Stap 3 · Voeg je organisaties toe',
+    'ob.s3.sub': 'Plak hieronder de organisaties die in jouw markt vallen — bedrijven, instellingen, accounts. Eén per regel werkt het snelst.',
+    'ob.s3.label': "Organisaties (1 per regel — optioneel met komma's: naam, regio, segment)",
+    'ob.s4.h': 'Stap 4 · Markeer je huidige klanten',
+    'ob.s4.sub': 'Welke organisaties zijn al klant van je? Je kunt dit later wijzigen of importeren vanuit je CRM.',
+    'ob.s4.empty': 'Je hebt nog geen organisaties opgegeven. Geen probleem — sla deze stap over en voeg ze later toe via Beheer.',
+    // Confirms
+    'confirm.logout': 'Uitloggen op dit apparaat?',
+    'confirm.deleteBoardmember': 'Verwijder',
+    'confirm.deleteTodo': 'Todo verwijderen?',
+    // Inst-row + score
+    'inst.leadscore': 'Leadscore', 'inst.lens': 'Actieve lens', 'inst.status': 'Status',
+    // Form labels admin tenant
+    'tenant.naamLabel': 'Naam werkomgeving', 'tenant.slugLabel': 'URL-slug',
+    'tenant.propositieLabel': 'Propositie — wat verkoop je en aan wie?',
+    'tenant.marktLabel': 'Markt-naam', 'tenant.marktDescLabel': 'Markt-beschrijving (optioneel)',
+    'tenant.idLabel': 'Tenant-ID', 'tenant.rerunOb': 'Onboarding opnieuw doorlopen',
   },
   en: {
     'gate.h1': 'Markt<em>Radar</em> · Intelligence portal',
     'gate.sub': 'Live overview of organisations, signals and opportunities in your market. For internal use.',
+    'gate.email': 'Email', 'gate.password': 'Password', 'gate.naam': 'Full name',
+    'gate.tenant': 'Workspace name', 'gate.remember': 'Remember me on this device',
+    'gate.login': 'Log in →', 'gate.register': 'Create workspace →',
+    'gate.bootstrap': 'Create first account →',
+    'gate.toggle.toRegister': 'No account yet? Create your own workspace',
+    'gate.toggle.toLogin': 'I already have an account → log in',
     'topbar.admin': 'Admin',
     'scope.label': 'Show:', 'scope.mine': 'My todos', 'scope.all': 'All',
     'scope.help': 'Filters todos, organisations and signals on ownership.',
     'tab.todo': 'Todos', 'tab.signals': 'Signals', 'tab.orgs': 'Organisations',
     'tab.suppliers': 'Suppliers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends',
     'menu.password': 'Change password', 'menu.logout': 'Log out',
+    'admin.title': 'Admin',
+    'admin.tab.tenant': 'Workspace', 'admin.tab.market': 'Market',
+    'admin.tab.users': 'Users', 'admin.tab.assignments': 'Assignments',
+    'admin.tab.contacts': 'Contacts', 'admin.tab.dropdowns': 'Dropdowns',
+    'admin.tab.weekly': 'Weekly update', 'admin.tab.data': 'Data & sync',
+    'common.save': 'Save', 'common.cancel': 'Cancel', 'common.close': 'Close',
+    'common.delete': 'Delete', 'common.add': 'Add', 'common.back': 'Back',
+    'common.next': 'Next', 'common.search': 'Search',
+    'ov.todo': 'Todos', 'ov.pipeline': 'Pipeline & opportunity',
+    'ov.people': 'People', 'ov.activity': 'Activity', 'ov.company': 'Company info',
+    'people.directors': 'Directors / Board', 'people.dmu': 'DMU · Decision Making Unit',
+    'people.specialists': 'Specialists',
+    'add.boardmember': '+ Board member', 'add.contact': '+ Contact', 'add.specialist': '+ Specialist',
+    'empty.todo': 'No todos; add one.',
+    'empty.activity': 'No recent activity. Add a todo or wait for a market signal.',
+    'empty.boardmembers': 'No board members. Click + Board member to add one.',
+    'empty.contacts': 'No contacts. Click + Contact to add one.',
+    'empty.specialists': 'No specialists. Click + Specialist to add one.',
+    'empty.signals': 'No recent signals.',
+    'filter.allProv': 'All regions', 'filter.allRegions': 'All areas',
+    'filter.allOwners': 'All owners', 'filter.unassigned': 'Unassigned',
+    'sort.score': 'Score', 'sort.acquisitie': 'Acquisition', 'sort.retention': 'Retention',
+    'sort.expansion': 'Expansion', 'sort.consolidatie': 'Consolidation',
+    'sort.signals': 'Signals', 'sort.size': 'Size', 'sort.az': 'A-Z',
+    'todoFilter.open': 'Open todos only', 'todoFilter.all': 'Open + done',
+    'todoFilter.done': 'Done only',
     'ob.welcome': 'Welcome to MarktRadar', 'ob.later': 'Later',
     'ob.next': 'Next →', 'ob.prev': '← Back', 'ob.finish': 'Done — start selling 🎯',
+    'ob.s1.h': 'Step 1 · What is your value proposition?',
+    'ob.s1.sub': 'In one sentence: what do you sell and to whom? This helps MarktRadar score signals for relevance.',
+    'ob.s1.label': 'Value proposition',
+    'ob.s2.h': 'Step 2 · What is your market?',
+    'ob.s2.sub': 'Give your market a name and short description. Visible in your workspace and used as scoring context.',
+    'ob.s2.name': 'Market name', 'ob.s2.desc': 'Short description (optional)',
+    'ob.s3.h': 'Step 3 · Add your organisations',
+    'ob.s3.sub': 'Paste below the organisations in your market — companies, accounts, contacts. One per line works fastest.',
+    'ob.s3.label': 'Organisations (1 per line — optionally with commas: name, region, segment)',
+    'ob.s4.h': 'Step 4 · Mark your existing customers',
+    'ob.s4.sub': 'Which organisations are already customers? You can change this later or import from your CRM.',
+    'ob.s4.empty': "You haven't added organisations yet. No problem — skip this step and add them later in Admin.",
+    'confirm.logout': 'Log out on this device?',
+    'confirm.deleteBoardmember': 'Delete',
+    'confirm.deleteTodo': 'Delete todo?',
+    'inst.leadscore': 'Lead score', 'inst.lens': 'Active lens', 'inst.status': 'Status',
+    'tenant.naamLabel': 'Workspace name', 'tenant.slugLabel': 'URL slug',
+    'tenant.propositieLabel': 'Value proposition — what do you sell and to whom?',
+    'tenant.marktLabel': 'Market name', 'tenant.marktDescLabel': 'Market description (optional)',
+    'tenant.idLabel': 'Tenant ID', 'tenant.rerunOb': 'Re-run onboarding',
   }
 };
 function getLang(){
