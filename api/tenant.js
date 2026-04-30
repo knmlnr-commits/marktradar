@@ -65,6 +65,20 @@ function publicTenantBranding(t) {
   };
 }
 
+// GeriCall canonical defaults — gebruikt zowel bij eerste creatie als bij
+// idempotent backfill voor bestaande tenant-records die nog op oudere
+// schemaversie zitten. Backfill respecteert handmatige user-edits: alleen
+// ontbrekende of expliciet 'oude default'-waarden worden vervangen.
+const GERICALL_PROPOSITIE = 'GeriCall biedt VVT-organisaties 24/7 ANW-bereikbaarheid van specialisten ouderengeneeskunde, zodat hun eigen artsen geen avond-, nacht- en weekenddiensten hoeven te draaien.';
+const GERICALL_MARKTNAAM = 'VVT — verpleeg-, verzorgings- en thuiszorg Nederland';
+const GERICALL_MARKTBESCHRIJVING = 'Nederlandse VVT-instellingen met intramurale capaciteit (verpleeghuiszorg, GRZ, ELV) waar specialisten ouderengeneeskunde nodig zijn voor avond-, nacht- en weekendzorg. Focus op organisaties met 200+ cliënten waar eigen SO-capaciteit ontoereikend is voor 24/7 dekking; secundair de thuiszorg- en VPT-segmenten waar ANW-bereikbaarheid via samenwerkingsverbanden loopt (ThoeZ, AWIZ, NOB Green Deal).';
+const GERICALL_OLD_PROPOSITIES = [
+  'GeriCall · ANW-zorg & VVT-marktintelligentie voor zorgleveranciers',
+];
+const GERICALL_OLD_MARKTNAAMEN = [
+  'VVT (verpleeg-, verzorgings- en thuiszorg)',
+];
+
 async function loadOrCreate(tenantId) {
   let t = await auth.kvGet(auth.tenantMetaKey(tenantId));
   if (!t) {
@@ -80,18 +94,37 @@ async function loadOrCreate(tenantId) {
     if (tenantId === auth.LEGACY_TENANT_ID) {
       t.naam = 'GeriCall';
       t.slug = auth.LEGACY_TENANT_SLUG;
-      // GeriCall heeft een ingebouwde VVT-baseline, dus onboarding is af.
       t.onboardingDone = true;
-      t.propositie = 'GeriCall biedt VVT-organisaties 24/7 ANW-bereikbaarheid van specialisten ouderengeneeskunde, zodat hun eigen artsen geen avond-, nacht- en weekenddiensten hoeven te draaien.';
-      t.marktNaam = 'VVT — verpleeg-, verzorgings- en thuiszorg Nederland';
-      t.marktBeschrijving = 'Nederlandse VVT-instellingen met intramurale capaciteit (verpleeghuiszorg, GRZ, ELV) waar specialisten ouderengeneeskunde nodig zijn voor avond-, nacht- en weekendzorg. Focus op organisaties met 200+ cliënten waar eigen SO-capaciteit ontoereikend is voor 24/7 dekking; secundair de thuiszorg- en VPT-segmenten waar ANW-bereikbaarheid via samenwerkingsverbanden loopt (ThoeZ, AWIZ, NOB Green Deal).';
-      // Seed met een default feed-set zodat de wekelijkse cron meteen
-      // werkt voor de GeriCall-tenant. Beheer > Werkomgeving kan ze later
-      // aanvullen of verwijderen.
+      t.propositie = GERICALL_PROPOSITIE;
+      t.marktNaam = GERICALL_MARKTNAAM;
+      t.marktBeschrijving = GERICALL_MARKTBESCHRIJVING;
       t.feeds = GERICALL_DEFAULT_FEEDS.slice();
       await auth.kvSet(auth.tenantSlugKey(auth.LEGACY_TENANT_SLUG), tenantId);
     }
     await auth.kvSet(auth.tenantMetaKey(tenantId), t);
+    return t;
+  }
+  // Backfill voor bestaande GeriCall-record: vul ontbrekende velden of
+  // upgrade oude default-waarden naar de nieuwe canonical waarden.
+  // Door alleen op LEEG of op een EXACTE oude default te checken blijven
+  // handmatige edits gerespecteerd.
+  if (tenantId === auth.LEGACY_TENANT_ID) {
+    let dirty = false;
+    if (!t.naam || t.naam === 'MarktRadar') { t.naam = 'GeriCall'; dirty = true; }
+    if (!t.slug) { t.slug = auth.LEGACY_TENANT_SLUG; dirty = true; await auth.kvSet(auth.tenantSlugKey(auth.LEGACY_TENANT_SLUG), tenantId); }
+    if (!t.onboardingDone) { t.onboardingDone = true; dirty = true; }
+    if (!t.propositie || GERICALL_OLD_PROPOSITIES.includes(t.propositie)) {
+      t.propositie = GERICALL_PROPOSITIE; dirty = true;
+    }
+    if (!t.marktNaam || GERICALL_OLD_MARKTNAAMEN.includes(t.marktNaam)) {
+      t.marktNaam = GERICALL_MARKTNAAM; dirty = true;
+    }
+    if (!t.marktBeschrijving) { t.marktBeschrijving = GERICALL_MARKTBESCHRIJVING; dirty = true; }
+    if (!Array.isArray(t.feeds) || t.feeds.length === 0) { t.feeds = GERICALL_DEFAULT_FEEDS.slice(); dirty = true; }
+    if (dirty) {
+      t.backfilledAt = Date.now();
+      await auth.kvSet(auth.tenantMetaKey(tenantId), t);
+    }
   }
   return t;
 }
