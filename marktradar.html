@@ -508,6 +508,9 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   color:var(--grey-700);font:inherit;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .12s;
   display:inline-flex;align-items:center;gap:4px}
 .add-people-btn:hover{border-color:var(--orange);color:var(--orange-dark);background:var(--orange-pale)}
+.dir-delete-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--grey-200);background:var(--white);
+  color:var(--grey-500);font-size:1.1rem;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .12s}
+.dir-delete-btn:hover{background:var(--red-light);color:var(--red);border-color:var(--red)}
 .acc-icon{display:inline-flex;align-items:center;justify-content:center;
   width:28px;height:28px;border-radius:8px;background:var(--orange-pale);color:var(--orange-dark);
   font-size:.95rem;flex-shrink:0;border:1px solid rgba(232,119,34,.2)}
@@ -13357,6 +13360,7 @@ function renderAnwItBody(i){
 }
 
 function renderMensenBody(i){
+  const dirItems = (i.directie || []);
   const dirHtml = `
     <div>
       <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px">
@@ -13364,12 +13368,18 @@ function renderMensenBody(i){
         <button type="button" class="add-people-btn" data-add-people="directie" data-inst-id="${escapeHtml(i.id)}">+ Bestuurder</button>
       </div>
       <div class="directie-list">
-        ${(i.directie||[]).map(d => `
-          <div class="directie-item ${d.recent ? 'recent' : ''}">
-            <div class="directie-naam">${escapeHtml(d.naam)}${d.linkedin ? ` <a href="${escapeHtml(d.linkedin)}" target="_blank" rel="noopener" style="font-size:.7rem;color:var(--orange-dark);text-decoration:none;font-weight:600;margin-left:4px">LinkedIn &#x2197;</a>` : ''}</div>
-            <div class="directie-functie">${escapeHtml(d.functie||'')}</div>
-            ${d.sinds || d.recent ? `<div class="directie-sinds">${d.recent ? '&#9888; recente wijziging' : ''}${d.sinds ? `${d.recent ? ' &middot; ' : ''}sinds ${escapeHtml(d.sinds)}` : ''}</div>` : ''}
-          </div>`).join('') || '<div class="no-data">Geen directie-info bekend.</div>'}
+        ${dirItems.map((d, idx) => `
+          <div class="directie-item ${d.recent ? 'recent' : ''}" style="display:grid;grid-template-columns:1.4fr 1.4fr 110px 90px 28px;gap:6px;align-items:center;padding:8px 10px">
+            <input type="text" class="inline-edit-input ie ie-dir" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" data-dir-field="naam" value="${escapeHtml(d.naam || '')}" placeholder="naam" style="font-weight:600">
+            <input type="text" class="inline-edit-input ie ie-dir" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" data-dir-field="functie" value="${escapeHtml(d.functie || '')}" placeholder="functie">
+            <input type="date" class="inline-edit-input ie ie-dir" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" data-dir-field="sinds" value="${escapeHtml(d.sinds || '')}" title="Sinds">
+            <label style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;color:var(--grey-700)" title="Recente wijziging (<90 dagen)">
+              <input type="checkbox" class="ie ie-dir" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" data-dir-field="recent" ${d.recent ? 'checked' : ''}>
+              recent
+            </label>
+            <button type="button" class="dir-delete-btn" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" title="Verwijder bestuurder" aria-label="Verwijderen">&times;</button>
+            ${d.linkedin ? `<div style="grid-column:1 / -1"><a href="${escapeHtml(d.linkedin)}" target="_blank" rel="noopener" style="font-size:.7rem;color:var(--orange-dark);font-weight:600;text-decoration:none">LinkedIn &#x2197;</a></div>` : ''}
+          </div>`).join('') || '<div class="no-data">Geen bestuurders. Klik <strong>+ Bestuurder</strong> om er een toe te voegen.</div>'}
       </div>
     </div>`;
   return dirHtml + renderDmuSection(i) + renderSpecSection(i);
@@ -13703,6 +13713,25 @@ function bindOverlayChrome(i){
       addPersonToOverlay(btn.dataset.instId, btn.dataset.addPeople);
     });
   });
+  // Verwijder-knoppen voor bestuurders.
+  document.querySelectorAll('#overlayPanel .dir-delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const instId = btn.dataset.instId;
+      const idx = parseInt(btn.dataset.dirIdx, 10);
+      const inst = getInstellingRaw(instId);
+      const baseDir = (overrides[instId] && Array.isArray(overrides[instId].directie))
+        ? overrides[instId].directie.slice()
+        : (inst && Array.isArray(inst.directie) ? inst.directie.map(d => ({ ...d })) : []);
+      if(!baseDir[idx]) return;
+      const naam = baseDir[idx].naam || 'deze bestuurder';
+      if(!confirm('Verwijder ' + naam + '?')) return;
+      baseDir.splice(idx, 1);
+      setOverrides(instId, { directie: baseDir });
+      openInstelling(instId);
+    });
+  });
 }
 
 function saveInlineEdit(instId, el){
@@ -13714,6 +13743,24 @@ function saveInlineEdit(instId, el){
     const next = { ...cur, [seg]: !!el.checked };
     setOverrides(instId, { segmenten: next });
     flashInlineSaved(el.closest('.segment-tag'));
+    return;
+  }
+  if(el.classList.contains('ie-dir')){
+    // Bestuurders-array editen op index. We werken op een kopie van
+    // overrides.directie (of, als die er nog niet is, baseline directie)
+    // en schrijven het hele bijgewerkte array terug.
+    const idx = parseInt(el.dataset.dirIdx, 10);
+    const f = el.dataset.dirField;
+    const inst = getInstellingRaw(instId);
+    const baseDir = (overrides[instId] && Array.isArray(overrides[instId].directie))
+      ? overrides[instId].directie.slice()
+      : (inst && Array.isArray(inst.directie) ? inst.directie.map(d => ({ ...d })) : []);
+    if(!baseDir[idx]) return;
+    let v = el.type === 'checkbox' ? !!el.checked : el.value;
+    if(typeof v === 'string' && v === '') v = null;
+    baseDir[idx] = { ...baseDir[idx], [f]: v };
+    setOverrides(instId, { directie: baseDir });
+    flashInlineSaved(el);
     return;
   }
   if(!field) return;
