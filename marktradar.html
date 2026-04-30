@@ -1021,7 +1021,6 @@ body{
     <button class="scope-pill active" data-scope="all">Alles</button>
     <span class="scope-help">Filtert acties, instellingen en signalen op jouw eigenaarschap.</span>
   </div>
-  <div class="kpi-row" id="kpiRow"></div>
 
   <div class="tabs">
     <button class="tab active" data-tab="acties">
@@ -11550,6 +11549,10 @@ function renderBottomSections(){
 }
 
 function renderKpiRow(){
+  // KPI-rij is verwijderd in v1.13.2 — nam te veel werkruimte zonder
+  // proportionele waarde. Tellers staan nu in de tab-counts en inline.
+  return;
+  /* legacy renderer (uitgeschakeld):
   const scopeInst = instellingenMerged();
   const scopeIds = new Set(scopeInst.map(i => String(i.id)));
   const scopeSig = signalenInScope().filter(s => !s.instellingId || scopeIds.has(String(s.instellingId)));
@@ -11584,6 +11587,7 @@ function renderKpiRow(){
       if(tabBtn) tabBtn.click();
     });
   });
+  */
 }
 function addDaysISO(iso, days){
   const d = new Date(iso); d.setDate(d.getDate() + days);
