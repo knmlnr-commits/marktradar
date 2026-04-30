@@ -413,13 +413,14 @@ body{
 .owner-empty-prominent{font-size:.92rem;font-weight:700;color:var(--orange-dark);font-style:italic;}
 .owner-prominent-right{min-width:240px}
 .owner-prominent-right .owner-select{background:white;border-color:var(--orange);font-weight:600;}
-.version-pill{display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 9px;margin-left:8px;
-  background:var(--orange-pale);border:1px solid var(--orange);border-radius:12px;cursor:pointer;
-  font-family:'DM Mono',monospace;font-size:.68rem;font-weight:700;color:var(--orange-dark);letter-spacing:.02em;transition:all .15s;}
-.version-pill:hover{background:var(--orange);color:white}
-.version-pill:hover .version-codename{color:rgba(255,255,255,.85);border-left-color:rgba(255,255,255,.4)}
-.version-codename{font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:600;color:var(--orange);
-  padding-left:6px;border-left:1px solid var(--orange-light);font-style:italic;}
+.version-pill{display:inline-flex;align-items:center;gap:4px;padding:1px 6px 1px 7px;margin-left:6px;
+  background:transparent;border:1px solid var(--grey-200);border-radius:8px;cursor:pointer;
+  font-family:'DM Mono',monospace;font-size:.58rem;font-weight:600;color:var(--grey-500);letter-spacing:.02em;transition:all .15s;}
+.version-pill:hover{background:var(--orange-pale);border-color:var(--orange);color:var(--orange-dark)}
+.version-pill:hover .version-codename{color:var(--orange);border-left-color:var(--orange-light)}
+.version-codename{display:none}
+@media(min-width:1100px){.version-codename{display:inline;font-family:'DM Sans',sans-serif;font-size:.58rem;font-weight:500;color:var(--grey-500);
+  padding-left:5px;border-left:1px solid var(--grey-300);font-style:italic;}}
 .version-history{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;margin:14px 0}
 .version-row{display:grid;grid-template-columns:78px 130px 1fr 86px;gap:12px;align-items:start;
   padding:10px 12px;background:var(--grey-50);border:1px solid var(--grey-150);border-radius:6px;font-size:.78rem;}
@@ -13301,7 +13302,20 @@ function renderCrmBody(i){
 // altijd zichtbaar, niet weggestopt in een accordion).
 
 function renderPipelineBody(i){
-  // Opportunity-tekst + 4-lens scoring + (indien aanwezig) PipeDrive deals/leads.
+  // Opportunity-tekst + (indien aanwezig) PipeDrive deals/leads.
+  // Geen 4-lens score-breakdown meer — neemt veel ruimte zonder dat
+  // de berekening interessant is. Lead-score staat in de header en in
+  // de accordion-meta. Actieve lens als korte samenvatting.
+  const lens = i.leadLens || 'acquisitie';
+  const lensInfo = LENS_INFO[lens] || { label: lens, color: 'var(--orange)' };
+  const summaryHtml = `
+    <div style="display:flex;gap:14px;align-items:center;padding:8px 12px;background:var(--grey-50);border-radius:6px;font-size:.82rem;margin-bottom:10px">
+      <span><strong>Leadscore</strong> ${i.leadScore || 0}</span>
+      <span style="color:var(--grey-500)">|</span>
+      <span><strong>Actieve lens</strong> <span style="color:${lensInfo.color};font-weight:600">${lensInfo.label}</span></span>
+      <span style="color:var(--grey-500)">|</span>
+      <span style="color:var(--grey-600)">Status «${escapeHtml(i.gericallStatus)}»</span>
+    </div>`;
   let crmPipelineHtml = '';
   if(i.crm){
     const c = i.crm;
@@ -13332,7 +13346,7 @@ function renderPipelineBody(i){
         <div class="acc-sub-title">CRM pipeline (${c.deals.length})</div>${dealsHtml}${leadsHtml}
       </div>`;
   }
-  return renderGericallContextBody(i) + renderScoringPanel(i) + crmPipelineHtml;
+  return summaryHtml + renderGericallContextBody(i) + crmPipelineHtml;
 }
 
 function renderActivityBody(i, sigs){
