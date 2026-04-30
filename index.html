@@ -21,30 +21,27 @@ a{color:var(--orange-dark);text-decoration:none}
 a:hover{text-decoration:underline}
 img,svg{max-width:100%;display:block}
 .wrap{max-width:920px;margin:0 auto;padding:0 18px}
-
-/* Nav */
 .nav{padding:14px 0;border-bottom:1px solid var(--grey-200);background:var(--white);position:sticky;top:0;z-index:10}
 .nav-inner{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;color:var(--grey-900)}
 .brand em{color:var(--orange);font-style:normal}
-.brand-sub{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--grey-600);text-transform:uppercase;margin-left:4px}
 .nav-spacer{flex:1}
-.nav-actions{display:flex;gap:8px;align-items:center}
+.nav-actions{display:flex;gap:6px;align-items:center}
+.lang-switch{display:inline-flex;gap:2px;align-items:center;border:1px solid var(--grey-200);border-radius:7px;padding:2px;background:var(--white);margin-right:6px}
+.lang-btn{border:0;background:transparent;font:inherit;font-size:1rem;line-height:1;padding:4px 6px;border-radius:5px;cursor:pointer;transition:background .12s}
+.lang-btn:hover{background:var(--grey-100)}
+.lang-btn.active{background:var(--orange-pale)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:8px;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer;border:1px solid transparent;text-decoration:none;transition:all .12s;white-space:nowrap}
 .btn-primary{background:var(--orange);color:#fff;border-color:var(--orange)}
 .btn-primary:hover{background:var(--orange-dark);border-color:var(--orange-dark);text-decoration:none}
 .btn-ghost{background:transparent;color:var(--grey-900);border-color:var(--grey-300)}
 .btn-ghost:hover{border-color:var(--grey-900);text-decoration:none}
 .btn-sm{padding:7px 12px;font-size:.82rem}
-
-/* Hero */
 .hero{padding:48px 0 32px}
 .hero h1{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:10px}
 .hero h1 em{color:var(--orange);font-style:normal}
 .hero p{font-size:clamp(.95rem,2vw,1.05rem);color:var(--grey-700);max-width:560px;margin-bottom:22px}
 .hero-cta{display:flex;gap:10px;flex-wrap:wrap}
-
-/* Steps — de 4 basale stappen */
 .steps{padding:24px 0 48px;border-top:1px solid var(--grey-200)}
 .steps h2{font-size:1.05rem;font-weight:600;color:var(--grey-700);margin-bottom:18px;text-transform:uppercase;letter-spacing:.06em;font-family:'DM Mono',monospace}
 .steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
@@ -52,8 +49,6 @@ img,svg{max-width:100%;display:block}
 .step-num{font-family:'DM Mono',monospace;font-size:.74rem;color:var(--orange);font-weight:600;margin-bottom:6px}
 .step h3{font-size:.96rem;font-weight:700;margin-bottom:4px}
 .step p{font-size:.82rem;color:var(--grey-700);line-height:1.45}
-
-/* Demo */
 .demo{padding:36px 0;background:var(--grey-50);border-top:1px solid var(--grey-200);border-bottom:1px solid var(--grey-200)}
 .demo h2{font-size:1.2rem;font-weight:700;margin-bottom:6px}
 .demo p.lead{font-size:.9rem;color:var(--grey-700);margin-bottom:18px}
@@ -67,16 +62,11 @@ img,svg{max-width:100%;display:block}
 .demo-result.show{display:block}
 .demo-result.ok{background:var(--green-light);color:var(--green);border:1px solid var(--green)}
 .demo-result.err{background:var(--red-light);color:var(--red);border:1px solid var(--red)}
-
-/* Footer */
 .foot{padding:24px 0;font-size:.78rem;color:var(--grey-600)}
 .foot-inner{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-
-/* Mobile-first responsive */
 @media(max-width:640px){
   .nav{padding:10px 0}
   .nav-inner{gap:8px}
-  .brand-sub{display:none}
   .nav-actions .btn-ghost{display:none}
   .hero{padding:28px 0 22px}
   .steps-grid{grid-template-columns:1fr;gap:10px}
@@ -105,46 +95,50 @@ img,svg{max-width:100%;display:block}
     </a>
     <span class="nav-spacer"></span>
     <div class="nav-actions">
-      <a class="btn btn-ghost btn-sm" href="#demo">Demo aanvragen</a>
-      <a class="btn btn-primary btn-sm" href="/app">Inloggen</a>
+      <span class="lang-switch" role="group" aria-label="Language">
+        <button class="lang-btn" data-lang="nl" title="Nederlands" aria-label="Nederlands">🇳🇱</button>
+        <button class="lang-btn" data-lang="en" title="English" aria-label="English">🇬🇧</button>
+      </span>
+      <a class="btn btn-ghost btn-sm" href="#demo" data-i18n="nav.demo">Demo aanvragen</a>
+      <a class="btn btn-primary btn-sm" href="/app" data-i18n="nav.login">Inloggen</a>
     </div>
   </div>
 </nav>
 
 <header class="hero">
   <div class="wrap">
-    <h1>Volg je <em>markt</em>.</h1>
-    <p>Definieer je propositie, plak je organisaties, koppel je klanten — en houd je markt scherp in één werkomgeving.</p>
+    <h1 data-i18n="hero.h1" data-i18n-html="1">Volg je <em>markt</em>.</h1>
+    <p data-i18n="hero.lead">Definieer je propositie, plak je organisaties, koppel je klanten — en houd je markt scherp in één werkomgeving.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary" href="/app">Maak werkomgeving</a>
-      <a class="btn btn-ghost" href="#demo">Demo aanvragen</a>
+      <a class="btn btn-primary" href="/app" data-i18n="hero.cta1">Maak werkomgeving</a>
+      <a class="btn btn-ghost" href="#demo" data-i18n="hero.cta2">Demo aanvragen</a>
     </div>
   </div>
 </header>
 
 <section class="steps">
   <div class="wrap">
-    <h2>Hoe het werkt</h2>
+    <h2 data-i18n="steps.h2">Hoe het werkt</h2>
     <div class="steps-grid">
       <div class="step">
         <div class="step-num">01</div>
-        <h3>Propositie</h3>
-        <p>Beschrijf in één zin wat je verkoopt en aan wie.</p>
+        <h3 data-i18n="step1.title">Propositie</h3>
+        <p data-i18n="step1.text">Beschrijf in één zin wat je verkoopt en aan wie.</p>
       </div>
       <div class="step">
         <div class="step-num">02</div>
-        <h3>Markt</h3>
-        <p>Plak je organisaties — bedrijven, accounts of relaties.</p>
+        <h3 data-i18n="step2.title">Markt</h3>
+        <p data-i18n="step2.text">Plak je organisaties — bedrijven, accounts of relaties.</p>
       </div>
       <div class="step">
         <div class="step-num">03</div>
-        <h3>Signalen</h3>
-        <p>Krijg meldingen over wijzigingen in jouw markt.</p>
+        <h3 data-i18n="step3.title">Signalen</h3>
+        <p data-i18n="step3.text">Krijg meldingen over wijzigingen in jouw markt.</p>
       </div>
       <div class="step">
         <div class="step-num">04</div>
-        <h3>Klanten</h3>
-        <p>Markeer relaties handmatig of via CRM-import.</p>
+        <h3 data-i18n="step4.title">Klanten</h3>
+        <p data-i18n="step4.text">Markeer relaties handmatig of via CRM-import.</p>
       </div>
     </div>
   </div>
@@ -152,32 +146,92 @@ img,svg{max-width:100%;display:block}
 
 <section class="demo" id="demo">
   <div class="wrap">
-    <h2>Demo aanvragen</h2>
-    <p class="lead">Vul je gegevens in. We nemen binnen één werkdag contact op.</p>
+    <h2 data-i18n="demo.h2">Demo aanvragen</h2>
+    <p class="lead" data-i18n="demo.lead">Vul je gegevens in. We nemen binnen één werkdag contact op.</p>
     <form id="demoForm" class="demo-form" autocomplete="on">
       <div class="row">
-        <div><label for="df-naam">Naam</label><input id="df-naam" name="naam" required maxlength="200"></div>
-        <div><label for="df-organisatie">Organisatie</label><input id="df-organisatie" name="organisatie" required maxlength="200"></div>
+        <div><label for="df-naam" data-i18n="form.name">Naam</label><input id="df-naam" name="naam" required maxlength="200"></div>
+        <div><label for="df-organisatie" data-i18n="form.org">Organisatie</label><input id="df-organisatie" name="organisatie" required maxlength="200"></div>
       </div>
       <div class="row">
-        <div><label for="df-email">Email</label><input id="df-email" name="email" type="email" required maxlength="200"></div>
-        <div><label for="df-telefoon">Telefoon (optioneel)</label><input id="df-telefoon" name="telefoon" type="tel" maxlength="50"></div>
+        <div><label for="df-email" data-i18n="form.email">Email</label><input id="df-email" name="email" type="email" required maxlength="200"></div>
+        <div><label for="df-telefoon" data-i18n="form.phone">Telefoon (optioneel)</label><input id="df-telefoon" name="telefoon" type="tel" maxlength="50"></div>
       </div>
-      <div><label for="df-bericht">Bericht (optioneel)</label><textarea id="df-bericht" name="bericht" maxlength="4000"></textarea></div>
+      <div><label for="df-bericht" data-i18n="form.message">Bericht (optioneel)</label><textarea id="df-bericht" name="bericht" maxlength="4000"></textarea></div>
       <div class="demo-result" id="demoResult"></div>
-      <div><button class="btn btn-primary" type="submit" id="demoSubmit">Aanvragen</button></div>
+      <div><button class="btn btn-primary" type="submit" id="demoSubmit" data-i18n="form.submit">Aanvragen</button></div>
     </form>
   </div>
 </section>
 
 <footer class="foot">
   <div class="wrap foot-inner">
-    <div>&copy; 2026 MarktRadar</div>
-    <div><a href="/app">Inloggen</a></div>
+    <div data-i18n="foot.copy">&copy; 2026 MarktRadar</div>
+    <div><a href="/app" data-i18n="foot.login">Inloggen</a></div>
   </div>
 </footer>
 
 <script>
+const I18N = {
+  nl: {
+    'nav.demo': 'Demo aanvragen', 'nav.login': 'Inloggen',
+    'hero.h1': 'Volg je <em>markt</em>.',
+    'hero.lead': 'Definieer je propositie, plak je organisaties, koppel je klanten — en houd je markt scherp in één werkomgeving.',
+    'hero.cta1': 'Maak werkomgeving', 'hero.cta2': 'Demo aanvragen',
+    'steps.h2': 'Hoe het werkt',
+    'step1.title': 'Propositie', 'step1.text': 'Beschrijf in één zin wat je verkoopt en aan wie.',
+    'step2.title': 'Markt', 'step2.text': 'Plak je organisaties — bedrijven, accounts of relaties.',
+    'step3.title': 'Signalen', 'step3.text': 'Krijg meldingen over wijzigingen in jouw markt.',
+    'step4.title': 'Klanten', 'step4.text': 'Markeer relaties handmatig of via CRM-import.',
+    'demo.h2': 'Demo aanvragen', 'demo.lead': 'Vul je gegevens in. We nemen binnen één werkdag contact op.',
+    'form.name': 'Naam', 'form.org': 'Organisatie', 'form.email': 'Email',
+    'form.phone': 'Telefoon (optioneel)', 'form.message': 'Bericht (optioneel)', 'form.submit': 'Aanvragen',
+    'form.required': 'Naam, organisatie en email zijn verplicht.',
+    'form.sending': 'Versturen…', 'form.ok': 'Bedankt — we nemen binnen één werkdag contact op.',
+    'form.err': 'Er ging iets mis.',
+    'foot.copy': '© 2026 MarktRadar', 'foot.login': 'Inloggen',
+  },
+  en: {
+    'nav.demo': 'Request demo', 'nav.login': 'Log in',
+    'hero.h1': 'Track your <em>market</em>.',
+    'hero.lead': 'Define your value proposition, paste your organisations, connect your customers — and keep your market in focus in one workspace.',
+    'hero.cta1': 'Create workspace', 'hero.cta2': 'Request demo',
+    'steps.h2': 'How it works',
+    'step1.title': 'Proposition', 'step1.text': 'Describe in one sentence what you sell and to whom.',
+    'step2.title': 'Market', 'step2.text': 'Paste your organisations — companies, accounts or contacts.',
+    'step3.title': 'Signals', 'step3.text': 'Get alerts on changes in your market.',
+    'step4.title': 'Customers', 'step4.text': 'Mark relationships manually or via CRM import.',
+    'demo.h2': 'Request a demo', 'demo.lead': 'Fill in your details. We will get in touch within one business day.',
+    'form.name': 'Name', 'form.org': 'Organisation', 'form.email': 'Email',
+    'form.phone': 'Phone (optional)', 'form.message': 'Message (optional)', 'form.submit': 'Submit',
+    'form.required': 'Name, organisation and email are required.',
+    'form.sending': 'Sending…', 'form.ok': 'Thanks — we will get in touch within one business day.',
+    'form.err': 'Something went wrong.',
+    'foot.copy': '© 2026 MarktRadar', 'foot.login': 'Log in',
+  }
+};
+function getLang(){
+  try { const s = localStorage.getItem('mr.lang'); if(s === 'nl' || s === 'en') return s; } catch(e){}
+  return (navigator.language || 'nl').toLowerCase().startsWith('en') ? 'en' : 'nl';
+}
+function tt(k){ const l = getLang(); return (I18N[l] && I18N[l][k]) || I18N.nl[k] || k; }
+function applyI18n(){
+  const l = getLang();
+  document.documentElement.lang = l;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    if(el.dataset.i18nHtml) el.innerHTML = tt(k); else el.textContent = tt(k);
+  });
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+  document.title = l === 'en' ? 'MarktRadar' : 'MarktRadar';
+}
+function setLang(l){
+  try { localStorage.setItem('mr.lang', l); } catch(e){}
+  applyI18n();
+}
+document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+applyI18n();
+
 (function(){
   const form = document.getElementById('demoForm');
   const result = document.getElementById('demoResult');
@@ -194,22 +248,22 @@ img,svg{max-width:100%;display:block}
       bericht: document.getElementById('df-bericht').value.trim(),
     };
     if(!data.naam || !data.organisatie || !data.email){
-      result.textContent = 'Naam, organisatie en email zijn verplicht.';
+      result.textContent = tt('form.required');
       result.classList.add('show', 'err'); return;
     }
-    submit.disabled = true; const orig = submit.textContent; submit.textContent = 'Versturen…';
+    submit.disabled = true; const orig = submit.textContent; submit.textContent = tt('form.sending');
     try {
       const r = await fetch('/api/demo-request', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
       const j = await r.json().catch(() => ({}));
-      if(!r.ok) throw new Error(j.error || ('Er ging iets mis (' + r.status + ')'));
-      result.textContent = j.message || 'Bedankt — we nemen binnen één werkdag contact op.';
+      if(!r.ok) throw new Error(j.error || tt('form.err'));
+      result.textContent = j.message || tt('form.ok');
       result.classList.add('show', 'ok');
       form.reset();
     } catch(err){
-      result.textContent = err.message || 'Er ging iets mis.';
+      result.textContent = err.message || tt('form.err');
       result.classList.add('show', 'err');
     } finally {
       submit.disabled = false; submit.textContent = orig;

@@ -693,6 +693,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
 .user-row .user-action:hover{background:var(--orange-pale);border-color:var(--orange);color:var(--orange-dark)}
 .user-row-me{font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;border-radius:3px;background:var(--orange);color:white;margin-left:4px;vertical-align:middle}
 .user-row-tag{font-size:.6rem;font-weight:700;letter-spacing:.04em;padding:1px 5px;border-radius:3px;background:var(--amber-light);color:#8a6a1c;margin-left:4px;vertical-align:middle}
+.lang-switch{display:inline-flex;gap:2px;align-items:center;border:1px solid var(--grey-200);border-radius:7px;padding:2px;background:var(--white)}
+.lang-btn{border:0;background:transparent;font:inherit;font-size:1rem;line-height:1;padding:3px 6px;border-radius:5px;cursor:pointer;transition:background .12s}
+.lang-btn:hover{background:var(--grey-100)}
+.lang-btn.active{background:var(--orange-pale)}
 .user-menu-wrap{position:relative;display:inline-block;margin-left:8px}
 .user-menu-chev{margin-left:2px;font-size:.7rem;opacity:.7}
 .user-menu{position:absolute;top:calc(100% + 6px);right:0;display:none;flex-direction:column;
@@ -982,8 +986,8 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <span class="pill pill-vertr">Vertrouwelijk</span>
       <span class="pill pill-meta" id="gate-pill-segment">Markt-intelligence</span>
     </div>
-    <h1>Markt<em>Radar</em> · Intelligence Portal</h1>
-    <p class="sub" id="gate-sub">Live overzicht van organisaties, signalen en opportunities in jouw markt. Voor intern gebruik.</p>
+    <h1 data-i18n="gate.h1" data-i18n-html="1">Markt<em>Radar</em> · Intelligence Portal</h1>
+    <p class="sub" id="gate-sub" data-i18n="gate.sub">Live overzicht van organisaties, signalen en opportunities in jouw markt. Voor intern gebruik.</p>
     <form id="gate-form-auth" autocomplete="off" style="display:none">
       <div id="gate-naam-row" style="display:none">
         <label for="gate-naam">Volledige naam</label>
@@ -1021,6 +1025,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div class="gate-foot">
       <span id="gate-version">Client-side &middot; v1.0.0 &middot; Aldebaran</span>
       <span id="gate-week"></span>
+      <span class="lang-switch" role="group" aria-label="Language" style="margin-left:auto">
+        <button class="lang-btn" data-lang="nl" title="Nederlands" aria-label="Nederlands">🇳🇱</button>
+        <button class="lang-btn" data-lang="en" title="English" aria-label="English">🇬🇧</button>
+      </span>
     </div>
   </div>
 </div>
@@ -1062,8 +1070,12 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     </div>
     <button class="refresh-btn" id="adminBtn" style="margin-right:8px" title="Beheer: gebruikers, toewijzingen, contacten, dropdowns, weekupdate, data" aria-label="Beheer">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      <span class="btn-label">Beheer</span>
+      <span class="btn-label" data-i18n="topbar.admin">Beheer</span>
     </button>
+    <span class="lang-switch" role="group" aria-label="Language" style="margin-right:8px">
+      <button class="lang-btn" data-lang="nl" title="Nederlands" aria-label="Nederlands">🇳🇱</button>
+      <button class="lang-btn" data-lang="en" title="English" aria-label="English">🇬🇧</button>
+    </span>
     <span class="user-menu-wrap" id="userMenuWrap">
       <span class="user-badge" id="userBadge" style="display:none">
         <span class="user-avatar" id="userBadgeAvatar"></span>
@@ -1071,8 +1083,8 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <span class="user-menu-chev">&#9662;</span>
       </span>
       <div class="user-menu" id="userMenu">
-        <button type="button" class="user-menu-item" data-um-action="password">Wachtwoord wijzigen</button>
-        <button type="button" class="user-menu-item" data-um-action="logout">Uitloggen</button>
+        <button type="button" class="user-menu-item" data-um-action="password" data-i18n="menu.password">Wachtwoord wijzigen</button>
+        <button type="button" class="user-menu-item" data-um-action="logout" data-i18n="menu.logout">Uitloggen</button>
       </div>
     </span>
     <button class="topbar-icon-btn" id="topbarLogoutBtn" title="Uitloggen" aria-label="Uitloggen" style="display:none">
@@ -1081,36 +1093,36 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   </div>
 
   <div class="scope-bar" id="scopeBar" style="display:none">
-    <span class="scope-label">Toon:</span>
-    <button class="scope-pill" data-scope="mine">Mijn todo</button>
-    <button class="scope-pill active" data-scope="all">Alles</button>
-    <span class="scope-help">Filtert todo's, instellingen en signalen op jouw eigenaarschap.</span>
+    <span class="scope-label" data-i18n="scope.label">Toon:</span>
+    <button class="scope-pill" data-scope="mine" data-i18n="scope.mine">Mijn todo</button>
+    <button class="scope-pill active" data-scope="all" data-i18n="scope.all">Alles</button>
+    <span class="scope-help" data-i18n="scope.help">Filtert todo's, instellingen en signalen op jouw eigenaarschap.</span>
   </div>
 
   <div class="tabs">
     <button class="tab active" data-tab="acties" title="Todo" aria-label="Todo">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      <span class="tab-label">Todo</span> <span class="tab-count" id="tabCountActies">0</span>
+      <span class="tab-label" data-i18n="tab.todo">Todo</span> <span class="tab-count" id="tabCountActies">0</span>
     </button>
     <button class="tab" data-tab="signalen" title="Signalen" aria-label="Signalen">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h2"/><path d="M20 12h2"/><path d="M12 2v2"/><path d="M12 20v2"/><circle cx="12" cy="12" r="4"/></svg>
-      <span class="tab-label">Signalen</span> <span class="tab-count" id="tabCountSignalen">0</span>
+      <span class="tab-label" data-i18n="tab.signals">Signalen</span> <span class="tab-count" id="tabCountSignalen">0</span>
     </button>
     <button class="tab" data-tab="instellingen" title="Instellingen" aria-label="Instellingen">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
-      <span class="tab-label">Instellingen</span> <span class="tab-count" id="tabCountInst">0</span>
+      <span class="tab-label" data-i18n="tab.orgs">Instellingen</span> <span class="tab-count" id="tabCountInst">0</span>
     </button>
     <button class="tab" data-tab="leveranciers" title="Leveranciers" aria-label="Leveranciers">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-      <span class="tab-label">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
+      <span class="tab-label" data-i18n="tab.suppliers">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
     </button>
     <button class="tab" data-tab="opportunities" title="Opportunities" aria-label="Opportunities">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      <span class="tab-label">Opportunities</span> <span class="tab-count" id="tabCountOpp">0</span>
+      <span class="tab-label" data-i18n="tab.opps">Opportunities</span> <span class="tab-count" id="tabCountOpp">0</span>
     </button>
     <button class="tab" data-tab="trends" title="Trends" aria-label="Trends">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
-      <span class="tab-label">Trends</span> <span class="tab-count" id="tabCountTrends">0</span>
+      <span class="tab-label" data-i18n="tab.trends">Trends</span> <span class="tab-count" id="tabCountTrends">0</span>
     </button>
   </div>
 
@@ -11997,6 +12009,7 @@ function initApp(){
   bindPasswordModal();
   bindOnboarding();
   bindHomeBtn();
+  bindLangSwitch();
   renderUserBadge();
   renderBottomSections();
   if(currentUser && currentUser.mustChangePassword) openPasswordModal({ forced: true });
@@ -12193,6 +12206,69 @@ function goHome(){
   if(home) home.click();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+/* ============= i18n module — minimal NL/EN switch ============= */
+const I18N = {
+  nl: {
+    'gate.h1': 'Markt<em>Radar</em> · Intelligence Portal',
+    'gate.sub': 'Live overzicht van organisaties, signalen en opportunities in jouw markt. Voor intern gebruik.',
+    'topbar.admin': 'Beheer',
+    'scope.label': 'Toon:', 'scope.mine': 'Mijn todo', 'scope.all': 'Alles',
+    'scope.help': "Filtert todo's, instellingen en signalen op jouw eigenaarschap.",
+    'tab.todo': 'Todo', 'tab.signals': 'Signalen', 'tab.orgs': 'Organisaties',
+    'tab.suppliers': 'Leveranciers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends',
+    'menu.password': 'Wachtwoord wijzigen', 'menu.logout': 'Uitloggen',
+    'ob.welcome': 'Welkom bij MarktRadar', 'ob.later': 'Later doen',
+    'ob.next': 'Volgende →', 'ob.prev': '← Vorige', 'ob.finish': 'Klaar — start verkopen 🎯',
+  },
+  en: {
+    'gate.h1': 'Markt<em>Radar</em> · Intelligence portal',
+    'gate.sub': 'Live overview of organisations, signals and opportunities in your market. For internal use.',
+    'topbar.admin': 'Admin',
+    'scope.label': 'Show:', 'scope.mine': 'My todos', 'scope.all': 'All',
+    'scope.help': 'Filters todos, organisations and signals on ownership.',
+    'tab.todo': 'Todos', 'tab.signals': 'Signals', 'tab.orgs': 'Organisations',
+    'tab.suppliers': 'Suppliers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends',
+    'menu.password': 'Change password', 'menu.logout': 'Log out',
+    'ob.welcome': 'Welcome to MarktRadar', 'ob.later': 'Later',
+    'ob.next': 'Next →', 'ob.prev': '← Back', 'ob.finish': 'Done — start selling 🎯',
+  }
+};
+function getLang(){
+  try { const s = localStorage.getItem('mr.lang'); if(s === 'nl' || s === 'en') return s; } catch(e){}
+  return (navigator.language || 'nl').toLowerCase().startsWith('en') ? 'en' : 'nl';
+}
+function tt(k){ const l = getLang(); return (I18N[l] && I18N[l][k]) || I18N.nl[k] || k; }
+function applyI18n(root){
+  const l = getLang();
+  document.documentElement.lang = l;
+  (root || document).querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    if(el.dataset.i18nHtml) el.innerHTML = tt(k); else el.textContent = tt(k);
+  });
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+}
+function setLang(l){
+  try { localStorage.setItem('mr.lang', l); } catch(e){}
+  applyI18n();
+  // Re-render dynamic UI die strings van tt() gebruikt:
+  try { if(typeof renderActies === 'function') renderActies(); } catch(e){}
+  try { if(typeof renderActiesOwnerChips === 'function') renderActiesOwnerChips(); } catch(e){}
+  try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+  try { if(document.getElementById('overlay')?.classList.contains('show') && currentInstellingId) openInstelling(currentInstellingId); } catch(e){}
+  try { if(document.getElementById('onboardingModal')?.classList.contains('show')) obRender(); } catch(e){}
+}
+function bindLangSwitch(){
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    if(b.dataset.boundLang) return;
+    b.dataset.boundLang = '1';
+    b.addEventListener('click', () => setLang(b.dataset.lang));
+  });
+  applyI18n();
+}
+// Vroege binding: gate is zichtbaar vóór initApp() draait, dus tags op
+// de gate (h1, p, lang-buttons) worden meteen vertaald.
+try { bindLangSwitch(); } catch(e){}
+
 function bindHomeBtn(){
   const btn = document.getElementById('topbarHomeBtn');
   if(btn) btn.addEventListener('click', goHome);
