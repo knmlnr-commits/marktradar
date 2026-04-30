@@ -14788,11 +14788,13 @@ function bindSearch(){
   });
 }
 function bindSorts(){
-  document.getElementById('signalSort').addEventListener('change', e => { signalSort = e.target.value; renderSignals(); });
-  document.getElementById('instSort').addEventListener('change', e => { instSort = e.target.value; renderInstellingen(); });
-  document.getElementById('instProv').addEventListener('change', e => { instProv = e.target.value; renderInstellingen(); });
-  document.getElementById('instRegio').addEventListener('change', e => { instRegio = e.target.value; renderInstellingen(); });
-  document.getElementById('instOwner').addEventListener('change', e => { instOwner = e.target.value; renderInstellingen(); });
+  // Null-safe: instRegio is in v1.14.1 uit de filter-bar gehaald (overlap met provincie).
+  const bind = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('change', fn); };
+  bind('signalSort', e => { signalSort = e.target.value; renderSignals(); });
+  bind('instSort',   e => { instSort   = e.target.value; renderInstellingen(); });
+  bind('instProv',   e => { instProv   = e.target.value; renderInstellingen(); });
+  bind('instRegio',  e => { instRegio  = e.target.value; renderInstellingen(); });
+  bind('instOwner',  e => { instOwner  = e.target.value; renderInstellingen(); });
 }
 
 const WEEKLY_PROMPT = `Werk marktradar.html bij met de signalen van de afgelopen 7 dagen.
