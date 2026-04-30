@@ -197,6 +197,9 @@ body{
 .filter-group{display:flex;flex-direction:column;gap:4px;min-width:170px}
 .filter-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--orange-dark);}
 .filter-select{background-color:white;border-color:var(--orange-light);font-weight:600;color:var(--grey-900);}
+.filter-compact{padding:5px 24px 5px 10px;font-size:.78rem;background-color:var(--white);border:1px solid var(--grey-200);font-weight:500;color:var(--grey-700);min-width:0;max-width:160px}
+.filter-compact:hover{border-color:var(--grey-400)}
+.filter-compact:focus{outline:2px solid var(--orange);outline-offset:1px}
 .filter-select:hover{border-color:var(--orange)}
 .filter-select:focus{outline:2px solid var(--orange);outline-offset:1px}
 .sort-select{padding:6px 28px 6px 12px;border-radius:8px;
@@ -1066,40 +1069,23 @@ body{
     <div class="tab-pane" id="pane-instellingen">
       <div class="toolbar">
         <div class="chip-row" id="instFilters"></div>
-      </div>
-      <div class="filter-bar">
-        <div class="filter-group">
-          <label class="filter-label">Regio</label>
-          <select class="sort-select filter-select" id="instRegio">
-            <option value="all">Alle regio's</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">Provincie</label>
-          <select class="sort-select filter-select" id="instProv">
-            <option value="all">Alle provincies</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">Eigenaar</label>
-          <select class="sort-select filter-select" id="instOwner">
-            <option value="all">Alle eigenaren</option>
-          </select>
-        </div>
         <div class="toolbar-spacer"></div>
-        <div class="filter-group">
-          <label class="filter-label">Sortering</label>
-          <select class="sort-select filter-select" id="instSort">
-            <option value="auto">Score (status-specifiek)</option>
-            <option value="acquisitie">Acquisitie-score (winnen)</option>
-            <option value="retention">Retention-risico (klanten)</option>
-            <option value="expansion">Expansion-score (upsell)</option>
-            <option value="consolidatie">Consolidatie-score (M&amp;A)</option>
-            <option value="signals">Sorteer op signalen</option>
-            <option value="size">Sorteer op grootte</option>
-            <option value="name">Sorteer alfabetisch</option>
-          </select>
-        </div>
+        <select class="sort-select filter-compact" id="instProv" title="Filter op provincie">
+          <option value="all">Alle provincies</option>
+        </select>
+        <select class="sort-select filter-compact" id="instOwner" title="Filter op eigenaar">
+          <option value="all">Alle eigenaren</option>
+        </select>
+        <select class="sort-select filter-compact" id="instSort" title="Sortering">
+          <option value="auto">Score</option>
+          <option value="acquisitie">Acquisitie</option>
+          <option value="retention">Retention</option>
+          <option value="expansion">Expansion</option>
+          <option value="consolidatie">Consolidatie</option>
+          <option value="signals">Signalen</option>
+          <option value="size">Grootte</option>
+          <option value="name">A-Z</option>
+        </select>
       </div>
       <div class="inst-grid" id="instGrid"></div>
     </div>
@@ -1499,7 +1485,7 @@ const DATA = {
       }
     ],
     "totalInstellingen": 64,
-    "totalSignalen": 27,
+    "totalSignalen": 14,
     "totalLeveranciers": 15,
     "crmImport": {
       "bron": "pipedrive",
@@ -8170,6 +8156,198 @@ const DATA = {
       "summary": "Nieuwe locatie Bosweg in Lochem; uitbreiding capaciteit Twente.",
       "source": "Marktscan GeriCall",
       "sourceUrl": "https://www.zgsm.nl"
+    },
+    {
+      "id": "SIG-2025-014",
+      "datum": "2025-05-20",
+      "instellingId": "interzorg",
+      "instellingNaam": "Interzorg",
+      "type": "uitbreiding",
+      "urgentie": "middel",
+      "headline": "Interzorg opent De Slingeborgh Assen fase 1 (lente 2025)",
+      "summary": "Eerste fase van nieuwe locatie De Slingeborgh in Assen geopend.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.interzorg.nl"
+    },
+    {
+      "id": "SIG-2025-015",
+      "datum": "2025-03-15",
+      "instellingId": "de-waalboog",
+      "instellingNaam": "De Waalboog",
+      "type": "fusie",
+      "urgentie": "middel",
+      "headline": "De Waalboog fuseert met LuciVer (2025)",
+      "summary": "Fusie met LuciVer; samenwerking Nijmegen-Noord met ZZG.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.waalboog.nl"
+    },
+    {
+      "id": "SIG-2025-016",
+      "datum": "2025-03-01",
+      "instellingId": "cicero-zorggroep",
+      "instellingNaam": "Cicero Zorggroep",
+      "type": "attentie",
+      "urgentie": "hoog",
+      "headline": "Cicero: 0 consulten geregistreerd in periode",
+      "summary": "GeriCall-klant met 0 consulten in de geregistreerde periode; activering en relatieversterking nodig.",
+      "source": "GeriCall interne data",
+      "sourceUrl": ""
+    },
+    {
+      "id": "SIG-2025-020",
+      "datum": "2025-02-01",
+      "instellingId": "carintreggeland",
+      "instellingNaam": "Carintreggeland",
+      "type": "contract",
+      "urgentie": "hoog",
+      "headline": "ThoeZ Twente raamovereenkomst (feb. 2025)",
+      "summary": "11-organisatie raamovereenkomst voor gezamenlijke ANW Twente; Carintreggeland als grootste partij.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.carintreggeland.nl"
+    },
+    {
+      "id": "SIG-2025-021",
+      "datum": "2025-01-15",
+      "instellingId": "alliade",
+      "instellingNaam": "Alliade",
+      "type": "contract",
+      "urgentie": "hoog",
+      "headline": "Alliade tekent voor GeriForce Friesland (jan. 2025)",
+      "summary": "Friese 5-org. samenwerking via GeriForce Friesland; GeriCall partner.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.alliade.nl"
+    },
+    {
+      "id": "SIG-2025-022",
+      "datum": "2025-01-15",
+      "instellingId": "patyna",
+      "instellingNaam": "Patyna",
+      "type": "contract",
+      "urgentie": "hoog",
+      "headline": "Patyna tekent voor GeriForce Friesland (jan. 2025)",
+      "summary": "Friese 5-org. samenwerking; eigen SO's blijven actief.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.patyna.nl"
+    },
+    {
+      "id": "SIG-2025-023",
+      "datum": "2025-01-15",
+      "instellingId": "zuidoostzorg",
+      "instellingNaam": "ZuidOostZorg",
+      "type": "contract",
+      "urgentie": "hoog",
+      "headline": "ZuidOostZorg in GeriForce Friesland-samenwerking",
+      "summary": "Friese samenwerking; Triage.nu als achterliggende tooling betrokken.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.zuidoostzorg.nl"
+    },
+    {
+      "id": "SIG-2025-024",
+      "datum": "2025-01-15",
+      "instellingId": "kwadrantgroep",
+      "instellingNaam": "KwadrantGroep",
+      "type": "contract",
+      "urgentie": "hoog",
+      "headline": "KwadrantGroep in GeriForce Friesland-samenwerking",
+      "summary": "Friese samenwerking; eigen SO's deels behouden.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.kwadrantgroep.nl"
+    },
+    {
+      "id": "SIG-2025-025",
+      "datum": "2025-01-15",
+      "instellingId": "noorderbreedte",
+      "instellingNaam": "Noorderbreedte",
+      "type": "contract",
+      "urgentie": "hoog",
+      "headline": "Noorderbreedte in GeriForce Friesland-samenwerking",
+      "summary": "Friese samenwerking; bestuurderswissel begin 2026 mogelijk effect op vervolg.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.noorderbreedte.nl"
+    },
+    {
+      "id": "SIG-2024-007",
+      "datum": "2024-12-01",
+      "instellingId": "laurens",
+      "instellingNaam": "Laurens",
+      "type": "uitbreiding",
+      "urgentie": "laag",
+      "headline": "Laurens opent Borgstede Barendrecht (dec. 2024)",
+      "summary": "Nieuwe locatie Borgstede in Barendrecht.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.laurens.nl"
+    },
+    {
+      "id": "SIG-2024-003",
+      "datum": "2024-10-15",
+      "instellingId": "zorgspectrum",
+      "instellingNaam": "Zorgspectrum",
+      "type": "uitbreiding",
+      "urgentie": "laag",
+      "headline": "Zorgspectrum opent Brinkhoef Hoef en Haag (okt. 2024)",
+      "summary": "Nieuwe locatie Brinkhoef in Hoef en Haag.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.zorgspectrum.nl"
+    },
+    {
+      "id": "SIG-2024-001",
+      "datum": "2024-09-01",
+      "instellingId": "envida",
+      "instellingNaam": "Envida",
+      "type": "uitbreiding",
+      "urgentie": "laag",
+      "headline": "Envida opent drie nieuwe locaties (2024)",
+      "summary": "Gronsveld, Lindenhoven en Herculeshof toegevoegd aan Zuid-Limburgs portfolio.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.envida.nl"
+    },
+    {
+      "id": "SIG-2024-002",
+      "datum": "2024-09-01",
+      "instellingId": "sensire",
+      "instellingNaam": "Sensire",
+      "type": "uitbreiding",
+      "urgentie": "laag",
+      "headline": "Sensire opent Ons Zorghuis Zutphen (2024)",
+      "summary": "Nieuwe Achterhoek-locatie Zutphen.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.sensire.nl"
+    },
+    {
+      "id": "SIG-2024-004",
+      "datum": "2024-09-01",
+      "instellingId": "thebe",
+      "instellingNaam": "Thebe",
+      "type": "uitbreiding",
+      "urgentie": "laag",
+      "headline": "Thebe opent Heilaarstaete Breda (2024)",
+      "summary": "Nieuwe locatie Heilaarstaete in Breda.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.thebe.nl"
+    },
+    {
+      "id": "SIG-2024-005",
+      "datum": "2024-09-01",
+      "instellingId": "zuyderland-zorgcentra",
+      "instellingNaam": "Zuyderland Zorgcentra",
+      "type": "uitbreiding",
+      "urgentie": "laag",
+      "headline": "Zuyderland opent Egtherhof (2024)",
+      "summary": "Nieuwe Zuid-Limburgs locatie Egtherhof.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.zuyderland.nl"
+    },
+    {
+      "id": "SIG-2024-006",
+      "datum": "2024-09-01",
+      "instellingId": "brabantzorg",
+      "instellingNaam": "BrabantZorg",
+      "type": "uitbreiding",
+      "urgentie": "laag",
+      "headline": "BrabantZorg opent Nieuwe Hoeven Schaijk + De Wielewaal Zaltbommel (2024)",
+      "summary": "Twee nieuwe locaties in Schaijk en Zaltbommel.",
+      "source": "Marktscan GeriCall",
+      "sourceUrl": "https://www.brabantzorg.eu"
     }
   ],
   "leveranciers": [
