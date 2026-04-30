@@ -180,11 +180,16 @@ body{
 .kpi.kpi-secondary .kpi-value-small small{font-weight:500;color:var(--grey-500);font-size:.7rem;letter-spacing:0;display:inline}
 .kpi.kpi-primary[data-goto]{cursor:pointer}
 .tabs{background:var(--white);padding:0 24px;border-bottom:1px solid var(--grey-200);display:flex;gap:0;}
-.tab{padding:14px 18px;font-family:inherit;font-size:.88rem;font-weight:600;color:var(--grey-600);
+.tab{padding:14px 14px;font-family:inherit;font-size:.88rem;font-weight:600;color:var(--grey-600);
   background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent;
-  transition:color .15s, border-color .15s;display:inline-flex;align-items:center;gap:8px;}
+  transition:color .15s,border-color .15s,padding .15s;display:inline-flex;align-items:center;gap:8px;}
 .tab:hover{color:var(--grey-900)}
 .tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+/* Tab-label: alleen zichtbaar bij hover óf op de actieve tab. Niet-actieve
+   tabs zijn icon-only zodat de header rustig blijft, maar de tekst komt
+   tevoorschijn bij mouse-over (en altijd op de huidige tab). */
+.tab .tab-label{max-width:0;overflow:hidden;white-space:nowrap;opacity:0;transition:max-width .2s ease,opacity .15s ease,margin .15s ease;margin-left:0}
+.tab:hover .tab-label,.tab.active .tab-label,.tab:focus-visible .tab-label{max-width:160px;opacity:1;margin-left:2px}
 .tab-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:18px;
   padding:0 6px;border-radius:9px;background:var(--grey-150);color:var(--grey-700);
   font-family:'DM Mono',monospace;font-size:.68rem;font-weight:600;}
@@ -711,7 +716,11 @@ body{
   color:var(--grey-500);margin-top:8px;padding-top:6px;border-top:1px solid var(--grey-150)}
 .actie-list{display:flex;flex-direction:column;gap:6px}
 .actie-row{display:grid;grid-template-columns:18px 1fr 160px 24px;gap:12px;align-items:center;
-  padding:10px 14px;background:var(--white);border:1px solid var(--grey-200);border-radius:8px;transition:opacity .15s}
+  padding:10px 14px;background:var(--white);border:1px solid var(--grey-200);border-radius:8px;
+  transition:opacity .15s,background .12s,border-color .12s;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:rgba(232,119,34,.18);user-select:none}
+.actie-row:hover{background:var(--grey-50);border-color:var(--grey-300)}
+.actie-row:active{background:var(--orange-pale);border-color:var(--orange)}
 .actie-row.done{opacity:.55;background:var(--grey-50)}
 .actie-row.done .actie-text{text-decoration:line-through;color:var(--grey-600)}
 .actie-text{font-size:.86rem;color:var(--grey-900);font-weight:500;line-height:1.35}
@@ -1054,29 +1063,29 @@ body{
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-tab="acties">
+    <button class="tab active" data-tab="acties" title="Todo" aria-label="Todo">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Todo <span class="tab-count" id="tabCountActies">0</span>
+      <span class="tab-label">Todo</span> <span class="tab-count" id="tabCountActies">0</span>
     </button>
-    <button class="tab" data-tab="signalen">
+    <button class="tab" data-tab="signalen" title="Signalen" aria-label="Signalen">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h2"/><path d="M20 12h2"/><path d="M12 2v2"/><path d="M12 20v2"/><circle cx="12" cy="12" r="4"/></svg>
-      Signalen <span class="tab-count" id="tabCountSignalen">0</span>
+      <span class="tab-label">Signalen</span> <span class="tab-count" id="tabCountSignalen">0</span>
     </button>
-    <button class="tab" data-tab="instellingen">
+    <button class="tab" data-tab="instellingen" title="Instellingen" aria-label="Instellingen">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
-      Instellingen <span class="tab-count" id="tabCountInst">0</span>
+      <span class="tab-label">Instellingen</span> <span class="tab-count" id="tabCountInst">0</span>
     </button>
-    <button class="tab" data-tab="leveranciers">
+    <button class="tab" data-tab="leveranciers" title="Leveranciers" aria-label="Leveranciers">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-      Leveranciers <span class="tab-count" id="tabCountLev">0</span>
+      <span class="tab-label">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
     </button>
-    <button class="tab" data-tab="opportunities">
+    <button class="tab" data-tab="opportunities" title="Opportunities" aria-label="Opportunities">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      Opportunities <span class="tab-count" id="tabCountOpp">0</span>
+      <span class="tab-label">Opportunities</span> <span class="tab-count" id="tabCountOpp">0</span>
     </button>
-    <button class="tab" data-tab="trends">
+    <button class="tab" data-tab="trends" title="Trends" aria-label="Trends">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
-      Trends <span class="tab-count" id="tabCountTrends">0</span>
+      <span class="tab-label">Trends</span> <span class="tab-count" id="tabCountTrends">0</span>
     </button>
   </div>
 
@@ -14883,7 +14892,7 @@ function renderActies(){
     const created = new Date(t.createdAt || Date.now()).toLocaleDateString('nl-NL');
     const completed = t.completedAt ? new Date(t.completedAt).toLocaleDateString('nl-NL') : '';
     return `
-      <div class="actie-row ${t.done ? 'done' : ''}" data-todo-id="${t.id}" data-inst-id="${t.instellingId}">
+      <div class="actie-row ${t.done ? 'done' : ''}" data-todo-id="${t.id}" data-inst-id="${t.instellingId}" role="button" tabindex="0" aria-label="Open ${escapeHtml((inst && inst.naam) || t.instellingId)}">
         <input type="checkbox" class="todo-check" ${t.done ? 'checked' : ''} aria-label="Markeer als ${t.done ? 'open' : 'klaar'}">
         <div class="actie-body">
           <div class="actie-text">${escapeHtml(t.text)}${t.auto ? ' <span class="actie-auto-tag" title="Automatisch aangemaakt voor signaal">auto</span>' : ''}</div>
@@ -14930,6 +14939,25 @@ function renderActies(){
   document.querySelectorAll('#actiesList .actie-inst-link').forEach(a => {
     a.addEventListener('click', (e) => { e.stopPropagation(); openInstelling(a.dataset.instId, 'actie'); });
   });
+  // Tile-click: hele rij is klikbaar, behalve op de interactieve children
+  // (afvink-checkbox, eigenaar-dropdown, verwijder-kruisje of inst-link).
+  // Event-delegation op #actiesList overleeft re-renders zonder rebind.
+  const actiesList = document.getElementById('actiesList');
+  if(actiesList && !actiesList.dataset.boundClick){
+    actiesList.dataset.boundClick = '1';
+    const handle = (target) => {
+      const row = target.closest('.actie-row');
+      if(!row || !row.dataset.instId) return false;
+      // Skip als de tap op een interactieve child viel.
+      if(target.closest('.todo-check, .todo-delete, .actie-owner-select, .actie-inst-link, option')) return false;
+      openInstelling(row.dataset.instId, 'actie');
+      return true;
+    };
+    actiesList.addEventListener('click', e => handle(e.target));
+    actiesList.addEventListener('keydown', e => {
+      if((e.key === 'Enter' || e.key === ' ') && handle(e.target)){ e.preventDefault(); }
+    });
+  }
 }
 
 function computeOpportunities(){
