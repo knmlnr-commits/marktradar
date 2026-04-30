@@ -269,7 +269,9 @@ body{
   font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-500);}
 .inst-row{display:grid;grid-template-columns:minmax(220px,2.2fr) 1fr 1fr 1fr 1fr 90px 60px;
   gap:12px;padding:14px 18px;border-bottom:1px solid var(--grey-150);cursor:pointer;
-  transition:background .12s;align-items:center;}
+  transition:background .12s;align-items:center;
+  touch-action:manipulation;-webkit-tap-highlight-color:rgba(232,119,34,.18);user-select:none;}
+.inst-row:active{background:var(--orange-pale)}
 .inst-row:last-child{border-bottom:none}
 .inst-row:hover{background:var(--grey-50)}
 .inst-name{display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -12632,7 +12634,7 @@ function renderInstellingen(){
     const owner = ownerId ? ownerById(ownerId) : null;
     const ownerInitials = owner ? owner.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase() : '';
     return `
-      <div class="inst-row" data-inst-id="${i.id}">
+      <div class="inst-row" data-inst-id="${i.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(i.naam)}">
         <div class="inst-name">
           <div class="inst-name-main">
             ${i.naam}
@@ -12659,9 +12661,23 @@ function renderInstellingen(){
       </div>`;
   }).join('');
   document.getElementById('instGrid').innerHTML = head + (rows || '<div class="no-data" style="padding:32px">Geen instellingen gevonden.</div>');
-  document.querySelectorAll('.inst-row').forEach(r => {
-    r.addEventListener('click', () => openInstelling(r.dataset.instId, 'instelling'));
-  });
+  // Event-delegation op de container i.p.v. per-rij listeners — overleeft
+  // re-renders zonder rebind, en is robuuster voor mobiel-tap (geen flakey
+  // attachment per node). Bind eenmalig.
+  const grid = document.getElementById('instGrid');
+  if(grid && !grid.dataset.boundClick){
+    grid.dataset.boundClick = '1';
+    const handle = (target) => {
+      const row = target.closest('.inst-row');
+      if(!row || !row.dataset.instId) return false;
+      openInstelling(row.dataset.instId, 'instelling');
+      return true;
+    };
+    grid.addEventListener('click', e => handle(e.target));
+    grid.addEventListener('keydown', e => {
+      if((e.key === 'Enter' || e.key === ' ') && handle(e.target)){ e.preventDefault(); }
+    });
+  }
 }
 
 const DMU_ROL_ORDER = ['decider','champion','influencer','gatekeeper','blocker'];
