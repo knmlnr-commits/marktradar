@@ -229,6 +229,7 @@ body{
 .signal-type.contract{background:var(--green-light);color:var(--green)}
 .signal-type.uitbreiding{background:var(--green-light);color:var(--green)}
 .signal-type.attentie{background:var(--red-light);color:#9c2f2f}
+.overlay-context-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid;border-radius:999px;font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-left:12px;vertical-align:middle;line-height:1}
 .overlay-owner-strip{padding:10px 18px;background:var(--grey-50);border-bottom:1px solid var(--grey-150)}
 .overlay-owner-strip .owner-block{margin:0;padding:0;background:transparent;border:none}
 .activity-timeline{display:flex;flex-direction:column;gap:0}
@@ -12372,14 +12373,14 @@ function renderSignals(){
   }).join('');
   document.getElementById('signalFeed').innerHTML = html || '<div class="no-data">Geen signalen die voldoen aan dit filter.</div>';
   document.querySelectorAll('.signal-instelling').forEach(el => {
-    el.addEventListener('click', (e) => { e.stopPropagation(); openInstelling(el.dataset.instId); });
+    el.addEventListener('click', (e) => { e.stopPropagation(); openInstelling(el.dataset.instId, 'signaal'); });
   });
   document.querySelectorAll('.signal').forEach(el => {
     const sid = el.dataset.signalId;
     const sig = DATA.signalen.find(x => x.id === sid);
     if(sig && sig.instellingId){
       el.style.cursor = 'pointer';
-      el.addEventListener('click', () => openInstelling(sig.instellingId));
+      el.addEventListener('click', () => openInstelling(sig.instellingId, 'signaal'));
     } else {
       // Sector-signaal zonder gekoppelde instelling: geen drill-down.
       el.style.cursor = 'default';
@@ -12658,7 +12659,7 @@ function renderInstellingen(){
   }).join('');
   document.getElementById('instGrid').innerHTML = head + (rows || '<div class="no-data" style="padding:32px">Geen instellingen gevonden.</div>');
   document.querySelectorAll('.inst-row').forEach(r => {
-    r.addEventListener('click', () => openInstelling(r.dataset.instId));
+    r.addEventListener('click', () => openInstelling(r.dataset.instId, 'instelling'));
   });
 }
 
@@ -13384,15 +13385,33 @@ function renderBedrijfsinfoBody(i){
   return renderKerngetallenBody(i) + renderAnwItBody(i) + bijlagenHtml;
 }
 
-function openInstelling(id){
+// Context-aware openInstelling — default-open accordion en breadcrumb-pill
+// hangen af van vanwaar de overlay geopend wordt.
+//   'instelling'  → klantbeeld   (Acties + Pipeline open)
+//   'signaal'     → vanuit signaal (Activiteit + Acties open)
+//   'opportunity' → vanuit opp.   (Pipeline open)
+//   'actie'       → vanuit actie  (Acties open)
+let currentOverlayContext = 'instelling';
+const OVERLAY_CTX = {
+  instelling:  { label: 'Klantbeeld',          icon: '&#9636;', open: ['acties', 'pipeline'], color: 'var(--grey-600)' },
+  signaal:     { label: 'Vanuit signaal',      icon: '&#9889;', open: ['activiteit', 'acties'], color: '#b94a3c' },
+  opportunity: { label: 'Vanuit opportunity',  icon: '&#9733;', open: ['pipeline'], color: 'var(--orange)' },
+  actie:       { label: 'Vanuit actie',        icon: '&#9745;', open: ['acties'], color: '#5a8a5a' },
+};
+
+function openInstelling(id, ctx){
+  if(ctx) currentOverlayContext = ctx;
   const i = getInstelling(id);
   if(!i) return;
   const sigs = signalsForInst(id).sort((a,b) => b.datum.localeCompare(a.datum));
   const isEditing = editingInstId === id;
+  const ctxCfg = OVERLAY_CTX[currentOverlayContext] || OVERLAY_CTX.instelling;
+  const ctxPill = currentOverlayContext === 'instelling' ? '' :
+    `<span class="overlay-context-pill" style="background:${ctxCfg.color}1a;border-color:${ctxCfg.color};color:${ctxCfg.color}">${ctxCfg.icon} ${ctxCfg.label}</span>`;
   const headHtml = `
     <div class="overlay-head">
       <div class="overlay-title-block">
-        <h2>${i.naam}</h2>
+        <h2>${i.naam}${ctxPill}</h2>
         <div class="overlay-meta">
           <strong>${i.hoofdvestiging}</strong>
           <span class="overlay-meta-dot"></span>
@@ -13437,23 +13456,25 @@ function openInstelling(id){
       ${accordion({
         icon: '&#9745;', title: 'Acties',
         meta: tc.open ? (tc.open + ' open') : (tc.done ? tc.done + ' afgerond' : 'geen acties'),
-        open: true,
+        open: ctxCfg.open.includes('acties'),
         body: renderTodosBody(i)
       })}
       ${accordion({
         icon: '&#9733;', title: 'Pipeline &amp; opportunity',
         meta: 'lead-score ' + (i.leadScore || 0) + (dealsCount ? ' · ' + dealsCount + ' deal' + (dealsCount === 1 ? '' : 's') : ''),
-        open: true,
+        open: ctxCfg.open.includes('pipeline'),
         body: renderPipelineBody(i)
       })}
       ${accordion({
         icon: '&#9758;', title: 'Mensen',
         meta: dmuCount + ' personen',
+        open: ctxCfg.open.includes('mensen'),
         body: renderMensenBody(i)
       })}
       ${accordion({
         icon: '&#9889;', title: 'Activiteit',
         meta: activityCount + (activityCount === 1 ? ' item' : ' items'),
+        open: ctxCfg.open.includes('activiteit'),
         body: renderActivityBody(i, sigs)
       })}
       ${accordion({
@@ -14789,7 +14810,7 @@ function renderActies(){
     });
   });
   document.querySelectorAll('#actiesList .actie-inst-link').forEach(a => {
-    a.addEventListener('click', (e) => { e.stopPropagation(); openInstelling(a.dataset.instId); });
+    a.addEventListener('click', (e) => { e.stopPropagation(); openInstelling(a.dataset.instId, 'actie'); });
   });
 }
 
@@ -14873,7 +14894,7 @@ function renderOpportunities(){
   }).join('');
   document.getElementById('oppList').innerHTML = `<div class="opp-list">${html || '<div class="no-data" style="padding:32px">Geen opportunities die voldoen aan dit filter.</div>'}</div>`;
   document.querySelectorAll('#oppList .opp-card').forEach(el => {
-    el.addEventListener('click', () => openInstelling(el.dataset.instId));
+    el.addEventListener('click', () => openInstelling(el.dataset.instId, 'opportunity'));
   });
 }
 
