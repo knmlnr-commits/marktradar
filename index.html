@@ -3,289 +3,177 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MarktRadar · Start verkopen — vandaag</title>
-<meta name="description" content="MarktRadar maakt elke B2B-markt scanbaar. Definieer je propositie, kies je markt, koppel je klanten — en zie direct waar de kansen zitten. SalesDay vanaf dag één.">
+<title>MarktRadar</title>
+<meta name="description" content="MarktRadar — definieer je propositie, kies je markt, krijg signalen, koppel klanten.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 :root{
   --orange:#e87722;--orange-dark:#c45f1a;--orange-pale:#fdf2e7;
-  --grey-900:#1a1a1f;--grey-800:#2c2c33;--grey-700:#4a4a52;--grey-600:#6b6b75;
-  --grey-500:#8a8a93;--grey-400:#aaaab2;--grey-300:#c7c7ce;--grey-200:#e3e3e8;
-  --grey-150:#ededf1;--grey-100:#f4f4f6;--grey-50:#fafafb;
-  --white:#fff;--green:#2d9d78;--green-light:#e7f6f0;--red:#c43d3d;
+  --grey-900:#1a1a1f;--grey-700:#4a4a52;--grey-600:#6b6b75;
+  --grey-300:#c7c7ce;--grey-200:#e3e3e8;--grey-100:#f4f4f6;--grey-50:#fafafb;
+  --white:#fff;--green:#2d9d78;--green-light:#e7f6f0;--red:#c43d3d;--red-light:#fbeceb;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--grey-900);background:var(--white);line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:var(--orange-dark);text-decoration:none}
 a:hover{text-decoration:underline}
-img,svg{max-width:100%}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-</style>
-<style id="sty-2">
-.nav{background:rgba(255,255,255,.92);border-bottom:1px solid var(--grey-200);padding:14px 0;position:sticky;top:0;z-index:50;backdrop-filter:saturate(140%) blur(8px)}
-.nav-inner{display:flex;align-items:center;gap:18px}
+img,svg{max-width:100%;display:block}
+.wrap{max-width:920px;margin:0 auto;padding:0 18px}
+
+/* Nav */
+.nav{padding:14px 0;border-bottom:1px solid var(--grey-200);background:var(--white);position:sticky;top:0;z-index:10}
+.nav-inner{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;color:var(--grey-900)}
 .brand em{color:var(--orange);font-style:normal}
-.brand-sub{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.22em;color:var(--grey-500);text-transform:uppercase;margin-left:6px}
+.brand-sub{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--grey-600);text-transform:uppercase;margin-left:4px}
 .nav-spacer{flex:1}
-.nav-links{display:flex;gap:22px;align-items:center;font-size:.88rem;color:var(--grey-700);font-weight:500}
-.nav-links a{color:var(--grey-700)}
-.nav-links a:hover{color:var(--grey-900);text-decoration:none}
-.nav-cta{padding:8px 16px;background:var(--grey-900);color:#fff;border-radius:8px;font-weight:600;font-size:.85rem}
-.nav-cta:hover{background:var(--orange);color:#fff;text-decoration:none}
-.hero{padding:72px 0 48px;background:linear-gradient(180deg,var(--orange-pale) 0%,#fff 70%)}
-.hero-inner{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:center}
-@media(max-width:880px){.hero-inner{grid-template-columns:1fr}}
-.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--white);border:1px solid var(--grey-200);border-radius:999px;font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--grey-700);font-weight:500}
-.pill-orange{background:var(--orange);border-color:var(--orange);color:#fff}
-.hero h1{font-size:clamp(2rem,4.6vw,3.4rem);font-weight:800;letter-spacing:-.025em;line-height:1.08;color:var(--grey-900);margin-bottom:18px}
-.hero h1 em{color:var(--orange);font-style:normal}
-.hero p.lead{font-size:clamp(1.05rem,1.6vw,1.18rem);color:var(--grey-700);max-width:680px;margin-bottom:28px;line-height:1.55}
-.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
-.hero-foot{margin-top:14px;font-size:.78rem;color:var(--grey-600)}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:10px;font-weight:600;font-size:.94rem;font-family:inherit;cursor:pointer;border:0;transition:transform .12s,background .12s,color .12s,border-color .12s}
-.btn-primary{background:var(--orange);color:#fff}
-.btn-primary:hover{background:var(--orange-dark);text-decoration:none;transform:translateY(-1px)}
-.btn-ghost{background:transparent;color:var(--grey-900);border:1px solid var(--grey-300)}
+.nav-actions{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:8px;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer;border:1px solid transparent;text-decoration:none;transition:all .12s;white-space:nowrap}
+.btn-primary{background:var(--orange);color:#fff;border-color:var(--orange)}
+.btn-primary:hover{background:var(--orange-dark);border-color:var(--orange-dark);text-decoration:none}
+.btn-ghost{background:transparent;color:var(--grey-900);border-color:var(--grey-300)}
 .btn-ghost:hover{border-color:var(--grey-900);text-decoration:none}
-.hero-art{display:flex;flex-direction:column;align-items:center;gap:10px}
-.hero-art-mascotte{width:240px;height:240px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,var(--white) 0%,var(--orange-pale) 70%);border-radius:50%;box-shadow:0 14px 50px -18px rgba(232,119,34,.45)}
-.hero-art-caption{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.2em;color:var(--grey-500);text-transform:uppercase}
-</style>
-<style id="sty-3">
-.section{padding:72px 0}
-.section-head{text-align:center;margin-bottom:42px}
-.section-eyebrow{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.2em;color:var(--orange);text-transform:uppercase;font-weight:600;margin-bottom:10px}
-.section-head h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;letter-spacing:-.02em;color:var(--grey-900);margin-bottom:10px}
-.section-head p{color:var(--grey-700);max-width:680px;margin:0 auto;font-size:1rem}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-@media(max-width:880px){.steps{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.steps{grid-template-columns:1fr}}
-.step{padding:22px;background:var(--white);border:1px solid var(--grey-200);border-radius:14px;transition:transform .15s,box-shadow .15s}
-.step:hover{transform:translateY(-2px);box-shadow:0 14px 38px -22px rgba(0,0,0,.18)}
-.step-num{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.16em;color:var(--orange);font-weight:600;margin-bottom:8px}
-.step h3{font-size:1.02rem;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
-.step p{font-size:.86rem;color:var(--grey-700);line-height:1.55}
-.usps{background:var(--grey-50);padding:72px 0}
-.usps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-@media(max-width:880px){.usps-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.usps-grid{grid-template-columns:1fr}}
-.usp{padding:24px;background:var(--white);border:1px solid var(--grey-200);border-radius:14px}
-.usp-icon{font-size:1.6rem;margin-bottom:10px}
-.usp h3{font-size:1rem;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
-.usp p{font-size:.86rem;color:var(--grey-700);line-height:1.55}
-.gericall{background:linear-gradient(135deg,var(--grey-900) 0%,#2c2c33 100%);color:#fff;padding:56px 0}
-.gericall-inner{display:grid;grid-template-columns:2fr 1fr;gap:32px;align-items:center}
-@media(max-width:780px){.gericall-inner{grid-template-columns:1fr}}
-.gericall .pill{background:rgba(232,119,34,.18);border-color:rgba(232,119,34,.4);color:#fcd0a8;margin-bottom:14px}
-.gericall h2{font-size:1.6rem;font-weight:700;letter-spacing:-.02em;margin-bottom:10px}
-.gericall p{color:#bdbdc6;font-size:.94rem;line-height:1.6}
-.gericall .btn{align-self:start;justify-self:end;background:var(--orange);color:#fff}
-@media(max-width:780px){.gericall .btn{justify-self:start}}
-.demo{padding:72px 0;background:var(--white)}
-.demo-inner{display:grid;grid-template-columns:1fr 1.2fr;gap:42px;align-items:start}
-@media(max-width:880px){.demo-inner{grid-template-columns:1fr}}
-.demo-form{display:grid;gap:12px;background:var(--grey-50);padding:28px;border:1px solid var(--grey-200);border-radius:14px}
-.demo-form label{font-size:.78rem;font-weight:600;color:var(--grey-700)}
-.demo-form input,.demo-form textarea{width:100%;padding:11px 14px;font-family:inherit;font-size:.94rem;border:1px solid var(--grey-300);border-radius:8px;outline:none;background:var(--white)}
+.btn-sm{padding:7px 12px;font-size:.82rem}
+
+/* Hero */
+.hero{padding:48px 0 32px}
+.hero h1{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:10px}
+.hero h1 em{color:var(--orange);font-style:normal}
+.hero p{font-size:clamp(.95rem,2vw,1.05rem);color:var(--grey-700);max-width:560px;margin-bottom:22px}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap}
+
+/* Steps — de 4 basale stappen */
+.steps{padding:24px 0 48px;border-top:1px solid var(--grey-200)}
+.steps h2{font-size:1.05rem;font-weight:600;color:var(--grey-700);margin-bottom:18px;text-transform:uppercase;letter-spacing:.06em;font-family:'DM Mono',monospace}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.step{padding:16px;border:1px solid var(--grey-200);border-radius:10px;background:var(--white)}
+.step-num{font-family:'DM Mono',monospace;font-size:.74rem;color:var(--orange);font-weight:600;margin-bottom:6px}
+.step h3{font-size:.96rem;font-weight:700;margin-bottom:4px}
+.step p{font-size:.82rem;color:var(--grey-700);line-height:1.45}
+
+/* Demo */
+.demo{padding:36px 0;background:var(--grey-50);border-top:1px solid var(--grey-200);border-bottom:1px solid var(--grey-200)}
+.demo h2{font-size:1.2rem;font-weight:700;margin-bottom:6px}
+.demo p.lead{font-size:.9rem;color:var(--grey-700);margin-bottom:18px}
+.demo-form{display:grid;gap:10px;max-width:520px}
+.demo-form label{font-size:.74rem;font-weight:600;color:var(--grey-700)}
+.demo-form input,.demo-form textarea{width:100%;padding:10px 12px;font:inherit;font-size:.92rem;border:1px solid var(--grey-300);border-radius:7px;outline:none;background:var(--white)}
 .demo-form input:focus,.demo-form textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,119,34,.14)}
-.demo-form textarea{min-height:96px;resize:vertical}
-.demo-form .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:520px){.demo-form .field-row{grid-template-columns:1fr}}
-.demo-result{font-size:.86rem;padding:10px 12px;border-radius:8px;display:none}
+.demo-form textarea{min-height:80px;resize:vertical}
+.demo-form .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.demo-result{font-size:.84rem;padding:8px 10px;border-radius:7px;display:none}
 .demo-result.show{display:block}
 .demo-result.ok{background:var(--green-light);color:var(--green);border:1px solid var(--green)}
-.demo-result.err{background:#fbeceb;color:var(--red);border:1px solid var(--red)}
-.foot{padding:32px 0;border-top:1px solid var(--grey-200);background:var(--grey-50)}
-.foot-inner{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--grey-600)}
+.demo-result.err{background:var(--red-light);color:var(--red);border:1px solid var(--red)}
+
+/* Footer */
+.foot{padding:24px 0;font-size:.78rem;color:var(--grey-600)}
+.foot-inner{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* Mobile-first responsive */
+@media(max-width:640px){
+  .nav{padding:10px 0}
+  .nav-inner{gap:8px}
+  .brand-sub{display:none}
+  .nav-actions .btn-ghost{display:none}
+  .hero{padding:28px 0 22px}
+  .steps-grid{grid-template-columns:1fr;gap:10px}
+  .step{padding:14px}
+  .demo-form .row{grid-template-columns:1fr}
+  .btn{padding:11px 16px}
+  .foot-inner{flex-direction:column;align-items:flex-start;gap:6px}
+}
 </style>
 </head>
 <body>
+
 <nav class="nav">
   <div class="wrap nav-inner">
     <a class="brand" href="/">
-      <svg viewBox="0 0 100 100" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-label="MarktRadar">
+      <svg viewBox="0 0 100 100" width="28" height="28" xmlns="http://www.w3.org/2000/svg" aria-label="MarktRadar">
         <circle cx="50" cy="50" r="46" fill="#fafafb" stroke="#1a1a1f" stroke-width="3"/>
         <circle cx="50" cy="50" r="32" fill="none" stroke="#c7c7ce" stroke-width="1.5"/>
         <circle cx="50" cy="50" r="18" fill="none" stroke="#c7c7ce" stroke-width="1.5"/>
         <path d="M 50 50 L 50 4 A 46 46 0 0 1 90 27 Z" fill="#e87722" fill-opacity=".22"/>
         <line x1="50" y1="50" x2="90" y2="27" stroke="#e87722" stroke-width="2.4" stroke-linecap="round"/>
         <circle cx="76" cy="28" r="3.6" fill="#e87722"/>
-        <circle cx="76" cy="28" r="7" fill="none" stroke="#e87722" stroke-width="1.2" stroke-opacity=".5"/>
         <circle cx="50" cy="50" r="3" fill="#1a1a1f"/>
       </svg>
       <span>Markt<em>Radar</em></span>
-      <span class="brand-sub">SalesDay</span>
     </a>
     <span class="nav-spacer"></span>
-    <div class="nav-links">
-      <a href="#hoe">Hoe het werkt</a>
-      <a href="#usps">Waarom</a>
-      <a href="#demo">Demo</a>
-      <a href="/app/gericall">GeriCall →</a>
-      <a class="nav-cta" href="/app">Inloggen / Aanmaken</a>
+    <div class="nav-actions">
+      <a class="btn btn-ghost btn-sm" href="#demo">Demo aanvragen</a>
+      <a class="btn btn-primary btn-sm" href="/app">Inloggen</a>
     </div>
   </div>
 </nav>
 
-<section class="hero">
-  <div class="wrap hero-inner">
-    <div>
-      <div class="pill-row">
-        <span class="pill pill-orange">SalesDay</span>
-        <span class="pill">Markt-agnostisch · multi-tenant</span>
-      </div>
-      <h1>Definieer je propositie. Kies je markt. <em>Start verkopen — vandaag.</em></h1>
-      <p class="lead">MarktRadar maakt elke B2B-markt scanbaar. Beschrijf wat je verkoopt, plak je doelmarkt, koppel je klanten — en zie direct waar de kansen zitten. Geen 6-weekse implementatie. Geen branche-lock-in. Geen IT-traject.</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="/app">Maak je werkomgeving aan →</a>
-        <a class="btn btn-ghost" href="#demo">Demo aanvragen</a>
-      </div>
-      <div class="hero-foot">Geen creditcard. Werkomgeving binnen 60 seconden actief op <code style="font-family:'DM Mono',monospace;background:var(--white);padding:2px 6px;border-radius:4px;border:1px solid var(--grey-200)">/app/&lt;jouw-slug&gt;</code>.</div>
-    </div>
-    <div class="hero-art">
-      <div class="hero-art-mascotte">
-        <svg viewBox="0 0 100 100" width="220" height="220" xmlns="http://www.w3.org/2000/svg" aria-label="MarktRadar">
-          <circle cx="50" cy="50" r="46" fill="#fff" stroke="#1a1a1f" stroke-width="2.5"/>
-          <circle cx="50" cy="50" r="36" fill="none" stroke="#d8d8de" stroke-width="1"/>
-          <circle cx="50" cy="50" r="24" fill="none" stroke="#d8d8de" stroke-width="1"/>
-          <circle cx="50" cy="50" r="12" fill="none" stroke="#d8d8de" stroke-width="1"/>
-          <line x1="6" y1="50" x2="94" y2="50" stroke="#ededf1" stroke-width="1"/>
-          <line x1="50" y1="6" x2="50" y2="94" stroke="#ededf1" stroke-width="1"/>
-          <line x1="18.5" y1="18.5" x2="81.5" y2="81.5" stroke="#ededf1" stroke-width="1"/>
-          <line x1="81.5" y1="18.5" x2="18.5" y2="81.5" stroke="#ededf1" stroke-width="1"/>
-          <path d="M 50 50 L 50 4 A 46 46 0 0 1 90 27 Z" fill="#e87722" fill-opacity=".22"/>
-          <line x1="50" y1="50" x2="90" y2="27" stroke="#e87722" stroke-width="2.6" stroke-linecap="round"/>
-          <circle cx="76" cy="28" r="4" fill="#e87722"/>
-          <circle cx="76" cy="28" r="9" fill="none" stroke="#e87722" stroke-width="1.2" stroke-opacity=".55"/>
-          <circle cx="32" cy="64" r="2.4" fill="#e87722" fill-opacity=".75"/>
-          <circle cx="64" cy="74" r="2" fill="#e87722" fill-opacity=".55"/>
-          <circle cx="28" cy="38" r="1.8" fill="#e87722" fill-opacity=".4"/>
-          <circle cx="50" cy="50" r="3" fill="#1a1a1f"/>
-        </svg>
-      </div>
-      <div class="hero-art-caption">Scanning your market · live</div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="hoe">
+<header class="hero">
   <div class="wrap">
-    <div class="section-head">
-      <div class="section-eyebrow">Hoe het werkt</div>
-      <h2>Vier stappen, vandaag operationeel</h2>
-      <p>Geen IT-traject. Geen branche-templates. Je werkomgeving leeft binnen een uur en denkt mee met jouw markt.</p>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01 · PROPOSITIE</div>
-        <h3>Wat verkoop je?</h3>
-        <p>In één zin: jouw aanbod en doelklant. Dit kalibreert de relevantie van signalen die binnenkomen.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">02 · MARKT</div>
-        <h3>Wie is je markt?</h3>
-        <p>Geef je markt een naam en plak je entiteiten — VVT, retailers, B2B SaaS, consultancy, energie, je segmenteert zelf.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">03 · SIGNALEN</div>
-        <h3>Krijg de feed</h3>
-        <p>MarktRadar verzamelt signalen — bestuurswisselingen, financiële alerts, M&amp;A, aanbestedingen — gescoord op urgentie.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">04 · KLANTEN</div>
-        <h3>Koppel je relaties</h3>
-        <p>Markeer klanten handmatig of via CRM-import. Zie direct welke entiteiten klant zijn en waar de witte vlekken liggen.</p>
-      </div>
+    <h1>Volg je <em>markt</em>.</h1>
+    <p>Definieer je propositie, plak je entiteiten, koppel je klanten — en houd je markt scherp in één werkomgeving.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="/app">Maak werkomgeving</a>
+      <a class="btn btn-ghost" href="/app/gericall">GeriCall demo &rarr;</a>
     </div>
   </div>
-</section>
+</header>
 
-<section class="usps" id="usps">
+<section class="steps">
   <div class="wrap">
-    <div class="section-head">
-      <div class="section-eyebrow">Waarom MarktRadar</div>
-      <h2>Eén werkomgeving voor markt, signalen, klanten en acties</h2>
-      <p>Stop met losse Excels, mailthreads en CRM-tabbladen. MarktRadar bundelt het signaal en de relatie op één plek.</p>
-    </div>
-    <div class="usps-grid">
-      <div class="usp">
-        <div class="usp-icon">🎯</div>
-        <h3>Markt-agnostisch</h3>
-        <p>Werkt voor iedere verticale markt. Definieer zelf welke entiteiten je volgt — geen lock-in op een branche.</p>
+    <h2>Hoe het werkt</h2>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Propositie</h3>
+        <p>Beschrijf in één zin wat je verkoopt en aan wie.</p>
       </div>
-      <div class="usp">
-        <div class="usp-icon">⚡</div>
-        <h3>SalesDay vanaf dag één</h3>
-        <p>De onboarding-wizard activeert je werkomgeving in minuten — propositie, markt, entiteiten, klanten — klaar.</p>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Markt</h3>
+        <p>Plak je entiteiten — bedrijven, instellingen of klanten.</p>
       </div>
-      <div class="usp">
-        <div class="usp-icon">🔌</div>
-        <h3>CRM-koppeling</h3>
-        <p>Importeer PipeDrive, HubSpot of Salesforce-data. Zie waar markt en klantbestand uit elkaar lopen.</p>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Signalen</h3>
+        <p>Krijg meldingen over wijzigingen in jouw markt.</p>
       </div>
-      <div class="usp">
-        <div class="usp-icon">📡</div>
-        <h3>Signalen-feed</h3>
-        <p>Bestuurswisselingen, financiële alerts, aanbestedingen, M&amp;A — gescoord op urgentie en relevantie voor jouw propositie.</p>
-      </div>
-      <div class="usp">
-        <div class="usp-icon">🏢</div>
-        <h3>Per-tenant geïsoleerd</h3>
-        <p>Eigen URL <code style="font-family:'DM Mono',monospace;font-size:.78rem;background:var(--grey-100);padding:1px 5px;border-radius:3px">/app/&lt;slug&gt;</code>, eigen team, eigen markt, eigen data — strikt gescheiden.</p>
-      </div>
-      <div class="usp">
-        <div class="usp-icon">👥</div>
-        <h3>Acties &amp; eigenaarschap</h3>
-        <p>Wijs een eigenaar toe — todos cascaderen automatisch. Cross-device sync via Vercel KV / Redis.</p>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Klanten</h3>
+        <p>Markeer relaties handmatig of via CRM-import.</p>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="gericall">
-  <div class="wrap gericall-inner">
-    <div>
-      <span class="pill">Live demo · Zorgsector</span>
-      <h2>Bekijk hoe GeriCall MarktRadar inzet</h2>
-      <p>De GeriCall-werkomgeving is een complete demo voor de Nederlandse VVT-markt: 64 instellingen, 27 marktsignalen, PipeDrive CRM-koppeling, DMU-mapping en bestaande dossiers. Mooie referentie om te zien hoe MarktRadar er voor jouw markt uit zou kunnen zien.</p>
-    </div>
-    <a class="btn btn-primary" href="/app/gericall">Open GeriCall demo →</a>
   </div>
 </section>
 
 <section class="demo" id="demo">
-  <div class="wrap demo-inner">
-    <div>
-      <div class="section-eyebrow">Demo aanvragen</div>
-      <h2 style="font-size:clamp(1.5rem,2.6vw,2rem);font-weight:700;letter-spacing:-.02em;margin-bottom:14px">Persoonlijke demo, op maat van jouw markt</h2>
-      <p style="color:var(--grey-700);font-size:.95rem;line-height:1.6;margin-bottom:14px">Vul het formulier in. We bellen of mailen binnen één werkdag voor een 30-minuten demo waarin we MarktRadar inrichten op jouw propositie en markt. Liever direct los? Maak je werkomgeving aan op <a href="/app">/app</a>.</p>
-      <p style="color:var(--grey-600);font-size:.84rem;line-height:1.55"><strong>Wat krijg je?</strong> Een ingerichte demo-werkomgeving, een doorloop van de 4 stappen, en concrete adviezen over hoe MarktRadar past in je sales-flow.</p>
-    </div>
+  <div class="wrap">
+    <h2>Demo aanvragen</h2>
+    <p class="lead">Vul je gegevens in. We nemen binnen één werkdag contact op.</p>
     <form id="demoForm" class="demo-form" autocomplete="on">
-      <div class="field-row">
-        <div><label for="df-naam">Naam *</label><input id="df-naam" name="naam" required maxlength="200"></div>
-        <div><label for="df-organisatie">Organisatie *</label><input id="df-organisatie" name="organisatie" required maxlength="200"></div>
+      <div class="row">
+        <div><label for="df-naam">Naam</label><input id="df-naam" name="naam" required maxlength="200"></div>
+        <div><label for="df-organisatie">Organisatie</label><input id="df-organisatie" name="organisatie" required maxlength="200"></div>
       </div>
-      <div class="field-row">
-        <div><label for="df-email">Werk-email *</label><input id="df-email" name="email" type="email" required maxlength="200"></div>
+      <div class="row">
+        <div><label for="df-email">Email</label><input id="df-email" name="email" type="email" required maxlength="200"></div>
         <div><label for="df-telefoon">Telefoon (optioneel)</label><input id="df-telefoon" name="telefoon" type="tel" maxlength="50"></div>
       </div>
-      <div><label for="df-rol">Rol / functie (optioneel)</label><input id="df-rol" name="rol" maxlength="100"></div>
-      <div><label for="df-bericht">In welke markt zit je en wat verkoop je? (optioneel)</label><textarea id="df-bericht" name="bericht" maxlength="4000" placeholder="Bijv: Wij verkopen ANW-bereikbaarheidsdiensten aan VVT-organisaties met 200+ cliënten."></textarea></div>
+      <div><label for="df-bericht">Bericht (optioneel)</label><textarea id="df-bericht" name="bericht" maxlength="4000"></textarea></div>
       <div class="demo-result" id="demoResult"></div>
-      <button class="btn btn-primary" type="submit" id="demoSubmit">Demo aanvragen →</button>
+      <div><button class="btn btn-primary" type="submit" id="demoSubmit">Aanvragen</button></div>
     </form>
   </div>
 </section>
 
 <footer class="foot">
   <div class="wrap foot-inner">
-    <div>© 2026 MarktRadar — gebouwd voor commerciële teams die hun markt willen kennen.</div>
-    <div><a href="/app">Inloggen</a> · <a href="/app/gericall">GeriCall demo</a> · <a href="#demo">Demo aanvragen</a></div>
+    <div>&copy; 2026 MarktRadar</div>
+    <div><a href="/app">Inloggen</a> &middot; <a href="/app/gericall">GeriCall</a></div>
   </div>
 </footer>
 
@@ -303,11 +191,10 @@ img,svg{max-width:100%}
       organisatie: document.getElementById('df-organisatie').value.trim(),
       email: document.getElementById('df-email').value.trim(),
       telefoon: document.getElementById('df-telefoon').value.trim(),
-      rol: document.getElementById('df-rol').value.trim(),
       bericht: document.getElementById('df-bericht').value.trim(),
     };
     if(!data.naam || !data.organisatie || !data.email){
-      result.textContent = 'Vul je naam, organisatie en email in.';
+      result.textContent = 'Naam, organisatie en email zijn verplicht.';
       result.classList.add('show', 'err'); return;
     }
     submit.disabled = true; const orig = submit.textContent; submit.textContent = 'Versturen…';
@@ -318,11 +205,11 @@ img,svg{max-width:100%}
       });
       const j = await r.json().catch(() => ({}));
       if(!r.ok) throw new Error(j.error || ('Er ging iets mis (' + r.status + ')'));
-      result.innerHTML = '<strong>Bedankt!</strong> ' + (j.message || 'We nemen binnen één werkdag contact op.');
+      result.textContent = j.message || 'Bedankt — we nemen binnen één werkdag contact op.';
       result.classList.add('show', 'ok');
       form.reset();
     } catch(err){
-      result.textContent = err.message || 'Er ging iets mis. Probeer het later opnieuw of mail direct.';
+      result.textContent = err.message || 'Er ging iets mis.';
       result.classList.add('show', 'err');
     } finally {
       submit.disabled = false; submit.textContent = orig;
