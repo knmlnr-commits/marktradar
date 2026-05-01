@@ -1,0 +1,17 @@
+{
+  "name": "MarktRadar",
+  "short_name": "MarktRadar",
+  "description": "Volg je markt — propositie, signalen, klanten in één werkomgeving.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fafafb",
+  "theme_color": "#e87722",
+  "lang": "nl",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GeriCall · MarktRadar</title>
 <meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="apple-touch-icon" href="/icon.svg">
+<meta name="theme-color" content="#e87722">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MarktRadar">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15906,6 +15914,18 @@ function bindAssignmentsPane(){
     renderInstellingen();
     alert('Import: ' + imported + ' toewijzingen verwerkt, ' + skipped + ' overgeslagen.');
     e.target.value = '';
+  });
+}
+
+// PWA service worker — registreert op load zodat de app installable is
+// als web-app op iOS/Android home screen. Faalt stilletjes op file://
+// of in private modes; service workers werken alleen op http(s).
+// Forward-compatible: bij een Capacitor-wrap (optie B) wordt deze
+// service worker genegeerd door de native shell, maar manifest + icon
+// + theme-color blijven 1:1 bruikbaar.
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
 }
 </script>
