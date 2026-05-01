@@ -1215,10 +1215,11 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <div class="toolbar">
         <div class="chip-row" id="oppLensChips"></div>
         <div class="toolbar-spacer"></div>
-        <select class="sort-select" id="oppSort">
-          <option value="score">Sorteer op score</option>
-          <option value="name">Sorteer alfabetisch</option>
-          <option value="status">Sorteer op status</option>
+        <button class="btn-secondary" id="newOppBtn" style="font-size:.78rem;padding:6px 12px;border-color:var(--orange);color:var(--orange-dark)">+ Opportunity</button>
+        <select class="sort-select filter-compact" id="oppSort" title="Sortering">
+          <option value="updated">Recent</option>
+          <option value="status">Status</option>
+          <option value="name">A-Z</option>
         </select>
       </div>
       <div id="oppList"></div>
@@ -1463,6 +1464,20 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   </div>
 </div>
 
+<div class="refresh-modal" id="oppCreateModal">
+  <div class="refresh-modal-panel" style="max-width:480px">
+    <h3>Nieuwe opportunity</h3>
+    <p style="font-size:.84rem;color:var(--grey-700);margin-bottom:14px">Een verkoopkans gekoppeld aan een organisatie. Je kunt er later todo's onder hangen en de status doorlopen.</p>
+    <div class="edit-field"><label>Organisatie</label><select id="oppCreate-inst" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></select></div>
+    <div class="edit-field" style="margin-top:10px"><label>Titel</label><input type="text" id="oppCreate-titel" placeholder="bv. Pilot ANW Q4 2026" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    <div class="edit-field" style="margin-top:10px"><label>Status</label><select id="oppCreate-status" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></select></div>
+    <div class="btn-row">
+      <button class="btn-secondary" id="oppCreateCancel">Annuleren</button>
+      <button class="btn-primary" id="oppCreateSave">Maak opportunity</button>
+    </div>
+  </div>
+</div>
+
 <div class="refresh-modal" id="signalDetailModal">
   <div class="refresh-modal-panel" style="max-width:640px">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
@@ -1476,6 +1491,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div class="btn-row">
       <button class="btn-secondary" id="sdmCloseBtn">Sluiten</button>
       <a id="sdmInstellingBtn" class="btn-secondary" style="display:none" href="#">Open instelling &rarr;</a>
+      <button type="button" id="sdmMakeTodoBtn" class="btn-secondary" style="display:none;border-color:var(--orange);color:var(--orange-dark)">+ Maak todo</button>
       <a id="sdmSourceBtn" class="btn-primary" style="display:none" target="_blank" rel="noopener" href="#">Open bron &nearr;</a>
     </div>
   </div>
@@ -11722,12 +11738,14 @@ function mergeTodos(a, b){
   return out;
 }
 function todosForInst(id){ return (todos[id] || []).slice(); }
-function addTodo(instId, text, ownerId){
+function addTodo(instId, text, ownerId, opts){
   const t = {
     id: 'TD-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
     text: text.trim(), done: false,
     createdAt: Date.now(), updatedAt: Date.now(),
-    ownerId: ownerId || null
+    ownerId: ownerId || null,
+    opportunityId: (opts && opts.opportunityId) || null,
+    signalIds: (opts && Array.isArray(opts.signalIds)) ? opts.signalIds : [],
   };
   if(!todos[instId]) todos[instId] = [];
   todos[instId].push(t);
@@ -12209,6 +12227,9 @@ function initApp(){
   });
   bindContactEditModal();
   bindSignalDetailModal();
+  bindOppCreateModal();
+  const newOppBtn = document.getElementById('newOppBtn');
+  if(newOppBtn) newOppBtn.addEventListener('click', () => openOppCreateModal());
   bindDropdownAddHandler();
   bindDropdownDeleteModal();
   bindAdminModal();
@@ -12907,7 +12928,59 @@ function openSignalDetail(sig){
     instBtn.style.display = 'none';
     instBtn.onclick = null;
   }
+  // 'Maak todo'-knop: alleen zichtbaar als signaal aan een instelling
+  // hangt; klik maakt een todo met text=headline + signalIds=[sig.id]
+  // en opent het klantbeeld in 'signaal'-context.
+  const todoBtn = document.getElementById('sdmMakeTodoBtn');
+  if(todoBtn){
+    if(sig.instellingId){
+      todoBtn.style.display = '';
+      todoBtn.onclick = () => {
+        const text = (sig.headline || 'Volg-up signaal').slice(0, 200);
+        const ownerId = (currentUser && currentUser.id) || ownerForInst(sig.instellingId);
+        addTodo(sig.instellingId, text, ownerId, { signalIds: [sig.id] });
+        document.getElementById('signalDetailModal').classList.remove('show');
+        openInstelling(sig.instellingId, 'signaal');
+      };
+    } else {
+      todoBtn.style.display = 'none';
+      todoBtn.onclick = null;
+    }
+  }
   document.getElementById('signalDetailModal').classList.add('show');
+}
+
+function openOppCreateModal(initialInstId){
+  const m = document.getElementById('oppCreateModal');
+  if(!m) return;
+  const instSel = document.getElementById('oppCreate-inst');
+  const sortedInsts = getMarketInstellingen().slice().sort((a,b) => (a.naam||'').localeCompare(b.naam||''));
+  instSel.innerHTML = sortedInsts
+    .map(i => `<option value="${escapeHtml(i.id)}" ${initialInstId === i.id ? 'selected' : ''}>${escapeHtml(i.naam)}</option>`)
+    .join('');
+  const statusSel = document.getElementById('oppCreate-status');
+  const statuses = getDropdownOptions('opportunityStatus');
+  statusSel.innerHTML = statuses.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+  document.getElementById('oppCreate-titel').value = '';
+  m.classList.add('show');
+  setTimeout(() => document.getElementById('oppCreate-titel').focus(), 100);
+}
+
+function bindOppCreateModal(){
+  const m = document.getElementById('oppCreateModal');
+  if(!m) return;
+  document.getElementById('oppCreateCancel').addEventListener('click', () => m.classList.remove('show'));
+  m.addEventListener('click', (e) => { if(e.target.id === 'oppCreateModal') m.classList.remove('show'); });
+  document.getElementById('oppCreateSave').addEventListener('click', () => {
+    const instId = document.getElementById('oppCreate-inst').value;
+    const titel = document.getElementById('oppCreate-titel').value.trim();
+    const status = document.getElementById('oppCreate-status').value;
+    if(!instId || !titel){ alert('Organisatie en titel zijn verplicht.'); return; }
+    addOpportunity(instId, { titel, status });
+    m.classList.remove('show');
+    if(typeof renderOpportunities === 'function') renderOpportunities();
+    openInstelling(instId, 'opportunity');
+  });
 }
 
 function bindSignalDetailModal(){
@@ -13298,21 +13371,39 @@ function renderTodosBodyOnly(inst){
   const list = todosForInst(inst.id);
   const open = list.filter(t => !t.done);
   const done = list.filter(t => t.done);
+  const opps = getOppsForInst(inst.id);
+  const oppOpts = ['<option value="">— Geen opportunity —</option>']
+    .concat(opps.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.titel || '(zonder titel)')}</option>`))
+    .join('');
   const renderOne = (t) => {
     const owner = t.ownerId ? ownerById(t.ownerId) : null;
+    const linkedOpp = t.opportunityId ? opps.find(o => o.id === t.opportunityId) : null;
     const created = new Date(t.createdAt || Date.now()).toLocaleDateString('nl-NL');
     const completed = t.completedAt ? new Date(t.completedAt).toLocaleDateString('nl-NL') : '';
+    // Gekoppelde signalen onder deze todo (signalIds-array, fallback []).
+    const sigIds = Array.isArray(t.signalIds) ? t.signalIds : [];
+    const linkedSignals = sigIds.map(sid => DATA.signalen.find(s => s.id === sid) || (remoteSignals||[]).find(s => s.id === sid)).filter(Boolean);
+    const sigsHtml = linkedSignals.length === 0 ? '' : `
+      <div style="margin-top:6px;padding:6px 10px;background:var(--grey-50);border-left:3px solid var(--orange);border-radius:4px;font-size:.72rem;color:var(--grey-700)">
+        ${linkedSignals.map(s => `<div>📡 <strong>${escapeHtml(s.datum)}</strong> &middot; ${escapeHtml(s.headline || '')}</div>`).join('')}
+      </div>`;
+    const oppSelectPerTodo = opps.length === 0 ? '' : `
+      <select class="todo-opp-select ie ie-todo-opp" data-inst-id="${escapeHtml(inst.id)}" data-todo-id="${escapeHtml(t.id)}" title="Koppel aan opportunity">
+        ${['<option value="">— losse todo —</option>'].concat(opps.map(o => `<option value="${escapeHtml(o.id)}" ${t.opportunityId === o.id ? 'selected' : ''}>→ ${escapeHtml(o.titel || '(zonder titel)')}</option>`)).join('')}
+      </select>`;
     return `
       <div class="todo-item ${t.done ? 'done' : ''}" data-todo-id="${t.id}">
         <input type="checkbox" class="todo-check" ${t.done ? 'checked' : ''} aria-label="Markeer als ${t.done ? 'open' : 'klaar'}">
         <div class="todo-body">
-          <div class="todo-text">${escapeHtml(t.text)}</div>
+          <div class="todo-text">${escapeHtml(t.text)}${linkedOpp ? ` <span style="font-size:.7rem;background:var(--orange-pale);color:var(--orange-dark);padding:1px 6px;border-radius:8px;font-weight:600">→ ${escapeHtml(linkedOpp.titel)}</span>` : ''}</div>
           <div class="todo-meta">
             <span>aangemaakt ${created}</span>
             ${completed ? `<span>&middot; klaar ${completed}</span>` : ''}
             ${owner ? `<span>&middot; ${escapeHtml(owner.naam)}</span>` : ''}
           </div>
+          ${sigsHtml}
         </div>
+        ${oppSelectPerTodo}
         <button class="todo-delete" type="button" title="Verwijderen" aria-label="Verwijderen">&times;</button>
       </div>`;
   };
@@ -13321,12 +13412,14 @@ function renderTodosBodyOnly(inst){
       const sel = currentUser && o.id === currentUser.id ? ' selected' : '';
       return `<option value="${o.id}"${sel}>${escapeHtml(o.naam)}${currentUser && o.id === currentUser.id ? ' (jij)' : ''}</option>`;
     })).join('');
+  const oppAddSelect = opps.length === 0 ? '' : `<select class="todo-owner-select" id="todoOpp-${inst.id}" title="Koppel aan opportunity">${oppOpts}</select>`;
   return `
     <div>
       <div class="acc-sub-title">Todo's</div>
       <div class="todo-add">
         <input type="text" class="todo-input" id="todoInput-${inst.id}" placeholder="Nieuwe todo&hellip; (Enter om toe te voegen)" maxlength="200">
         <select class="todo-owner-select" id="todoOwner-${inst.id}" title="Eigenaar van deze todo">${ownerOptions}</select>
+        ${oppAddSelect}
         <button class="todo-add-btn" type="button" id="todoAddBtn-${inst.id}">Toevoegen</button>
       </div>
       <div class="todo-list" style="margin-top:10px">
@@ -15499,12 +15592,14 @@ function bindEditFormHandlers(i){
 function bindTodoHandlers(i){
   const input = document.getElementById('todoInput-' + i.id);
   const ownerSel = document.getElementById('todoOwner-' + i.id);
+  const oppSel = document.getElementById('todoOpp-' + i.id);
   const addBtn = document.getElementById('todoAddBtn-' + i.id);
   const submit = () => {
     const text = (input?.value || '').trim();
     if(!text) return;
     const owner = ownerSel?.value || null;
-    addTodo(i.id, text, owner);
+    const opp = oppSel?.value || null;
+    addTodo(i.id, text, owner, opp ? { opportunityId: opp } : undefined);
     openInstelling(i.id);
   };
   if(addBtn) addBtn.addEventListener('click', submit);
@@ -15515,6 +15610,19 @@ function bindTodoHandlers(i){
     const tid = row.dataset.todoId;
     const cb = row.querySelector('.todo-check');
     const del = row.querySelector('.todo-delete');
+    const oppSelRow = row.querySelector('.ie-todo-opp');
+    if(oppSelRow){
+      oppSelRow.addEventListener('change', () => {
+        const arr = todos[i.id] || [];
+        const t = arr.find(x => x.id === tid);
+        if(!t) return;
+        t.opportunityId = oppSelRow.value || null;
+        t.updatedAt = Date.now();
+        saveTodosLocal();
+        if(todosRemoteAvailable) pushRemoteTodos();
+        openInstelling(i.id);
+      });
+    }
     if(cb) cb.addEventListener('change', () => { toggleTodo(i.id, tid); openInstelling(i.id); });
     if(del) del.addEventListener('click', () => { deleteTodo(i.id, tid); openInstelling(i.id); });
   });
