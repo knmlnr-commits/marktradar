@@ -11161,7 +11161,13 @@ function getMarketSignalen(){
   // met de auto-cron-resultaten uit tenant-state. Dedupliceer op id en op
   // sourceUrl zodat een handmatig signaal niet dubbel verschijnt naast de
   // auto-versie.
-  const base = tenantHasOwnEntities() ? [] : (Array.isArray(DATA.signalen) ? DATA.signalen : []);
+  // GeriCall (legacy seed-tenant) heeft tegenwoordig óók een eigen
+  // tenant.entiteiten[]-lijst, dus tenantHasOwnEntities() volstaat niet
+  // meer als signaal-baseline-keuze. Detecteer GeriCall op slug/id en
+  // hou de hardcoded DATA.signalen als baseline; andere tenants vullen
+  // hun signalen volledig via /api/signals/list (cron).
+  const isLegacy = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+  const base = !isLegacy && tenantHasOwnEntities() ? [] : (Array.isArray(DATA.signalen) ? DATA.signalen : []);
   const combined = [];
   const seenIds = new Set();
   const seenUrls = new Set();
@@ -13477,6 +13483,11 @@ function renderTodosBodyOnly(inst){
 }
 
 function renderSpecSection(i){
+  // Specialisten Ouderengeneeskunde is VVT/zorg-jargon. Voor non-GeriCall
+  // tenants (bv. verzekering) is deze sectie irrelevant — verberg 'm. De
+  // inhoudelijke contactpersonen zitten al in DMU + bestuurders.
+  const isLegacy = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+  if(!isLegacy) return '';
   const specs = i.specialisten || [];
   const addBtn = `<button type="button" class="add-people-btn" data-add-people="spec" data-inst-id="${escapeHtml(i.id)}">+ Specialist</button>`;
   if(specs.length === 0){
@@ -13871,29 +13882,66 @@ function ieSegment(instId, segKey, on, label){
 
 function renderKerngetallenBody(i){
   const segLabels = [{key:'vvt',label:'VVT'},{key:'vpt',label:'VPT'},{key:'thuiszorg',label:'Thuiszorg'},{key:'elv',label:'ELV'},{key:'grz',label:'GRZ'}];
-  return `
+  const isLegacy = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+  // Eigen velden: vrij key/value-paar dat de tenant zelf definieert. Bv.
+  // van Ameyde: { 'Aantal claims': '1.200', 'Premium-volume': 'EUR 50M' }.
+  const cfMap = (overrides[i.id] && overrides[i.id].customFields) || i.customFields || {};
+  const cfEntries = Object.entries(cfMap);
+  const cfHtml = cfEntries.map(([k, v], idx) => `
+    <div style="display:grid;grid-template-columns:1fr 1fr 28px;gap:8px;align-items:center;padding:6px 8px;border:1px solid var(--grey-200);border-radius:6px;margin-bottom:6px;background:var(--white)">
+      <input type="text" class="inline-edit-input ie ie-cf" data-inst-id="${escapeHtml(i.id)}" data-cf-idx="${idx}" data-cf-field="key" value="${escapeHtml(k || '')}" placeholder="Veldnaam" style="font-weight:500">
+      <input type="text" class="inline-edit-input ie ie-cf" data-inst-id="${escapeHtml(i.id)}" data-cf-idx="${idx}" data-cf-field="value" value="${escapeHtml(v || '')}" placeholder="Waarde">
+      <button type="button" class="dir-delete-btn" data-cf-delete="1" data-inst-id="${escapeHtml(i.id)}" data-cf-idx="${idx}" title="Verwijderen" aria-label="Verwijderen">&times;</button>
+    </div>`).join('');
+  // Hide-empty: alleen kerngetal-tegels tonen die een waarde hebben.
+  // Bedden, medewerkers, locaties, omzet zijn VVT-typische velden;
+  // verzekeringssector heeft hier geen waarde, dus blijft de tegel-rij
+  // leeg → wordt overgeslagen.
+  const stats = [];
+  if((i.aantalBedden||0) > 0) stats.push({label: 'Bedden', field: 'aantalBedden', value: i.aantalBedden, type: 'number'});
+  if((i.aantalMedewerkersEst||0) > 0) stats.push({label: 'Medewerkers <small>(est.)</small>', field: 'aantalMedewerkersEst', value: i.aantalMedewerkersEst, type: 'number'});
+  if((i.locaties||0) > 0) stats.push({label: 'Locaties', field: 'locaties', value: i.locaties, type: 'number'});
+  if((i.omzetMlnEst||0) > 0) stats.push({label: 'Omzet <small>(mln &euro;, est.)</small>', field: 'omzetMlnEst', value: i.omzetMlnEst, type: 'number'});
+  // Voor GeriCall: edit-pad altijd ophouden (legen via inline-edit). Voor
+  // andere tenants: alleen tonen als waarde > 0; gebruiker gebruikt
+  // 'Eigen velden' voor markt-specifieke metrics.
+  const showStats = isLegacy || stats.length > 0;
+  const statHtml = !showStats ? '' : `
     <div>
       <div class="acc-sub-title">Kerngetallen</div>
       <div class="stat-grid">
-        <div class="stat"><div class="stat-label">Bedden</div>${ieNum(i.id, 'aantalBedden', i.aantalBedden)}</div>
-        <div class="stat"><div class="stat-label">Medewerkers <small>(est.)</small></div>${ieNum(i.id, 'aantalMedewerkersEst', i.aantalMedewerkersEst)}</div>
-        <div class="stat"><div class="stat-label">Locaties</div>${ieNum(i.id, 'locaties', i.locaties)}</div>
-        <div class="stat"><div class="stat-label">Omzet <small>(mln &euro;, est.)</small></div>${ieNum(i.id, 'omzetMlnEst', i.omzetMlnEst)}</div>
+        ${(isLegacy ? [
+          {label: 'Bedden', field: 'aantalBedden', value: i.aantalBedden},
+          {label: 'Medewerkers <small>(est.)</small>', field: 'aantalMedewerkersEst', value: i.aantalMedewerkersEst},
+          {label: 'Locaties', field: 'locaties', value: i.locaties},
+          {label: 'Omzet <small>(mln &euro;, est.)</small>', field: 'omzetMlnEst', value: i.omzetMlnEst}
+        ] : stats).map(s => `<div class="stat"><div class="stat-label">${s.label}</div>${ieNum(i.id, s.field, s.value)}</div>`).join('')}
       </div>
-    </div>
+    </div>`;
+  const segHtml = !isLegacy ? '' : `
     <div>
       <div class="acc-sub-title">Segmenten</div>
       <div class="segments" style="gap:8px">
         ${segLabels.map(s => ieSegment(i.id, s.key, !!(i.segmenten && i.segmenten[s.key]), s.label)).join('')}
       </div>
-    </div>
+    </div>`;
+  return statHtml + segHtml + `
     <div>
       <div class="acc-sub-title">Verband / fusie</div>
       ${ieText(i.id, 'fusie', i.fusie, 'bv. onderdeel van groep, fusie 2025')}
     </div>
     <div>
-      <div class="acc-sub-title">Recente uitbreiding</div>
-      ${ieText(i.id, 'recenteUitbreiding', i.recenteUitbreiding, 'beschrijving recente locatie/dienst')}
+      <div class="acc-sub-title">Recente uitbreiding / wijziging</div>
+      ${ieText(i.id, 'recenteUitbreiding', i.recenteUitbreiding, 'beschrijving recente locatie/dienst/contract')}
+    </div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)">
+      <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        Eigen velden
+        <button type="button" class="add-people-btn" data-add-cf="1" data-inst-id="${escapeHtml(i.id)}" style="margin-left:auto">+ Veld</button>
+      </div>
+      ${cfEntries.length === 0
+        ? '<div class="dmu-empty" style="padding:8px 12px">Geen eigen velden. Voor markt-specifieke metrics zoals <em>Aantal claims</em>, <em>Premium-volume</em>, <em>NPS</em> klik <strong>+ Veld</strong>.</div>'
+        : cfHtml}
     </div>`;
 }
 
@@ -14153,14 +14201,18 @@ function renderBedrijfsinfoBody(i){
 }
 
 function renderLeveranciersBody(i){
+  const isLegacy = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
   const andere = Array.isArray(i.andereItLeveranciers) ? i.andereItLeveranciers : [];
   const andereHtml = andere.map((l, idx) => `
     <div style="display:grid;grid-template-columns:1fr 1fr 28px;gap:8px;align-items:center;padding:6px 8px;border:1px solid var(--grey-200);border-radius:6px;margin-bottom:6px;background:var(--white)">
       <input type="text" class="inline-edit-input ie ie-andere" data-inst-id="${escapeHtml(i.id)}" data-andere-idx="${idx}" data-andere-field="naam" value="${escapeHtml(l.naam || '')}" placeholder="Leverancier" style="font-weight:500">
-      <input type="text" class="inline-edit-input ie ie-andere" data-inst-id="${escapeHtml(i.id)}" data-andere-idx="${idx}" data-andere-field="domein" value="${escapeHtml(l.domein || '')}" placeholder="Domein (bv. Telefonie, Planning)">
+      <input type="text" class="inline-edit-input ie ie-andere" data-inst-id="${escapeHtml(i.id)}" data-andere-idx="${idx}" data-andere-field="domein" value="${escapeHtml(l.domein || '')}" placeholder="Domein (bv. Telefonie, Polis-administratie)">
       <button type="button" class="dir-delete-btn" data-andere-delete="1" data-inst-id="${escapeHtml(i.id)}" data-andere-idx="${idx}" title="Verwijderen" aria-label="Verwijderen">&times;</button>
     </div>`).join('');
-  return `
+  // Voor GeriCall (zorg-tenant) tonen we de specifieke ANW + ECD blocks
+  // bovenaan. Voor andere markten (verzekering, retail, etc.) zijn die
+  // niet relevant — gebruiker noteert leveranciers in de generieke lijst.
+  const anwEcdHtml = !isLegacy ? '' : `
     <div class="it-stack">
       <div class="it-block">
         <div class="it-block-title">ANW &middot; Avond/Nacht/Weekend</div>
@@ -14177,13 +14229,19 @@ function renderLeveranciersBody(i){
           ${ieText(i.id, 'ecdSysteem', i.ecdSysteem === 'Onbekend' ? '' : i.ecdSysteem, 'systeem-versie / variant (optioneel)')}
         </div>
       </div>
-    </div>
-    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)">
+    </div>`;
+  const sepStyle = isLegacy ? 'margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)' : '';
+  const listLabel = isLegacy ? 'Andere leveranciers' : 'Leveranciers';
+  const placeholderTip = isLegacy
+    ? 'Denk aan: HR/Salaris, Telefonie, Planning, eLearning, Cliëntportaal, Triage tooling.'
+    : 'Denk aan: polis-administratie, claim-handling-systeem, fraude-detectie, schade-experts, IT.';
+  return anwEcdHtml + `
+    <div style="${sepStyle}">
       <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        Andere leveranciers
+        ${listLabel}
         <button type="button" class="add-people-btn" data-add-andere="1" data-inst-id="${escapeHtml(i.id)}" style="margin-left:auto">+ Leverancier</button>
       </div>
-      ${andere.length === 0 ? '<div class="dmu-empty" style="padding:8px 12px">Nog geen overige leveranciers vastgelegd. Denk aan: HR/Salaris, Telefonie, Planning, eLearning, Cliëntportaal, Triage tooling.</div>' : andereHtml}
+      ${andere.length === 0 ? `<div class="dmu-empty" style="padding:8px 12px">Nog geen leveranciers vastgelegd. ${placeholderTip}</div>` : andereHtml}
     </div>`;
 }
 
@@ -14278,18 +14336,28 @@ function openInstelling(id, ctx){
         open: ctxCfg.open[0] === 'activiteit',
         body: renderActivityBody(i, sigs)
       })}
-      ${accordion({
-        icon: '&#9636;', title: 'Bedrijfsinfo',
-        meta: (i.aantalBedden ? i.aantalBedden.toLocaleString('nl-NL') + ' bedden' : '') + (i.locaties ? ' &middot; ' + i.locaties + ' loc.' : ''),
-        open: ctxCfg.open[0] === 'bedrijfsinfo',
-        body: renderBedrijfsinfoBody(i)
-      })}
-      ${accordion({
-        icon: '&#9881;', title: 'Leveranciers',
-        meta: (i.anwLeverancier ? 'ANW: ' + i.anwLeverancier : 'geen ANW') + (i.ecdLeverancier && i.ecdLeverancier !== 'Onbekend' ? ' &middot; ECD: ' + i.ecdLeverancier : ''),
-        open: ctxCfg.open[0] === 'leveranciers',
-        body: renderLeveranciersBody(i)
-      })}
+      ${(() => {
+        const isLegacyT = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+        const cfCount = Object.keys((overrides[i.id] && overrides[i.id].customFields) || i.customFields || {}).length;
+        const bedrijfsMeta = isLegacyT
+          ? ((i.aantalBedden ? i.aantalBedden.toLocaleString('nl-NL') + ' bedden' : '') + (i.locaties ? ' &middot; ' + i.locaties + ' loc.' : ''))
+          : (cfCount ? cfCount + ' eigen veld' + (cfCount === 1 ? '' : 'en') : 'kerngetallen');
+        const andereCount = Array.isArray(i.andereItLeveranciers) ? i.andereItLeveranciers.length : 0;
+        const levMeta = isLegacyT
+          ? ((i.anwLeverancier ? 'ANW: ' + i.anwLeverancier : 'geen ANW') + (i.ecdLeverancier && i.ecdLeverancier !== 'Onbekend' ? ' &middot; ECD: ' + i.ecdLeverancier : ''))
+          : (andereCount ? andereCount + ' leverancier' + (andereCount === 1 ? '' : 's') : 'geen leveranciers');
+        return accordion({
+          icon: '&#9636;', title: 'Bedrijfsinfo',
+          meta: bedrijfsMeta,
+          open: ctxCfg.open[0] === 'bedrijfsinfo',
+          body: renderBedrijfsinfoBody(i)
+        }) + accordion({
+          icon: '&#9881;', title: 'Leveranciers',
+          meta: levMeta,
+          open: ctxCfg.open[0] === 'leveranciers',
+          body: renderLeveranciersBody(i)
+        });
+      })()}
       ${websiteHtml}
     </div>`;
   document.getElementById('overlayPanel').innerHTML = html;
@@ -14378,6 +14446,45 @@ function bindOverlayChrome(i){
       openInstelling(instId, 'leveranciers');
     });
   });
+  // + Eigen veld (markt-specifieke metric, bv. 'Aantal claims')
+  document.querySelectorAll('#overlayPanel [data-add-cf]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const instId = btn.dataset.instId;
+      const inst = getInstellingRaw(instId);
+      const cur = (overrides[instId] && overrides[instId].customFields) || (inst && inst.customFields) || {};
+      // Genereer een unieke placeholder-key zodat de nieuwe regel zichtbaar
+      // wordt; de gebruiker overschrijft 'm meteen.
+      let i = 1;
+      let placeholder = 'Nieuw veld';
+      while(Object.prototype.hasOwnProperty.call(cur, placeholder)){
+        i += 1;
+        placeholder = 'Nieuw veld ' + i;
+      }
+      const next = { ...cur, [placeholder]: '' };
+      setOverrides(instId, { customFields: next });
+      openInstelling(instId, 'bedrijfsinfo');
+    });
+  });
+  // Verwijder eigen veld
+  document.querySelectorAll('#overlayPanel .dir-delete-btn[data-cf-delete]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const instId = btn.dataset.instId;
+      const idx = parseInt(btn.dataset.cfIdx, 10);
+      const inst = getInstellingRaw(instId);
+      const cur = (overrides[instId] && overrides[instId].customFields) || (inst && inst.customFields) || {};
+      const tuples = Object.entries(cur);
+      if(!tuples[idx]) return;
+      const [k] = tuples[idx];
+      if(!confirm('Verwijder veld "' + (k || 'zonder naam') + '"?')) return;
+      tuples.splice(idx, 1);
+      const next = {};
+      tuples.forEach(([kk, vv]) => { if(kk) next[kk] = vv; });
+      setOverrides(instId, { customFields: next });
+      openInstelling(instId, 'bedrijfsinfo');
+    });
+  });
   // + Opportunity-knop
   document.querySelectorAll('#overlayPanel [data-add-opp]').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -14458,6 +14565,32 @@ function saveInlineEdit(instId, el){
     if(typeof v === 'string' && v.trim() === '') v = null;
     baseArr[idx] = { ...baseArr[idx], [f]: v };
     setOverrides(instId, { andereItLeveranciers: baseArr });
+    flashInlineSaved(el);
+    return;
+  }
+  if(el.classList.contains('ie-cf')){
+    // Eigen velden — markt-specifieke key/value-paren. Map blijft een
+    // object, maar we serialiseren intern via [key, value]-tuples
+    // (cfOrder) zodat bewerken van de key de andere entries niet
+    // opnieuw indexeert. Bij rename: oude key droppen, nieuwe key
+    // toevoegen; lege key + lege value = stilzwijgend negeren.
+    const idx = parseInt(el.dataset.cfIdx, 10);
+    const f = el.dataset.cfField;
+    const inst = getInstellingRaw(instId);
+    const cur = (overrides[instId] && overrides[instId].customFields) || (inst && inst.customFields) || {};
+    const tuples = Object.entries(cur);
+    if(!tuples[idx]) return;
+    let v = el.value;
+    if(typeof v === 'string') v = v.trim();
+    if(f === 'key'){
+      const [oldKey, oldVal] = tuples[idx];
+      tuples[idx] = [v, oldVal];
+    } else {
+      tuples[idx] = [tuples[idx][0], v];
+    }
+    const next = {};
+    tuples.forEach(([k, vv]) => { if(k) next[k] = vv; });
+    setOverrides(instId, { customFields: next });
     flashInlineSaved(el);
     return;
   }
