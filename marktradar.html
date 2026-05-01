@@ -16042,11 +16042,21 @@ function renderActies(){
     const owner = t.ownerId ? ownerById(t.ownerId) : null;
     const created = new Date(t.createdAt || Date.now()).toLocaleDateString('nl-NL');
     const completed = t.completedAt ? new Date(t.completedAt).toLocaleDateString('nl-NL') : '';
+    // Opp-dropdown gescoped op DEZE instelling — alleen koppelen aan
+    // opportunities van dezelfde organisatie (regel: cross-inst niet
+    // mogelijk). + Nieuwe opportunity… opent het oppCreateModal voor
+    // deze instelling en koppelt na save automatisch.
+    const oppsForInst = getOppsForInst(t.instellingId);
+    const linkedOpp = t.opportunityId ? oppsForInst.find(o => o.id === t.opportunityId) : null;
+    const oppOpts = ['<option value="">— losse todo —</option>']
+      .concat(oppsForInst.map(o => `<option value="${escapeHtml(o.id)}" ${t.opportunityId === o.id ? 'selected' : ''}>→ ${escapeHtml(o.titel || '(zonder titel)')}</option>`))
+      .concat(['<option value="__new__" style="font-style:italic;color:#C45E1E">+ Nieuwe opportunity…</option>'])
+      .join('');
     return `
       <div class="actie-row ${t.done ? 'done' : ''}" data-todo-id="${t.id}" data-inst-id="${t.instellingId}" role="button" tabindex="0" aria-label="Open ${escapeHtml((inst && inst.naam) || t.instellingId)}">
         <input type="checkbox" class="todo-check" ${t.done ? 'checked' : ''} aria-label="Markeer als ${t.done ? 'open' : 'klaar'}">
         <div class="actie-body">
-          <div class="actie-text">${escapeHtml(t.text)}${t.auto ? ' <span class="actie-auto-tag" title="Automatisch aangemaakt voor signaal">auto</span>' : ''}</div>
+          <div class="actie-text">${escapeHtml(t.text)}${t.auto ? ' <span class="actie-auto-tag" title="Automatisch aangemaakt voor signaal">auto</span>' : ''}${linkedOpp ? ` <span style="font-size:.7rem;background:var(--orange-pale);color:var(--orange-dark);padding:1px 6px;border-radius:8px;font-weight:600">→ ${escapeHtml(linkedOpp.titel)}</span>` : ''}</div>
           <div class="actie-meta">
             <a class="actie-inst-link" data-inst-id="${t.instellingId}">${escapeHtml(inst?.naam || t.instellingId)}</a>
             <span>&middot; aangemaakt ${created}</span>
@@ -16054,6 +16064,9 @@ function renderActies(){
             ${owner ? `<span>&middot; ${escapeHtml(owner.naam)}</span>` : `<span>&middot; <em>geen eigenaar</em></span>`}
           </div>
         </div>
+        <select class="todo-owner-select actie-owner-select actie-opp-select" data-todo-id="${t.id}" data-inst-id="${t.instellingId}" title="Koppel aan opportunity (alleen van deze organisatie)">
+          ${oppOpts}
+        </select>
         <select class="todo-owner-select actie-owner-select" data-todo-id="${t.id}" data-inst-id="${t.instellingId}" title="Wijs eigenaar toe">
           <option value="">— Geen —</option>
           ${OWNERS.map(o => `<option value="${o.id}" ${t.ownerId === o.id ? 'selected' : ''}>${escapeHtml(o.naam)}</option>`).join('')}
@@ -16078,12 +16091,36 @@ function renderActies(){
       renderActies();
     });
   });
-  document.querySelectorAll('#actiesList .actie-owner-select').forEach(sel => {
+  document.querySelectorAll('#actiesList .actie-owner-select:not(.actie-opp-select)').forEach(sel => {
     sel.addEventListener('change', () => {
       const list = todos[sel.dataset.instId] || [];
       const t = list.find(x => x.id === sel.dataset.todoId);
       if(t){ t.ownerId = sel.value || null; t.updatedAt = Date.now(); saveTodosLocal(); pushRemoteTodos(); }
       renderActiesOwnerChips();
+      renderActies();
+    });
+  });
+  document.querySelectorAll('#actiesList .actie-opp-select').forEach(sel => {
+    sel.addEventListener('change', (e) => {
+      e.stopPropagation();
+      const instId = sel.dataset.instId;
+      const todoId = sel.dataset.todoId;
+      if(sel.value === '__new__'){
+        // Markeer welke todo gekoppeld moet worden, open create-modal voor
+        // dezelfde instelling. Reset de visuele selectie naar oude waarde.
+        _pendingTodoLink = { instId, todoId };
+        openOppCreateModal(instId);
+        const cur = (todos[instId] || []).find(x => x.id === todoId);
+        sel.value = (cur && cur.opportunityId) || '';
+        return;
+      }
+      const arr = todos[instId] || [];
+      const t = arr.find(x => x.id === todoId);
+      if(!t) return;
+      t.opportunityId = sel.value || null;
+      t.updatedAt = Date.now();
+      saveTodosLocal();
+      if(todosRemoteAvailable) pushRemoteTodos();
       renderActies();
     });
   });
