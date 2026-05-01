@@ -11075,12 +11075,29 @@ function tenantHasOwnEntities(){
   return !!(currentTenant && Array.isArray(currentTenant.entiteiten) && currentTenant.entiteiten.length > 0);
 }
 function getEntiteitenUniverse(){
-  if(tenantHasOwnEntities()){
-    // Markeer klanten via tenant.klanten[] zodat renderers gericallStatus kunnen afleiden
-    const klantSet = new Set((currentTenant.klanten || []).map(String));
-    return currentTenant.entiteiten.map(e => ({
+  if(!tenantHasOwnEntities()) return DATA.instellingen;
+  // Voor GeriCall: de tenant.entiteiten[] is een lichte seed (id, naam,
+  // regio, klant-flag) — voor opportunities/scoring/dmu hebben we de
+  // rijke DATA.instellingen-data nodig. Match op id en gebruik baseline
+  // als bron. tenant.klanten[] kan klant-status overschrijven.
+  const klantSet = new Set((currentTenant.klanten || []).map(String));
+  const isLegacy = currentTenant.slug === 'gericall' || currentTenant.id === 'gericall';
+  const baselineMap = isLegacy ? new Map(DATA.instellingen.map(i => [String(i.id), i])) : null;
+  return currentTenant.entiteiten.map(e => {
+    const baseline = baselineMap ? baselineMap.get(String(e.id)) : null;
+    const isKlant = e.klant === true || klantSet.has(String(e.id));
+    if(baseline){
+      return {
+        ...baseline,
+        klant: isKlant,
+        gericallStatus: isKlant ? 'klant' : (baseline.gericallStatus || 'cold'),
+      };
+    }
+    // Fallback voor non-GeriCall tenants: minimal structuur zodat de
+    // renderers geen errors gooien op missende velden.
+    return {
       ...e,
-      gericallStatus: e.klant || klantSet.has(String(e.id)) ? 'klant' : (e.gericallStatus || 'cold'),
+      gericallStatus: isKlant ? 'klant' : (e.gericallStatus || 'cold'),
       scores: e.scores || {},
       leadScore: typeof e.leadScore === 'number' ? e.leadScore : 0,
       leadLens: e.leadLens || 'acquisitie',
@@ -11088,9 +11105,8 @@ function getEntiteitenUniverse(){
       directie: Array.isArray(e.directie) ? e.directie : [],
       hoofdvestiging: e.hoofdvestiging || e.regio || '',
       aantalBedden: e.aantalBedden || 0,
-    }));
-  }
-  return DATA.instellingen;
+    };
+  });
 }
 function getMarketInstellingen(){
   const universe = getEntiteitenUniverse();
