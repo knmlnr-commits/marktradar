@@ -1502,6 +1502,41 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   </div>
 </div>
 
+<div class="refresh-modal" id="supplierEditModal">
+  <div class="refresh-modal-panel" style="max-width:680px">
+    <h3 id="supEditTitle" style="margin-bottom:6px">Leverancier bewerken</h3>
+    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:14px">Bewerk de gegevens van deze leverancier. Wijzigingen worden per werkomgeving opgeslagen en gesynced via KV.</p>
+    <div class="edit-field"><label>Naam</label><input type="text" id="supEdit-naam" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <div class="edit-field"><label>Categorie</label><input type="text" id="supEdit-categorie" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+      <div class="edit-field"><label>Type</label><input type="text" id="supEdit-type" placeholder="bv. voorwacht + achterwacht" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <div class="edit-field"><label>Partner-status</label><select id="supEdit-partnerStatus" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit">
+        <option value="eigen">eigen</option>
+        <option value="partner">partner</option>
+        <option value="competitor">competitor</option>
+        <option value="onbekend">onbekend</option>
+      </select></div>
+      <div class="edit-field"><label>Markt-aandeel (%)</label><input type="number" min="0" max="100" id="supEdit-marktaandeel" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    </div>
+    <div class="edit-field" style="margin-top:10px"><label>Notities</label><textarea id="supEdit-notes" style="width:100%;min-height:60px;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></textarea></div>
+    <div class="edit-field" style="margin-top:14px">
+      <label>Klanten in DB <span style="color:var(--grey-600);font-weight:400">(klik om te verwijderen)</span></label>
+      <div id="supEdit-klantenTags" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid var(--grey-200);border-radius:6px;background:var(--grey-50);min-height:40px"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <select id="supEdit-klantAdd" style="flex:1;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></select>
+        <button type="button" class="btn-secondary" id="supEdit-klantAddBtn">+ Toevoegen</button>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn-secondary" id="supEditCancel">Annuleren</button>
+      <button class="btn-secondary" id="supEditDelete" style="border-color:#b94a3c;color:#b94a3c;margin-right:auto">Verwijderen</button>
+      <button class="btn-primary" id="supEditSave">Opslaan</button>
+    </div>
+  </div>
+</div>
+
 <div class="refresh-modal" id="passwordModal">
   <div class="refresh-modal-panel" style="max-width:520px">
     <h3 id="passwordModalTitle">Wachtwoord wijzigen</h3>
@@ -1554,7 +1589,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.15.1",
+    "version": "1.15.2",
     "codename": "Procyon",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1689,6 +1724,12 @@ const DATA = {
         "codename": "Procyon",
         "date": "2026-05-01",
         "note": "Patch-release: (1) Signal-loss in GeriCall opgelost — getMarketSignalen gebruikte tenantHasOwnEntities() om de baseline te kiezen, maar GeriCall heeft tegenwoordig óók een eigen entiteiten[]-lijst → DATA.signalen-baseline viel weg. Fix: legacy-detectie op slug/id; baseline blijft voor GeriCall. (2) Nieuwe (auto/LLM-)signalen openden geen popup — click-handler zocht alleen in DATA.signalen i.p.v. de gemerged getMarketSignalen-lijst, en signalen zonder geldige instellingId vielen niet terug op de detail-modal. Fix: merged lookup + fallback naar openSignalDetail. (3) Klantbeeld toonde 'Wijs een eigenaar toe' terwijl het overzicht de juiste eigenaar liet zien — race condition: OWNERS-list async gehydrateerd na overlay-render. Fix: currentUser-fallback in renderOwnerBlock + synthetische dropdown-optie voor onbekende owner-id + auto-rerender van overzicht en open klantbeeld zodra OWNERS arriveert. (4) Klantbeeld markt-agnostisch voor non-GeriCall tenants (van Ameyde, etc.): hide-empty kerngetallen, segmenten + ANW/ECD + Specialisten Ouderengeneeskunde alleen voor GeriCall, nieuwe sectie 'Eigen velden' (key/value, inline editable) in Bedrijfsinfo voor markt-specifieke metrics zoals 'Aantal claims' of 'Premium-volume', accordion-meta past zich aan op tenant. (5) Klantbeeld opent nu correct voor alle tenants: getInstellingRaw is universe-aware en valt niet meer alleen terug op DATA.instellingen. (6) LLM-curator toggle slaat direct op (geen Opslaan-klik nodig)."
+      },
+      {
+        "version": "1.15.2",
+        "codename": "Procyon",
+        "date": "2026-05-01",
+        "note": "Leveranciers-tab: cards zijn nu klikbaar voor bewerken. Modal met velden naam, categorie, type, partner-status, markt-aandeel, notities en klanten (tag-list met dropdown om toe te voegen + klik om te verwijderen). Nieuwe knop '+ Nieuwe leverancier' bovenaan de tab. Wijzigingen worden per werkomgeving opgeslagen als supplier-overrides en gesynced via Vercel KV (nieuwe ALLOWED_KEY 'supplier-overrides' in /api/state). Baseline-leveranciers kunnen worden 'verborgen' via tombstone (lokaal _deleted) zodat een upgrade van DATA.leveranciers de tenant-keuzes niet overschrijft. Custom suppliers krijgen 'cust-'-id-prefix. Card toont 'aangepast'-badge wanneer een override actief is."
       }
     ],
     "totalInstellingen": 64,
@@ -12264,8 +12305,12 @@ function initApp(){
     try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
     try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
   });
+  syncSupplierOverrides().then(() => {
+    try { if(typeof renderLeveranciers === 'function') renderLeveranciers(); } catch(e){}
+  });
   bindContactEditModal();
   bindSignalDetailModal();
+  bindSupplierEditModal();
   bindOppCreateModal();
   const newOppBtn = document.getElementById('newOppBtn');
   if(newOppBtn) newOppBtn.addEventListener('click', () => openOppCreateModal());
@@ -13058,6 +13103,24 @@ function bindSignalDetailModal(){
   if(!m) return;
   document.getElementById('sdmCloseBtn').addEventListener('click', () => m.classList.remove('show'));
   m.addEventListener('click', (e) => { if(e.target.id === 'signalDetailModal') m.classList.remove('show'); });
+}
+
+function bindSupplierEditModal(){
+  const m = document.getElementById('supplierEditModal');
+  if(!m) return;
+  document.getElementById('supEditCancel').addEventListener('click', closeSupplierEditor);
+  document.getElementById('supEditSave').addEventListener('click', saveSupplierEdit);
+  document.getElementById('supEditDelete').addEventListener('click', deleteSupplierEdit);
+  m.addEventListener('click', (e) => { if(e.target.id === 'supplierEditModal') closeSupplierEditor(); });
+  const addBtn = document.getElementById('supEdit-klantAddBtn');
+  if(addBtn) addBtn.addEventListener('click', () => {
+    const sel = document.getElementById('supEdit-klantAdd');
+    const v = sel && sel.value;
+    if(!v) return;
+    if(!_supEditDraft.klanten.includes(v)) _supEditDraft.klanten.push(v);
+    renderSupKlantenTags();
+    populateSupKlantAdd();
+  });
 }
 
 const INST_FILTERS = [
@@ -15991,11 +16054,73 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// ---------------- Supplier-overrides (per tenant, in KV) ----------------
+// Schema: { [supplierId]: { naam?, categorie?, type?, partnerStatus?,
+//   marktaandeelPct?, notes?, klanten?, klantenLikely?, _deleted?: true,
+//   _new?: true } }
+// _deleted: tombstone — verberg de baseline-leverancier.
+// _new: door de gebruiker zelf aangemaakt (id begint met 'cust-').
+const SUPPLIER_OVERRIDES_STORAGE = 'marktradar.supplier-overrides.v1';
+let supplierOverrides = (function(){
+  try { return JSON.parse(localStorage.getItem(SUPPLIER_OVERRIDES_STORAGE) || '{}'); }
+  catch(e){ return {}; }
+})();
+let supplierOverridesRemoteAvailable = false;
+function saveSupplierOverridesLocal(){
+  try { localStorage.setItem(SUPPLIER_OVERRIDES_STORAGE, JSON.stringify(supplierOverrides)); } catch(e){}
+}
+async function fetchRemoteSupplierOverrides(){
+  try {
+    const r = await apiFetch(STATE_API + '?key=supplier-overrides');
+    if(!r.ok) return null;
+    const j = await r.json();
+    return (j && typeof j.value === 'object') ? j.value : null;
+  } catch(e){ return null; }
+}
+async function pushRemoteSupplierOverrides(){
+  try {
+    const r = await apiFetch(STATE_API, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'supplier-overrides', value: supplierOverrides })
+    });
+    return r.ok;
+  } catch(e){ return false; }
+}
+async function syncSupplierOverrides(){
+  const remote = await fetchRemoteSupplierOverrides();
+  if(remote){
+    supplierOverridesRemoteAvailable = true;
+    supplierOverrides = remote;
+    saveSupplierOverridesLocal();
+  }
+}
+// Combineer DATA.leveranciers (baseline) met supplierOverrides (per-tenant).
+// Tombstones (_deleted) worden uitgefilterd. Custom suppliers (id begint
+// met 'cust-') komen alleen uit overrides.
+function getEffectiveLeveranciers(){
+  const baseline = Array.isArray(DATA.leveranciers) ? DATA.leveranciers : [];
+  const out = [];
+  baseline.forEach(l => {
+    const ov = supplierOverrides[l.id];
+    if(ov && ov._deleted) return;
+    out.push(ov ? { ...l, ...ov, klanten: ov.klanten || l.klanten, klantenLikely: ov.klantenLikely || l.klantenLikely } : l);
+  });
+  Object.keys(supplierOverrides).forEach(id => {
+    const ov = supplierOverrides[id];
+    if(ov && ov._new && !ov._deleted){
+      out.push({ id, ...ov });
+    }
+  });
+  return out;
+}
+
 function renderLeveranciers(){
   const cats = {};
-  DATA.leveranciers.forEach(l => {
-    if(!cats[l.categorie]) cats[l.categorie] = [];
-    cats[l.categorie].push(l);
+  const all = getEffectiveLeveranciers();
+  all.forEach(l => {
+    const cat = l.categorie || 'Overig';
+    if(!cats[cat]) cats[cat] = [];
+    cats[cat].push(l);
   });
   const order = ['ANW dienstverlening','ANW samenwerkingsverband','ANW netwerk','WSD','Triage tooling','ECD','eLearning','Cliëntportaal','Telefonie/CC','Planning','HRM/Salaris'];
   const sortedCats = Object.keys(cats).sort((a,b) => {
@@ -16004,14 +16129,17 @@ function renderLeveranciers(){
   });
   const scopedSet = new Set(instellingenMerged().map(i => String(i.id)));
   const totalInst = scopedSet.size;
-  let html = '';
+  let html = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button type="button" class="btn-primary" id="supAddBtn">+ Nieuwe leverancier</button>
+    </div>`;
   sortedCats.forEach(cat => {
     const items = cats[cat];
     const totalCustomers = items.reduce((s,l) => s + ((l.klanten||[]).filter(id => scopedSet.has(String(id))).length), 0);
     html += `
       <div class="lev-cat">
         <div class="lev-cat-head">
-          <div class="lev-cat-title">${cat}</div>
+          <div class="lev-cat-title">${escapeHtml(cat)}</div>
           <div class="lev-cat-meta">${items.length} leveranciers &middot; ${totalCustomers} bekende klanten in DB</div>
         </div>
         <div class="lev-grid">
@@ -16021,14 +16149,15 @@ function renderLeveranciers(){
             const likelyNamen = (l.klantenLikely||[]).filter(id => scopedSet.has(String(id))).map(id => getInstelling(id)?.naam).filter(Boolean);
             const sharePct = totalInst > 0 ? Math.round((scopedKlanten.length / totalInst) * 100) : 0;
             const hasMarketShare = typeof l.marktaandeelPct === 'number';
+            const isOverridden = !!supplierOverrides[l.id];
             return `
-              <div class="lev-card">
+              <div class="lev-card" data-supplier-id="${escapeHtml(l.id)}" role="button" tabindex="0" title="Klik om te bewerken" style="cursor:pointer">
                 <div class="lev-card-head">
                   <div>
-                    <div class="lev-name">${l.naam}</div>
-                    <div class="lev-type">${l.type}</div>
+                    <div class="lev-name">${escapeHtml(l.naam)}${isOverridden ? ' <span style="font-size:.65rem;color:var(--orange-dark);font-weight:600">(aangepast)</span>' : ''}</div>
+                    <div class="lev-type">${escapeHtml(l.type || '')}</div>
                   </div>
-                  <span class="partner-pill partner-${l.partnerStatus}">${l.partnerStatus}</span>
+                  <span class="partner-pill partner-${l.partnerStatus || 'onbekend'}">${escapeHtml(l.partnerStatus || 'onbekend')}</span>
                 </div>
                 <div class="lev-stat-row">
                   <div class="lev-stat"><div class="lev-stat-label">In DB</div><div class="lev-stat-value">${scopedKlanten.length}<small>/${totalInst}</small></div></div>
@@ -16036,10 +16165,10 @@ function renderLeveranciers(){
                   <div class="lev-stat"><div class="lev-stat-label">Dekking DB</div><div class="lev-stat-value">${sharePct}<small>%</small></div></div>
                 </div>
                 <div class="lev-customers">
-                  ${klantNamen.length > 0 ? `<strong>Klanten in DB:</strong> ${klantNamen.join(', ')}` : '<span class="muted">Nog geen klanten in DB gemapt.</span>'}
-                  ${likelyNamen.length > 0 ? `<div style="margin-top:6px;color:var(--grey-600)"><strong>Vermoedelijk:</strong> ${likelyNamen.join(', ')}</div>` : ''}
+                  ${klantNamen.length > 0 ? `<strong>Klanten in DB:</strong> ${escapeHtml(klantNamen.join(', '))}` : '<span class="muted">Nog geen klanten in DB gemapt.</span>'}
+                  ${likelyNamen.length > 0 ? `<div style="margin-top:6px;color:var(--grey-600)"><strong>Vermoedelijk:</strong> ${escapeHtml(likelyNamen.join(', '))}</div>` : ''}
                 </div>
-                ${l.notes ? `<div class="lev-notes">${l.notes}</div>` : ''}
+                ${l.notes ? `<div class="lev-notes">${escapeHtml(l.notes)}</div>` : ''}
               </div>`;
           }).join('')}
         </div>
@@ -16055,7 +16184,7 @@ function renderLeveranciers(){
         <div class="whitespace-block">
           <div class="whitespace-title">&#9678; White space &middot; geen ${cat}-leverancier bekend</div>
           <div class="whitespace-list">
-            ${missing.map(i => `<span class="whitespace-tag" data-inst-id="${i.id}">${i.naam}</span>`).join('')}
+            ${missing.map(i => `<span class="whitespace-tag" data-inst-id="${i.id}">${escapeHtml(i.naam)}</span>`).join('')}
           </div>
         </div>`;
     }
@@ -16064,6 +16193,127 @@ function renderLeveranciers(){
   document.querySelectorAll('.whitespace-tag').forEach(t => {
     t.addEventListener('click', () => openInstelling(t.dataset.instId));
   });
+  document.querySelectorAll('.lev-card').forEach(card => {
+    const open = () => openSupplierEditor(card.dataset.supplierId);
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); }
+    });
+  });
+  const addBtn = document.getElementById('supAddBtn');
+  if(addBtn) addBtn.addEventListener('click', () => openSupplierEditor(null));
+}
+
+// Edit-modal voor leveranciers. id=null → nieuwe entry (krijgt 'cust-'-id).
+let _supEditId = null;
+let _supEditDraft = null;
+function openSupplierEditor(id){
+  const all = getEffectiveLeveranciers();
+  let lev = id ? all.find(x => x.id === id) : null;
+  if(id && !lev) return;
+  if(!id){
+    _supEditId = 'cust-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,6);
+    lev = { id: _supEditId, naam: '', categorie: '', type: '', partnerStatus: 'onbekend', notes: '', klanten: [], klantenLikely: [] };
+  } else {
+    _supEditId = id;
+  }
+  _supEditDraft = {
+    naam: lev.naam || '',
+    categorie: lev.categorie || '',
+    type: lev.type || '',
+    partnerStatus: lev.partnerStatus || 'onbekend',
+    marktaandeelPct: typeof lev.marktaandeelPct === 'number' ? lev.marktaandeelPct : '',
+    notes: lev.notes || '',
+    klanten: Array.isArray(lev.klanten) ? lev.klanten.slice() : [],
+  };
+  document.getElementById('supEditTitle').textContent = id ? 'Leverancier bewerken' : 'Nieuwe leverancier';
+  document.getElementById('supEdit-naam').value = _supEditDraft.naam;
+  document.getElementById('supEdit-categorie').value = _supEditDraft.categorie;
+  document.getElementById('supEdit-type').value = _supEditDraft.type;
+  document.getElementById('supEdit-partnerStatus').value = _supEditDraft.partnerStatus;
+  document.getElementById('supEdit-marktaandeel').value = _supEditDraft.marktaandeelPct;
+  document.getElementById('supEdit-notes').value = _supEditDraft.notes;
+  renderSupKlantenTags();
+  populateSupKlantAdd();
+  // Verwijder-knop is alleen relevant voor bestaande entries.
+  const delBtn = document.getElementById('supEditDelete');
+  if(delBtn) delBtn.style.display = id ? '' : 'none';
+  document.getElementById('supplierEditModal').classList.add('show');
+}
+function renderSupKlantenTags(){
+  const wrap = document.getElementById('supEdit-klantenTags');
+  if(!wrap) return;
+  if(!_supEditDraft.klanten.length){
+    wrap.innerHTML = '<span class="muted" style="font-size:.78rem">Nog geen klanten gemapt</span>';
+    return;
+  }
+  wrap.innerHTML = _supEditDraft.klanten.map(iid => {
+    const inst = getInstelling(iid);
+    const naam = inst ? inst.naam : iid;
+    return `<span class="whitespace-tag" data-klant-id="${escapeHtml(iid)}" style="cursor:pointer;background:var(--orange-pale);border-color:var(--orange);color:var(--orange-dark)">${escapeHtml(naam)} &times;</span>`;
+  }).join('');
+  wrap.querySelectorAll('[data-klant-id]').forEach(tag => {
+    tag.addEventListener('click', () => {
+      _supEditDraft.klanten = _supEditDraft.klanten.filter(x => x !== tag.dataset.klantId);
+      renderSupKlantenTags();
+      populateSupKlantAdd();
+    });
+  });
+}
+function populateSupKlantAdd(){
+  const sel = document.getElementById('supEdit-klantAdd');
+  if(!sel) return;
+  const have = new Set(_supEditDraft.klanten);
+  const opts = instellingenMerged()
+    .filter(i => !have.has(String(i.id)))
+    .sort((a,b) => a.naam.localeCompare(b.naam))
+    .map(i => `<option value="${escapeHtml(i.id)}">${escapeHtml(i.naam)}</option>`)
+    .join('');
+  sel.innerHTML = '<option value="">— Kies organisatie —</option>' + opts;
+}
+function closeSupplierEditor(){
+  document.getElementById('supplierEditModal').classList.remove('show');
+  _supEditId = null;
+  _supEditDraft = null;
+}
+function saveSupplierEdit(){
+  if(!_supEditId || !_supEditDraft) return;
+  const naam = (document.getElementById('supEdit-naam').value || '').trim();
+  if(!naam){ alert('Naam is verplicht'); return; }
+  const all = getEffectiveLeveranciers();
+  const baseline = (DATA.leveranciers || []).find(x => x.id === _supEditId);
+  const rawMarkt = document.getElementById('supEdit-marktaandeel').value;
+  const next = {
+    naam,
+    categorie: (document.getElementById('supEdit-categorie').value || '').trim(),
+    type: (document.getElementById('supEdit-type').value || '').trim(),
+    partnerStatus: document.getElementById('supEdit-partnerStatus').value,
+    notes: (document.getElementById('supEdit-notes').value || '').trim(),
+    klanten: _supEditDraft.klanten.slice(),
+  };
+  if(rawMarkt !== '' && !isNaN(Number(rawMarkt))) next.marktaandeelPct = Number(rawMarkt);
+  if(!baseline) next._new = true;
+  supplierOverrides[_supEditId] = next;
+  saveSupplierOverridesLocal();
+  pushRemoteSupplierOverrides();
+  closeSupplierEditor();
+  renderLeveranciers();
+}
+function deleteSupplierEdit(){
+  if(!_supEditId) return;
+  const lev = getEffectiveLeveranciers().find(x => x.id === _supEditId);
+  if(!lev) return;
+  if(!confirm('Verwijder leverancier "' + (lev.naam || _supEditId) + '"? Voor baseline-leveranciers wordt alleen voor deze werkomgeving verborgen.')) return;
+  const baseline = (DATA.leveranciers || []).find(x => x.id === _supEditId);
+  if(baseline){
+    supplierOverrides[_supEditId] = { _deleted: true };
+  } else {
+    delete supplierOverrides[_supEditId];
+  }
+  saveSupplierOverridesLocal();
+  pushRemoteSupplierOverrides();
+  closeSupplierEditor();
+  renderLeveranciers();
 }
 
 function findMovers(){
