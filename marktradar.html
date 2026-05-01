@@ -754,8 +754,12 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   font-weight:600;font-size:.82rem;cursor:pointer;font-family:inherit;transition:background .15s}
 .todo-add-btn:hover{background:var(--orange-dark)}
 .todo-list{display:flex;flex-direction:column;gap:6px}
-.todo-item{display:grid;grid-template-columns:18px 1fr 24px;gap:10px;align-items:center;
+.todo-item{display:grid;grid-template-columns:18px 1fr 160px 24px;gap:10px;align-items:center;
   padding:8px 12px;background:var(--white);border:1px solid var(--grey-200);border-radius:8px;transition:opacity .15s}
+@media(max-width:720px){
+  .todo-item{grid-template-columns:18px 1fr 24px}
+  .todo-item .todo-opp-select{grid-column:2 / 3;width:100%;margin-top:2px}
+}
 .todo-item.done{opacity:.55;background:var(--grey-50)}
 .todo-item.done .todo-text{text-decoration:line-through;color:var(--grey-600)}
 .todo-check{width:16px;height:16px;cursor:pointer;accent-color:var(--orange)}
@@ -13398,13 +13402,17 @@ function renderTodosBodyOnly(inst){
   const open = list.filter(t => !t.done);
   const done = list.filter(t => t.done);
   const opps = getOppsForInst(inst.id);
-  // 'losse todo' eerst, daarna alle bestaande opps, dan altijd '+ Nieuwe
-  // opportunity' als laatste optie zodat de koppeling discoverable blijft
-  // ook als er nog geen opp voor deze organisatie is.
-  const oppOpts = ['<option value="">— losse todo —</option>']
-    .concat(opps.map(o => `<option value="${escapeHtml(o.id)}">→ ${escapeHtml(o.titel || '(zonder titel)')}</option>`))
-    .concat(['<option value="__new__" style="font-style:italic;color:#C45E1E">+ Nieuwe opportunity…</option>'])
-    .join('');
+  // Helper: bouw opp-opties met de juiste selected per todo. Voorheen
+  // gebruikten we een fragiele .replace()-trick op een gedeelde string —
+  // selected werkte niet betrouwbaar. Nu wordt per todo een verse string
+  // opgebouwd met expliciete selected-markering.
+  const buildOppOpts = (currentOppId) => {
+    const id = currentOppId || '';
+    return ['<option value="" ' + (id === '' ? 'selected' : '') + '>— losse todo —</option>']
+      .concat(opps.map(o => `<option value="${escapeHtml(o.id)}" ${id === o.id ? 'selected' : ''}>→ ${escapeHtml(o.titel || '(zonder titel)')}</option>`))
+      .concat(['<option value="__new__" style="font-style:italic;color:#C45E1E">+ Nieuwe opportunity…</option>'])
+      .join('');
+  };
   const renderOne = (t) => {
     const owner = t.ownerId ? ownerById(t.ownerId) : null;
     const linkedOpp = t.opportunityId ? opps.find(o => o.id === t.opportunityId) : null;
@@ -13419,7 +13427,7 @@ function renderTodosBodyOnly(inst){
       </div>`;
     const oppSelectPerTodo = `
       <select class="todo-opp-select ie ie-todo-opp" data-inst-id="${escapeHtml(inst.id)}" data-todo-id="${escapeHtml(t.id)}" title="Koppel aan opportunity">
-        ${oppOpts.replace(`value="${escapeHtml(t.opportunityId || '')}"`, `value="${escapeHtml(t.opportunityId || '')}" selected`)}
+        ${buildOppOpts(t.opportunityId)}
       </select>`;
     return `
       <div class="todo-item ${t.done ? 'done' : ''}" data-todo-id="${t.id}">
@@ -13442,7 +13450,7 @@ function renderTodosBodyOnly(inst){
       const sel = currentUser && o.id === currentUser.id ? ' selected' : '';
       return `<option value="${o.id}"${sel}>${escapeHtml(o.naam)}${currentUser && o.id === currentUser.id ? ' (jij)' : ''}</option>`;
     })).join('');
-  const oppAddSelect = `<select class="todo-owner-select" id="todoOpp-${inst.id}" title="Koppel aan opportunity (optioneel)">${oppOpts}</select>`;
+  const oppAddSelect = `<select class="todo-owner-select" id="todoOpp-${inst.id}" title="Koppel aan opportunity (optioneel)">${buildOppOpts('')}</select>`;
   return `
     <div>
       <div class="acc-sub-title">Todo's</div>
