@@ -1589,7 +1589,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.15.2",
+    "version": "1.15.3",
     "codename": "Procyon",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1730,6 +1730,12 @@ const DATA = {
         "codename": "Procyon",
         "date": "2026-05-01",
         "note": "Leveranciers-tab: cards zijn nu klikbaar voor bewerken. Modal met velden naam, categorie, type, partner-status, markt-aandeel, notities en klanten (tag-list met dropdown om toe te voegen + klik om te verwijderen). Nieuwe knop '+ Nieuwe leverancier' bovenaan de tab. Wijzigingen worden per werkomgeving opgeslagen als supplier-overrides en gesynced via Vercel KV (nieuwe ALLOWED_KEY 'supplier-overrides' in /api/state). Baseline-leveranciers kunnen worden 'verborgen' via tombstone (lokaal _deleted) zodat een upgrade van DATA.leveranciers de tenant-keuzes niet overschrijft. Custom suppliers krijgen 'cust-'-id-prefix. Card toont 'aangepast'-badge wanneer een override actief is."
+      },
+      {
+        "version": "1.15.3",
+        "codename": "Procyon",
+        "date": "2026-05-01",
+        "note": "Mensen: bestuurder en DMU samengevoegd tot één lijst contactpersonen. Het kunstmatige onderscheid tussen 'Directie / Raad van Bestuur' en 'DMU' is weg — een bestuurder is gewoon een contactpersoon met rol='decider'. Eén centrale '+ Contactpersoon'-knop bovenaan; de rol (decider / champion / influencer / gatekeeper / blocker) wordt in de modal gekozen. Voor GeriCall blijft de sectie 'Specialisten Ouderengeneeskunde' apart (per vakgebied gegroepeerd) en is er een Type-dropdown (contactpersoon vs specialist). Voor andere tenants is de modal nog simpeler — gewoon één type. Bestaande baseline-directie[]-records blijven zichtbaar in de samengevoegde lijst en edits routeren netjes terug naar directie[] (via _source-tag, geen data-migratie). DMU-card-clicks gebruiken nu een data-dmu-key i.p.v. DOM-index — dat fixed een latente bug waar je op de verkeerde kaart kon klikken zodra de rol-grouping de DOM-volgorde verschoof."
       }
     ],
     "totalInstellingen": 64,
@@ -11892,14 +11898,32 @@ async function syncDmuOverrides(){
 }
 function dmuKey(p){ return (p.naam || '').toLowerCase() + '|' + (p.functie || '').toLowerCase(); }
 function combinedDmu(inst){
+  // Vanaf v1.15.4 zijn bestuurders en DMU één lijst contactpersonen. Het
+  // onderscheid tussen 'directie' en 'dmu' was verwarrend voor gebruikers
+  // — een bestuurder is gewoon een contactpersoon met rol='decider'. We
+  // mergen i.directie[] in dezelfde lijst en taggen ze met _source='dir'
+  // zodat een edit op zo'n record netjes terug naar de directie-array
+  // wordt geschreven (geen migratie / data-loss).
   const base = inst.dmu || [];
   const extras = dmuOverrides[inst.id] || [];
+  const directie = Array.isArray(inst.directie) ? inst.directie : [];
   const result = base.map(p => ({ ...p }));
   extras.forEach(o => {
     const k = dmuKey(o);
     const idx = result.findIndex(p => dmuKey(p) === k);
     if(idx >= 0){ result[idx] = { ...result[idx], ...o, _edited: true }; }
     else { result.push({ ...o, _imported: true }); }
+  });
+  directie.forEach((d, idx) => {
+    if(!d || !d.naam) return;
+    const k = dmuKey(d);
+    if(result.some(p => dmuKey(p) === k)) return;
+    result.push({
+      ...d,
+      rol: d.rol || 'decider',
+      _source: 'dir',
+      _dirIdx: idx,
+    });
   });
   return result;
 }
@@ -13427,8 +13451,11 @@ function renderDmuCard(p){
   const tagHtml = p._imported ? ' <span class="dmu-imported-tag" title="Geïmporteerd contact">import</span>'
     : p._edited ? ' <span class="dmu-edit-tag" title="Bewerkt t.o.v. baseline">bewerkt</span>'
     : '';
+  // data-dmu-key wordt gebruikt door bindDmuClickHandlers om de juiste
+  // contact te vinden — de DOM-volgorde matcht niet 1:1 met combinedDmu()
+  // omdat de cards gegroepeerd worden per rol.
   return `
-    <div class="dmu-card${p._imported ? ' dmu-imported' : ''}" title="Klik om te bewerken">
+    <div class="dmu-card${p._imported ? ' dmu-imported' : ''}" data-dmu-key="${escapeHtml(dmuKey(p))}" title="Klik om te bewerken">
       <div class="dmu-card-head">
         <div>
           <div class="dmu-naam">${escapeHtml(p.naam)}${tagHtml}</div>
@@ -13449,12 +13476,11 @@ function renderDmuCard(p){
 
 function renderDmuSection(i){
   const dmu = combinedDmu(i);
-  const addBtn = `<button type="button" class="add-people-btn" data-add-people="dmu" data-inst-id="${escapeHtml(i.id)}">+ Contactpersoon</button>`;
   if(dmu.length === 0){
     return `
       <div class="overlay-section">
-        <div class="section-title" style="display:flex;align-items:center;gap:10px">DMU &middot; Decision Making Unit ${addBtn}</div>
-        <div class="dmu-empty">Geen contactpersonen; klik <strong>+ Contactpersoon</strong> om er een toe te voegen.</div>
+        <div class="section-title">Contactpersonen</div>
+        <div class="dmu-empty">Nog geen contactpersonen. Klik <strong>+ Contactpersoon</strong> bovenaan om er een toe te voegen.</div>
       </div>`;
   }
   const groups = {};
@@ -13472,7 +13498,7 @@ function renderDmuSection(i){
       </div>`).join('');
   return `
     <div class="overlay-section">
-      <div class="section-title" style="display:flex;align-items:center;gap:10px">DMU &middot; Decision Making Unit <span class="dmu-progress">${dmu.length} ${dmu.length === 1 ? 'persoon' : 'personen'}</span> ${addBtn}</div>
+      <div class="section-title">Contactpersonen <span class="dmu-progress">${dmu.length} ${dmu.length === 1 ? 'persoon' : 'personen'}</span></div>
       ${groupHtml}
     </div>`;
 }
@@ -13578,12 +13604,11 @@ function renderSpecSection(i){
   const isLegacy = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
   if(!isLegacy) return '';
   const specs = i.specialisten || [];
-  const addBtn = `<button type="button" class="add-people-btn" data-add-people="spec" data-inst-id="${escapeHtml(i.id)}">+ Specialist</button>`;
   if(specs.length === 0){
     return `
       <div class="overlay-section">
-        <div class="section-title" style="display:flex;align-items:center;gap:10px">Specialisten Ouderengeneeskunde ${addBtn}</div>
-        <div class="dmu-empty">Geen specialisten bekend; klik <strong>+ Specialist</strong> om er een toe te voegen.</div>
+        <div class="section-title">Specialisten Ouderengeneeskunde</div>
+        <div class="dmu-empty">Nog geen specialisten bekend.</div>
       </div>`;
   }
   const byVak = {};
@@ -13598,7 +13623,7 @@ function renderSpecSection(i){
     </div>`).join('');
   return `
     <div class="overlay-section">
-      <div class="section-title" style="display:flex;align-items:center;gap:10px">Specialisten Ouderengeneeskunde <span class="dmu-progress">${specs.length}</span> ${addBtn}</div>
+      <div class="section-title">Specialisten Ouderengeneeskunde <span class="dmu-progress">${specs.length}</span></div>
       ${groupHtml}
     </div>`;
 }
@@ -14075,29 +14100,12 @@ function renderAnwItBody(i){
 }
 
 function renderMensenBody(i){
-  const dirItems = (i.directie || []);
-  const dirHtml = `
-    <div>
-      <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px">
-        Directie / Raad van Bestuur
-        <button type="button" class="add-people-btn" data-add-people="directie" data-inst-id="${escapeHtml(i.id)}">+ Bestuurder</button>
-      </div>
-      <div class="directie-list">
-        ${dirItems.map((d, idx) => `
-          <div class="directie-item ${d.recent ? 'recent' : ''}" style="display:grid;grid-template-columns:1.4fr 1.4fr 110px 90px 28px;gap:6px;align-items:center;padding:8px 10px">
-            <input type="text" class="inline-edit-input ie ie-dir" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" data-dir-field="naam" value="${escapeHtml(d.naam || '')}" placeholder="naam" style="font-weight:600">
-            <input type="text" class="inline-edit-input ie ie-dir" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" data-dir-field="functie" value="${escapeHtml(d.functie || '')}" placeholder="functie">
-            <input type="date" class="inline-edit-input ie ie-dir" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" data-dir-field="sinds" value="${escapeHtml(d.sinds || '')}" title="Sinds">
-            <label style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;color:var(--grey-700)" title="Recente wijziging (<90 dagen)">
-              <input type="checkbox" class="ie ie-dir" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" data-dir-field="recent" ${d.recent ? 'checked' : ''}>
-              recent
-            </label>
-            <button type="button" class="dir-delete-btn" data-inst-id="${escapeHtml(i.id)}" data-dir-idx="${idx}" title="Verwijder bestuurder" aria-label="Verwijderen">&times;</button>
-            ${d.linkedin ? `<div style="grid-column:1 / -1"><a href="${escapeHtml(d.linkedin)}" target="_blank" rel="noopener" style="font-size:.7rem;color:var(--orange-dark);font-weight:600;text-decoration:none">LinkedIn &#x2197;</a></div>` : ''}
-          </div>`).join('') || '<div class="no-data">Geen bestuurders. Klik <strong>+ Bestuurder</strong> om er een toe te voegen.</div>'}
-      </div>
-    </div>`;
-  return dirHtml + renderDmuSection(i) + renderSpecSection(i);
+  // Eén centrale +-knop, één lijst contactpersonen. Bestuurders en DMU
+  // zijn samengevoegd: een bestuurder is gewoon een contactpersoon met
+  // rol='decider'. Specialisten Ouderengeneeskunde houden een eigen
+  // sectie omdat ze per vakgebied gegroepeerd worden (alleen GeriCall).
+  const addBtn = `<div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button type="button" class="add-people-btn" data-add-people="contact" data-inst-id="${escapeHtml(i.id)}" style="background:var(--orange);color:white;border-color:var(--orange)">+ Contactpersoon</button></div>`;
+  return addBtn + renderDmuSection(i) + renderSpecSection(i);
 }
 
 function renderGericallContextBody(i){
@@ -14745,6 +14753,9 @@ function addPersonToOverlay(instId, kind){
   // Unified flow: één modal voor dmu / specialist / bestuurder met
   // hetzelfde contactpersoon-schema. De kind bepaalt alleen de defaults
   // voor rol, functie en vakgebied + naar welke array er wordt gesaved.
+  // kind === 'contact' (de centrale + Contactpersoon-knop) opent de modal
+  // met een Type-dropdown bovenin; de gebruiker kiest daar Bestuurder /
+  // DMU / Specialist en op save wordt naar de juiste array gerouteerd.
   const today = new Date().toISOString().slice(0,10);
   if(kind === 'dmu'){
     openContactEdit(instId, {
@@ -14764,12 +14775,22 @@ function addPersonToOverlay(instId, kind){
       email: '', telefoon: '', linkedin: '', vakgebied: '',
       sinds: today, recent: true, bron: '', bronType: 'website', notitie: ''
     }, 'directie');
+  } else if(kind === 'contact'){
+    // Default: DMU. De type-dropdown in de modal kan dit bij submit
+    // overrulen. Bij type-wisseling vullen we lege defaults aan.
+    openContactEdit(instId, {
+      naam: '', functie: '', rol: 'influencer', vertrouwen: 'middel',
+      email: '', telefoon: '', linkedin: '', vakgebied: '', sinds: '',
+      recent: false, bron: '', bronType: 'website', notitie: '',
+      _newContact: true
+    }, 'contact');
   }
 }
 function bindDmuClickHandlers(i){
   const merged = combinedDmu(i);
-  document.querySelectorAll('#overlayPanel .dmu-card').forEach((el, idx) => {
-    const contact = merged[idx];
+  const byKey = new Map(merged.map(c => [dmuKey(c), c]));
+  document.querySelectorAll('#overlayPanel .dmu-card').forEach((el) => {
+    const contact = byKey.get(el.dataset.dmuKey);
     if(!contact) return;
     el.style.cursor = 'pointer';
     el.addEventListener('click', (e) => {
@@ -14801,7 +14822,22 @@ function openContactEdit(instId, contact, kind){
   editingContactCtx = { instId, original: contact, kind: k, originalIndex: contact && typeof contact._idx === 'number' ? contact._idx : null };
   const c = contact || {};
   const titlePrefix = k === 'directie' ? 'Bestuurder' : (k === 'specialist' ? 'Specialist' : 'Contactpersoon');
-  const body = `
+  const isLegacy = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+  // Type-dropdown alleen bij 'contact' én alleen voor GeriCall (waar
+  // Specialist Ouderengeneeskunde een aparte gegroepeerde sectie heeft).
+  // Voor andere tenants is er maar één type — gewone contactpersoon —
+  // dus de dropdown zou nodeloos overbodig zijn. De rol (decider /
+  // influencer / champion / etc.) wordt apart in de modal gekozen; een
+  // bestuurder is gewoon iemand met rol='decider'.
+  const typeRow = (k === 'contact' && isLegacy) ? `
+    <div class="edit-field full" style="background:var(--orange-pale);padding:10px 12px;border-radius:6px;border:1px solid var(--orange);margin-bottom:10px">
+      <label style="color:var(--orange-dark);font-weight:600">Type contactpersoon</label>
+      <select id="ce-type" style="width:100%;padding:8px 12px;border:1px solid var(--orange);border-radius:6px;font:inherit;background:white">
+        <option value="dmu">Contactpersoon (incl. bestuurders, kies rol hieronder)</option>
+        <option value="specialist">Specialist Ouderengeneeskunde</option>
+      </select>
+    </div>` : '';
+  const body = typeRow + `
     <div class="contact-edit-grid">
       <div class="edit-field"><label>Naam</label><input type="text" id="ce-naam" value="${escapeHtml(c.naam||'')}"></div>
       <div class="edit-field"><label>Functie</label><input type="text" id="ce-functie" value="${escapeHtml(c.functie||'')}"></div>
@@ -14823,8 +14859,28 @@ function openContactEdit(instId, contact, kind){
       ${c._edited ? 'Dit is een eerder bewerkt record uit de baseline.' : c._imported ? 'Dit record komt uit een eerdere XLS-import.' : ''}
     </div>`;
   const inst = getInstellingRaw(instId);
-  document.getElementById('contactEditTitle').textContent = titlePrefix + ' bewerken: ' + (inst ? inst.naam : '');
+  const titleAction = (k === 'contact') ? 'toevoegen' : 'bewerken';
+  document.getElementById('contactEditTitle').textContent = titlePrefix + ' ' + titleAction + ': ' + (inst ? inst.naam : '');
   document.getElementById('contactEditBody').innerHTML = body;
+  // Type-dropdown gedrag: bij wisselen naar Specialist worden lege
+  // functie/vakgebied/rol-defaults ingevuld zodat de spec-grouping per
+  // vakgebied klopt. Voor het standaard contactpersoon-type wordt rol
+  // niet automatisch overschreven — de gebruiker kiest zelf decider /
+  // influencer / champion / etc.
+  const typeSel = document.getElementById('ce-type');
+  if(typeSel){
+    typeSel.addEventListener('change', () => {
+      const t = typeSel.value;
+      const fEl = document.getElementById('ce-functie');
+      const rEl = document.getElementById('ce-rol');
+      const vakEl = document.getElementById('ce-vakgebied');
+      if(t === 'specialist'){
+        if(fEl && !fEl.value) fEl.value = 'Specialist';
+        if(rEl) rEl.value = 'influencer';
+        if(vakEl && !vakEl.value) vakEl.value = 'Algemeen';
+      }
+    });
+  }
   document.getElementById('contactEditModal').classList.add('show');
 }
 function toggleKvBanner(show){
@@ -15895,7 +15951,24 @@ function bindContactEditModal(){
     const get = (id) => document.getElementById(id)?.value?.trim() || '';
     const getCheck = (id) => !!document.getElementById(id)?.checked;
     const orig = editingContactCtx.original || {};
-    const kind = editingContactCtx.kind || 'dmu';
+    let kind = editingContactCtx.kind || 'dmu';
+    // Bij de centrale + Contactpersoon-knop is kind='contact' en is de
+    // echte bestemming (dmu / directie / specialist) gekozen in de
+    // type-dropdown bovenaan de modal. Resolve hier zodat downstream-
+    // logica (DMU-override vs overrides[directie/specialisten]) klopt.
+    if(kind === 'contact'){
+      const t = document.getElementById('ce-type')?.value;
+      kind = (t === 'specialist') ? 'specialist' : 'dmu';
+    }
+    // Edits op een contact dat oorspronkelijk uit de baseline-directie[]-
+    // array komt: route terug naar directie[] in overrides, niet naar
+    // dmu-overrides. Anders krijg je twee records (origineel directie +
+    // nieuwe DMU-override) zichtbaar in de lijst.
+    const origCtx = editingContactCtx.original || {};
+    if(origCtx._source === 'dir' && kind === 'dmu'){
+      kind = 'directie';
+      if(typeof origCtx._dirIdx === 'number') editingContactCtx.originalIndex = origCtx._dirIdx;
+    }
     const instId = editingContactCtx.instId;
     // Uniforme contactpersoon-record — alle velden in één schema.
     const updated = {
