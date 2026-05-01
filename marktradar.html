@@ -14177,6 +14177,9 @@ const OVERLAY_CTX = {
   signaal:     { label: 'Vanuit signaal',      icon: '&#9889;', open: ['activiteit', 'acties'], color: '#b94a3c' },
   opportunity: { label: 'Vanuit opportunity',  icon: '&#9733;', open: ['pipeline'], color: 'var(--orange)' },
   actie:       { label: 'Vanuit todo',         icon: '&#9745;', open: ['acties'], color: '#5a8a5a' },
+  mensen:      { label: 'Mensen',              icon: '&#9758;', open: ['mensen'], color: 'var(--grey-600)' },
+  bedrijfsinfo:{ label: 'Bedrijfsinfo',        icon: '&#9636;', open: ['bedrijfsinfo'], color: 'var(--grey-600)' },
+  leveranciers:{ label: 'Leveranciers',        icon: '&#9881;', open: ['leveranciers'], color: 'var(--grey-600)' },
 };
 
 function openInstelling(id, ctx){
@@ -14256,11 +14259,13 @@ function openInstelling(id, ctx){
       ${accordion({
         icon: '&#9636;', title: 'Bedrijfsinfo',
         meta: (i.aantalBedden ? i.aantalBedden.toLocaleString('nl-NL') + ' bedden' : '') + (i.locaties ? ' &middot; ' + i.locaties + ' loc.' : ''),
+        open: ctxCfg.open[0] === 'bedrijfsinfo',
         body: renderBedrijfsinfoBody(i)
       })}
       ${accordion({
         icon: '&#9881;', title: 'Leveranciers',
         meta: (i.anwLeverancier ? 'ANW: ' + i.anwLeverancier : 'geen ANW') + (i.ecdLeverancier && i.ecdLeverancier !== 'Onbekend' ? ' &middot; ECD: ' + i.ecdLeverancier : ''),
+        open: ctxCfg.open[0] === 'leveranciers',
         body: renderLeveranciersBody(i)
       })}
       ${websiteHtml}
@@ -14330,7 +14335,7 @@ function bindOverlayChrome(i){
         : (inst && Array.isArray(inst.andereItLeveranciers) ? inst.andereItLeveranciers.map(x => ({ ...x })) : []);
       arr.push({ naam: '', domein: '' });
       setOverrides(instId, { andereItLeveranciers: arr });
-      openInstelling(instId);
+      openInstelling(instId, 'leveranciers');
     });
   });
   // Verwijder andere leverancier
@@ -14348,7 +14353,7 @@ function bindOverlayChrome(i){
       if(!confirm('Verwijder ' + naam + '?')) return;
       arr.splice(idx, 1);
       setOverrides(instId, { andereItLeveranciers: arr });
-      openInstelling(instId);
+      openInstelling(instId, 'leveranciers');
     });
   });
   // + Opportunity-knop
@@ -14357,7 +14362,10 @@ function bindOverlayChrome(i){
       e.preventDefault(); e.stopPropagation();
       const instId = btn.dataset.instId;
       addOpportunity(instId, { titel: '' });
-      openInstelling(instId);
+      // Open in 'opportunity'-context zodat de Pipeline-accordion (waarin
+      // de nieuwe opp staat) open blijft. Anders klapt 'ie dicht door
+      // het exclusive-accordion-gedrag en lijkt er niets te gebeuren.
+      openInstelling(instId, 'opportunity');
     });
   });
   // Verwijder-knoppen voor opportunities
@@ -14370,7 +14378,7 @@ function bindOverlayChrome(i){
       if(!opp) return;
       if(!confirm('Verwijder opportunity "' + (opp.titel || 'zonder titel') + '"?')) return;
       deleteOpportunity(instId, oppId);
-      openInstelling(instId);
+      openInstelling(instId, 'opportunity');
     });
   });
   // Verwijder-knoppen voor bestuurders.
@@ -14389,7 +14397,7 @@ function bindOverlayChrome(i){
       if(!confirm('Verwijder ' + naam + '?')) return;
       baseDir.splice(idx, 1);
       setOverrides(instId, { directie: baseDir });
-      openInstelling(instId);
+      openInstelling(instId, 'mensen');
     });
   });
 }
@@ -15650,7 +15658,9 @@ function bindContactEditModal(){
     }
     document.getElementById('contactEditModal').classList.remove('show');
     editingContactCtx = null;
-    openInstelling(instId);
+    // Houd de Mensen-accordion open na contact-save zodat de nieuwe DMU/
+    // specialist/bestuurder direct zichtbaar is.
+    openInstelling(instId, 'mensen');
   });
   document.getElementById('contactEditDelete').addEventListener('click', () => {
     if(!editingContactCtx) return;
