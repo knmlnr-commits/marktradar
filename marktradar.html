@@ -11900,6 +11900,75 @@ function fmtRelative(s){
   if(days < 30) return `${Math.floor(days/7)}w geleden`;
   return fmtFullDate(s);
 }
+/* ---------------- Opportunities (eerste-klas verkoop-proces per organisatie) ---------------- */
+const OPPS_STORAGE = 'marktradar.opportunities.v1';
+let opportunities = (function(){
+  try { const raw = localStorage.getItem(OPPS_STORAGE); return raw ? JSON.parse(raw) : {}; }
+  catch(e){ return {}; }
+})();
+let opportunitiesRemoteAvailable = false;
+function saveOpportunitiesLocal(){ try { localStorage.setItem(OPPS_STORAGE, JSON.stringify(opportunities)); } catch(e){} }
+async function syncOpportunities(){
+  try {
+    const r = await apiFetch(STATE_API + '?key=opportunities');
+    if(r.ok){
+      opportunitiesRemoteAvailable = true;
+      const j = await r.json();
+      const remote = j && j.value && typeof j.value === 'object' ? j.value : {};
+      opportunities = remote;
+      saveOpportunitiesLocal();
+    }
+  } catch(e){}
+}
+async function pushRemoteOpportunities(){
+  try {
+    await apiFetch(STATE_API, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'opportunities', value: opportunities })
+    });
+  } catch(e){}
+}
+function makeOppId(){ return 'opp-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6); }
+function getOppsForInst(instId){ return Array.isArray(opportunities[instId]) ? opportunities[instId] : []; }
+function allOpportunitiesFlat(){
+  const out = [];
+  Object.keys(opportunities).forEach(instId => {
+    (opportunities[instId] || []).forEach(o => out.push({ ...o, instellingId: instId }));
+  });
+  return out;
+}
+function addOpportunity(instId, partial){
+  const opp = {
+    id: makeOppId(),
+    titel: partial.titel || 'Nieuwe opportunity',
+    omschrijving: partial.omschrijving || '',
+    status: partial.status || (getDropdownOptions('opportunityStatus')[0] || 'Lead'),
+    ownerId: partial.ownerId || (currentUser && currentUser.id) || null,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+  if(!Array.isArray(opportunities[instId])) opportunities[instId] = [];
+  opportunities[instId].push(opp);
+  saveOpportunitiesLocal();
+  if(opportunitiesRemoteAvailable) pushRemoteOpportunities();
+  return opp;
+}
+function updateOpportunity(instId, oppId, patch){
+  const arr = opportunities[instId] || [];
+  const idx = arr.findIndex(o => o && o.id === oppId);
+  if(idx < 0) return;
+  arr[idx] = { ...arr[idx], ...patch, updatedAt: Date.now() };
+  saveOpportunitiesLocal();
+  if(opportunitiesRemoteAvailable) pushRemoteOpportunities();
+}
+function deleteOpportunity(instId, oppId){
+  const arr = opportunities[instId] || [];
+  opportunities[instId] = arr.filter(o => !o || o.id !== oppId);
+  if(opportunities[instId].length === 0) delete opportunities[instId];
+  saveOpportunitiesLocal();
+  if(opportunitiesRemoteAvailable) pushRemoteOpportunities();
+}
+
 /* ---------------- Signal-history (per signal: addedAt + runVersion) ---------------- */
 const SIGNAL_HISTORY_STORAGE = 'marktradar.signal-history.v1';
 let signalHistory = (function(){
@@ -12130,6 +12199,9 @@ function initApp(){
   syncDmuOverrides();
   syncOverrides();
   syncDropdowns();
+  syncOpportunities().then(() => {
+    try { if(typeof renderOpportunities === 'function') renderOpportunities(); } catch(e){}
+  });
   syncRemoteSignals().then(() => {
     try { if(typeof renderSignals === 'function') renderSignals(); } catch(e){}
     try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
@@ -13302,7 +13374,8 @@ const DROPDOWN_REGISTRY = {
   anwLeverancier:  { label: 'ANW-leveranciers',      defaults: ['GeriCall','GeriCall (ANW Nederland)','GeriCall (vermoedelijk)','ThoeZ Twente (samenwerkingsverband)','AWIZ-verband','NOB Green Deal','Archipel ZHE','WSD Rotterdam','Verwijspunt 020','Triage.nu','Nonna Reco','Extern bureau (onbekend)','Onbekend'] },
   dmuRol:          { label: 'DMU-rol',               defaults: ['decider','champion','influencer','gatekeeper','blocker'] },
   vertrouwen:      { label: 'Vertrouwen-rating',     defaults: ['hoog','middel','laag'] },
-  bronType:        { label: 'Bron-type',             defaults: ['jaarverslag','website','persbericht','linkedin-publiek','verenso','big-register','kvk','pipedrive','xls-import','anders'] }
+  bronType:        { label: 'Bron-type',             defaults: ['jaarverslag','website','persbericht','linkedin-publiek','verenso','big-register','kvk','pipedrive','xls-import','anders'] },
+  opportunityStatus:{label: 'Opportunity-status',    defaults: ['Lead','Suspect','Prospect','Contract'] }
 };
 const DROPDOWNS_STORAGE = 'marktradar.dropdowns.v1';
 let dropdowns = (function(){
@@ -13861,7 +13934,39 @@ function renderPipelineBody(i){
         <div class="acc-sub-title">CRM pipeline (${c.deals.length})</div>${dealsHtml}${leadsHtml}
       </div>`;
   }
-  return summaryHtml + renderGericallContextBody(i) + crmPipelineHtml;
+  return summaryHtml + renderOpportunitiesSection(i) + renderGericallContextBody(i) + crmPipelineHtml;
+}
+
+function renderOpportunitiesSection(i){
+  const opps = getOppsForInst(i.id);
+  const statusOptions = getDropdownOptions('opportunityStatus');
+  const rowsHtml = opps.map(o => {
+    const statusOpts = statusOptions.map(s => `<option value="${escapeHtml(s)}" ${o.status === s ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('');
+    const ownerOpts = `<option value="">— Geen —</option>` +
+      OWNERS.map(ow => `<option value="${ow.id}" ${o.ownerId === ow.id ? 'selected' : ''}>${escapeHtml(ow.naam)}</option>`).join('');
+    const linkedTodos = (todos[i.id] || []).filter(t => t.opportunityId === o.id);
+    const linkedCount = linkedTodos.length;
+    const openCount = linkedTodos.filter(t => !t.done).length;
+    return `
+      <div class="opp-row" data-opp-id="${escapeHtml(o.id)}" style="display:grid;grid-template-columns:1.6fr 110px 130px 28px;gap:8px;align-items:start;padding:10px;border:1px solid var(--grey-200);border-radius:8px;margin-bottom:8px;background:var(--white)">
+        <div>
+          <input type="text" class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="titel" value="${escapeHtml(o.titel || '')}" placeholder="Titel" style="font-weight:600">
+          <textarea class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="omschrijving" placeholder="Omschrijving (optioneel)" style="margin-top:4px;min-height:36px;font-size:.78rem">${escapeHtml(o.omschrijving || '')}</textarea>
+          ${linkedCount > 0 ? `<div style="margin-top:6px;font-size:.72rem;color:var(--grey-600)"><strong>${openCount}</strong> open todo${openCount === 1 ? '' : 's'} &middot; ${linkedCount} totaal</div>` : '<div style="margin-top:6px;font-size:.72rem;color:var(--grey-500)"><em>Nog geen gekoppelde todos</em></div>'}
+        </div>
+        <select class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="status">${statusOpts}</select>
+        <select class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="ownerId" title="Eigenaar">${ownerOpts}</select>
+        <button type="button" class="dir-delete-btn" data-opp-delete="1" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" title="Opportunity verwijderen" aria-label="Verwijderen">&times;</button>
+      </div>`;
+  }).join('');
+  return `
+    <div style="margin-bottom:14px">
+      <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        Opportunities
+        <button type="button" class="add-people-btn" data-add-opp="1" data-inst-id="${escapeHtml(i.id)}">+ Opportunity</button>
+      </div>
+      ${opps.length === 0 ? '<div class="dmu-empty" style="padding:8px 12px">Geen opportunities. Klik <strong>+ Opportunity</strong> om een verkoop-proces te starten.</div>' : rowsHtml}
+    </div>`;
 }
 
 function renderActivityBody(i, sigs){
@@ -14063,8 +14168,30 @@ function bindOverlayChrome(i){
       addPersonToOverlay(btn.dataset.instId, btn.dataset.addPeople);
     });
   });
+  // + Opportunity-knop
+  document.querySelectorAll('#overlayPanel [data-add-opp]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const instId = btn.dataset.instId;
+      addOpportunity(instId, { titel: '' });
+      openInstelling(instId);
+    });
+  });
+  // Verwijder-knoppen voor opportunities
+  document.querySelectorAll('#overlayPanel .dir-delete-btn[data-opp-delete]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const instId = btn.dataset.instId;
+      const oppId = btn.dataset.oppId;
+      const opp = (opportunities[instId] || []).find(o => o.id === oppId);
+      if(!opp) return;
+      if(!confirm('Verwijder opportunity "' + (opp.titel || 'zonder titel') + '"?')) return;
+      deleteOpportunity(instId, oppId);
+      openInstelling(instId);
+    });
+  });
   // Verwijder-knoppen voor bestuurders.
-  document.querySelectorAll('#overlayPanel .dir-delete-btn').forEach(btn => {
+  document.querySelectorAll('#overlayPanel .dir-delete-btn:not([data-opp-delete])').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -14093,6 +14220,16 @@ function saveInlineEdit(instId, el){
     const next = { ...cur, [seg]: !!el.checked };
     setOverrides(instId, { segmenten: next });
     flashInlineSaved(el.closest('.segment-tag'));
+    return;
+  }
+  if(el.classList.contains('ie-opp')){
+    // Opportunity-veld bewerken (titel / omschrijving / status / ownerId)
+    const oppId = el.dataset.oppId;
+    const f = el.dataset.oppField;
+    let v = el.value;
+    if(typeof v === 'string' && v.trim() === '' && f !== 'omschrijving') v = null;
+    updateOpportunity(instId, oppId, { [f]: v });
+    flashInlineSaved(el);
     return;
   }
   if(el.classList.contains('ie-dir')){
@@ -15751,22 +15888,16 @@ function computeOpportunities(){
 }
 
 function renderOppLensChips(){
-  const all = computeOpportunities();
+  // Filter-chips op basis van de beheerbare opportunityStatus-dropdown.
+  const all = allOpportunitiesFlat();
+  const statuses = getDropdownOptions('opportunityStatus');
   const counts = { all: all.length };
-  ['acquisitie','retention','expansion','consolidatie'].forEach(l => {
-    counts[l] = all.filter(o => o.lens === l).length;
-  });
-  const lenses = [
-    { key: 'all', label: 'Alle' },
-    { key: 'acquisitie', label: 'Acquisitie' },
-    { key: 'retention', label: 'Retention' },
-    { key: 'expansion', label: 'Expansion' },
-    { key: 'consolidatie', label: 'Consolidatie' },
-  ];
-  const html = lenses.map(l => {
+  statuses.forEach(s => { counts[s] = all.filter(o => o.status === s).length; });
+  const chips = [{ key: 'all', label: 'Alle' }, ...statuses.map(s => ({ key: s, label: s }))];
+  const html = chips.map(l => {
     const c = counts[l.key] || 0;
     if(l.key !== 'all' && c === 0) return '';
-    return `<button class="chip ${oppLensFilter === l.key ? 'active orange' : ''}" data-lens="${l.key}">${l.label} <span class="chip-count">${c}</span></button>`;
+    return `<button class="chip ${oppLensFilter === l.key ? 'active orange' : ''}" data-lens="${l.key}">${escapeHtml(l.label)} <span class="chip-count">${c}</span></button>`;
   }).join('');
   document.getElementById('oppLensChips').innerHTML = html;
   document.querySelectorAll('#oppLensChips .chip').forEach(c => {
@@ -15775,46 +15906,54 @@ function renderOppLensChips(){
 }
 
 function renderOpportunities(){
-  let opps = computeOpportunities();
+  // Vanaf v1.14.x: Opportunities-tab toont echte opportunity-entities
+  // (verkoop-processen) met titel/omschrijving/status, gekoppeld aan een
+  // organisatie. De oude score-derived computeOpportunities() blijft als
+  // helper voor 'suggesties' onderaan.
+  let opps = allOpportunitiesFlat();
+  // Filter op markt-scope + scopeMode='mine'
+  const scopedSet = new Set(getMarketInstellingen().map(i => String(i.id)));
+  opps = opps.filter(o => scopedSet.has(String(o.instellingId)));
   if(scopeMode === 'mine' && currentUser){
-    opps = opps.filter(o => ownerForInst(o.inst.id) === currentUser.id);
+    opps = opps.filter(o => o.ownerId === currentUser.id || ownerForInst(o.instellingId) === currentUser.id);
   }
-  if(oppLensFilter !== 'all') opps = opps.filter(o => o.lens === oppLensFilter);
-  if(oppSort === 'score') opps.sort((a,b) => b.score - a.score);
-  if(oppSort === 'name') opps.sort((a,b) => a.inst.naam.localeCompare(b.inst.naam));
-  if(oppSort === 'status'){
-    const order = { klant: 0, prospect: 1, lead: 2, cold: 3 };
-    opps.sort((a,b) => (order[a.inst.gericallStatus]||9) - (order[b.inst.gericallStatus]||9) || b.score - a.score);
+  if(oppLensFilter !== 'all') opps = opps.filter(o => o.status === oppLensFilter);
+  if(oppSort === 'name') opps.sort((a,b) => {
+    const ia = getInstelling(a.instellingId);
+    const ib = getInstelling(b.instellingId);
+    return ((ia && ia.naam) || '').localeCompare((ib && ib.naam) || '');
+  });
+  else if(oppSort === 'status'){
+    const statuses = getDropdownOptions('opportunityStatus');
+    const order = new Map(statuses.map((s,i) => [s, i]));
+    opps.sort((a,b) => (order.get(a.status) ?? 99) - (order.get(b.status) ?? 99));
   }
-  const seen = new Set();
-  currentListContext = [];
-  opps.forEach(o => { if(!seen.has(o.inst.id)){ seen.add(o.inst.id); currentListContext.push(o.inst.id); } });
+  else opps.sort((a,b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  currentListContext = Array.from(new Set(opps.map(o => o.instellingId)));
   const html = opps.map(o => {
-    const i = o.inst;
-    const ownerId = ownerForInst(i.id);
-    const owner = ownerId ? ownerById(ownerId) : null;
-    const lensLabel = LENS_INFO[o.lens]?.label || o.lens;
+    const i = getInstelling(o.instellingId);
+    if(!i) return '';
+    const owner = o.ownerId ? ownerById(o.ownerId) : (ownerForInst(o.instellingId) ? ownerById(ownerForInst(o.instellingId)) : null);
+    const linkedTodos = (todos[o.instellingId] || []).filter(t => t.opportunityId === o.id);
+    const openCount = linkedTodos.filter(t => !t.done).length;
     return `
-      <div class="opp-card lens-${o.lens}" data-inst-id="${i.id}">
+      <div class="opp-card" data-inst-id="${i.id}" data-opp-id="${escapeHtml(o.id)}" style="grid-template-columns:1.6fr 110px 1fr 90px 18px">
         <div>
-          <div class="opp-naam">${i.naam}</div>
+          <div class="opp-naam">${escapeHtml(o.titel || '(zonder titel)')}</div>
           <div class="opp-meta-row">
-            <span class="status-pill status-${i.gericallStatus}">${i.gericallStatus}</span>
-            <span style="font-size:.72rem;color:var(--grey-600)">${i.provincie || i.regio} &middot; ${(i.aantalBedden||0).toLocaleString('nl-NL')} bedden</span>
-            ${owner ? `<span class="owner-chip" style="font-size:.66rem"><span class="owner-mini">${owner.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase()}</span><span class="owner-chip-name">${owner.naam}</span></span>` : ''}
+            <strong style="font-size:.78rem;color:var(--grey-700)">${escapeHtml(i.naam)}</strong>
+            <span style="font-size:.72rem;color:var(--grey-500)">${escapeHtml(i.provincie || i.regio || '')}</span>
+            ${owner ? `<span class="owner-chip" style="font-size:.66rem"><span class="owner-mini">${owner.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase()}</span><span class="owner-chip-name">${escapeHtml(owner.naam)}</span></span>` : ''}
           </div>
         </div>
-        <div>
-          <span class="opp-lens-badge lens-${o.lens}">${lensLabel}</span>
-        </div>
-        <div class="opp-text" title="${(i.opportunity||'').replace(/"/g,'&quot;')}">${i.opportunity || '<span class="muted">Geen opportunity-tekst.</span>'}</div>
-        <div>
-          <span class="opp-score lens-${o.lens}">${o.score}<span class="bar"><span class="bar-fill" style="width:${o.score}%"></span></span></span>
-        </div>
+        <div><span class="opp-lens-badge" style="background:var(--orange-pale);color:var(--orange-dark);border-color:var(--orange)">${escapeHtml(o.status || '')}</span></div>
+        <div class="opp-text">${escapeHtml(o.omschrijving || '')}</div>
+        <div style="font-size:.74rem;color:var(--grey-700)">${openCount > 0 ? `<strong>${openCount}</strong> open` : (linkedTodos.length > 0 ? linkedTodos.length + ' afgerond' : '<em style="color:var(--grey-500)">geen todos</em>')}</div>
         <div class="opp-arrow">&rsaquo;</div>
       </div>`;
   }).join('');
-  document.getElementById('oppList').innerHTML = `<div class="opp-list">${html || '<div class="no-data" style="padding:32px">Geen opportunities die voldoen aan dit filter.</div>'}</div>`;
+  const empty = '<div class="no-data" style="padding:32px">Nog geen opportunities. Open een organisatie en klik <strong>+ Opportunity</strong> in de Pipeline-accordion om er een te starten.</div>';
+  document.getElementById('oppList').innerHTML = `<div class="opp-list">${html || empty}</div>`;
   document.querySelectorAll('#oppList .opp-card').forEach(el => {
     el.addEventListener('click', () => openInstelling(el.dataset.instId, 'opportunity'));
   });

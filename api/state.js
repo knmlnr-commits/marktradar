@@ -6,7 +6,7 @@ const auth = require('./_lib/auth');
 
 const ALLOWED_KEYS = new Set([
   'todos', 'dmu-overrides', 'spec-overrides', 'overrides',
-  'dropdowns', 'owners', 'signal-history',
+  'dropdowns', 'owners', 'signal-history', 'opportunities',
 ]);
 
 module.exports = async function handler(req, res) {
