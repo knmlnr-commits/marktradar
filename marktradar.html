@@ -12743,7 +12743,10 @@ function renderTabs(){
   const scopeInst = instellingenMerged().filter(i => inMyOwnerScope(i.id));
   const scopeIds = new Set(scopeInst.map(i => String(i.id)));
   const scopeSig = signalenInScope().filter(s => !s.instellingId || scopeIds.has(String(s.instellingId)));
-  const scopeOpp = computeOpportunities().filter(o => scopeIds.has(String(o.inst.id)));
+  // Counter telt de ECHTE opportunities (entity-based), niet de score-
+  // derived suggesties — anders krijg je een mismatch met wat in de
+  // Opportunities-tab gerenderd wordt.
+  const scopeOpp = allOpportunitiesFlat().filter(o => scopeIds.has(String(o.instellingId)));
   const scopeTodos = allTodosFlat().filter(t => scopeIds.has(String(t.instellingId)) &&
     (scopeMode !== 'mine' || !currentUser || t.ownerId === currentUser.id || (!t.ownerId && ownerForInst(t.instellingId) === currentUser.id)));
   document.getElementById('tabCountSignalen').textContent = scopeSig.length;
@@ -16142,10 +16145,50 @@ function renderOpportunities(){
         <div class="opp-arrow">&rsaquo;</div>
       </div>`;
   }).join('');
-  const empty = '<div class="no-data" style="padding:32px">Nog geen opportunities. Open een organisatie en klik <strong>+ Opportunity</strong> in de Pipeline-accordion om er een te starten.</div>';
-  document.getElementById('oppList').innerHTML = `<div class="opp-list">${html || empty}</div>`;
+  const empty = '<div class="no-data" style="padding:32px">Nog geen opportunities. Open een organisatie en klik <strong>+ Opportunity</strong> in de Pipeline-accordion om er een te starten — of gebruik de + Opportunity-knop hierboven.</div>';
+  // Score-derived suggesties: organisaties met hoge scores die nog géén
+  // bijbehorende opportunity hebben. Klik op een suggestie opent het
+  // oppCreateModal met die organisatie alvast geselecteerd.
+  const existingOppKeys = new Set(opps.map(o => String(o.instellingId)));
+  const suggestions = computeOpportunities()
+    .filter(s => scopedSet.has(String(s.inst.id)))
+    .filter(s => !existingOppKeys.has(String(s.inst.id)));
+  // Top 8 suggesties op score-score
+  suggestions.sort((a,b) => (b.score||0) - (a.score||0));
+  const top = suggestions.slice(0, 8);
+  const suggestionsHtml = top.length === 0 ? '' : `
+    <div style="margin-top:28px;padding-top:16px;border-top:1px solid var(--grey-200)">
+      <div class="acc-sub-title" style="margin-bottom:6px">Suggesties · score-derived</div>
+      <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">Op basis van scores per organisatie en status zijn dit potentiële opportunities. Klik op een suggestie om er een echte opportunity van te maken.</p>
+      <div style="display:grid;gap:6px">
+        ${top.map(s => {
+          const lensLabel = LENS_INFO[s.lens]?.label || s.lens;
+          const lensColor = LENS_INFO[s.lens]?.color || 'var(--orange)';
+          return `<button type="button" class="opp-suggest-row" data-inst-id="${escapeHtml(s.inst.id)}" data-suggest-lens="${escapeHtml(s.lens)}" style="display:grid;grid-template-columns:1.5fr 110px 60px 18px;gap:10px;align-items:center;padding:8px 12px;border:1px solid var(--grey-200);border-radius:8px;background:var(--white);cursor:pointer;text-align:left;font:inherit;color:inherit">
+            <div><strong style="font-size:.86rem">${escapeHtml(s.inst.naam)}</strong><div style="font-size:.7rem;color:var(--grey-500)">${escapeHtml(s.inst.provincie || s.inst.regio || '')} &middot; status ${escapeHtml(s.inst.gericallStatus)}</div></div>
+            <span style="font-size:.7rem;padding:3px 8px;border-radius:8px;background:${lensColor}1a;color:${lensColor};font-weight:600">${escapeHtml(lensLabel)}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:.78rem;font-weight:700;color:var(--grey-900)">${s.score}</span>
+            <span style="color:var(--grey-400)">›</span>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+  document.getElementById('oppList').innerHTML = `<div class="opp-list">${html || empty}</div>${suggestionsHtml}`;
   document.querySelectorAll('#oppList .opp-card').forEach(el => {
     el.addEventListener('click', () => openInstelling(el.dataset.instId, 'opportunity'));
+  });
+  document.querySelectorAll('#oppList .opp-suggest-row').forEach(el => {
+    el.addEventListener('click', () => {
+      const instId = el.dataset.instId;
+      const lens = el.dataset.suggestLens;
+      const inst = getInstelling(instId);
+      const lensLabel = LENS_INFO[lens]?.label || lens;
+      // Open create-modal met geselecteerde organisatie + auto-titel
+      openOppCreateModal(instId);
+      // Vul de titel met een concept-beschrijving
+      const titelInput = document.getElementById('oppCreate-titel');
+      if(titelInput) titelInput.value = lensLabel + ' bij ' + (inst ? inst.naam : '');
+    });
   });
 }
 
