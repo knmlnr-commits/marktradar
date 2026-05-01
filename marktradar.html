@@ -15109,7 +15109,29 @@ async function refreshTenantPane(){
   if(mDescEl) mDescEl.value = currentTenant?.marktBeschrijving || '';
   if(idEl) idEl.value = currentTenant?.id || '—';
   const llmEl = document.getElementById('tenant-use-llm');
-  if(llmEl) llmEl.checked = !!currentTenant?.useLlmCurator;
+  if(llmEl){
+    llmEl.checked = !!currentTenant?.useLlmCurator;
+    // Auto-save bij toggle (geen 'Opslaan'-klik nodig). Bind eenmalig.
+    if(!llmEl.dataset.boundChange){
+      llmEl.dataset.boundChange = '1';
+      llmEl.addEventListener('change', async () => {
+        const out = document.getElementById('tenantResult');
+        try {
+          const r = await apiFetch('/api/tenant?action=update', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ useLlmCurator: llmEl.checked })
+          });
+          const j = await r.json();
+          if(!r.ok) throw new Error(j.error || 'Opslaan mislukt');
+          if(j.tenant) currentTenant = j.tenant;
+          if(out) out.innerHTML = '<span style="color:var(--green)">LLM-curator ' + (llmEl.checked ? 'aan' : 'uit') + '.</span>';
+          setTimeout(() => { if(out && /LLM-curator/.test(out.innerHTML)) out.innerHTML = ''; }, 2400);
+        } catch(err){
+          if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+        }
+      });
+    }
+  }
   renderTenantLogoPreview();
   // Render feed-list + status uit laatste cron-run
   renderFeedsList();
