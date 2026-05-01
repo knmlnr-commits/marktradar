@@ -12141,7 +12141,14 @@ function applyOverrides(inst){
   });
   return merged;
 }
-function getInstellingRaw(id){ return DATA.instellingen.find(i => i.id === id); }
+function getInstellingRaw(id){
+  // Universe-aware: GeriCall valt terug op DATA.instellingen, andere
+  // tenants gebruiken hun eigen tenant.entiteiten[]. getEntiteitenUniverse()
+  // doet die keuze al + voegt default-velden toe (scores, dmu, leadScore)
+  // zodat renderers niet stuk gaan op missende velden.
+  const universe = getEntiteitenUniverse();
+  return universe.find(i => String(i.id) === String(id)) || null;
+}
 function getInstelling(id){
   const raw = getInstellingRaw(id);
   return raw ? applyOverrides(raw) : null;
