@@ -70,6 +70,15 @@ img,svg{max-width:100%;display:block}
 .demo-result.show{display:block}
 .demo-result.ok{background:var(--green-light);color:var(--green);border:1px solid var(--green)}
 .demo-result.err{background:var(--red-light);color:var(--red);border:1px solid var(--red)}
+.install-modal{position:fixed;inset:0;background:rgba(26,26,31,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}
+.install-modal.show{display:flex}
+.install-modal-card{background:var(--white);border-radius:14px;padding:24px;max-width:420px;width:100%;box-shadow:0 24px 60px -12px rgba(0,0,0,.35)}
+.install-modal-card h3{font-size:1.05rem;font-weight:700;margin-bottom:6px}
+.install-modal-card p{font-size:.86rem;color:var(--grey-700);line-height:1.5;margin-bottom:14px}
+.install-step{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--grey-150);font-size:.84rem;color:var(--grey-700)}
+.install-step:first-child{border-top:none}
+.install-step-num{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-weight:700;font-size:.74rem;display:inline-flex;align-items:center;justify-content:center}
+.install-modal-card .btn{margin-top:12px;width:100%}
 .foot{padding:24px 0;font-size:.78rem;color:var(--grey-600)}
 .foot-inner{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media(max-width:640px){
@@ -107,6 +116,7 @@ img,svg{max-width:100%;display:block}
         <button class="lang-btn" data-lang="nl" title="Nederlands" aria-label="Nederlands">🇳🇱</button>
         <button class="lang-btn" data-lang="en" title="English" aria-label="English">🇬🇧</button>
       </span>
+      <button type="button" class="btn btn-ghost btn-sm" id="installBtn" style="display:none" data-i18n="nav.install">Installeer app</button>
       <a class="btn btn-ghost btn-sm" href="#demo" data-i18n="nav.demo">Demo aanvragen</a>
       <a class="btn btn-primary btn-sm" href="/app" data-i18n="nav.login">Inloggen</a>
     </div>
@@ -120,6 +130,7 @@ img,svg{max-width:100%;display:block}
     <div class="hero-cta">
       <a class="btn btn-primary" href="/app" data-i18n="hero.cta1">Maak werkomgeving</a>
       <a class="btn btn-ghost" href="#demo" data-i18n="hero.cta2">Demo aanvragen</a>
+      <button type="button" class="btn btn-ghost" id="installBtnHero" style="display:none" data-i18n="hero.install">📱 Installeer als app</button>
     </div>
   </div>
 </header>
@@ -179,10 +190,30 @@ img,svg{max-width:100%;display:block}
   </div>
 </footer>
 
+<div class="install-modal" id="installModal" aria-hidden="true">
+  <div class="install-modal-card">
+    <h3 data-i18n="install.h">Installeer MarktRadar als app</h3>
+    <p data-i18n="install.lead">Werk vanuit een eigen app-icoon op je beginscherm — zonder browser, full-screen.</p>
+    <div id="installSteps"></div>
+    <button type="button" class="btn btn-ghost btn-sm" id="installCloseBtn" data-i18n="install.close">Sluiten</button>
+  </div>
+</div>
+
 <script>
 const I18N = {
   nl: {
-    'nav.demo': 'Demo aanvragen', 'nav.login': 'Inloggen',
+    'nav.demo': 'Demo aanvragen', 'nav.login': 'Inloggen', 'nav.install': 'Installeer app',
+    'hero.install': '📱 Installeer als app',
+    'install.h': 'Installeer MarktRadar als app',
+    'install.lead': 'Werk vanuit een eigen app-icoon op je beginscherm — zonder browser, full-screen.',
+    'install.close': 'Sluiten',
+    'install.iosStep1': 'Tik op het deel-icoon onderaan Safari (vierkant met pijl omhoog).',
+    'install.iosStep2': "Scroll en kies 'Voeg toe aan beginscherm'.",
+    'install.iosStep3': "Tik 'Voeg toe' rechtsboven om te bevestigen.",
+    'install.androidStep1': 'Tik op het menu-icoon (drie puntjes rechtsboven).',
+    'install.androidStep2': "Kies 'App installeren' of 'Toevoegen aan startscherm'.",
+    'install.androidStep3': "Bevestig de installatie.",
+    'install.installing': 'Installeren…',
     'hero.h1': 'Volg je <em>markt</em>.',
     'hero.lead': 'Definieer je propositie, plak je organisaties, koppel je klanten — en houd je markt scherp in één werkomgeving.',
     'hero.cta1': 'Maak werkomgeving', 'hero.cta2': 'Demo aanvragen',
@@ -200,7 +231,18 @@ const I18N = {
     'foot.copy': '© 2026 MarktRadar', 'foot.login': 'Inloggen',
   },
   en: {
-    'nav.demo': 'Request demo', 'nav.login': 'Log in',
+    'nav.demo': 'Request demo', 'nav.login': 'Log in', 'nav.install': 'Install app',
+    'hero.install': '📱 Install as app',
+    'install.h': 'Install MarktRadar as an app',
+    'install.lead': 'Work from a dedicated app icon on your home screen — no browser, full-screen.',
+    'install.close': 'Close',
+    'install.iosStep1': 'Tap the share icon at the bottom of Safari (square with arrow up).',
+    'install.iosStep2': "Scroll and pick 'Add to Home Screen'.",
+    'install.iosStep3': "Tap 'Add' in the top-right to confirm.",
+    'install.androidStep1': 'Tap the menu icon (three dots, top-right).',
+    'install.androidStep2': "Pick 'Install app' or 'Add to Home screen'.",
+    'install.androidStep3': "Confirm the installation.",
+    'install.installing': 'Installing…',
     'hero.h1': 'Track your <em>market</em>.',
     'hero.lead': 'Define your value proposition, paste your organisations, connect your customers — and keep your market in focus in one workspace.',
     'hero.cta1': 'Create workspace', 'hero.cta2': 'Request demo',
@@ -277,6 +319,97 @@ applyI18n();
       submit.disabled = false; submit.textContent = orig;
     }
   });
+})();
+
+/* ===== PWA install-flow =====
+ * Twee paden:
+ *   - Chrome / Edge / Android Chrome / Samsung: vangen we het
+ *     'beforeinstallprompt'-event op en triggeren we een native dialog
+ *     wanneer de gebruiker op Installeer klikt.
+ *   - iOS Safari: geen native event beschikbaar; we tonen een modal
+ *     met stap-voor-stap-instructies (Share → Voeg toe aan beginscherm).
+ * Knop wordt verborgen als de app al in standalone-modus draait.
+ */
+(function(){
+  const installBtn = document.getElementById('installBtn');
+  const installBtnHero = document.getElementById('installBtnHero');
+  const modal = document.getElementById('installModal');
+  const stepsEl = document.getElementById('installSteps');
+  const closeBtn = document.getElementById('installCloseBtn');
+  if(!installBtn || !modal) return;
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+  let deferredPrompt = null;
+
+  // Geen install-knop als de app al geïnstalleerd is of op desktop draait
+  // zonder PWA-support — dan heeft de actie geen zichtbaar effect.
+  function reveal(){
+    if(isStandalone) return;
+    installBtn.style.display = '';
+    if(installBtnHero) installBtnHero.style.display = '';
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    reveal();
+  });
+  // iOS heeft geen beforeinstallprompt — toon hint-knop direct.
+  if(isIOS && !isStandalone) reveal();
+
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+    if(installBtnHero) installBtnHero.style.display = 'none';
+  });
+
+  function openModalForOS(){
+    const isI = isIOS;
+    const isA = isAndroid;
+    const steps = [];
+    if(isI){
+      steps.push(['1', tt('install.iosStep1')]);
+      steps.push(['2', tt('install.iosStep2')]);
+      steps.push(['3', tt('install.iosStep3')]);
+    } else if(isA){
+      steps.push(['1', tt('install.androidStep1')]);
+      steps.push(['2', tt('install.androidStep2')]);
+      steps.push(['3', tt('install.androidStep3')]);
+    } else {
+      // Desktop: meeste browsers tonen een install-icoon in de adresbalk
+      steps.push(['1', 'Klik op het install-icoon in de adresbalk (rechts).']);
+      steps.push(['2', 'Bevestig de installatie.']);
+    }
+    stepsEl.innerHTML = steps.map(([n,t]) => `
+      <div class="install-step"><span class="install-step-num">${n}</span><span>${t.replace(/</g,'&lt;')}</span></div>
+    `).join('');
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  async function tryInstall(){
+    if(deferredPrompt){
+      try {
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        if(choice && choice.outcome === 'accepted'){
+          installBtn.style.display = 'none';
+          if(installBtnHero) installBtnHero.style.display = 'none';
+        }
+      } catch(e){ openModalForOS(); }
+    } else {
+      openModalForOS();
+    }
+  }
+
+  installBtn.addEventListener('click', tryInstall);
+  if(installBtnHero) installBtnHero.addEventListener('click', tryInstall);
+  if(closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+  modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.remove('show'); });
 })();
 
 // PWA service worker — installable als app op homescreen.
