@@ -1142,10 +1142,6 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
       <span class="tab-label" data-i18n="tab.orgs">Instellingen</span> <span class="tab-count" id="tabCountInst">0</span>
     </button>
-    <button class="tab" data-tab="leveranciers" title="Leveranciers" aria-label="Leveranciers">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-      <span class="tab-label" data-i18n="tab.suppliers">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
-    </button>
     <button class="tab" data-tab="opportunities" title="Opportunities" aria-label="Opportunities">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       <span class="tab-label" data-i18n="tab.opps">Opportunities</span> <span class="tab-count" id="tabCountOpp">0</span>
@@ -1153,6 +1149,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <button class="tab" data-tab="trends" title="Trends" aria-label="Trends">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
       <span class="tab-label" data-i18n="tab.trends">Trends</span> <span class="tab-count" id="tabCountTrends">0</span>
+    </button>
+    <button class="tab" data-tab="leveranciers" title="Leveranciers" aria-label="Leveranciers">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      <span class="tab-label" data-i18n="tab.suppliers">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
     </button>
   </div>
 
@@ -14099,17 +14099,46 @@ function renderActivityBody(i, sigs){
 }
 
 function renderBedrijfsinfoBody(i){
-  // Organisatie-statics + ANW/IT + verbanden + CRM-bijlagen samenvatting.
-  let bijlagenHtml = '';
-  if(i.crm && i.crm.bijlagenSamenvatting){
-    const bs = i.crm.bijlagenSamenvatting;
-    bijlagenHtml = (bs.aantal||0) === 0 ? '' : `
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)">
-        <div class="acc-sub-title">CRM bijlagen</div>
-        <div class="crm-row"><strong>${bs.aantal}</strong> bestanden &middot; offerte ${bs.types?.offerte||0}, overeenkomst ${bs.types?.overeenkomst||0}, brochure ${bs.types?.brochure||0}, anders ${bs.types?.anders||0}${bs.laatsteBestand ? ' &middot; laatste: ' + escapeHtml(bs.laatsteBestand) + ' (' + escapeHtml(bs.laatsteUpload || '-') + ')' : ''}</div>
-      </div>`;
-  }
-  return renderKerngetallenBody(i) + renderAnwItBody(i) + bijlagenHtml;
+  // Vanaf v1.14.x: Bedrijfsinfo bevat alleen company-stats. ANW + ECD +
+  // andere IT-leveranciers zijn verplaatst naar de aparte 'Leveranciers'-
+  // accordion zodat het klantbeeld die info los van bedden/segmenten kan
+  // tonen.
+  return renderKerngetallenBody(i);
+}
+
+function renderLeveranciersBody(i){
+  const andere = Array.isArray(i.andereItLeveranciers) ? i.andereItLeveranciers : [];
+  const andereHtml = andere.map((l, idx) => `
+    <div style="display:grid;grid-template-columns:1fr 1fr 28px;gap:8px;align-items:center;padding:6px 8px;border:1px solid var(--grey-200);border-radius:6px;margin-bottom:6px;background:var(--white)">
+      <input type="text" class="inline-edit-input ie ie-andere" data-inst-id="${escapeHtml(i.id)}" data-andere-idx="${idx}" data-andere-field="naam" value="${escapeHtml(l.naam || '')}" placeholder="Leverancier" style="font-weight:500">
+      <input type="text" class="inline-edit-input ie ie-andere" data-inst-id="${escapeHtml(i.id)}" data-andere-idx="${idx}" data-andere-field="domein" value="${escapeHtml(l.domein || '')}" placeholder="Domein (bv. Telefonie, Planning)">
+      <button type="button" class="dir-delete-btn" data-andere-delete="1" data-inst-id="${escapeHtml(i.id)}" data-andere-idx="${idx}" title="Verwijderen" aria-label="Verwijderen">&times;</button>
+    </div>`).join('');
+  return `
+    <div class="it-stack">
+      <div class="it-block">
+        <div class="it-block-title">ANW &middot; Avond/Nacht/Weekend</div>
+        <div style="display:grid;gap:6px">
+          ${ieDropdown(i.id, 'anwLeverancier', 'anwLeverancier', i.anwLeverancier)}
+          ${ieDropdown(i.id, 'anwModelKort', 'anwModelKort', i.anwModelKort)}
+        </div>
+        ${ieTextarea(i.id, 'anwDetail', i.anwDetail, 'Detail / opmerkingen ANW-regeling')}
+      </div>
+      <div class="it-block">
+        <div class="it-block-title">ECD &middot; Cli&euml;ntdossier</div>
+        <div style="display:grid;gap:6px">
+          ${ieDropdown(i.id, 'ecdLeverancier', 'ecdLeverancier', i.ecdLeverancier)}
+          ${ieText(i.id, 'ecdSysteem', i.ecdSysteem === 'Onbekend' ? '' : i.ecdSysteem, 'systeem-versie / variant (optioneel)')}
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)">
+      <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        Andere leveranciers
+        <button type="button" class="add-people-btn" data-add-andere="1" data-inst-id="${escapeHtml(i.id)}" style="margin-left:auto">+ Leverancier</button>
+      </div>
+      ${andere.length === 0 ? '<div class="dmu-empty" style="padding:8px 12px">Nog geen overige leveranciers vastgelegd. Denk aan: HR/Salaris, Telefonie, Planning, eLearning, Cliëntportaal, Triage tooling.</div>' : andereHtml}
+    </div>`;
 }
 
 // Context-aware openInstelling — default-open accordion en breadcrumb-pill
@@ -14202,8 +14231,13 @@ function openInstelling(id, ctx){
       })}
       ${accordion({
         icon: '&#9636;', title: 'Bedrijfsinfo',
-        meta: (i.aantalBedden ? i.aantalBedden.toLocaleString('nl-NL') + ' bedden' : '') + (i.locaties ? ' &middot; ' + i.locaties + ' loc.' : '') + (i.anwLeverancier ? ' &middot; ' + i.anwLeverancier : ''),
+        meta: (i.aantalBedden ? i.aantalBedden.toLocaleString('nl-NL') + ' bedden' : '') + (i.locaties ? ' &middot; ' + i.locaties + ' loc.' : ''),
         body: renderBedrijfsinfoBody(i)
+      })}
+      ${accordion({
+        icon: '&#9881;', title: 'Leveranciers',
+        meta: (i.anwLeverancier ? 'ANW: ' + i.anwLeverancier : 'geen ANW') + (i.ecdLeverancier && i.ecdLeverancier !== 'Onbekend' ? ' &middot; ECD: ' + i.ecdLeverancier : ''),
+        body: renderLeveranciersBody(i)
       })}
       ${websiteHtml}
     </div>`;
@@ -14259,6 +14293,38 @@ function bindOverlayChrome(i){
       e.preventDefault();
       e.stopPropagation();
       addPersonToOverlay(btn.dataset.instId, btn.dataset.addPeople);
+    });
+  });
+  // + Andere leverancier
+  document.querySelectorAll('#overlayPanel [data-add-andere]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const instId = btn.dataset.instId;
+      const inst = getInstellingRaw(instId);
+      const arr = (overrides[instId] && Array.isArray(overrides[instId].andereItLeveranciers))
+        ? overrides[instId].andereItLeveranciers.slice()
+        : (inst && Array.isArray(inst.andereItLeveranciers) ? inst.andereItLeveranciers.map(x => ({ ...x })) : []);
+      arr.push({ naam: '', domein: '' });
+      setOverrides(instId, { andereItLeveranciers: arr });
+      openInstelling(instId);
+    });
+  });
+  // Verwijder andere leverancier
+  document.querySelectorAll('#overlayPanel .dir-delete-btn[data-andere-delete]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const instId = btn.dataset.instId;
+      const idx = parseInt(btn.dataset.andereIdx, 10);
+      const inst = getInstellingRaw(instId);
+      const arr = (overrides[instId] && Array.isArray(overrides[instId].andereItLeveranciers))
+        ? overrides[instId].andereItLeveranciers.slice()
+        : (inst && Array.isArray(inst.andereItLeveranciers) ? inst.andereItLeveranciers.map(x => ({ ...x })) : []);
+      if(!arr[idx]) return;
+      const naam = arr[idx].naam || 'deze leverancier';
+      if(!confirm('Verwijder ' + naam + '?')) return;
+      arr.splice(idx, 1);
+      setOverrides(instId, { andereItLeveranciers: arr });
+      openInstelling(instId);
     });
   });
   // + Opportunity-knop
@@ -14322,6 +14388,22 @@ function saveInlineEdit(instId, el){
     let v = el.value;
     if(typeof v === 'string' && v.trim() === '' && f !== 'omschrijving') v = null;
     updateOpportunity(instId, oppId, { [f]: v });
+    flashInlineSaved(el);
+    return;
+  }
+  if(el.classList.contains('ie-andere')){
+    // Andere leverancier bewerken op index — schrijf hele array terug.
+    const idx = parseInt(el.dataset.andereIdx, 10);
+    const f = el.dataset.andereField;
+    const inst = getInstellingRaw(instId);
+    const baseArr = (overrides[instId] && Array.isArray(overrides[instId].andereItLeveranciers))
+      ? overrides[instId].andereItLeveranciers.slice()
+      : (inst && Array.isArray(inst.andereItLeveranciers) ? inst.andereItLeveranciers.map(x => ({ ...x })) : []);
+    if(!baseArr[idx]) return;
+    let v = el.value;
+    if(typeof v === 'string' && v.trim() === '') v = null;
+    baseArr[idx] = { ...baseArr[idx], [f]: v };
+    setOverrides(instId, { andereItLeveranciers: baseArr });
     flashInlineSaved(el);
     return;
   }
