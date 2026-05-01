@@ -1554,7 +1554,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.15.0",
+    "version": "1.15.1",
     "codename": "Procyon",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1683,6 +1683,12 @@ const DATA = {
         "codename": "Procyon",
         "date": "2026-05-01",
         "note": "Grote release: opportunities als eerste-klas entity (titel/omschrijving/status/eigenaar) met beheerbare status-dropdown (Lead/Suspect/Prospect/Contract); todos koppelen aan opportunities (dropdown overal incl. + Nieuwe-optie); signaal → todo workflow met +Maak todo in signal-detail-modal en signalIds[] onder todos. Klantbeeld is altijd in edit-modus (geen toggle); contactpersonen uniform schema (DMU/specialist/bestuurder gebruiken dezelfde modal); leveranciers verplaatst naar eigen accordion (ANW + ECD + andere editable lijst); Bedrijfsinfo-accordion alleen company-stats; suppliers-tab achteraan in nav. Auto signal-retrieval via Vercel cron met RSS-parser (Skipr/Zorgvisie/ICTHealth/NationaleZorggids voor GeriCall) én optionele LLM-curator (Claude + web search) voor brede zoekslag; UI in Beheer > Werkomgeving voor feed-management + Refresh nu. PWA: installable als app op iOS/Android met manifest, service worker en install-knop op landing. Multi-language NL/EN met vlag-switcher in topbar én user-menu. Logo per tenant uploadbaar (vervangt radar in gate + topbar). Beheer-modal opgeschoond: 8 tabs naar 6 (Toewijzingen + Wekelijkse update prompt verwijderd want vervangen door tenant-users en RSS+LLM-cron); Werkomgeving-tab in 4 inline accordions (Identiteit & propositie / Logo / Automatische signalen / Geavanceerd). Mobile header op 1 regel; topbar logo klikbaar als home; exclusive accordion in klantbeeld (1 sectie tegelijk open); context-aware overlay met breadcrumb-pill per entree (instelling / signaal / opportunity / todo). KPI-rij + score-breakdown verwijderd om ruimte te besparen. GeriCall workspace-beschrijving uitgebreid met volledige propositie + markt-beschrijving + 64 entiteiten als seed met klant-flags."
+      },
+      {
+        "version": "1.15.1",
+        "codename": "Procyon",
+        "date": "2026-05-01",
+        "note": "Patch-release: (1) Signal-loss in GeriCall opgelost — getMarketSignalen gebruikte tenantHasOwnEntities() om de baseline te kiezen, maar GeriCall heeft tegenwoordig óók een eigen entiteiten[]-lijst → DATA.signalen-baseline viel weg. Fix: legacy-detectie op slug/id; baseline blijft voor GeriCall. (2) Nieuwe (auto/LLM-)signalen openden geen popup — click-handler zocht alleen in DATA.signalen i.p.v. de gemerged getMarketSignalen-lijst, en signalen zonder geldige instellingId vielen niet terug op de detail-modal. Fix: merged lookup + fallback naar openSignalDetail. (3) Klantbeeld toonde 'Wijs een eigenaar toe' terwijl het overzicht de juiste eigenaar liet zien — race condition: OWNERS-list async gehydrateerd na overlay-render. Fix: currentUser-fallback in renderOwnerBlock + synthetische dropdown-optie voor onbekende owner-id + auto-rerender van overzicht en open klantbeeld zodra OWNERS arriveert. (4) Klantbeeld markt-agnostisch voor non-GeriCall tenants (van Ameyde, etc.): hide-empty kerngetallen, segmenten + ANW/ECD + Specialisten Ouderengeneeskunde alleen voor GeriCall, nieuwe sectie 'Eigen velden' (key/value, inline editable) in Bedrijfsinfo voor markt-specifieke metrics zoals 'Aantal claims' of 'Premium-volume', accordion-meta past zich aan op tenant. (5) Klantbeeld opent nu correct voor alle tenants: getInstellingRaw is universe-aware en valt niet meer alleen terug op DATA.instellingen. (6) LLM-curator toggle slaat direct op (geen Opslaan-klik nodig)."
       }
     ],
     "totalInstellingen": 64,
@@ -11592,6 +11598,15 @@ async function syncOwnersList(){
       OWNERS = [{ id: currentUser.id, naam: currentUser.naam, email: currentUser.email || null }];
     }
   }
+  // Bij eerste hydratie kunnen al renders gedaan zijn met een lege OWNERS-
+  // lijst (overzicht + open klantbeeld). Refresh ze zodat het selected-
+  // owner-pill direct de juiste naam toont i.p.v. 'Wijs een eigenaar toe'.
+  try { if(typeof renderInstellingen === 'function') renderInstellingen(); } catch(e){}
+  try {
+    if(document.getElementById('overlay')?.classList.contains('show') && typeof currentInstellingId !== 'undefined' && currentInstellingId){
+      openInstelling(currentInstellingId);
+    }
+  } catch(e){}
 }
 
 const STORAGE_KEY = 'marktradar.assignments.v1';
@@ -12907,15 +12922,26 @@ function renderSignals(){
   document.querySelectorAll('.signal-instelling').forEach(el => {
     el.addEventListener('click', (e) => { e.stopPropagation(); openInstelling(el.dataset.instId, 'signaal'); });
   });
+  // Index alle zichtbare signalen — baseline DATA.signalen + auto-cron
+  // remoteSignals — zodat de klik-handler ook werkt op LLM- en RSS-
+  // gegenereerde signalen (id begint met 'auto-' of 'llm-').
+  const allSignalsById = new Map();
+  signalen.forEach(s => { if(s && s.id) allSignalsById.set(String(s.id), s); });
   document.querySelectorAll('.signal').forEach(el => {
     const sid = el.dataset.signalId;
-    const sig = DATA.signalen.find(x => x.id === sid);
+    const sig = allSignalsById.get(String(sid));
     if(!sig) return;
     el.style.cursor = 'pointer';
     el.addEventListener('click', (e) => {
       // Klik op bestaande source-link buiten de detail-modal om laat doorgaan.
       if(e.target.closest('.signal-source')) return;
-      if(sig.instellingId){
+      // Als de signal-instellingId verwijst naar een entiteit die niet in
+      // het universe zit (bv. LLM heeft een sector-signaal teruggegeven of
+      // de naam-match heeft gefaald), val terug op de detail-modal.
+      // Anders zou openInstelling() stilzwijgend afsluiten zonder iets
+      // te tonen → "klik doet niets"-bug.
+      const instOk = sig.instellingId && getInstelling(sig.instellingId);
+      if(instOk){
         openInstelling(sig.instellingId, 'signaal');
       } else {
         openSignalDetail(sig);
@@ -13839,12 +13865,28 @@ function accordion({ icon, title, meta, body, open, editable }){
 
 function renderOwnerBlock(i){
   const oid = ownerForInst(i.id);
-  const o = oid ? ownerById(oid) : null;
+  // Twee bronnen voor de owner-naam: OWNERS-list (gesynchroniseerd via
+  // syncOwnersList) of currentUser zelf. Als OWNERS nog niet gehydrateerd
+  // is bij eerste render (race condition), valt ownerById terug op null
+  // → klantbeeld liet 'Wijs een eigenaar toe' zien terwijl het overzicht
+  // (later gerenderd na hydratie) wel de naam toonde. Fix: pak naam óók
+  // uit currentUser als de id matcht.
+  let o = oid ? ownerById(oid) : null;
+  if(!o && oid && currentUser && oid === currentUser.id){
+    o = { id: currentUser.id, naam: currentUser.naam, email: currentUser.email || null };
+  }
+  // Dropdown-opties: garandeer dat de huidige owner ook in de lijst zit,
+  // zelfs als OWNERS hem (nog) niet kent — anders is de selected-state
+  // visueel leeg en lijkt het alsof er geen eigenaar is gezet.
+  const optList = OWNERS.slice();
+  if(o && !optList.some(x => x.id === o.id)) optList.unshift(o);
   const inner = o
     ? `<div class="owner-pill"><span class="owner-avatar">${o.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase()}</span><div class="owner-name">${escapeHtml(o.naam)}</div></div>`
-    : `<div class="owner-empty-prominent">&larr; Wijs een eigenaar toe</div>`;
+    : (oid
+        ? `<div class="owner-pill" title="Eigenaar-id ${escapeHtml(oid)} niet gevonden in lijst"><span class="owner-avatar">?</span><div class="owner-name">eigenaar (laden...)</div></div>`
+        : `<div class="owner-empty-prominent">&larr; Wijs een eigenaar toe</div>`);
   return `
-    <div class="owner-prominent ${o ? 'assigned' : 'unassigned'}">
+    <div class="owner-prominent ${o || oid ? 'assigned' : 'unassigned'}">
       <div class="owner-prominent-left">
         <div class="owner-prominent-label">Eigenaar</div>
         <div class="owner-prominent-current">${inner}</div>
@@ -13852,7 +13894,7 @@ function renderOwnerBlock(i){
       <div class="owner-prominent-right">
         <select class="owner-select" id="ownerSelect-${i.id}">
           <option value="">— Niemand —</option>
-          ${OWNERS.map(o => `<option value="${o.id}" ${ownerForInst(i.id)===o.id?'selected':''}>${escapeHtml(o.naam)}</option>`).join('')}
+          ${optList.map(opt => `<option value="${opt.id}" ${oid===opt.id?'selected':''}>${escapeHtml(opt.naam)}</option>`).join('')}
         </select>
       </div>
     </div>`;
