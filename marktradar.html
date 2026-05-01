@@ -773,7 +773,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
 .todo-divider{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   color:var(--grey-500);margin-top:8px;padding-top:6px;border-top:1px solid var(--grey-150)}
 .actie-list{display:flex;flex-direction:column;gap:6px}
-.actie-row{display:grid;grid-template-columns:18px 1fr 160px 24px;gap:12px;align-items:center;
+.actie-row{display:grid;grid-template-columns:18px 1fr 150px 130px 24px;gap:10px;align-items:center;
   padding:10px 14px;background:var(--white);border:1px solid var(--grey-200);border-radius:8px;
   transition:opacity .15s,background .12s,border-color .12s;
   cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:rgba(232,119,34,.18);user-select:none}
@@ -792,6 +792,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   background:white;font-family:inherit;font-size:.74rem;color:var(--grey-700);cursor:pointer}
 @media (max-width:720px){
   .actie-row{grid-template-columns:18px 1fr 24px;gap:8px}
+  .actie-row .actie-opp-select,
   .actie-owner-select{grid-column:2 / 3;width:100%;margin-top:2px}
 }
 .directie-item{padding:11px 14px;border-radius:8px;background:var(--white);border:1px solid var(--grey-200);}
