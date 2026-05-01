@@ -129,22 +129,140 @@ async function refreshViaFeeds(tenant) {
   };
 }
 
-function refreshViaLlmStub(_tenant) {
+/**
+ * LLM-curator (Claude + web search). Werkt waar RSS-feeds niet bij komen
+ * — bestuurswisselingen op company-sites, lokale persberichten, RTV-
+ * stations, branchevereniging-publicaties (Verenso/ActiZ), aanbestedingen
+ * op TenderNed. Vereist ANTHROPIC_API_KEY env-var.
+ *
+ * Claude krijgt: tenant.propositie + marktNaam + marktBeschrijving + tot
+ * 30 entiteiten + 14-dagen-venster. Tool: web_search_20250305 (max 8
+ * uses per call, voorkomt runaway-kosten). Output: strikt JSON-array.
+ */
+async function callAnthropicWithSearch(tenant, recentDateIso) {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error('ANTHROPIC_API_KEY niet gezet');
+  const ents = (Array.isArray(tenant.entiteiten) ? tenant.entiteiten : []).slice(0, 30);
+  const entsList = ents.map(e => `- ${e.naam}${e.regio ? ' (' + e.regio + ')' : ''}`).join('\n') || '(nog geen organisaties geconfigureerd)';
+
+  const sys = 'Je bent een sales-intelligence-analist voor MarktRadar. Doe doelgericht web-onderzoek, vind marktsignalen van de afgelopen 14 dagen die relevant zijn voor de propositie, en geef ze terug als strikt JSON. Geen prose, alleen het JSON-array.';
+  const userMessage = `**Werkomgeving:** ${tenant.naam || ''}
+**Propositie:** ${tenant.propositie || '(niet gezet)'}
+**Markt:** ${tenant.marktNaam || '(niet gezet)'}
+**Markt-beschrijving:** ${tenant.marktBeschrijving || '(niet gezet)'}
+
+**Te volgen organisaties:**
+${entsList}
+
+**Opdracht:** Zoek op het web naar marktsignalen na ${recentDateIso} voor deze organisaties. Type signalen: bestuurswisselingen, fusies/overnames, financiële alerts, aanbestedingen (TenderNed), CAO/sector-bewegingen, nieuwe locaties/uitbreiding. Filter strikt op datum (laatste 14 dagen). Voor elk signaal: datum (YYYY-MM-DD), urgentie (laag|middel|hoog), type, instellingNaam (matcht een van bovenstaande organisaties OF leeg voor sector-signaal), headline (max 200 chars), summary (max 500 chars), source (bron-naam), sourceUrl (volledige URL).
+
+**Output: alleen JSON-array, geen prose:**
+[{"datum":"2026-04-23","urgentie":"middel","type":"...","instellingNaam":"...","headline":"...","summary":"...","source":"...","sourceUrl":"..."}]`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 8192,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 8 }],
+      system: sys,
+      messages: [{ role: 'user', content: userMessage }],
+    }),
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error('Anthropic API ' + res.status + ': ' + t.slice(0, 500));
+  }
+  const j = await res.json();
+  const text = (j.content || []).filter(b => b && b.type === 'text').map(b => b.text).join('\n');
+  const m = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
+  if (!m) {
+    return { items: [], rawTextSnippet: text.slice(0, 200) };
+  }
+  let arr;
+  try { arr = JSON.parse(m[0]); } catch (e) { throw new Error('JSON-parse mislukt op LLM-output: ' + e.message); }
+  return { items: Array.isArray(arr) ? arr : [], usage: j.usage };
+}
+
+async function refreshViaLlm(tenant) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return {
+      mode: 'llm-skipped',
+      reason: 'ANTHROPIC_API_KEY niet geconfigureerd in Vercel env-vars. Voeg toe om de LLM-curator te activeren.',
+    };
+  }
+  const recentDate = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
+  const { items, usage, rawTextSnippet } = await callAnthropicWithSearch(tenant, recentDate);
+  if (items.length === 0) {
+    return { mode: 'llm', candidates: 0, matched: 0, newSaved: 0, note: 'Claude vond geen signalen in dit venster' + (rawTextSnippet ? ' (tekst-fragment: "' + rawTextSnippet + '")' : ''), usage };
+  }
+  // Match instellingNaam tegen entiteiten op exacte (case-insensitive) naam
+  const ents = Array.isArray(tenant.entiteiten) ? tenant.entiteiten : [];
+  const byName = new Map(ents.map(e => [String(e.naam).toLowerCase().trim(), e]));
+  const signals = items.map(it => {
+    if (!it || !it.datum || !it.headline) return null;
+    const namKey = String(it.instellingNaam || '').toLowerCase().trim();
+    const matched = byName.get(namKey);
+    return {
+      id: 'llm-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
+      datum: String(it.datum).slice(0, 10),
+      urgentie: ['laag','middel','hoog'].includes(it.urgentie) ? it.urgentie : 'middel',
+      type: String(it.type || 'auto').slice(0, 40),
+      instellingId: matched ? matched.id : null,
+      instellingNaam: matched ? matched.naam : (it.instellingNaam || null),
+      headline: String(it.headline).slice(0, 200),
+      summary: String(it.summary || '').slice(0, 500),
+      source: String(it.source || 'LLM-curator').slice(0, 100),
+      sourceUrl: it.sourceUrl || null,
+    };
+  }).filter(Boolean);
+  const key = tenantSignalsKey(tenant.id);
+  const existing = (await auth.kvGet(key)) || [];
+  const existingUrls = new Set(existing.filter(s => s && s.sourceUrl).map(s => s.sourceUrl));
+  const fresh = signals.filter(s => s.sourceUrl && !existingUrls.has(s.sourceUrl));
+  const merged = [...fresh, ...existing]
+    .sort((a, b) => (b.datum || '').localeCompare(a.datum || ''))
+    .slice(0, SIGNALS_CAP);
+  await auth.kvSet(key, merged);
   return {
-    mode: 'llm-stub',
-    skipped: true,
-    reason: 'LLM-curator nog niet geïmplementeerd. Configureer feeds via Beheer > Werkomgeving om automatische refresh te activeren.',
+    mode: 'llm',
+    candidates: items.length,
+    matched: signals.length,
+    newSaved: fresh.length,
+    totalAfter: merged.length,
+    usage,
   };
 }
 
 async function refreshOneTenant(tenantId) {
   const tenant = await auth.kvGet(auth.tenantMetaKey(tenantId));
   if (!tenant) return { tenantId, error: 'Tenant niet gevonden' };
-  let result;
-  if (Array.isArray(tenant.feeds) && tenant.feeds.length > 0) {
-    result = await refreshViaFeeds(tenant);
+  // Twee modes kunnen samen lopen: feeds (goedkoop) + LLM (breder).
+  // Beslislogica:
+  //   - feeds[] aanwezig → run feeds
+  //   - useLlmCurator true OF (geen feeds én Anthropic key) → run LLM
+  // Resultaten worden gemerged in de signals-KV (per refreshViaX-functie).
+  const runs = [];
+  let result = null;
+  const hasFeeds = Array.isArray(tenant.feeds) && tenant.feeds.length > 0;
+  const wantLlm = !!tenant.useLlmCurator || (!hasFeeds && !!process.env.ANTHROPIC_API_KEY);
+  if (hasFeeds) {
+    try { runs.push({ feeds: await refreshViaFeeds(tenant) }); } catch (e) { runs.push({ feeds: { mode: 'feeds', error: String(e.message || e) } }); }
+  }
+  if (wantLlm) {
+    try { runs.push({ llm: await refreshViaLlm(tenant) }); } catch (e) { runs.push({ llm: { mode: 'llm', error: String(e.message || e) } }); }
+  }
+  if (runs.length === 0) {
+    result = { mode: 'no-source', reason: 'Geen feeds geconfigureerd en LLM-curator niet geactiveerd. Voeg feeds toe in Beheer > Werkomgeving of zet useLlmCurator aan.' };
+  } else if (runs.length === 1) {
+    result = runs[0].feeds || runs[0].llm;
   } else {
-    result = refreshViaLlmStub(tenant);
+    result = { mode: 'combined', feeds: runs[0].feeds, llm: runs[1].llm };
   }
   // Schrijf laatste-run-log voor inspectie in de Beheer-UI
   await auth.kvSet(tenantRefreshLogKey(tenantId), {

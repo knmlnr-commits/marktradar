@@ -38,6 +38,7 @@ function publicTenant(t) {
     entiteiten: Array.isArray(t.entiteiten) ? t.entiteiten : null,
     klanten: Array.isArray(t.klanten) ? t.klanten : [],
     feeds: Array.isArray(t.feeds) ? t.feeds : [],
+    useLlmCurator: !!t.useLlmCurator,
     onboardingDone: !!t.onboardingDone,
     market: Array.isArray(t.market) ? t.market : null,
     marketDefined: !!t.marketDefined,
@@ -162,6 +163,7 @@ module.exports = async function handler(req, res) {
       const body = await readJsonBody(req);
       const t = await loadOrCreate(session.tenantId);
       if (typeof body.naam === 'string') t.naam = String(body.naam).trim() || t.naam;
+      if (typeof body.useLlmCurator === 'boolean') t.useLlmCurator = body.useLlmCurator;
       if (typeof body.slug === 'string' && body.slug.trim()) {
         // Legacy 'gericall' slug is gereserveerd voor de seed-tenant
         const desired = auth.slugifyName(body.slug.trim());

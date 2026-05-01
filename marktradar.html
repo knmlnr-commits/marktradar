@@ -1276,14 +1276,26 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <div id="tenantResult" style="font-size:.82rem"></div>
       <div id="tenantStats" style="margin-top:10px;font-size:.78rem;color:var(--grey-700);padding:10px 12px;background:var(--grey-50);border-radius:6px;border:1px solid var(--grey-150)"></div>
 
-      <!-- RSS-feeds beheer -->
+      <!-- LLM-curator toggle -->
       <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--grey-200)">
+        <div class="acc-sub-title" style="margin-bottom:6px">Automatische signalen</div>
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--orange-pale);border:1px solid var(--orange);border-radius:8px;cursor:pointer;margin-bottom:14px">
+          <input type="checkbox" id="tenant-use-llm" style="margin-top:3px">
+          <span style="font-size:.84rem;color:var(--grey-900);line-height:1.45">
+            <strong>LLM-curator (Claude + web search)</strong><br>
+            <span style="color:var(--grey-700);font-size:.78rem">Brede zoekslag op het web in plaats van alleen RSS. Vindt bestuurswisselingen, aanbestedingen, persberichten — ook van bronnen zonder feed. Vereist <code>ANTHROPIC_API_KEY</code> in Vercel-env. Kost ~$0.20–$1 per refresh.</span>
+          </span>
+        </label>
+      </div>
+
+      <!-- RSS-feeds beheer -->
+      <div style="margin-top:18px">
         <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
           RSS-feeds voor automatische signalen
           <button class="btn-secondary" id="feedRefreshNowBtn" style="margin-left:auto;font-size:.74rem;padding:4px 10px">Refresh nu</button>
         </div>
         <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">
-          Elke maandagochtend 06:00 UTC haalt de cron deze feeds op, filtert artikelen van de afgelopen 7 dagen, en matcht ze fuzzy op je organisaties. De &lsquo;Refresh nu&rsquo;-knop start hetzelfde proces direct voor jouw tenant.
+          Elke maandagochtend 06:00 UTC haalt de cron deze feeds op, filtert artikelen van de afgelopen 7 dagen, en matcht ze fuzzy op je organisaties. Beide modes (RSS + LLM) kunnen samen lopen — resultaten worden gemerged. De &lsquo;Refresh nu&rsquo;-knop start direct voor jouw tenant.
         </p>
         <div id="tenantFeedsList" style="margin-bottom:10px"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
@@ -14591,6 +14603,8 @@ async function refreshTenantPane(){
   if(mNaamEl) mNaamEl.value = currentTenant?.marktNaam || '';
   if(mDescEl) mDescEl.value = currentTenant?.marktBeschrijving || '';
   if(idEl) idEl.value = currentTenant?.id || '—';
+  const llmEl = document.getElementById('tenant-use-llm');
+  if(llmEl) llmEl.checked = !!currentTenant?.useLlmCurator;
   // Render feed-list + status uit laatste cron-run
   renderFeedsList();
   loadLastRun().then(lr => renderFeedsStatus(lr));
@@ -14616,13 +14630,14 @@ async function onTenantSave(){
   const propositie = (document.getElementById('tenant-propositie').value || '').trim();
   const marktNaam = (document.getElementById('tenant-markt-naam').value || '').trim();
   const marktBeschrijving = (document.getElementById('tenant-markt-beschrijving').value || '').trim();
+  const useLlmCurator = !!document.getElementById('tenant-use-llm')?.checked;
   const out = document.getElementById('tenantResult');
   if(!naam){ out.innerHTML = '<span style="color:var(--red)">Naam is verplicht.</span>'; return; }
   try {
-    // Naam + slug via /api/tenant?action=update
+    // Naam + slug + useLlmCurator via /api/tenant?action=update
     const r = await apiFetch('/api/tenant?action=update', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ naam, slug: slug || undefined })
+      body: JSON.stringify({ naam, slug: slug || undefined, useLlmCurator })
     });
     const j = await r.json().catch(() => ({}));
     if(!r.ok) throw new Error(j.error || 'Tenant-update mislukt');
