@@ -164,7 +164,16 @@ body{
   .user-badge .user-name{display:none}
   .user-badge{padding:3px 3px 3px 3px;gap:0}
   .user-menu-chev{display:none}
+  /* Topbar lang-switch verdwijnt op mobiel — taalkeuze blijft beschikbaar
+     via het user-menu (zie .user-menu-lang). Spaart ~70px header-ruimte. */
+  .topbar > .lang-switch{display:none}
+  /* Brand-sub (tenant-naam) ook weg op mobiel zodat de header op 1 regel past */
+  .topbar-sub{display:none}
 }
+.user-menu-lang{display:flex;gap:4px;padding:8px 12px;border-bottom:1px solid var(--grey-150)}
+.user-menu-lang button{flex:1;padding:6px 8px;border-radius:6px;border:1px solid var(--grey-200);background:var(--white);font:inherit;font-size:.78rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.user-menu-lang button.active{background:var(--orange-pale);border-color:var(--orange);color:var(--orange-dark);font-weight:600}
+.user-menu-lang button:hover{background:var(--grey-100)}
 .scope-bar{background:var(--orange-pale);border-bottom:1px solid var(--orange);
   padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--orange-dark);flex-wrap:wrap}
 .scope-label{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.66rem}
@@ -1091,6 +1100,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <span class="user-menu-chev">&#9662;</span>
       </span>
       <div class="user-menu" id="userMenu">
+        <div class="user-menu-lang">
+          <button type="button" class="lang-btn" data-lang="nl" title="Nederlands">🇳🇱 NL</button>
+          <button type="button" class="lang-btn" data-lang="en" title="English">🇬🇧 EN</button>
+        </div>
         <button type="button" class="user-menu-item" data-um-action="password" data-i18n="menu.password">Wachtwoord wijzigen</button>
         <button type="button" class="user-menu-item" data-um-action="logout" data-i18n="menu.logout">Uitloggen</button>
       </div>
@@ -1275,6 +1288,23 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       </div>
       <div id="tenantResult" style="font-size:.82rem"></div>
       <div id="tenantStats" style="margin-top:10px;font-size:.78rem;color:var(--grey-700);padding:10px 12px;background:var(--grey-50);border-radius:6px;border:1px solid var(--grey-150)"></div>
+
+      <!-- Eigen logo per tenant -->
+      <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--grey-200)">
+        <div class="acc-sub-title" style="margin-bottom:6px">Eigen logo</div>
+        <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">
+          Upload een SVG, PNG of WEBP — vervangt het radar-logo in de gate, topbar en op het home-screen icoon (PWA). Aanbevolen: vierkant, 256×256 of groter, transparante achtergrond.
+        </p>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <div id="tenant-logo-preview" style="width:64px;height:64px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--grey-200);border-radius:10px;background:var(--white);overflow:hidden"></div>
+          <div style="flex:1;min-width:200px">
+            <label class="btn-secondary" for="tenant-logo-file" style="cursor:pointer;display:inline-block">Upload logo&hellip;</label>
+            <input type="file" id="tenant-logo-file" accept="image/svg+xml,image/png,image/jpeg,image/webp" style="display:none">
+            <button type="button" class="btn-secondary" id="tenant-logo-clear" style="margin-left:6px;border-color:var(--red);color:var(--red)">Verwijder</button>
+            <div id="tenant-logo-status" style="margin-top:6px;font-size:.74rem;color:var(--grey-600)"></div>
+          </div>
+        </div>
+      </div>
 
       <!-- LLM-curator toggle -->
       <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--grey-200)">
@@ -14168,6 +14198,8 @@ function toggleKvBanner(show){
   if(b) b.classList.toggle('show', !!show);
 }
 function renderUserBadge(){
+  // Logo-vervang draait altijd als de tenant er een heeft
+  try { applyTenantLogo(); } catch(e){}
   const badge = document.getElementById('userBadge');
   if(!badge) return;
   if(currentUser){
@@ -14465,6 +14497,89 @@ function bindUserMenu(){
   });
 }
 
+/* ===== Logo-upload per tenant ===== */
+function applyTenantLogo(){
+  // Vervangt het inline radar-SVG in topbar en gate door tenant.logoDataUri
+  // wanneer die gezet is. Bij verwijdering valt het terug op het default
+  // radar-icoon (re-render via renderUserBadge / applyGateBranding).
+  const uri = currentTenant && currentTenant.logoDataUri;
+  const topbarMark = document.getElementById('topbarBrandMark');
+  const gateMark = document.getElementById('gate-brand-mark');
+  if(uri){
+    if(topbarMark) topbarMark.innerHTML = `<img src="${escapeHtml(uri)}" alt="" style="width:30px;height:30px;object-fit:contain;border-radius:6px">`;
+    if(gateMark) gateMark.innerHTML = `<img src="${escapeHtml(uri)}" alt="" style="width:38px;height:38px;object-fit:contain;border-radius:8px">`;
+  } else {
+    // Niet overschrijven als geen tenant.logoDataUri — de radar-SVG staat
+    // er hardcoded; alleen herstellen wanneer eerder een img is geplaatst.
+    if(topbarMark && topbarMark.querySelector('img')) topbarMark.innerHTML = DEFAULT_TOPBAR_LOGO_SVG;
+    if(gateMark && gateMark.querySelector('img')) gateMark.innerHTML = DEFAULT_GATE_LOGO_SVG;
+  }
+}
+const DEFAULT_TOPBAR_LOGO_SVG = `<svg viewBox="0 0 100 100" width="30" height="30" xmlns="http://www.w3.org/2000/svg" aria-label="MarktRadar"><circle cx="50" cy="50" r="46" fill="#fafafb" stroke="#1a1a1f" stroke-width="3"/><circle cx="50" cy="50" r="32" fill="none" stroke="#c7c7ce" stroke-width="1.5"/><circle cx="50" cy="50" r="18" fill="none" stroke="#c7c7ce" stroke-width="1.5"/><path d="M 50 50 L 50 4 A 46 46 0 0 1 90 27 Z" fill="#e87722" fill-opacity=".22"/><line x1="50" y1="50" x2="90" y2="27" stroke="#e87722" stroke-width="2.4" stroke-linecap="round"/><circle cx="76" cy="28" r="3.6" fill="#e87722"/><circle cx="76" cy="28" r="7" fill="none" stroke="#e87722" stroke-width="1.2" stroke-opacity=".5"/><circle cx="50" cy="50" r="3" fill="#1a1a1f"/></svg>`;
+const DEFAULT_GATE_LOGO_SVG = `<svg viewBox="0 0 100 100" width="38" height="38" xmlns="http://www.w3.org/2000/svg" aria-label="MarktRadar"><circle cx="50" cy="50" r="46" fill="#fafafb" stroke="#1a1a1f" stroke-width="3"/><circle cx="50" cy="50" r="32" fill="none" stroke="#c7c7ce" stroke-width="1.5"/><circle cx="50" cy="50" r="18" fill="none" stroke="#c7c7ce" stroke-width="1.5"/><line x1="6" y1="50" x2="94" y2="50" stroke="#e3e3e8" stroke-width="1"/><line x1="50" y1="6" x2="50" y2="94" stroke="#e3e3e8" stroke-width="1"/><path d="M 50 50 L 50 4 A 46 46 0 0 1 90 27 Z" fill="#e87722" fill-opacity=".22"/><line x1="50" y1="50" x2="90" y2="27" stroke="#e87722" stroke-width="2.4" stroke-linecap="round"/><circle cx="76" cy="28" r="3.6" fill="#e87722"/><circle cx="76" cy="28" r="7" fill="none" stroke="#e87722" stroke-width="1.2" stroke-opacity=".5"/><circle cx="50" cy="50" r="3" fill="#1a1a1f"/></svg>`;
+
+function renderTenantLogoPreview(){
+  const wrap = document.getElementById('tenant-logo-preview');
+  if(!wrap) return;
+  const uri = currentTenant && currentTenant.logoDataUri;
+  wrap.innerHTML = uri
+    ? `<img src="${escapeHtml(uri)}" alt="logo" style="width:100%;height:100%;object-fit:contain">`
+    : `<span style="font-family:'DM Mono',monospace;font-size:.62rem;color:var(--grey-500)">geen logo</span>`;
+}
+
+async function onTenantLogoUpload(file){
+  const status = document.getElementById('tenant-logo-status');
+  if(!file){ return; }
+  if(!/image\/(svg\+xml|png|jpeg|webp)/i.test(file.type)){
+    if(status) status.innerHTML = '<span style="color:var(--red)">Type niet toegestaan — alleen SVG, PNG, JPEG of WEBP.</span>';
+    return;
+  }
+  if(file.size > 75000){
+    if(status) status.innerHTML = '<span style="color:var(--red)">Bestand te groot (>75 KB). Comprimeer eerst.</span>';
+    return;
+  }
+  if(status) status.textContent = 'Lezen…';
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const dataUri = reader.result;
+    try {
+      const r = await apiFetch('/api/tenant?action=set-logo', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ logoDataUri: dataUri })
+      });
+      const j = await r.json();
+      if(!r.ok) throw new Error(j.error || 'Upload mislukt');
+      if(j.tenant) currentTenant = j.tenant;
+      if(status) status.innerHTML = '<span style="color:var(--green)">Logo opgeslagen.</span>';
+      renderTenantLogoPreview();
+      applyTenantLogo();
+    } catch(err){
+      if(status) status.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+    }
+  };
+  reader.onerror = () => { if(status) status.innerHTML = '<span style="color:var(--red)">Bestand lezen mislukt.</span>'; };
+  reader.readAsDataURL(file);
+}
+
+async function onTenantLogoClear(){
+  const status = document.getElementById('tenant-logo-status');
+  if(!confirm('Logo verwijderen en terug naar het standaard MarktRadar-icoon?')) return;
+  try {
+    const r = await apiFetch('/api/tenant?action=set-logo', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ logoDataUri: '' })
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'Mislukt');
+    if(j.tenant) currentTenant = j.tenant;
+    if(status) status.innerHTML = '<span style="color:var(--grey-600)">Logo verwijderd.</span>';
+    renderTenantLogoPreview();
+    applyTenantLogo();
+  } catch(err){
+    if(status) status.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  }
+}
+
 /* ===== RSS-feed-management voor de huidige tenant ===== */
 
 function renderFeedsList(){
@@ -14605,6 +14720,7 @@ async function refreshTenantPane(){
   if(idEl) idEl.value = currentTenant?.id || '—';
   const llmEl = document.getElementById('tenant-use-llm');
   if(llmEl) llmEl.checked = !!currentTenant?.useLlmCurator;
+  renderTenantLogoPreview();
   // Render feed-list + status uit laatste cron-run
   renderFeedsList();
   loadLastRun().then(lr => renderFeedsStatus(lr));
@@ -14912,6 +15028,10 @@ function bindAdminModal(){
   if(feedAddBtn) feedAddBtn.addEventListener('click', onFeedAdd);
   const feedRefreshBtn = document.getElementById('feedRefreshNowBtn');
   if(feedRefreshBtn) feedRefreshBtn.addEventListener('click', onRefreshNow);
+  const logoFile = document.getElementById('tenant-logo-file');
+  if(logoFile) logoFile.addEventListener('change', e => onTenantLogoUpload(e.target.files?.[0]));
+  const logoClear = document.getElementById('tenant-logo-clear');
+  if(logoClear) logoClear.addEventListener('click', onTenantLogoClear);
   const marketSaveBtn = document.getElementById('marketSaveBtn');
   if(marketSaveBtn) marketSaveBtn.addEventListener('click', onMarketSave);
   const marketResetBtn = document.getElementById('marketResetBtn');

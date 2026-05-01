@@ -39,6 +39,7 @@ function publicTenant(t) {
     klanten: Array.isArray(t.klanten) ? t.klanten : [],
     feeds: Array.isArray(t.feeds) ? t.feeds : [],
     useLlmCurator: !!t.useLlmCurator,
+    logoDataUri: t.logoDataUri || null,
     onboardingDone: !!t.onboardingDone,
     market: Array.isArray(t.market) ? t.market : null,
     marketDefined: !!t.marketDefined,
@@ -267,6 +268,22 @@ module.exports = async function handler(req, res) {
       if (Array.isArray(t.entiteiten)) {
         t.entiteiten.forEach(e => { e.klant = set.has(String(e.id)); });
       }
+      t.updatedAt = Date.now(); t.updatedBy = session.email;
+      await auth.kvSet(auth.tenantMetaKey(session.tenantId), t);
+      return res.status(200).json({ tenant: publicTenant(t) });
+    }
+    if (action === 'set-logo' && req.method === 'POST') {
+      const body = await readJsonBody(req);
+      const dataUri = typeof body.logoDataUri === 'string' ? body.logoDataUri : '';
+      // Validatie: data:image/(svg+xml|png|jpeg|webp);base64,... — max 100KB
+      if (dataUri && !/^data:image\/(svg\+xml|png|jpeg|jpg|webp);base64,/i.test(dataUri)) {
+        return res.status(400).json({ error: 'Logo moet een data:image/(svg+xml|png|jpeg|webp);base64-URI zijn' });
+      }
+      if (dataUri && dataUri.length > 100000) {
+        return res.status(400).json({ error: 'Logo te groot — maximaal 100 KB (≈75 KB binary).' });
+      }
+      const t = await loadOrCreate(session.tenantId);
+      t.logoDataUri = dataUri || null;
       t.updatedAt = Date.now(); t.updatedBy = session.email;
       await auth.kvSet(auth.tenantMetaKey(session.tenantId), t);
       return res.status(200).json({ tenant: publicTenant(t) });
