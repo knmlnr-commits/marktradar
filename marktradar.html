@@ -1267,6 +1267,24 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       </div>
       <div id="tenantResult" style="font-size:.82rem"></div>
       <div id="tenantStats" style="margin-top:10px;font-size:.78rem;color:var(--grey-700);padding:10px 12px;background:var(--grey-50);border-radius:6px;border:1px solid var(--grey-150)"></div>
+
+      <!-- RSS-feeds beheer -->
+      <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--grey-200)">
+        <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          RSS-feeds voor automatische signalen
+          <button class="btn-secondary" id="feedRefreshNowBtn" style="margin-left:auto;font-size:.74rem;padding:4px 10px">Refresh nu</button>
+        </div>
+        <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">
+          Elke maandagochtend 06:00 UTC haalt de cron deze feeds op, filtert artikelen van de afgelopen 7 dagen, en matcht ze fuzzy op je organisaties. De &lsquo;Refresh nu&rsquo;-knop start hetzelfde proces direct voor jouw tenant.
+        </p>
+        <div id="tenantFeedsList" style="margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+          <div class="edit-field" style="flex:2;min-width:240px"><label>Feed-URL</label><input type="url" id="feed-url" placeholder="https://www.example.com/feed/"></div>
+          <div class="edit-field" style="flex:1;min-width:140px"><label>Label</label><input type="text" id="feed-label" placeholder="bv. Skipr"></div>
+          <button class="btn-primary" id="feedAddBtn" style="height:38px">+ Feed</button>
+        </div>
+        <div id="tenantFeedsStatus" style="margin-top:10px;font-size:.78rem"></div>
+      </div>
     </div>
     <div id="adminPaneMarket" class="admin-pane" style="display:none">
       <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Definieer welke instellingen tot jouw markt behoren. Alleen geselecteerde instellingen tellen mee in lijsten, signalen, opportunities, acties en KPI's. Standaard staat alles aan; je kunt verfijnen op provincie/regio of individueel selecteren.</p>
@@ -14427,6 +14445,125 @@ function bindUserMenu(){
   });
 }
 
+/* ===== RSS-feed-management voor de huidige tenant ===== */
+
+function renderFeedsList(){
+  const list = document.getElementById('tenantFeedsList');
+  if(!list) return;
+  const feeds = (currentTenant && Array.isArray(currentTenant.feeds)) ? currentTenant.feeds : [];
+  if(feeds.length === 0){
+    list.innerHTML = '<div class="dmu-empty" style="padding:8px 12px">Nog geen feeds. Voeg er hieronder één toe.</div>';
+    return;
+  }
+  list.innerHTML = feeds.map((f, idx) => `
+    <div class="feed-row" style="display:grid;grid-template-columns:1fr 160px 28px;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--grey-150);border-radius:6px;margin-bottom:6px;background:var(--white)">
+      <div style="font-size:.84rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(f.url)}">
+        <strong>${escapeHtml(f.label || '—')}</strong>
+        <div style="font-size:.7rem;color:var(--grey-500);font-family:'DM Mono',monospace;overflow:hidden;text-overflow:ellipsis">${escapeHtml(f.url)}</div>
+      </div>
+      <div style="font-size:.7rem;color:var(--grey-600);font-family:'DM Mono',monospace">${escapeHtml(f.type || 'rss')}</div>
+      <button type="button" class="dir-delete-btn" data-feed-idx="${idx}" title="Feed verwijderen" aria-label="Verwijderen">&times;</button>
+    </div>`).join('');
+  list.querySelectorAll('.dir-delete-btn[data-feed-idx]').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const idx = parseInt(btn.dataset.feedIdx, 10);
+      const feeds = (currentTenant.feeds || []).slice();
+      const removed = feeds.splice(idx, 1)[0];
+      if(!removed) return;
+      if(!confirm('Feed "' + (removed.label || removed.url) + '" verwijderen?')) return;
+      await saveFeeds(feeds);
+    });
+  });
+}
+
+function renderFeedsStatus(lastRun){
+  const out = document.getElementById('tenantFeedsStatus');
+  if(!out) return;
+  if(!lastRun){
+    out.innerHTML = '<span style="color:var(--grey-600)">Nog geen cron-run uitgevoerd voor deze tenant. Klik <strong>Refresh nu</strong> om handmatig te starten.</span>';
+    return;
+  }
+  const ts = lastRun.ranAt ? new Date(lastRun.ranAt).toLocaleString('nl-NL') : '—';
+  const mode = lastRun.mode || '?';
+  if(mode === 'feeds'){
+    const errs = (lastRun.errors || []).length;
+    out.innerHTML = `<div style="padding:8px 10px;background:${errs ? 'var(--orange-pale)' : 'var(--green-light)'};border-radius:6px;border:1px solid ${errs ? 'var(--orange)' : 'var(--green)'};">
+      <strong>Laatste run ${escapeHtml(ts)}</strong> &middot;
+      ${lastRun.feedsChecked || 0} feeds &middot;
+      ${lastRun.itemsFetched || 0} items &middot;
+      ${lastRun.matched || 0} matches &middot;
+      ${lastRun.newSaved || 0} nieuw opgeslagen
+      ${errs ? `<div style="margin-top:4px;font-size:.74rem">⚠ ${errs} feed${errs===1?'':'s'} faalde${errs===1?'':'n'}: ${(lastRun.errors||[]).map(e => escapeHtml(e.feed)).join(', ')}</div>` : ''}
+    </div>`;
+  } else if(mode === 'llm-stub'){
+    out.innerHTML = `<div style="padding:8px 10px;background:var(--grey-100);border-radius:6px;border:1px solid var(--grey-200)">
+      <strong>Laatste run ${escapeHtml(ts)}</strong> &middot; ${escapeHtml(lastRun.reason || 'LLM-curator nog niet geconfigureerd')}
+    </div>`;
+  } else {
+    out.innerHTML = `<div style="padding:8px 10px;background:var(--grey-50);border-radius:6px;border:1px solid var(--grey-200);font-family:'DM Mono',monospace;font-size:.72rem">${escapeHtml(JSON.stringify(lastRun))}</div>`;
+  }
+}
+
+async function loadLastRun(){
+  try {
+    const r = await apiFetch('/api/tenant?action=last-refresh');
+    if(!r.ok) return null;
+    const j = await r.json();
+    return j.lastRun || null;
+  } catch(e){ return null; }
+}
+
+async function saveFeeds(feeds){
+  const out = document.getElementById('tenantFeedsStatus');
+  if(out) out.innerHTML = '<span style="color:var(--grey-600)">Opslaan…</span>';
+  try {
+    const r = await apiFetch('/api/tenant?action=set-feeds', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ feeds })
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'Feeds opslaan mislukt');
+    if(j.tenant) currentTenant = j.tenant;
+    renderFeedsList();
+    if(out) out.innerHTML = '<span style="color:var(--green)">' + (j.aantal || 0) + ' feed(s) opgeslagen.</span>';
+  } catch(err){
+    if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  }
+}
+
+async function onFeedAdd(){
+  const url = (document.getElementById('feed-url')?.value || '').trim();
+  const label = (document.getElementById('feed-label')?.value || '').trim();
+  if(!url){ alert('Feed-URL is verplicht.'); return; }
+  if(!/^https?:\/\//i.test(url)){ alert('URL moet beginnen met http:// of https://'); return; }
+  const feeds = (currentTenant && Array.isArray(currentTenant.feeds) ? currentTenant.feeds.slice() : []);
+  feeds.push({ url, label: label || new URL(url).hostname, type: 'rss' });
+  await saveFeeds(feeds);
+  document.getElementById('feed-url').value = '';
+  document.getElementById('feed-label').value = '';
+}
+
+async function onRefreshNow(){
+  const out = document.getElementById('tenantFeedsStatus');
+  const btn = document.getElementById('feedRefreshNowBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Bezig…'; }
+  if(out) out.innerHTML = '<span style="color:var(--grey-600)">Cron handmatig starten…</span>';
+  try {
+    const r = await apiFetch('/api/signals/refresh', { method: 'POST' });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'Refresh mislukt');
+    const result = (j.results && j.results[0]) || {};
+    renderFeedsStatus({ ranAt: Date.now(), ...result });
+    // Trigger ook frontend re-fetch van signalen
+    try { await syncRemoteSignals(); if(typeof renderSignals === 'function') renderSignals(); if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+  } catch(err){
+    if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = 'Refresh nu'; }
+  }
+}
+
 async function refreshTenantPane(){
   const naamEl = document.getElementById('tenant-naam');
   const slugEl = document.getElementById('tenant-slug');
@@ -14446,6 +14583,9 @@ async function refreshTenantPane(){
   if(mNaamEl) mNaamEl.value = currentTenant?.marktNaam || '';
   if(mDescEl) mDescEl.value = currentTenant?.marktBeschrijving || '';
   if(idEl) idEl.value = currentTenant?.id || '—';
+  // Render feed-list + status uit laatste cron-run
+  renderFeedsList();
+  loadLastRun().then(lr => renderFeedsStatus(lr));
   if(stats){
     const universe = getEntiteitenUniverse();
     const baseN = universe.length;
@@ -14745,6 +14885,10 @@ function bindAdminModal(){
     document.getElementById('adminModal').classList.remove('show');
     openOnboarding();
   });
+  const feedAddBtn = document.getElementById('feedAddBtn');
+  if(feedAddBtn) feedAddBtn.addEventListener('click', onFeedAdd);
+  const feedRefreshBtn = document.getElementById('feedRefreshNowBtn');
+  if(feedRefreshBtn) feedRefreshBtn.addEventListener('click', onRefreshNow);
   const marketSaveBtn = document.getElementById('marketSaveBtn');
   if(marketSaveBtn) marketSaveBtn.addEventListener('click', onMarketSave);
   const marketResetBtn = document.getElementById('marketResetBtn');

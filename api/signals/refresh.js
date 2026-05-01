@@ -32,6 +32,16 @@ function isAuthorizedCron(req) {
   return false;
 }
 
+// Probeer een sessie-gebaseerde auth (Bearer token van een ingelogde
+// gebruiker). Daarmee kunnen admins via de Beheer-UI handmatig hun eigen
+// tenant refreshen, zonder dat ze CRON_SECRET nodig hebben.
+async function getSessionAuth(req) {
+  try {
+    const session = await auth.getSession(req);
+    return session ? session.tenantId : null;
+  } catch (e) { return null; }
+}
+
 function tenantSignalsKey(tenantId) {
   return 'marktradar:tenant:' + tenantId + ':signals:v1';
 }
@@ -149,10 +159,23 @@ module.exports = async function handler(req, res) {
   if (!auth.kvConfigured()) {
     return res.status(503).json({ error: 'KV niet geconfigureerd' });
   }
-  if (!isAuthorizedCron(req)) {
-    return res.status(401).json({ error: 'Unauthorized — alleen Vercel cron of geldige CRON_SECRET' });
+  // Twee auth-paden:
+  // 1. Vercel cron / CRON_SECRET → mag alle tenants of specifieke ID
+  // 2. Sessie-token → alleen de eigen tenant (tenantId uit sessie)
+  const cronOk = isAuthorizedCron(req);
+  let sessionTenantId = null;
+  if (!cronOk) {
+    sessionTenantId = await getSessionAuth(req);
+    if (!sessionTenantId) {
+      return res.status(401).json({ error: 'Unauthorized — Vercel cron, CRON_SECRET of geldige sessie vereist' });
+    }
   }
   try {
+    if (sessionTenantId) {
+      // Sessie-pad: forceer tenantId vanuit sessie, negeer ?tenantId param
+      const r = await refreshOneTenant(sessionTenantId);
+      return res.status(200).json({ ok: true, mode: 'session', results: [r] });
+    }
     const explicit = req.query && req.query.tenantId;
     if (explicit) {
       const r = await refreshOneTenant(String(explicit));
