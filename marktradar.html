@@ -1638,7 +1638,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.15.6",
+    "version": "1.15.7",
     "codename": "Procyon",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1803,6 +1803,12 @@ const DATA = {
         "codename": "Procyon",
         "date": "2026-05-01",
         "note": "Handmatig nieuwe organisaties en signalen aanmaken. (1) '+ Nieuwe organisatie' op de Instellingen-tab toolbar opent een modal voor naam, hoofdvestiging, provincie/regio, website, klant-flag en notitie. Append naar tenant.entiteiten via /api/tenant?action=set-entiteiten. Direct na opslaan opent de nieuwe organisatie zodat je verder kunt bewerken (eigenaar, bedden, eigen velden). (2) '+ Nieuw signaal' op de Signalen-tab toolbar opent een modal voor datum, urgentie, type, organisatie (dropdown — leeg = sector-signaal), headline, samenvatting en bron + bron-URL. Save merged in remoteSignals en POST naar /api/signals/list. Werkt voor alle tenants (GeriCall + non-GeriCall). De auto-cron blijft signalen bij-pushen maar overschrijft je handmatige entries niet (id-prefix 'usr-' vs 'auto-'/'llm-')."
+      },
+      {
+        "version": "1.15.7",
+        "codename": "Procyon",
+        "date": "2026-05-01",
+        "note": "App onthoudt nu waar je was bij een page-reload. Persisted naar localStorage (key marktradar.ui-state.v1): actieve tab, open instelling + overlay-context, alle filter-keuzes (signalFilter/Sort, instFilter/Sort/Prov/Owner, searchQuery, trendsLens/Sort, actiesFilter, oppSort, scopeMode). Bij init wordt eerst applyUiState aangeroepen, dan eerste render, dan dropdowns + tabs gesynced en eventueel openInstelling opnieuw geopend (wacht 700ms op tenant-syncs als getInstelling nog null returnt). Latente bug fixed: currentInstellingId werd gebruikt in twee plekken maar nergens gedeclareerd of toegekend — dat is nu wel zo, met clear in closeOverlay zodat een gesloten klantbeeld bij reload niet ongevraagd weer opent."
       }
     ],
     "totalInstellingen": 64,
@@ -11687,6 +11693,53 @@ let searchQuery = '';
 let trendsLens = 'auto';
 let trendsSort = 'delta-abs';
 
+// ---------------- UI-state persistence ----------------
+// Onthoud waar de gebruiker was: actieve tab, open instelling, filter-
+// keuzes. Voorkomt dat een page-reload je terugzet op de start-tab met
+// alle filters gereset. localStorage zodat dit ook overleeft over login/
+// logout — sessionStorage zou bij elke browser-quit kwijt zijn.
+const UI_STATE_STORAGE = 'marktradar.ui-state.v1';
+let currentInstellingId = null;
+function saveUiState(){
+  try {
+    const state = {
+      tab: document.querySelector('.tab.active')?.dataset.tab || null,
+      openInst: currentInstellingId,
+      overlayCtx: typeof currentOverlayContext !== 'undefined' ? currentOverlayContext : null,
+      signalFilter, signalSort,
+      instFilter, instSort, instProv, instRegio, instOwner,
+      searchQuery,
+      trendsLens, trendsSort,
+      actiesFilter: typeof actiesFilter !== 'undefined' ? actiesFilter : null,
+      oppSort: typeof oppSort !== 'undefined' ? oppSort : null,
+      scopeMode: typeof scopeMode !== 'undefined' ? scopeMode : null,
+    };
+    localStorage.setItem(UI_STATE_STORAGE, JSON.stringify(state));
+  } catch(e){}
+}
+function loadUiState(){
+  try { return JSON.parse(localStorage.getItem(UI_STATE_STORAGE) || 'null') || null; }
+  catch(e){ return null; }
+}
+function applyUiState(state){
+  if(!state) return;
+  // Filters herstellen vóór render zodat de eerste render direct de
+  // juiste subset toont (geen flash van default → filtered).
+  if(typeof state.signalFilter === 'string') signalFilter = state.signalFilter;
+  if(typeof state.signalSort === 'string') signalSort = state.signalSort;
+  if(typeof state.instFilter === 'string') instFilter = state.instFilter;
+  if(typeof state.instSort === 'string') instSort = state.instSort;
+  if(typeof state.instProv === 'string') instProv = state.instProv;
+  if(typeof state.instRegio === 'string') instRegio = state.instRegio;
+  if(typeof state.instOwner === 'string') instOwner = state.instOwner;
+  if(typeof state.searchQuery === 'string') searchQuery = state.searchQuery;
+  if(typeof state.trendsLens === 'string') trendsLens = state.trendsLens;
+  if(typeof state.trendsSort === 'string') trendsSort = state.trendsSort;
+  if(typeof state.actiesFilter === 'string' && typeof actiesFilter !== 'undefined') actiesFilter = state.actiesFilter;
+  if(typeof state.oppSort === 'string' && typeof oppSort !== 'undefined') oppSort = state.oppSort;
+  if(typeof state.scopeMode === 'string' && typeof scopeMode !== 'undefined') scopeMode = state.scopeMode;
+}
+
 // OWNERS = strikt de tenant-gebruikers. Geen hardcoded defaults meer;
 // een hardcoded lijstje vervuilde de dropdown met namen die niet
 // (meer) corresponderen met echte accounts.
@@ -12363,6 +12416,10 @@ function relevantLensesFor(status){
 
 function initApp(){
   document.getElementById('lastUpdated').textContent = `${fmtFullDate(DATA.meta.lastUpdated)} · WK ${DATA.meta.weekNumber}`;
+  // Filters/sorts uit localStorage herstellen vóór de eerste render zodat
+  // de gebruiker zijn vorige filtering meteen terugziet (geen flash).
+  const _savedUi = loadUiState();
+  if(_savedUi) applyUiState(_savedUi);
   renderKpiRow();
   renderTabs();
   renderSignalFilters();
@@ -12376,6 +12433,37 @@ function initApp(){
   bindTabs();
   bindSearch();
   bindSorts();
+  // Reflecteer hersteld filters in de DOM-controls (dropdowns + searchbox).
+  if(_savedUi){
+    const setVal = (id, v) => { const el = document.getElementById(id); if(el && typeof v === 'string') el.value = v; };
+    setVal('signalSort', _savedUi.signalSort);
+    setVal('instSort', _savedUi.instSort);
+    setVal('instProv', _savedUi.instProv);
+    setVal('instOwner', _savedUi.instOwner);
+    setVal('trendsSort', _savedUi.trendsSort);
+    setVal('actiesFilter', _savedUi.actiesFilter);
+    setVal('oppSort', _savedUi.oppSort);
+    setVal('globalSearch', _savedUi.searchQuery);
+    // Tab herstellen + eventueel openInstelling re-openen.
+    if(_savedUi.tab){
+      try { activateTab(_savedUi.tab); } catch(e){}
+    }
+    if(_savedUi.openInst){
+      // Wacht tot data geladen is — getInstelling werkt pas als de
+      // tenant-entiteiten + overrides synced zijn. Probeer eerst direct,
+      // anders na 600ms (na de bulk-syncs).
+      const tryOpen = () => {
+        try {
+          if(getInstelling(_savedUi.openInst)){
+            openInstelling(_savedUi.openInst, _savedUi.overlayCtx || 'instelling');
+            return true;
+          }
+        } catch(e){}
+        return false;
+      };
+      if(!tryOpen()) setTimeout(tryOpen, 700);
+    }
+  }
   bindRefreshPane();
   bindAssignmentsPane();
   bindContactsPane();
@@ -12939,24 +13027,30 @@ function renderTabs(){
   const actiesEl = document.getElementById('tabCountActies');
   if(actiesEl) actiesEl.textContent = scopeTodos.filter(t => !t.done).length;
 }
+function activateTab(target){
+  if(!target) return;
+  const btn = document.querySelector('.tab[data-tab="' + target + '"]');
+  const pane = document.getElementById('pane-' + target);
+  if(!btn || !pane) return;
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  pane.classList.add('active');
+  if(target === 'trends'){ renderTrendsLensChips(); renderTrendsTab(); }
+  if(target === 'opportunities'){ renderOppLensChips(); renderOpportunities(); }
+  if(target === 'acties'){ renderActiesOwnerChips(); renderActies(); }
+  saveUiState();
+}
 function bindTabs(){
   document.querySelectorAll('.tab').forEach(t => {
-    t.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-      t.classList.add('active');
-      const target = t.dataset.tab;
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-      document.getElementById(`pane-${target}`).classList.add('active');
-      if(target === 'trends'){ renderTrendsLensChips(); renderTrendsTab(); }
-      if(target === 'opportunities'){ renderOppLensChips(); renderOpportunities(); }
-      if(target === 'acties'){ renderActiesOwnerChips(); renderActies(); }
-    });
+    t.addEventListener('click', () => activateTab(t.dataset.tab));
   });
   const trendsSortEl = document.getElementById('trendsSort');
   if(trendsSortEl){
     trendsSortEl.addEventListener('change', e => {
       trendsSort = e.target.value;
       renderTrendsList(); bindTrendsClicks();
+      saveUiState();
     });
   }
   const actiesFilterEl = document.getElementById('actiesFilter');
@@ -12964,12 +13058,14 @@ function bindTabs(){
     actiesFilterEl.addEventListener('change', e => {
       actiesFilter = e.target.value;
       renderActies();
+      saveUiState();
     });
   }
   const oppSortEl = document.getElementById('oppSort');
   if(oppSortEl){
     oppSortEl.addEventListener('change', e => {
       oppSort = e.target.value;
+      saveUiState();
       renderOpportunities();
     });
   }
@@ -13004,6 +13100,7 @@ function renderSignalFilters(){
     c.addEventListener('click', () => {
       signalFilter = c.dataset.filter;
       renderSignalFilters(); renderSignals();
+      saveUiState();
     });
   });
 }
@@ -13377,7 +13474,7 @@ function renderInstFilters(){
   }).join('');
   document.getElementById('instFilters').innerHTML = html;
   document.querySelectorAll('#instFilters .chip').forEach(c => {
-    c.addEventListener('click', () => { instFilter = c.dataset.filter; renderInstFilters(); renderInstellingen(); });
+    c.addEventListener('click', () => { instFilter = c.dataset.filter; renderInstFilters(); renderInstellingen(); saveUiState(); });
   });
   // DMU-progress label ('X van Y met DMU ≥ 3') is verwijderd — voegde niets
   // toe naast de tab-count en kostte alleen verticale ruimte.
@@ -14610,6 +14707,8 @@ function openInstelling(id, ctx){
   if(ctx) currentOverlayContext = ctx;
   const i = getInstelling(id);
   if(!i) return;
+  currentInstellingId = id;
+  saveUiState();
   const sigs = signalsForInst(id).sort((a,b) => b.datum.localeCompare(a.datum));
   const isEditing = editingInstId === id;
   const ctxCfg = OVERLAY_CTX[currentOverlayContext] || OVERLAY_CTX.instelling;
@@ -15206,6 +15305,7 @@ function bindScopeBar(){
       renderKpiRow();
       renderTabs();
       renderOpportunities();
+      saveUiState();
     });
   });
 }
@@ -16341,7 +16441,11 @@ function bindTodoHandlers(i){
     if(del) del.addEventListener('click', () => { deleteTodo(i.id, tid); openInstelling(i.id); });
   });
 }
-function closeOverlay(){ document.getElementById('overlay').classList.remove('show'); }
+function closeOverlay(){
+  document.getElementById('overlay').classList.remove('show');
+  currentInstellingId = null;
+  saveUiState();
+}
 document.getElementById('overlay').addEventListener('click', (e) => {
   if(e.target.id === 'overlay') closeOverlay();
 });
@@ -17062,17 +17166,17 @@ function renderTrendsLensChips(){
 
 function bindSearch(){
   document.getElementById('globalSearch').addEventListener('input', (e) => {
-    searchQuery = e.target.value.trim(); renderSignals(); renderInstellingen();
+    searchQuery = e.target.value.trim(); renderSignals(); renderInstellingen(); saveUiState();
   });
 }
 function bindSorts(){
   // Null-safe: instRegio is in v1.14.1 uit de filter-bar gehaald (overlap met provincie).
   const bind = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('change', fn); };
-  bind('signalSort', e => { signalSort = e.target.value; renderSignals(); });
-  bind('instSort',   e => { instSort   = e.target.value; renderInstellingen(); });
-  bind('instProv',   e => { instProv   = e.target.value; renderInstellingen(); });
-  bind('instRegio',  e => { instRegio  = e.target.value; renderInstellingen(); });
-  bind('instOwner',  e => { instOwner  = e.target.value; renderInstellingen(); });
+  bind('signalSort', e => { signalSort = e.target.value; renderSignals(); saveUiState(); });
+  bind('instSort',   e => { instSort   = e.target.value; renderInstellingen(); saveUiState(); });
+  bind('instProv',   e => { instProv   = e.target.value; renderInstellingen(); saveUiState(); });
+  bind('instRegio',  e => { instRegio  = e.target.value; renderInstellingen(); saveUiState(); });
+  bind('instOwner',  e => { instOwner  = e.target.value; renderInstellingen(); saveUiState(); });
 }
 
 const WEEKLY_PROMPT = `Werk marktradar.html bij met de signalen van de afgelopen 7 dagen.
