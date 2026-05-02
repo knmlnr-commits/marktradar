@@ -1178,7 +1178,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
 
     <div class="tab-pane" id="pane-instellingen">
       <div class="toolbar">
-        <div class="chip-row" id="instFilters"></div>
+        <select class="sort-select filter-compact" id="instFilters" title="Filter op status / lens" style="min-width:200px"></select>
         <div class="toolbar-spacer"></div>
         <button type="button" class="btn-secondary" id="newInstBtn" style="font-size:.78rem;padding:6px 12px;border-color:var(--orange);color:var(--orange-dark)">+ Organisatie</button>
         <select class="sort-select filter-compact" id="instProv" title="Filter op provincie">
@@ -13443,17 +13443,17 @@ function bindSigCreateModal(){
 }
 
 const INST_FILTERS = [
-  {key:'alle', label:'Alle'},
-  {key:'klant', label:'Klant'},
-  {key:'lead', label:'Lead'},
-  {key:'prospect', label:'Prospect'},
-  {key:'cold', label:'Cold'},
-  {key:'mgmt', label:'Recent mgmt-wisseling'},
-  {key:'hot-acq', label:'Hot acquisitie', lens:'acquisitie', threshold:50},
-  {key:'klant-risk', label:'Klanten op risico', lens:'retention', threshold:35},
-  {key:'top-exp', label:'Top expansion', lens:'expansion', threshold:55},
-  {key:'consol', label:'Consolidatie-target', lens:'consolidatie', threshold:55},
-  {key:'dmu-incompleet', label:'DMU incompleet', dmuMax:3}
+  {key:'alle', label:'Alle', group:'Status'},
+  {key:'klant', label:'Klant', group:'Status'},
+  {key:'lead', label:'Lead', group:'Status'},
+  {key:'prospect', label:'Prospect', group:'Status'},
+  {key:'cold', label:'Cold', group:'Status'},
+  {key:'mgmt', label:'Recent mgmt-wisseling', group:'Signalen'},
+  {key:'dmu-incompleet', label:'DMU incompleet', dmuMax:3, group:'Signalen'},
+  {key:'hot-acq', label:'Hot acquisitie', lens:'acquisitie', threshold:50, group:'Lens'},
+  {key:'klant-risk', label:'Klanten op risico', lens:'retention', threshold:35, group:'Lens'},
+  {key:'top-exp', label:'Top expansion', lens:'expansion', threshold:55, group:'Lens'},
+  {key:'consol', label:'Consolidatie-target', lens:'consolidatie', threshold:55, group:'Lens'},
 ];
 
 function applyLensFilter(items, key){
@@ -13463,21 +13463,38 @@ function applyLensFilter(items, key){
 }
 
 function renderInstFilters(){
+  const sel = document.getElementById('instFilters');
+  if(!sel) return;
   const scoped = instellingenMerged();
   const counts = {alle: scoped.length};
   scoped.forEach(i => { counts[i.gericallStatus] = (counts[i.gericallStatus]||0) + 1; });
   counts.mgmt = scoped.filter(i => (i.directie||[]).some(d => d.recent)).length;
   INST_FILTERS.filter(f => f.lens).forEach(f => { counts[f.key] = applyLensFilter(scoped, f.key).length; });
   counts['dmu-incompleet'] = scoped.filter(i => (i.dmu||[]).length < 3).length;
-  const html = INST_FILTERS.map(f => {
+  // Group filters per categorie zodat de dropdown visueel rustig blijft.
+  // Filters met count=0 worden weggelaten (behalve 'alle' altijd zichtbaar).
+  const groups = {};
+  INST_FILTERS.forEach(f => {
     const c = counts[f.key] || 0;
-    if(f.key !== 'alle' && c === 0) return '';
-    return `<button class="chip ${instFilter === f.key ? 'active' : ''}" data-filter="${f.key}">${f.label} <span class="chip-count">${c}</span></button>`;
-  }).join('');
-  document.getElementById('instFilters').innerHTML = html;
-  document.querySelectorAll('#instFilters .chip').forEach(c => {
-    c.addEventListener('click', () => { instFilter = c.dataset.filter; renderInstFilters(); renderInstellingen(); saveUiState(); });
+    if(f.key !== 'alle' && c === 0) return;
+    (groups[f.group || 'Filter'] = groups[f.group || 'Filter'] || []).push({...f, count: c});
   });
+  // Volgorde van groepen: Status, Signalen, Lens (insertion order is OK).
+  const html = Object.keys(groups).map(g => `
+    <optgroup label="${escapeHtml(g)}">
+      ${groups[g].map(f => `<option value="${escapeHtml(f.key)}" ${instFilter === f.key ? 'selected' : ''}>${escapeHtml(f.label)} (${f.count})</option>`).join('')}
+    </optgroup>`).join('');
+  sel.innerHTML = html;
+  // Bind eenmalig — change-handler vervangt de oude chip-click-handler.
+  if(!sel.dataset.boundChange){
+    sel.dataset.boundChange = '1';
+    sel.addEventListener('change', () => {
+      instFilter = sel.value;
+      renderInstFilters();
+      renderInstellingen();
+      saveUiState();
+    });
+  }
   // DMU-progress label ('X van Y met DMU ≥ 3') is verwijderd — voegde niets
   // toe naast de tab-count en kostte alleen verticale ruimte.
   const stale = document.getElementById('instDmuProgress');
