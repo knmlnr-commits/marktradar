@@ -1589,7 +1589,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.15.3",
+    "version": "1.15.4",
     "codename": "Procyon",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1736,6 +1736,12 @@ const DATA = {
         "codename": "Procyon",
         "date": "2026-05-01",
         "note": "Mensen: bestuurder en DMU samengevoegd tot één lijst contactpersonen. Het kunstmatige onderscheid tussen 'Directie / Raad van Bestuur' en 'DMU' is weg — een bestuurder is gewoon een contactpersoon met rol='decider'. Eén centrale '+ Contactpersoon'-knop bovenaan; de rol (decider / champion / influencer / gatekeeper / blocker) wordt in de modal gekozen. Voor GeriCall blijft de sectie 'Specialisten Ouderengeneeskunde' apart (per vakgebied gegroepeerd) en is er een Type-dropdown (contactpersoon vs specialist). Voor andere tenants is de modal nog simpeler — gewoon één type. Bestaande baseline-directie[]-records blijven zichtbaar in de samengevoegde lijst en edits routeren netjes terug naar directie[] (via _source-tag, geen data-migratie). DMU-card-clicks gebruiken nu een data-dmu-key i.p.v. DOM-index — dat fixed een latente bug waar je op de verkeerde kaart kon klikken zodra de rol-grouping de DOM-volgorde verschoof."
+      },
+      {
+        "version": "1.15.4",
+        "codename": "Procyon",
+        "date": "2026-05-01",
+        "note": "Activiteit-accordion uit klantbeeld verwijderd: was een rommelige mix van marktsignalen + CRM-notities + Pipedrive-import-activiteiten zonder klikbaar detail of koppeling naar todo's. Marktsignalen staan nog steeds in de Signalen-tab. CRM-notities en Pipedrive-activiteiten zijn niet weggegooid: ze zijn verplaatst naar een nieuwe (read-only) 'Notities'-accordion die alleen verschijnt als er items zijn. Signaal-context (klik op een signaal in de Signalen-tab) opent nu de Todo-accordion in plaats van Activiteit, conform CRM best practice (signaal → actie)."
       }
     ],
     "totalInstellingen": 64,
@@ -14269,6 +14275,40 @@ function renderOpportunitiesSection(i){
     </div>`;
 }
 
+function renderNotitiesBody(i){
+  // Read-only weergave van bestaande CRM-notities + geïmporteerde
+  // Pipedrive-activiteiten — beide als notitie-stijl entries. Vervangt
+  // de verwijderde Activiteit-accordion (v1.15.4). Marktsignalen staan
+  // al in de Signalen-tab; daar hoeven ze hier niet ook nog eens te
+  // verschijnen.
+  const items = [];
+  const crm = i.crm || {};
+  (crm.notities || []).forEach(n => items.push({
+    datum: n.datum, kind: 'notitie',
+    titel: 'Notitie' + (n.gebruiker ? ' · ' + n.gebruiker : ''),
+    tekst: n.tekst || '',
+  }));
+  (crm.activiteiten || []).forEach(a => items.push({
+    datum: a.datum, kind: 'activiteit',
+    titel: (a.type || 'Activiteit') + (a.onderwerp ? ': ' + a.onderwerp : ''),
+    tekst: a.notitie || a.notes || '',
+  }));
+  if(items.length === 0){
+    return '<div class="dmu-empty" style="padding:14px 18px">Geen notities of geïmporteerde activiteiten voor deze organisatie.</div>';
+  }
+  items.sort((a, b) => (b.datum || '').localeCompare(a.datum || ''));
+  return `<div style="display:flex;flex-direction:column;gap:8px">
+    ${items.map(it => `
+      <div style="padding:10px 12px;border:1px solid var(--grey-200);border-radius:8px;background:var(--white)">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
+          <strong style="font-size:.85rem">${escapeHtml(it.titel)}</strong>
+          <span style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--grey-600)">${escapeHtml(it.datum || '?')}</span>
+        </div>
+        ${it.tekst ? `<div style="font-size:.82rem;color:var(--grey-800);line-height:1.5;margin-top:6px;white-space:pre-wrap">${escapeHtml(it.tekst)}</div>` : '<div style="font-size:.78rem;color:var(--grey-500);font-style:italic;margin-top:4px">geen tekst</div>'}
+      </div>`).join('')}
+  </div>`;
+}
+
 function renderActivityBody(i, sigs){
   // Chronologische tijdlijn van markt-signalen + CRM-notities + CRM-activiteiten.
   const items = [];
@@ -14367,12 +14407,13 @@ function renderLeveranciersBody(i){
 let currentOverlayContext = 'instelling';
 const OVERLAY_CTX = {
   instelling:  { label: 'Klantbeeld',          icon: '&#9636;', open: ['acties', 'pipeline'], color: 'var(--grey-600)' },
-  signaal:     { label: 'Vanuit signaal',      icon: '&#9889;', open: ['activiteit', 'acties'], color: '#b94a3c' },
+  signaal:     { label: 'Vanuit signaal',      icon: '&#9889;', open: ['acties'], color: '#b94a3c' },
   opportunity: { label: 'Vanuit opportunity',  icon: '&#9733;', open: ['pipeline'], color: 'var(--orange)' },
   actie:       { label: 'Vanuit todo',         icon: '&#9745;', open: ['acties'], color: '#5a8a5a' },
   mensen:      { label: 'Mensen',              icon: '&#9758;', open: ['mensen'], color: 'var(--grey-600)' },
   bedrijfsinfo:{ label: 'Bedrijfsinfo',        icon: '&#9636;', open: ['bedrijfsinfo'], color: 'var(--grey-600)' },
   leveranciers:{ label: 'Leveranciers',        icon: '&#9881;', open: ['leveranciers'], color: 'var(--grey-600)' },
+  notities:    { label: 'Notities',            icon: '&#9998;', open: ['notities'], color: 'var(--grey-600)' },
 };
 
 function openInstelling(id, ctx){
@@ -14417,8 +14458,11 @@ function openInstelling(id, ctx){
   // wordt niet meer gerenderd vanuit openInstelling.
   const tc = todoCounts(i.id);
   const dmuMerged = combinedDmu(i);
-  const dmuCount = dmuMerged.length + (i.specialisten || []).length + (i.directie || []).length;
-  const activityCount = sigs.length + (i.crm ? (i.crm.notities||[]).length + (i.crm.activiteiten||[]).length : 0);
+  const dmuCount = dmuMerged.length + (i.specialisten || []).length;
+  // Notities = imported CRM-notities + Pipedrive crm.activiteiten samen
+  // als historische context (read-only). Per v1.15.4 vervangt dit de
+  // verwijderde Activiteit-accordion.
+  const notitieCount = i.crm ? ((i.crm.notities||[]).length + (i.crm.activiteiten||[]).length) : 0;
   const dealsCount = i.crm ? (i.crm.deals||[]).length : 0;
   const websiteHtml = i.website ? `<div style="padding:10px 18px 16px"><a href="${escapeHtml(i.website)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--orange-dark);font-weight:600;text-decoration:none">${escapeHtml(i.website.replace('https://','').replace('http://',''))} &#x2197;</a></div>` : '';
   // CRM best practice: eigenaar zit in de header, niet in een accordion.
@@ -14443,12 +14487,13 @@ function openInstelling(id, ctx){
         open: ctxCfg.open[0] === 'mensen',
         body: renderMensenBody(i)
       })}
-      ${accordion({
-        icon: '&#9889;', title: 'Activiteit',
-        meta: activityCount + (activityCount === 1 ? ' item' : ' items'),
-        open: ctxCfg.open[0] === 'activiteit',
-        body: renderActivityBody(i, sigs)
-      })}
+      ${notitieCount > 0 ? accordion({
+        icon: '&#9998;', title: 'Notities',
+        meta: notitieCount + ' notitie' + (notitieCount === 1 ? '' : 's'),
+        open: ctxCfg.open[0] === 'notities',
+        body: renderNotitiesBody(i)
+      }) : ''}
+
       ${(() => {
         const isLegacyT = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
         const cfCount = Object.keys((overrides[i.id] && overrides[i.id].customFields) || i.customFields || {}).length;
