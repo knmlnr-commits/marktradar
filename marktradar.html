@@ -1589,7 +1589,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.15.4",
+    "version": "1.15.5",
     "codename": "Procyon",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1742,6 +1742,12 @@ const DATA = {
         "codename": "Procyon",
         "date": "2026-05-01",
         "note": "Activiteit-accordion uit klantbeeld verwijderd: was een rommelige mix van marktsignalen + CRM-notities + Pipedrive-import-activiteiten zonder klikbaar detail of koppeling naar todo's. Marktsignalen staan nog steeds in de Signalen-tab. CRM-notities en Pipedrive-activiteiten zijn niet weggegooid: ze zijn verplaatst naar een nieuwe (read-only) 'Notities'-accordion die alleen verschijnt als er items zijn. Signaal-context (klik op een signaal in de Signalen-tab) opent nu de Todo-accordion in plaats van Activiteit, conform CRM best practice (signaal → actie)."
+      },
+      {
+        "version": "1.15.5",
+        "codename": "Procyon",
+        "date": "2026-05-01",
+        "note": "Fix: vinkje voor automatische signalen (LLM-curator) bleef niet 'opgeslagen'. Root cause: er waren twee publicTenant()-functies — een in api/tenant.js (returnde useLlmCurator + feeds + logo) en een in api/auth.js (returnde dat NIET). /api/auth?action=me — de call die bij login + page-load currentTenant ophaalt — gebruikte de auth-versie. De toggle werd dus wel correct naar KV geschreven (POST /api/tenant?action=update werkt prima), maar bij volgende load was useLlmCurator undefined in currentTenant en dus stond het vinkje weer uit. Fix: auth.js' publicTenant volledig gelijkgetrokken met tenant.js' versie (useLlmCurator + feeds + logoDataUri toegevoegd). Geen client-side wijziging nodig."
       }
     ],
     "totalInstellingen": 64,
