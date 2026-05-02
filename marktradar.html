@@ -1166,6 +1166,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <div class="toolbar">
         <div class="chip-row" id="signalFilters"></div>
         <div class="toolbar-spacer"></div>
+        <button type="button" class="btn-primary" id="newSignalBtn" style="padding:6px 12px;font-size:.82rem">+ Nieuw signaal</button>
         <select class="sort-select" id="signalSort">
           <option value="date">Sorteer op datum</option>
           <option value="urgency">Sorteer op urgentie</option>
@@ -1179,6 +1180,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <div class="toolbar">
         <div class="chip-row" id="instFilters"></div>
         <div class="toolbar-spacer"></div>
+        <button type="button" class="btn-primary" id="newInstBtn" style="padding:6px 12px;font-size:.82rem">+ Nieuwe organisatie</button>
         <select class="sort-select filter-compact" id="instProv" title="Filter op provincie">
           <option value="all">Alle provincies</option>
         </select>
@@ -1537,6 +1539,53 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   </div>
 </div>
 
+<div class="refresh-modal" id="instCreateModal">
+  <div class="refresh-modal-panel" style="max-width:640px">
+    <h3 style="margin-bottom:6px">Nieuwe organisatie</h3>
+    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:14px">Voeg een organisatie toe aan deze werkomgeving. Verschijnt direct in het overzicht en is daar bewerkbaar voor verdere details.</p>
+    <div class="edit-field"><label>Naam</label><input type="text" id="instCreate-naam" placeholder="bv. Zorgvilla Nederland" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <div class="edit-field"><label>Hoofdvestiging</label><input type="text" id="instCreate-hoofd" placeholder="bv. Utrecht" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+      <div class="edit-field"><label>Provincie</label><input type="text" id="instCreate-provincie" placeholder="bv. Utrecht" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <div class="edit-field"><label>Regio <small>(optioneel)</small></label><input type="text" id="instCreate-regio" placeholder="bv. Midden" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+      <div class="edit-field"><label>Website <small>(optioneel)</small></label><input type="url" id="instCreate-website" placeholder="https://" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    </div>
+    <div class="edit-field" style="margin-top:10px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="instCreate-klant"> Bestaande klant</label>
+    </div>
+    <div class="edit-field" style="margin-top:10px"><label>Korte notitie / propositie <small>(optioneel)</small></label><textarea id="instCreate-notes" placeholder="Wat is deze organisatie? Waar staan ze om bekend?" style="width:100%;min-height:60px;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></textarea></div>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn-secondary" id="instCreateCancel">Annuleren</button>
+      <button class="btn-primary" id="instCreateSave">Toevoegen</button>
+    </div>
+  </div>
+</div>
+
+<div class="refresh-modal" id="signalCreateModal">
+  <div class="refresh-modal-panel" style="max-width:640px">
+    <h3 style="margin-bottom:6px">Nieuw signaal</h3>
+    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:14px">Leg een marktsignaal vast: bestuurswisseling, fusie, aanbesteding, financiële alert, etc. Verschijnt direct in de Signalen-tab.</p>
+    <div style="display:grid;grid-template-columns:140px 1fr 140px;gap:10px">
+      <div class="edit-field"><label>Datum</label><input type="date" id="sigCreate-datum" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+      <div class="edit-field"><label>Organisatie <small>(optioneel — leeg = sector-signaal)</small></label><select id="sigCreate-inst" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></select></div>
+      <div class="edit-field"><label>Urgentie</label><select id="sigCreate-urg" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"><option value="laag">Laag</option><option value="middel" selected>Middel</option><option value="hoog">Hoog</option></select></div>
+    </div>
+    <div class="edit-field" style="margin-top:10px"><label>Type <small>(bv. bestuurswisseling, aanbesteding, fusie, cao, financieel)</small></label><input type="text" id="sigCreate-type" placeholder="bv. bestuurswisseling" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    <div class="edit-field" style="margin-top:10px"><label>Headline</label><input type="text" id="sigCreate-headline" placeholder="bv. Nieuwe CEO benoemd per 1 juli 2026" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    <div class="edit-field" style="margin-top:10px"><label>Samenvatting</label><textarea id="sigCreate-summary" placeholder="Achtergrond, context, waarom relevant..." style="width:100%;min-height:80px;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-top:10px">
+      <div class="edit-field"><label>Bron <small>(naam)</small></label><input type="text" id="sigCreate-source" placeholder="bv. Skipr, eigen contact" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+      <div class="edit-field"><label>Bron-URL <small>(optioneel)</small></label><input type="url" id="sigCreate-sourceUrl" placeholder="https://" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    </div>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn-secondary" id="sigCreateCancel">Annuleren</button>
+      <button class="btn-primary" id="sigCreateSave">Toevoegen</button>
+    </div>
+  </div>
+</div>
+
 <div class="refresh-modal" id="passwordModal">
   <div class="refresh-modal-panel" style="max-width:520px">
     <h3 id="passwordModalTitle">Wachtwoord wijzigen</h3>
@@ -1589,7 +1638,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.15.5",
+    "version": "1.15.6",
     "codename": "Procyon",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1748,6 +1797,12 @@ const DATA = {
         "codename": "Procyon",
         "date": "2026-05-01",
         "note": "Fix: vinkje voor automatische signalen (LLM-curator) bleef niet 'opgeslagen'. Root cause: er waren twee publicTenant()-functies — een in api/tenant.js (returnde useLlmCurator + feeds + logo) en een in api/auth.js (returnde dat NIET). /api/auth?action=me — de call die bij login + page-load currentTenant ophaalt — gebruikte de auth-versie. De toggle werd dus wel correct naar KV geschreven (POST /api/tenant?action=update werkt prima), maar bij volgende load was useLlmCurator undefined in currentTenant en dus stond het vinkje weer uit. Fix: auth.js' publicTenant volledig gelijkgetrokken met tenant.js' versie (useLlmCurator + feeds + logoDataUri toegevoegd). Geen client-side wijziging nodig."
+      },
+      {
+        "version": "1.15.6",
+        "codename": "Procyon",
+        "date": "2026-05-01",
+        "note": "Handmatig nieuwe organisaties en signalen aanmaken. (1) '+ Nieuwe organisatie' op de Instellingen-tab toolbar opent een modal voor naam, hoofdvestiging, provincie/regio, website, klant-flag en notitie. Append naar tenant.entiteiten via /api/tenant?action=set-entiteiten. Direct na opslaan opent de nieuwe organisatie zodat je verder kunt bewerken (eigenaar, bedden, eigen velden). (2) '+ Nieuw signaal' op de Signalen-tab toolbar opent een modal voor datum, urgentie, type, organisatie (dropdown — leeg = sector-signaal), headline, samenvatting en bron + bron-URL. Save merged in remoteSignals en POST naar /api/signals/list. Werkt voor alle tenants (GeriCall + non-GeriCall). De auto-cron blijft signalen bij-pushen maar overschrijft je handmatige entries niet (id-prefix 'usr-' vs 'auto-'/'llm-')."
       }
     ],
     "totalInstellingen": 64,
@@ -12348,8 +12403,14 @@ function initApp(){
   bindSignalDetailModal();
   bindSupplierEditModal();
   bindOppCreateModal();
+  bindInstCreateModal();
+  bindSigCreateModal();
   const newOppBtn = document.getElementById('newOppBtn');
   if(newOppBtn) newOppBtn.addEventListener('click', () => openOppCreateModal());
+  const newInstBtn = document.getElementById('newInstBtn');
+  if(newInstBtn) newInstBtn.addEventListener('click', () => openInstCreateModal());
+  const newSignalBtn = document.getElementById('newSignalBtn');
+  if(newSignalBtn) newSignalBtn.addEventListener('click', () => openSigCreateModal());
   bindDropdownAddHandler();
   bindDropdownDeleteModal();
   bindAdminModal();
@@ -13156,6 +13217,129 @@ function bindSupplierEditModal(){
     if(!_supEditDraft.klanten.includes(v)) _supEditDraft.klanten.push(v);
     renderSupKlantenTags();
     populateSupKlantAdd();
+  });
+}
+
+// ---------------- Nieuwe organisatie ----------------
+function openInstCreateModal(){
+  const m = document.getElementById('instCreateModal');
+  if(!m) return;
+  document.getElementById('instCreate-naam').value = '';
+  document.getElementById('instCreate-hoofd').value = '';
+  document.getElementById('instCreate-provincie').value = '';
+  document.getElementById('instCreate-regio').value = '';
+  document.getElementById('instCreate-website').value = '';
+  document.getElementById('instCreate-klant').checked = false;
+  document.getElementById('instCreate-notes').value = '';
+  m.classList.add('show');
+  setTimeout(() => document.getElementById('instCreate-naam')?.focus(), 50);
+}
+function bindInstCreateModal(){
+  const m = document.getElementById('instCreateModal');
+  if(!m) return;
+  document.getElementById('instCreateCancel').addEventListener('click', () => m.classList.remove('show'));
+  m.addEventListener('click', (e) => { if(e.target.id === 'instCreateModal') m.classList.remove('show'); });
+  document.getElementById('instCreateSave').addEventListener('click', async () => {
+    const naam = (document.getElementById('instCreate-naam').value || '').trim();
+    if(!naam){ alert('Naam is verplicht.'); return; }
+    const newEntity = {
+      id: '',
+      naam,
+      hoofdvestiging: (document.getElementById('instCreate-hoofd').value || '').trim() || null,
+      provincie: (document.getElementById('instCreate-provincie').value || '').trim() || null,
+      regio: (document.getElementById('instCreate-regio').value || '').trim() || null,
+      website: (document.getElementById('instCreate-website').value || '').trim() || null,
+      klant: !!document.getElementById('instCreate-klant').checked,
+      notes: (document.getElementById('instCreate-notes').value || '').trim() || null,
+    };
+    // De API set-entiteiten verwacht de hele array. Lees huidige + push.
+    const current = Array.isArray(currentTenant?.entiteiten) ? currentTenant.entiteiten.slice() : [];
+    current.push(newEntity);
+    try {
+      const r = await apiFetch('/api/tenant?action=set-entiteiten', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entiteiten: current })
+      });
+      const j = await r.json();
+      if(!r.ok) throw new Error(j.error || 'Toevoegen mislukt');
+      if(j.tenant) currentTenant = j.tenant;
+      m.classList.remove('show');
+      try { if(typeof renderInstellingen === 'function') renderInstellingen(); } catch(e){}
+      try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+      // Open de nieuwe organisatie meteen, zodat de gebruiker verder kan
+      // bewerken (eigenaar, bedden, etc.). Pak de zojuist toegevoegde
+      // entry: dezelfde naam, laatste positie in de teruggegeven array.
+      const last = (j.tenant?.entiteiten || []).filter(e => e.naam === naam).slice(-1)[0];
+      if(last && last.id) setTimeout(() => openInstelling(last.id), 100);
+    } catch(err){
+      alert('Fout: ' + err.message);
+    }
+  });
+}
+
+// ---------------- Nieuw signaal ----------------
+function openSigCreateModal(){
+  const m = document.getElementById('signalCreateModal');
+  if(!m) return;
+  document.getElementById('sigCreate-datum').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('sigCreate-urg').value = 'middel';
+  document.getElementById('sigCreate-type').value = '';
+  document.getElementById('sigCreate-headline').value = '';
+  document.getElementById('sigCreate-summary').value = '';
+  document.getElementById('sigCreate-source').value = '';
+  document.getElementById('sigCreate-sourceUrl').value = '';
+  // Vul instelling-dropdown met huidige universe
+  const sel = document.getElementById('sigCreate-inst');
+  const opts = instellingenMerged()
+    .sort((a, b) => a.naam.localeCompare(b.naam))
+    .map(i => `<option value="${escapeHtml(i.id)}">${escapeHtml(i.naam)}</option>`)
+    .join('');
+  sel.innerHTML = '<option value="">— Sector-signaal (geen specifieke organisatie) —</option>' + opts;
+  m.classList.add('show');
+  setTimeout(() => document.getElementById('sigCreate-headline')?.focus(), 50);
+}
+function bindSigCreateModal(){
+  const m = document.getElementById('signalCreateModal');
+  if(!m) return;
+  document.getElementById('sigCreateCancel').addEventListener('click', () => m.classList.remove('show'));
+  m.addEventListener('click', (e) => { if(e.target.id === 'signalCreateModal') m.classList.remove('show'); });
+  document.getElementById('sigCreateSave').addEventListener('click', async () => {
+    const headline = (document.getElementById('sigCreate-headline').value || '').trim();
+    const datum = (document.getElementById('sigCreate-datum').value || '').trim();
+    if(!headline){ alert('Headline is verplicht.'); return; }
+    if(!datum){ alert('Datum is verplicht.'); return; }
+    const instId = document.getElementById('sigCreate-inst').value || null;
+    const inst = instId ? getInstelling(instId) : null;
+    const newSig = {
+      id: 'usr-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
+      datum,
+      urgentie: document.getElementById('sigCreate-urg').value || 'middel',
+      type: (document.getElementById('sigCreate-type').value || 'handmatig').trim() || 'handmatig',
+      instellingId: inst ? inst.id : null,
+      instellingNaam: inst ? inst.naam : null,
+      headline,
+      summary: (document.getElementById('sigCreate-summary').value || '').trim(),
+      source: (document.getElementById('sigCreate-source').value || 'handmatig').trim() || 'handmatig',
+      sourceUrl: (document.getElementById('sigCreate-sourceUrl').value || '').trim() || null,
+    };
+    // /api/signals/list vervangt de hele array; merge dus zelf met
+    // bestaande remoteSignals (die door de cron geschreven zijn) zodat
+    // we niets overschrijven.
+    const merged = [newSig, ...(Array.isArray(remoteSignals) ? remoteSignals : [])].slice(0, 100);
+    try {
+      const r = await apiFetch('/api/signals/list', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signals: merged })
+      });
+      const j = await r.json();
+      if(!r.ok) throw new Error(j.error || 'Opslaan mislukt');
+      remoteSignals = merged;
+      m.classList.remove('show');
+      try { if(typeof renderSignals === 'function') renderSignals(); } catch(e){}
+      try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+    } catch(err){
+      alert('Fout: ' + err.message);
+    }
   });
 }
 
