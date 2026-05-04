@@ -100,6 +100,8 @@ body{
 .gate-help{margin-top:12px;font-size:.74rem;color:var(--grey-500);text-align:center;font-weight:500}
 .gate-toggle-mode{background:none;border:0;color:var(--orange);font:inherit;cursor:pointer;text-decoration:underline;padding:0}
 .gate-toggle-mode:hover{color:var(--orange-dark)}
+.gate-google-btn:hover{background:var(--grey-50);border-color:var(--grey-400)}
+.gate-google-btn:focus{outline:2px solid var(--orange);outline-offset:2px}
 .gate-bootstrap-banner{padding:10px 12px;margin-bottom:12px;background:var(--orange-pale);border:1px solid var(--orange);border-radius:8px;font-size:.78rem;color:var(--orange-dark);font-weight:500}
 .ob-dot{display:inline-block;height:6px;flex:1;border-radius:3px;background:var(--grey-200)}
 .ob-dot.active{background:var(--orange)}
@@ -1037,6 +1039,20 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <span>Onthoud mij op dit apparaat <em>(30 dagen)</em></span>
       </label>
       <button type="submit" id="gate-submit-auth">Inloggen &rarr;</button>
+      <div class="oauth-divider" style="display:flex;align-items:center;gap:12px;margin:14px 0 10px;color:var(--grey-500);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em">
+        <span style="flex:1;height:1px;background:var(--grey-200)"></span>
+        <span>of</span>
+        <span style="flex:1;height:1px;background:var(--grey-200)"></span>
+      </div>
+      <a href="/api/auth?action=oauth-google-start" id="gate-google-btn" class="gate-google-btn" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px;border:1px solid var(--grey-300);border-radius:8px;background:var(--white);color:var(--grey-900);font:inherit;font-weight:600;font-size:.88rem;cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+          <path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/>
+          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.167 6.656 3.58 9 3.58z"/>
+        </svg>
+        <span>Inloggen met Google</span>
+      </a>
       <div class="err" id="gate-err-auth"><span></span></div>
       <div class="gate-help" id="gate-help">
         <button type="button" id="gate-toggle-mode" class="gate-toggle-mode">Nog geen account? Maak je eigen werkomgeving aan</button>
@@ -1638,8 +1654,8 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.15.7",
-    "codename": "Procyon",
+    "version": "1.16.0",
+    "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
       {
@@ -1809,6 +1825,12 @@ const DATA = {
         "codename": "Procyon",
         "date": "2026-05-01",
         "note": "App onthoudt nu waar je was bij een page-reload. Persisted naar localStorage (key marktradar.ui-state.v1): actieve tab, open instelling + overlay-context, alle filter-keuzes (signalFilter/Sort, instFilter/Sort/Prov/Owner, searchQuery, trendsLens/Sort, actiesFilter, oppSort, scopeMode). Bij init wordt eerst applyUiState aangeroepen, dan eerste render, dan dropdowns + tabs gesynced en eventueel openInstelling opnieuw geopend (wacht 700ms op tenant-syncs als getInstelling nog null returnt). Latente bug fixed: currentInstellingId werd gebruikt in twee plekken maar nergens gedeclareerd of toegekend — dat is nu wel zo, met clear in closeOverlay zodat een gesloten klantbeeld bij reload niet ongevraagd weer opent."
+      },
+      {
+        "version": "1.16.0",
+        "codename": "Quasar",
+        "date": "2026-05-04",
+        "note": "Sign in with Google. SSO-side-door naast email + wachtwoord. Backend: OAuth 2.0 authorization-code-flow met state-CSRF-protectie via HTTP-only cookie; nieuwe endpoints /api/auth?action=oauth-google-start (302 → Google consent) en /api/auth?action=oauth-google-callback (302 → /#token=…). Token-exchange via oauth2.googleapis.com/token, user-info via googleapis.com/oauth2/v2/userinfo (geen JWT-decode nodig). Bij callback: bestaand account → koppelt googleId en logt in; onbekend email → nieuwe tenant + user (zelfde pad als register), random temp-wachtwoord zodat password-login als fallback werkt na 'Wachtwoord wijzigen'. Frontend: 'Inloggen met Google'-knop op de gate met officieel Google-G-icoon en hover-/focus-styling, gescheiden van password-form via 'of'-divider. Token komt terug via URL-fragment (#token=…), wordt direct gewist uit history zodat het niet in browser-history of Referer-headers terechtkomt. Foutpaden (state-mismatch, geen email, email-unverified, Google API-fout) worden zichtbaar gemaakt op de gate. Vereist GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET env-vars in Vercel én een geregistreerde redirect-URI (/api/auth?action=oauth-google-callback) in Google Cloud Console."
       }
     ],
     "totalInstellingen": 64,
@@ -11629,8 +11651,44 @@ document.getElementById('gate-form').addEventListener('submit', async (e) => {
   }
 });
 
+// Google OAuth-callback verwerken: na een geslaagde sign-in redirect de
+// API ons terug met '#token=…' (of '#oauthError=…'). Pak het token uit
+// de fragment, sla het op, en wis de fragment uit de URL zodat een
+// volgende reload niet onnodig opnieuw matcht.
+function consumeOAuthFragment(){
+  if(!window.location.hash) return null;
+  const m = window.location.hash.replace(/^#/, '');
+  if(!m) return null;
+  let params;
+  try { params = new URLSearchParams(m); } catch(e){ return null; }
+  if(!params.has('token') && !params.has('oauthError')) return null;
+  // Wis fragment voordat we verder gaan (geen token in browser-history).
+  try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch(e){}
+  if(params.has('oauthError')){
+    return { error: params.get('oauthError') };
+  }
+  return { token: params.get('token'), email: params.get('email') || null };
+}
+
 (async function bootstrapAuth(){
   loadAuthFromStorage();
+  // Als we net van Google terugkomen: token uit fragment overschrijft
+  // een eventueel bestaand auth-token.
+  const oauth = consumeOAuthFragment();
+  if(oauth && oauth.token){
+    authToken = oauth.token;
+    saveAuthToStorage(authToken, null); // user volgt na /auth?action=me
+  } else if(oauth && oauth.error){
+    // Toon foutmelding bij eerste render van de gate.
+    setTimeout(() => {
+      const errEl = document.getElementById('gate-err-auth');
+      if(errEl){
+        errEl.classList.add('show');
+        const sp = errEl.querySelector('span') || errEl;
+        sp.textContent = 'Google sign-in mislukt: ' + oauth.error;
+      }
+    }, 200);
+  }
   // Branding-lookup vroeg starten zodat de gate de juiste tenant-naam toont.
   const brandingPromise = URL_SLUG ? fetchTenantBranding(URL_SLUG) : Promise.resolve(null);
   const detect = await detectAuthMode();

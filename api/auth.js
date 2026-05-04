@@ -449,6 +449,168 @@ async function resetPassword(req, res) {
   });
 }
 
+// ---------------- Google OAuth (sign-in side-door) ----------------
+// Volledige redirect-flow (geen popup-flow), zodat we geen client-id
+// in de browser-bundle hoeven te tonen voor de PKCE-variant. State-
+// CSRF-bescherming via een HTTP-only cookie die we tijdens de start-
+// stap zetten en op de callback verifiëren.
+//
+// Endpoints:
+//   GET  /api/auth?action=oauth-google-start     → 302 → Google consent
+//   GET  /api/auth?action=oauth-google-callback  → 302 → /?token=…
+//
+// Vereiste env-vars in Vercel:
+//   GOOGLE_CLIENT_ID
+//   GOOGLE_CLIENT_SECRET
+//
+// Authorized redirect URI in Google Cloud Console moet exact zijn:
+//   https://<jouw-vercel-domain>/api/auth?action=oauth-google-callback
+//
+// Bij eerste login matched op email; geen account → nieuwe tenant
+// (zelfde flow als register). Bestaand account → koppelt en logt in.
+const OAUTH_STATE_COOKIE = 'mr_oauth_state';
+const OAUTH_REDIRECT_DEFAULT = '/';
+
+function buildOAuthRedirectUri(req) {
+  // Vercel zet x-forwarded-host / x-forwarded-proto bij elke request.
+  const proto = req.headers['x-forwarded-proto'] || 'https';
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  return `${proto}://${host}/api/auth?action=oauth-google-callback`;
+}
+
+function setStateCookie(res, value) {
+  // HTTP-only, Secure, SameSite=Lax (voldoende voor de redirect-roundtrip
+  // via Google). Max-Age 10 minuten — meer dan genoeg voor de flow.
+  res.setHeader('Set-Cookie', [
+    `${OAUTH_STATE_COOKIE}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
+  ]);
+}
+function clearStateCookie(res) {
+  res.setHeader('Set-Cookie', [
+    `${OAUTH_STATE_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`,
+  ]);
+}
+function getCookie(req, name) {
+  const c = req.headers.cookie || '';
+  const m = c.split(';').map((s) => s.trim()).find((s) => s.startsWith(name + '='));
+  return m ? decodeURIComponent(m.slice(name.length + 1)) : null;
+}
+
+async function oauthGoogleStart(req, res) {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  if (!clientId) {
+    return res.status(503).send('Google OAuth niet geconfigureerd: zet GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET in Vercel env-vars.');
+  }
+  const state = randomBytes(24).toString('hex');
+  setStateCookie(res, state);
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: buildOAuthRedirectUri(req),
+    response_type: 'code',
+    scope: 'openid email profile',
+    state,
+    access_type: 'online',
+    prompt: 'select_account',
+  });
+  res.statusCode = 302;
+  res.setHeader('Location', 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString());
+  return res.end();
+}
+
+async function googleExchangeCode(code, redirectUri) {
+  const r = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: redirectUri,
+      grant_type: 'authorization_code',
+    }).toString(),
+  });
+  if (!r.ok) throw new Error('Google token-exchange mislukt: ' + r.status + ' ' + (await r.text()).slice(0, 300));
+  return r.json();
+}
+async function googleFetchUserInfo(accessToken) {
+  const r = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    headers: { Authorization: 'Bearer ' + accessToken },
+  });
+  if (!r.ok) throw new Error('Google userinfo mislukt: ' + r.status);
+  return r.json();
+}
+
+function redirectToGate(res, params) {
+  // Token + foutmelding via URL-fragment (#…) i.p.v. query-param zodat
+  // deze niet in server-logs of de Referer-header terecht komt.
+  const frag = new URLSearchParams(params).toString();
+  res.statusCode = 302;
+  res.setHeader('Location', OAUTH_REDIRECT_DEFAULT + '#' + frag);
+  return res.end();
+}
+
+async function oauthGoogleCallback(req, res) {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    return res.status(503).send('Google OAuth niet geconfigureerd');
+  }
+  const q = req.query || {};
+  const code = String(q.code || '');
+  const state = String(q.state || '');
+  const cookieState = getCookie(req, OAUTH_STATE_COOKIE);
+  clearStateCookie(res);
+  if (q.error) return redirectToGate(res, { oauthError: String(q.error) });
+  if (!code || !state || !cookieState || state !== cookieState) {
+    return redirectToGate(res, { oauthError: 'state-mismatch' });
+  }
+  try {
+    const redirectUri = buildOAuthRedirectUri(req);
+    const tok = await googleExchangeCode(code, redirectUri);
+    const info = await googleFetchUserInfo(tok.access_token);
+    const email = String(info.email || '').toLowerCase().trim();
+    if (!email) return redirectToGate(res, { oauthError: 'no-email' });
+    if (info.verified_email === false) return redirectToGate(res, { oauthError: 'email-unverified' });
+    const naam = String(info.name || email.split('@')[0]).trim();
+
+    // Bestaand account? Direct sessie aanmaken.
+    let user = await auth.kvGet(auth.KV_USER_PREFIX + email);
+    let tenantId;
+    if (user) {
+      // Markeer Google-koppeling op de user-record (idempotent).
+      if (!user.googleId && info.id) {
+        user.googleId = info.id;
+        await auth.kvSet(auth.KV_USER_PREFIX + email, user);
+      }
+      tenantId = user.tenantId;
+    } else {
+      // Nieuw account → eigen tenant aanmaken (zelfde pad als register).
+      // Wachtwoord wordt random gegenereerd; user kan later via 'Wachtwoord
+      // wijzigen' een eigen wachtwoord instellen om óók via password te
+      // kunnen inloggen.
+      const baseTenantId = auth.slugifyEmailForTenant(email);
+      const tenantsList = await getTenantsIndex();
+      tenantId = tenantsList.includes(baseTenantId) ? (baseTenantId + '_' + auth.makeId('').slice(0, 6)) : baseTenantId;
+      const tenantNaam = naam || (email.split('@')[0]) || 'Mijn werkomgeving';
+      await createTenant(tenantId, tenantNaam, email, '');
+      const tempPw = generateTempPassword(20);
+      user = await newUserRecord(email, naam, tempPw, {
+        tenantId,
+        role: 'admin',
+        mustChangePassword: false,
+      });
+      user.googleId = info.id || null;
+      await auth.kvSet(auth.KV_USER_PREFIX + email, user);
+      await appendGlobalUserIndex(email);
+      await appendTenantUserIndex(tenantId, email);
+    }
+    const token = await createSession(email, user.id, tenantId);
+    return redirectToGate(res, { token, email });
+  } catch (e) {
+    return redirectToGate(res, { oauthError: String(e.message || e).slice(0, 200) });
+  }
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (!auth.kvConfigured()) {
@@ -467,6 +629,8 @@ module.exports = async function handler(req, res) {
     if (action === 'create-user' && req.method === 'POST') return createUser(req, res);
     if (action === 'delete-user' && req.method === 'POST') return deleteUser(req, res);
     if (action === 'reset-password' && req.method === 'POST') return resetPassword(req, res);
+    if (action === 'oauth-google-start' && req.method === 'GET') return oauthGoogleStart(req, res);
+    if (action === 'oauth-google-callback' && req.method === 'GET') return oauthGoogleCallback(req, res);
     return res.status(400).json({ error: 'Onbekende actie of method' });
   } catch (e) {
     return res.status(500).json({ error: String(e.message || e) });
