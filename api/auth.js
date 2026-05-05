@@ -449,38 +449,98 @@ async function resetPassword(req, res) {
   });
 }
 
-// ---------------- Google OAuth (sign-in side-door) ----------------
-// Volledige redirect-flow (geen popup-flow), zodat we geen client-id
-// in de browser-bundle hoeven te tonen voor de PKCE-variant. State-
-// CSRF-bescherming via een HTTP-only cookie die we tijdens de start-
-// stap zetten en op de callback verifiëren.
+// ---------------- OAuth (sign-in side-door, generic) ----------------
+// Authorization-code-flow met state-CSRF-bescherming via een HTTP-only
+// cookie. De flow is identiek voor Google en Microsoft Entra; alleen
+// de endpoints, scopes en user-info-mapping verschillen. Vandaar de
+// PROVIDERS-config en gedeelde oauthStart/oauthCallback-helpers.
 //
 // Endpoints:
-//   GET  /api/auth?action=oauth-google-start     → 302 → Google consent
-//   GET  /api/auth?action=oauth-google-callback  → 302 → /?token=…
+//   GET  /api/auth?action=oauth-google-start        → 302 → Google consent
+//   GET  /api/auth?action=oauth-google-callback     → 302 → /#token=…
+//   GET  /api/auth?action=oauth-microsoft-start     → 302 → Microsoft consent
+//   GET  /api/auth?action=oauth-microsoft-callback  → 302 → /#token=…
 //
-// Vereiste env-vars in Vercel:
-//   GOOGLE_CLIENT_ID
-//   GOOGLE_CLIENT_SECRET
+// Vereiste env-vars:
+//   GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET
+//   MICROSOFT_CLIENT_ID + MICROSOFT_CLIENT_SECRET (+ optioneel
+//     MICROSOFT_TENANT, default 'organizations' = alle work-accounts;
+//     'common' = + persoonlijke accounts; tenant-id voor één org).
 //
-// Authorized redirect URI in Google Cloud Console moet exact zijn:
-//   https://<jouw-vercel-domain>/api/auth?action=oauth-google-callback
+// Authorized redirect URI in Google Cloud Console / Microsoft Azure
+// Portal moet exact zijn:
+//   https://<vercel-domain>/api/auth?action=oauth-<provider>-callback
 //
-// Bij eerste login matched op email; geen account → nieuwe tenant
-// (zelfde flow als register). Bestaand account → koppelt en logt in.
+// Bij eerste login wordt op email gematched: bestaand account →
+// koppelt provider-id en logt in; geen account → nieuwe tenant
+// (zelfde pad als register).
+
+const PROVIDERS = {
+  google: {
+    label: 'Google',
+    authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+    tokenUrl: 'https://oauth2.googleapis.com/token',
+    userInfoUrl: 'https://www.googleapis.com/oauth2/v2/userinfo',
+    scope: 'openid email profile',
+    extraAuthParams: { access_type: 'online', prompt: 'select_account' },
+    clientIdEnv: 'GOOGLE_CLIENT_ID',
+    clientSecretEnv: 'GOOGLE_CLIENT_SECRET',
+    extractUser(info) {
+      return {
+        email: String(info.email || '').toLowerCase().trim(),
+        naam: String(info.name || '').trim(),
+        providerId: info.id || null,
+        emailVerified: info.verified_email !== false,
+        userField: 'googleId',
+      };
+    },
+  },
+  microsoft: {
+    label: 'Microsoft',
+    // Microsoft is per-tenant gerouteerd; de placeholder {tenant} wordt
+    // bij gebruik vervangen. 'organizations' (default) accepteert alle
+    // werk-accounts maar weert persoonlijke Hotmail/Outlook-accounts.
+    authUrl: 'https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize',
+    tokenUrl: 'https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token',
+    userInfoUrl: 'https://graph.microsoft.com/v1.0/me',
+    scope: 'openid email profile User.Read',
+    extraAuthParams: { prompt: 'select_account' },
+    clientIdEnv: 'MICROSOFT_CLIENT_ID',
+    clientSecretEnv: 'MICROSOFT_CLIENT_SECRET',
+    tenantEnv: 'MICROSOFT_TENANT',
+    tenantDefault: 'organizations',
+    extractUser(info) {
+      // Microsoft Graph /me velden: id, displayName, mail (kan null zijn
+      // bij guest-accounts), userPrincipalName (altijd aanwezig).
+      return {
+        email: String(info.mail || info.userPrincipalName || '').toLowerCase().trim(),
+        naam: String(info.displayName || '').trim(),
+        providerId: info.id || null,
+        emailVerified: true,
+        userField: 'microsoftId',
+      };
+    },
+  },
+};
+
 const OAUTH_STATE_COOKIE = 'mr_oauth_state';
 const OAUTH_REDIRECT_DEFAULT = '/';
 
-function buildOAuthRedirectUri(req) {
-  // Vercel zet x-forwarded-host / x-forwarded-proto bij elke request.
+function resolveProviderUrl(template, provider) {
+  if (!template.includes('{tenant}')) return template;
+  const tenant = (provider.tenantEnv && process.env[provider.tenantEnv]) || provider.tenantDefault || 'common';
+  return template.replace('{tenant}', encodeURIComponent(tenant));
+}
+
+function buildOAuthRedirectUri(req, providerKey) {
   const proto = req.headers['x-forwarded-proto'] || 'https';
   const host = req.headers['x-forwarded-host'] || req.headers.host;
-  return `${proto}://${host}/api/auth?action=oauth-google-callback`;
+  return `${proto}://${host}/api/auth?action=oauth-${providerKey}-callback`;
 }
 
 function setStateCookie(res, value) {
   // HTTP-only, Secure, SameSite=Lax (voldoende voor de redirect-roundtrip
-  // via Google). Max-Age 10 minuten — meer dan genoeg voor de flow.
+  // via de IdP). Max-Age 10 minuten — meer dan genoeg voor de flow.
   res.setHeader('Set-Cookie', [
     `${OAUTH_STATE_COOKIE}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
   ]);
@@ -496,47 +556,26 @@ function getCookie(req, name) {
   return m ? decodeURIComponent(m.slice(name.length + 1)) : null;
 }
 
-async function oauthGoogleStart(req, res) {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  if (!clientId) {
-    return res.status(503).send('Google OAuth niet geconfigureerd: zet GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET in Vercel env-vars.');
-  }
-  const state = randomBytes(24).toString('hex');
-  setStateCookie(res, state);
-  const params = new URLSearchParams({
-    client_id: clientId,
-    redirect_uri: buildOAuthRedirectUri(req),
-    response_type: 'code',
-    scope: 'openid email profile',
-    state,
-    access_type: 'online',
-    prompt: 'select_account',
-  });
-  res.statusCode = 302;
-  res.setHeader('Location', 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString());
-  return res.end();
-}
-
-async function googleExchangeCode(code, redirectUri) {
-  const r = await fetch('https://oauth2.googleapis.com/token', {
+async function exchangeCodeForToken(provider, code, redirectUri) {
+  const r = await fetch(resolveProviderUrl(provider.tokenUrl, provider), {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      client_id: process.env[provider.clientIdEnv],
+      client_secret: process.env[provider.clientSecretEnv],
       redirect_uri: redirectUri,
       grant_type: 'authorization_code',
     }).toString(),
   });
-  if (!r.ok) throw new Error('Google token-exchange mislukt: ' + r.status + ' ' + (await r.text()).slice(0, 300));
+  if (!r.ok) throw new Error(provider.label + ' token-exchange mislukt: ' + r.status + ' ' + (await r.text()).slice(0, 300));
   return r.json();
 }
-async function googleFetchUserInfo(accessToken) {
-  const r = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+async function fetchUserInfo(provider, accessToken) {
+  const r = await fetch(provider.userInfoUrl, {
     headers: { Authorization: 'Bearer ' + accessToken },
   });
-  if (!r.ok) throw new Error('Google userinfo mislukt: ' + r.status);
+  if (!r.ok) throw new Error(provider.label + ' userinfo mislukt: ' + r.status);
   return r.json();
 }
 
@@ -549,11 +588,35 @@ function redirectToGate(res, params) {
   return res.end();
 }
 
-async function oauthGoogleCallback(req, res) {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+async function oauthStart(providerKey, req, res) {
+  const provider = PROVIDERS[providerKey];
+  if (!provider) return res.status(404).send('Unknown OAuth provider');
+  const clientId = process.env[provider.clientIdEnv];
+  if (!clientId) {
+    return res.status(503).send(provider.label + ' OAuth niet geconfigureerd: zet ' + provider.clientIdEnv + ' + ' + provider.clientSecretEnv + ' in Vercel env-vars.');
+  }
+  const state = randomBytes(24).toString('hex');
+  setStateCookie(res, state);
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: buildOAuthRedirectUri(req, providerKey),
+    response_type: 'code',
+    scope: provider.scope,
+    state,
+    ...(provider.extraAuthParams || {}),
+  });
+  res.statusCode = 302;
+  res.setHeader('Location', resolveProviderUrl(provider.authUrl, provider) + '?' + params.toString());
+  return res.end();
+}
+
+async function oauthCallback(providerKey, req, res) {
+  const provider = PROVIDERS[providerKey];
+  if (!provider) return res.status(404).send('Unknown OAuth provider');
+  const clientId = process.env[provider.clientIdEnv];
+  const clientSecret = process.env[provider.clientSecretEnv];
   if (!clientId || !clientSecret) {
-    return res.status(503).send('Google OAuth niet geconfigureerd');
+    return res.status(503).send(provider.label + ' OAuth niet geconfigureerd');
   }
   const q = req.query || {};
   const code = String(q.code || '');
@@ -565,47 +628,48 @@ async function oauthGoogleCallback(req, res) {
     return redirectToGate(res, { oauthError: 'state-mismatch' });
   }
   try {
-    const redirectUri = buildOAuthRedirectUri(req);
-    const tok = await googleExchangeCode(code, redirectUri);
-    const info = await googleFetchUserInfo(tok.access_token);
-    const email = String(info.email || '').toLowerCase().trim();
-    if (!email) return redirectToGate(res, { oauthError: 'no-email' });
-    if (info.verified_email === false) return redirectToGate(res, { oauthError: 'email-unverified' });
-    const naam = String(info.name || email.split('@')[0]).trim();
+    const redirectUri = buildOAuthRedirectUri(req, providerKey);
+    const tok = await exchangeCodeForToken(provider, code, redirectUri);
+    const info = await fetchUserInfo(provider, tok.access_token);
+    const u = provider.extractUser(info);
+    if (!u.email) return redirectToGate(res, { oauthError: 'no-email' });
+    if (!u.emailVerified) return redirectToGate(res, { oauthError: 'email-unverified' });
+    const naam = u.naam || u.email.split('@')[0];
 
     // Bestaand account? Direct sessie aanmaken.
-    let user = await auth.kvGet(auth.KV_USER_PREFIX + email);
+    let user = await auth.kvGet(auth.KV_USER_PREFIX + u.email);
     let tenantId;
     if (user) {
-      // Markeer Google-koppeling op de user-record (idempotent).
-      if (!user.googleId && info.id) {
-        user.googleId = info.id;
-        await auth.kvSet(auth.KV_USER_PREFIX + email, user);
+      // Provider-id idempotent koppelen (bv. user logde eerst in via
+      // password en nu via Google; we slaan de google-id op zodat we
+      // 'm later kunnen herkennen).
+      if (!user[u.userField] && u.providerId) {
+        user[u.userField] = u.providerId;
+        await auth.kvSet(auth.KV_USER_PREFIX + u.email, user);
       }
       tenantId = user.tenantId;
     } else {
-      // Nieuw account → eigen tenant aanmaken (zelfde pad als register).
-      // Wachtwoord wordt random gegenereerd; user kan later via 'Wachtwoord
-      // wijzigen' een eigen wachtwoord instellen om óók via password te
-      // kunnen inloggen.
-      const baseTenantId = auth.slugifyEmailForTenant(email);
+      // Nieuw account → eigen tenant (zelfde pad als register). Random
+      // temp-wachtwoord zodat user later óók via password kan inloggen
+      // na 'Wachtwoord wijzigen'.
+      const baseTenantId = auth.slugifyEmailForTenant(u.email);
       const tenantsList = await getTenantsIndex();
       tenantId = tenantsList.includes(baseTenantId) ? (baseTenantId + '_' + auth.makeId('').slice(0, 6)) : baseTenantId;
-      const tenantNaam = naam || (email.split('@')[0]) || 'Mijn werkomgeving';
-      await createTenant(tenantId, tenantNaam, email, '');
+      const tenantNaam = naam || u.email.split('@')[0] || 'Mijn werkomgeving';
+      await createTenant(tenantId, tenantNaam, u.email, '');
       const tempPw = generateTempPassword(20);
-      user = await newUserRecord(email, naam, tempPw, {
+      user = await newUserRecord(u.email, naam, tempPw, {
         tenantId,
         role: 'admin',
         mustChangePassword: false,
       });
-      user.googleId = info.id || null;
-      await auth.kvSet(auth.KV_USER_PREFIX + email, user);
-      await appendGlobalUserIndex(email);
-      await appendTenantUserIndex(tenantId, email);
+      user[u.userField] = u.providerId || null;
+      await auth.kvSet(auth.KV_USER_PREFIX + u.email, user);
+      await appendGlobalUserIndex(u.email);
+      await appendTenantUserIndex(tenantId, u.email);
     }
-    const token = await createSession(email, user.id, tenantId);
-    return redirectToGate(res, { token, email });
+    const token = await createSession(u.email, user.id, tenantId);
+    return redirectToGate(res, { token, email: u.email });
   } catch (e) {
     return redirectToGate(res, { oauthError: String(e.message || e).slice(0, 200) });
   }
@@ -629,8 +693,12 @@ module.exports = async function handler(req, res) {
     if (action === 'create-user' && req.method === 'POST') return createUser(req, res);
     if (action === 'delete-user' && req.method === 'POST') return deleteUser(req, res);
     if (action === 'reset-password' && req.method === 'POST') return resetPassword(req, res);
-    if (action === 'oauth-google-start' && req.method === 'GET') return oauthGoogleStart(req, res);
-    if (action === 'oauth-google-callback' && req.method === 'GET') return oauthGoogleCallback(req, res);
+    if (req.method === 'GET' && /^oauth-([a-z]+)-start$/.test(action)) {
+      return oauthStart(action.match(/^oauth-([a-z]+)-start$/)[1], req, res);
+    }
+    if (req.method === 'GET' && /^oauth-([a-z]+)-callback$/.test(action)) {
+      return oauthCallback(action.match(/^oauth-([a-z]+)-callback$/)[1], req, res);
+    }
     return res.status(400).json({ error: 'Onbekende actie of method' });
   } catch (e) {
     return res.status(500).json({ error: String(e.message || e) });

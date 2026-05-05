@@ -100,8 +100,9 @@ body{
 .gate-help{margin-top:12px;font-size:.74rem;color:var(--grey-500);text-align:center;font-weight:500}
 .gate-toggle-mode{background:none;border:0;color:var(--orange);font:inherit;cursor:pointer;text-decoration:underline;padding:0}
 .gate-toggle-mode:hover{color:var(--orange-dark)}
-.gate-google-btn:hover{background:var(--grey-50);border-color:var(--grey-400)}
-.gate-google-btn:focus{outline:2px solid var(--orange);outline-offset:2px}
+.gate-sso-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px;border:1px solid var(--grey-300);border-radius:8px;background:var(--white);color:var(--grey-900);font:inherit;font-weight:600;font-size:.88rem;cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s}
+.gate-sso-btn:hover{background:var(--grey-50);border-color:var(--grey-400)}
+.gate-sso-btn:focus{outline:2px solid var(--orange);outline-offset:2px}
 .gate-bootstrap-banner{padding:10px 12px;margin-bottom:12px;background:var(--orange-pale);border:1px solid var(--orange);border-radius:8px;font-size:.78rem;color:var(--orange-dark);font-weight:500}
 .ob-dot{display:inline-block;height:6px;flex:1;border-radius:3px;background:var(--grey-200)}
 .ob-dot.active{background:var(--orange)}
@@ -1044,15 +1045,26 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <span>of</span>
         <span style="flex:1;height:1px;background:var(--grey-200)"></span>
       </div>
-      <a href="/api/auth?action=oauth-google-start" id="gate-google-btn" class="gate-google-btn" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px;border:1px solid var(--grey-300);border-radius:8px;background:var(--white);color:var(--grey-900);font:inherit;font-weight:600;font-size:.88rem;cursor:pointer;text-decoration:none;transition:background .15s,border-color .15s">
-        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-          <path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/>
-          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.167 6.656 3.58 9 3.58z"/>
-        </svg>
-        <span>Inloggen met Google</span>
-      </a>
+      <div class="oauth-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <a href="/api/auth?action=oauth-google-start" id="gate-google-btn" class="gate-sso-btn" title="Inloggen met Google">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+            <path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/>
+            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.167 6.656 3.58 9 3.58z"/>
+          </svg>
+          <span>Google</span>
+        </a>
+        <a href="/api/auth?action=oauth-microsoft-start" id="gate-microsoft-btn" class="gate-sso-btn" title="Inloggen met Microsoft">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <rect x="0" y="0" width="8.5" height="8.5" fill="#F25022"/>
+            <rect x="9.5" y="0" width="8.5" height="8.5" fill="#7FBA00"/>
+            <rect x="0" y="9.5" width="8.5" height="8.5" fill="#00A4EF"/>
+            <rect x="9.5" y="9.5" width="8.5" height="8.5" fill="#FFB900"/>
+          </svg>
+          <span>Microsoft</span>
+        </a>
+      </div>
       <div class="err" id="gate-err-auth"><span></span></div>
       <div class="gate-help" id="gate-help">
         <button type="button" id="gate-toggle-mode" class="gate-toggle-mode">Nog geen account? Maak je eigen werkomgeving aan</button>
@@ -1654,7 +1666,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.0",
+    "version": "1.16.1",
     "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1831,6 +1843,12 @@ const DATA = {
         "codename": "Quasar",
         "date": "2026-05-04",
         "note": "Sign in with Google. SSO-side-door naast email + wachtwoord. Backend: OAuth 2.0 authorization-code-flow met state-CSRF-protectie via HTTP-only cookie; nieuwe endpoints /api/auth?action=oauth-google-start (302 → Google consent) en /api/auth?action=oauth-google-callback (302 → /#token=…). Token-exchange via oauth2.googleapis.com/token, user-info via googleapis.com/oauth2/v2/userinfo (geen JWT-decode nodig). Bij callback: bestaand account → koppelt googleId en logt in; onbekend email → nieuwe tenant + user (zelfde pad als register), random temp-wachtwoord zodat password-login als fallback werkt na 'Wachtwoord wijzigen'. Frontend: 'Inloggen met Google'-knop op de gate met officieel Google-G-icoon en hover-/focus-styling, gescheiden van password-form via 'of'-divider. Token komt terug via URL-fragment (#token=…), wordt direct gewist uit history zodat het niet in browser-history of Referer-headers terechtkomt. Foutpaden (state-mismatch, geen email, email-unverified, Google API-fout) worden zichtbaar gemaakt op de gate. Vereist GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET env-vars in Vercel én een geregistreerde redirect-URI (/api/auth?action=oauth-google-callback) in Google Cloud Console."
+      },
+      {
+        "version": "1.16.1",
+        "codename": "Quasar",
+        "date": "2026-05-04",
+        "note": "Microsoft Entra ID SSO erbij. OAuth-laag is gerefactored naar een PROVIDERS-config zodat Google + Microsoft dezelfde flow delen — alleen endpoints, scopes en user-info-mapping verschillen per provider. Generieke oauthStart/oauthCallback-helpers worden via regex-routing gedispatched (oauth-<provider>-start/callback). Microsoft gebruikt login.microsoftonline.com/{tenant}/oauth2/v2.0/* + Microsoft Graph /me voor user-info (geen JWT-decode). Default tenant-keuze 'organizations' (alle work-accounts; geen persoonlijke Hotmail/Outlook); aanpasbaar via MICROSOFT_TENANT env-var ('common' = + persoonlijk, of een specifieke tenant-id voor één org). Frontend: gate-knoppen Google + Microsoft staan nu side-by-side in een 2-kolom-grid; gedeelde .gate-sso-btn-class. Vereist MICROSOFT_CLIENT_ID + MICROSOFT_CLIENT_SECRET env-vars in Vercel én een redirect-URI (/api/auth?action=oauth-microsoft-callback) geregistreerd in Azure Portal > App registrations."
       }
     ],
     "totalInstellingen": 64,
