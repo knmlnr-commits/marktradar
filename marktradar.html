@@ -1666,7 +1666,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.1",
+    "version": "1.16.2",
     "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1849,6 +1849,12 @@ const DATA = {
         "codename": "Quasar",
         "date": "2026-05-04",
         "note": "Microsoft Entra ID SSO erbij. OAuth-laag is gerefactored naar een PROVIDERS-config zodat Google + Microsoft dezelfde flow delen — alleen endpoints, scopes en user-info-mapping verschillen per provider. Generieke oauthStart/oauthCallback-helpers worden via regex-routing gedispatched (oauth-<provider>-start/callback). Microsoft gebruikt login.microsoftonline.com/{tenant}/oauth2/v2.0/* + Microsoft Graph /me voor user-info (geen JWT-decode). Default tenant-keuze 'organizations' (alle work-accounts; geen persoonlijke Hotmail/Outlook); aanpasbaar via MICROSOFT_TENANT env-var ('common' = + persoonlijk, of een specifieke tenant-id voor één org). Frontend: gate-knoppen Google + Microsoft staan nu side-by-side in een 2-kolom-grid; gedeelde .gate-sso-btn-class. Vereist MICROSOFT_CLIENT_ID + MICROSOFT_CLIENT_SECRET env-vars in Vercel én een redirect-URI (/api/auth?action=oauth-microsoft-callback) geregistreerd in Azure Portal > App registrations."
+      },
+      {
+        "version": "1.16.2",
+        "codename": "Quasar",
+        "date": "2026-05-04",
+        "note": "Critical multi-tenant data-leak fix. Bij Beheer > Markt-tab werden voor élke tenant (incl. Van Ameyde) de 64 GeriCall-VVT-instellingen getoond i.p.v. de eigen tenant.entiteiten[]. Oorzaak: refreshMarketPane / renderMarketList / updateMarketStatus / Select-Alles-knop lazen direct uit DATA.instellingen (de hardcoded GeriCall-baseline) i.p.v. de tenant-aware getEntiteitenUniverse(). Idem voor findDropdownUsages, migrateDropdownValue en instellingenAllMerged — alle plekken zijn nu omgezet naar getEntiteitenUniverse(). De getEntiteitenUniverse-helper bestond al; hij werd gewoon op deze plekken niet gebruikt. Resultaat: Beheer is nu volledig gescheiden per tenant en kan multi-tenant ingezet worden zonder dat data tussen werkomgevingen lekt."
       }
     ],
     "totalInstellingen": 64,
@@ -12437,7 +12443,11 @@ function getInstelling(id){
 }
 // Tenant-market filter: lijsten/tellers worden gescoped op de gekozen markt.
 function instellingenMerged(){ return getMarketInstellingen().map(applyOverrides); }
-function instellingenAllMerged(){ return DATA.instellingen.map(applyOverrides); }
+// Tenant-aware: 'alle instellingen' is per tenant verschillend. Voor
+// GeriCall is dat de baseline DATA.instellingen, voor Van Ameyde de
+// eigen tenant.entiteiten[]. Anders zou bv. een Van-Ameyde-export
+// 64 GeriCall-records bevatten — multi-tenant-leak.
+function instellingenAllMerged(){ return getEntiteitenUniverse().map(applyOverrides); }
 function signalenInScope(){ return getMarketSignalen(); }
 function urgencyOrder(u){ return {hoog:3, middel:2, laag:1}[u] || 0; }
 function signalsForInst(id){ return DATA.signalen.filter(s => s.instellingId === id); }
@@ -14116,17 +14126,21 @@ const DROPDOWN_INST_FIELD = {
 const DROPDOWN_DMU_FIELD = { dmuRol: 'rol', vertrouwen: 'vertrouwen', bronType: 'bronType' };
 
 function findDropdownUsages(key, value){
+  // Scan alleen de entiteiten van déze tenant — DATA.instellingen is
+  // GeriCall-baseline en zou anders de Beheer-resultaten 'lekken'
+  // wanneer Van Ameyde een dropdown-waarde wil verwijderen.
+  const universe = getEntiteitenUniverse();
   const result = { instellingen: [], contacten: [] };
   const instField = DROPDOWN_INST_FIELD[key];
   if(instField){
-    DATA.instellingen.forEach(i => {
+    universe.forEach(i => {
       const merged = applyOverrides(i);
       if(merged[instField] === value) result.instellingen.push({ id: i.id, naam: i.naam });
     });
   }
   const dmuField = DROPDOWN_DMU_FIELD[key];
   if(dmuField){
-    DATA.instellingen.forEach(i => {
+    universe.forEach(i => {
       combinedDmu(i).forEach(p => {
         if(p[dmuField] === value){
           result.contacten.push({ instId: i.id, instNaam: i.naam, naam: p.naam, functie: p.functie });
@@ -14137,10 +14151,11 @@ function findDropdownUsages(key, value){
   return result;
 }
 function migrateDropdownValue(key, oldValue, newValue){
+  const universe = getEntiteitenUniverse();
   const counts = { instellingen: 0, contacten: 0 };
   const instField = DROPDOWN_INST_FIELD[key];
   if(instField){
-    DATA.instellingen.forEach(i => {
+    universe.forEach(i => {
       const merged = applyOverrides(i);
       if(merged[instField] === oldValue){
         setOverrides(i.id, { [instField]: newValue || null });
@@ -14150,7 +14165,7 @@ function migrateDropdownValue(key, oldValue, newValue){
   }
   const dmuField = DROPDOWN_DMU_FIELD[key];
   if(dmuField){
-    DATA.instellingen.forEach(i => {
+    universe.forEach(i => {
       combinedDmu(i).forEach(p => {
         if(p[dmuField] === oldValue){
           const updated = { ...p, [dmuField]: newValue || null };
@@ -15929,16 +15944,19 @@ async function refreshMarketPane(){
   const list = document.getElementById('marketList');
   if(!list) return;
   if(!currentTenant){ try { await tenantInfo(); } catch(e){} }
-  // Initialiseer selectie uit huidige tenant.market (of alles als marketDefined=false)
-  const allIds = DATA.instellingen.map(i => String(i.id));
+  // Tenant-aware: gebruik het universe dat bij déze tenant hoort, niet
+  // de hardcoded GeriCall-baseline. Anders ziet bv. Van Ameyde de
+  // 64 GeriCall-VVT-instellingen verschijnen in z'n Beheer > Markt-tab.
+  const universe = getEntiteitenUniverse();
+  const allIds = universe.map(i => String(i.id));
   if(currentTenant && currentTenant.marketDefined && Array.isArray(currentTenant.market)){
     _marketPendingSel = new Set(currentTenant.market.map(String));
   } else {
     _marketPendingSel = new Set(allIds);
   }
-  // Vul filter-dropdowns
+  // Vul filter-dropdowns op basis van de tenant-eigen universe.
   const provSet = new Set(); const regioSet = new Set();
-  DATA.instellingen.forEach(i => { if(i.provincie) provSet.add(i.provincie); if(i.regio) regioSet.add(i.regio); });
+  universe.forEach(i => { if(i.provincie) provSet.add(i.provincie); if(i.regio) regioSet.add(i.regio); });
   const provSel = document.getElementById('marketProvFilter');
   const regioSel = document.getElementById('marketRegioFilter');
   if(provSel && provSel.options.length <= 1){
@@ -15959,7 +15977,7 @@ function renderMarketList(){
   const provSel = document.getElementById('marketProvFilter')?.value || 'all';
   const regioSel = document.getElementById('marketRegioFilter')?.value || 'all';
   const q = (document.getElementById('marketSearchInput')?.value || '').toLowerCase().trim();
-  const items = DATA.instellingen.filter(i => {
+  const items = getEntiteitenUniverse().filter(i => {
     if(provSel !== 'all' && i.provincie !== provSel) return false;
     if(regioSel !== 'all' && i.regio !== regioSel) return false;
     if(q && !(String(i.naam || '').toLowerCase().includes(q))) return false;
@@ -15992,7 +16010,7 @@ function renderMarketList(){
 function updateMarketStatus(){
   const status = document.getElementById('marketStatusBar');
   if(!status) return;
-  const total = DATA.instellingen.length;
+  const total = getEntiteitenUniverse().length;
   const sel = _marketPendingSel ? _marketPendingSel.size : total;
   const defined = (currentTenant && currentTenant.marketDefined);
   status.innerHTML = `<strong>${sel}</strong> / ${total} instellingen geselecteerd ` +
@@ -16182,7 +16200,7 @@ function bindAdminModal(){
   const marketAllBtn = document.getElementById('marketSelectAllBtn');
   if(marketAllBtn) marketAllBtn.addEventListener('click', () => {
     if(!_marketPendingSel) return;
-    DATA.instellingen.forEach(i => _marketPendingSel.add(String(i.id)));
+    getEntiteitenUniverse().forEach(i => _marketPendingSel.add(String(i.id)));
     renderMarketList();
     updateMarketStatus();
   });
