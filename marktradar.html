@@ -1768,7 +1768,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.8",
+    "version": "1.16.9",
     "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -16962,7 +16962,13 @@ async function syncSupplierOverrides(){
 // Tombstones (_deleted) worden uitgefilterd. Custom suppliers (id begint
 // met 'cust-') komen alleen uit overrides.
 function getEffectiveLeveranciers(){
-  const baseline = Array.isArray(DATA.leveranciers) ? DATA.leveranciers : [];
+  // Tenant-aware: DATA.leveranciers is de hardcoded GeriCall-baseline
+  // (ANW/ECD/zorg-IT vendors). Voor andere tenants is dat irrelevant
+  // — die zien hun eigen leveranciers via supplierOverrides[id]._new.
+  // Anders zou bv. Van Ameyde 'GeriCall (ANW Nederland)', 'PinkRoccade
+  // Ysis' etc. in z'n leveranciers-tab zien staan.
+  const isLegacy = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+  const baseline = isLegacy && Array.isArray(DATA.leveranciers) ? DATA.leveranciers : [];
   const out = [];
   baseline.forEach(l => {
     const ov = supplierOverrides[l.id];
