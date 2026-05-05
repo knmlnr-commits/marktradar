@@ -481,13 +481,13 @@ body{
   transition:transform .25s cubic-bezier(.2,.8,.2,1);}
 .overlay.show .overlay-panel{transform:translateY(0)}
 
-/* Split-view op brede schermen: klantbeeld dokt rechts, lijst blijft
-   links zichtbaar. Outlook-stijl. Onder 1400px valt 'ie terug op de
-   bestaande full-overlay die over de hele app komt. */
+/* Split-view op brede schermen: klantbeeld dokt rechts (2/3 van de
+   viewport), lijst houdt 1/3 over. Outlook-stijl. Onder 1400px valt
+   'ie terug op de full-overlay die de hele app bedekt. */
 @media (min-width: 1400px){
   .overlay{
     inset:auto; top:0; right:0; bottom:0; left:auto;
-    width:640px;
+    width:66.66vw;
     background:transparent;
     backdrop-filter:none;
     padding:0;
@@ -504,21 +504,26 @@ body{
     transform:translateX(20px);
   }
   .overlay.show .overlay-panel{transform:translateX(0)}
-  /* App schuift in zodra de side-pane open is. Topbar (sticky) krijgt
-     dezelfde rechter-padding zodat 'ie niet onder de pane verdwijnt. */
-  .app.has-side-overlay .main{padding-right:664px}
+  /* App schuift in zodra de side-pane open is — content houdt 1/3
+     van de viewport. Topbar/tabs/scope-bar (sticky) krijgen dezelfde
+     rechter-padding zodat ze niet onder de pane verdwijnen. */
+  .app.has-side-overlay .main,
   .app.has-side-overlay .topbar,
   .app.has-side-overlay .tabs,
-  .app.has-side-overlay .scope-bar{padding-right:664px}
-  /* Compactere instelling-rij wanneer de lijst smaller wordt: alleen
-     Instelling-naam, Status, Lead-score; provincie/ANW/bedden vouwen
-     onder de naam (inst-name-sub doet dit al). */
+  .app.has-side-overlay .scope-bar{padding-right:66.66vw}
+  /* Compactere instelling-rij in side-pane mode: alleen naam, status,
+     lead-score zichtbaar (provincie/ANW/bedden/pijl verborgen). De
+     hoofdvestiging staat al als sub-regel onder de naam. */
   .app.has-side-overlay .inst-head,
-  .app.has-side-overlay .inst-row{grid-template-columns:minmax(180px,2.4fr) 1fr 1fr 70px}
+  .app.has-side-overlay .inst-row{grid-template-columns:minmax(140px,2fr) 90px 70px}
   .app.has-side-overlay .inst-head > div:nth-child(2),
   .app.has-side-overlay .inst-head > div:nth-child(3),
+  .app.has-side-overlay .inst-head > div:nth-child(6),
+  .app.has-side-overlay .inst-head > div:nth-child(7),
   .app.has-side-overlay .inst-row > .inst-cell:nth-child(2),
-  .app.has-side-overlay .inst-row > .inst-cell:nth-child(3){display:none}
+  .app.has-side-overlay .inst-row > .inst-cell:nth-child(3),
+  .app.has-side-overlay .inst-row > .inst-cell:nth-child(6),
+  .app.has-side-overlay .inst-row > .inst-arrow{display:none}
 }
 .overlay-head{padding:22px 28px;
   background:linear-gradient(135deg, var(--orange-pale) 0%, var(--white) 100%);
