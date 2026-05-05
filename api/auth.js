@@ -58,6 +58,14 @@ function publicTenant(t) {
 async function ensureUniqueSlug(base, ownTenantId) {
   const cleaned = auth.slugifyName(base);
   if (!cleaned) return null;
+  // Reserveer de 'gericall'-slug-family voor de legacy seed-tenant.
+  // Nieuwe tenants die via een naam-clash op 'gericall' uit zouden komen
+  // moeten geen 'gericall-2/3/...' krijgen — anders verschijnt er
+  // GeriCall-jargon in een totaal andere werkomgeving (bv. Van Ameyde).
+  // De caller valt terug op een andere slug-base als wij null teruggeven.
+  if (ownTenantId !== auth.LEGACY_TENANT_ID && /^gericall(-|$)/.test(cleaned)) {
+    return null;
+  }
   let candidate = cleaned;
   for (let i = 0; i < 50; i++) {
     const existing = await auth.kvGet(auth.tenantSlugKey(candidate));
@@ -215,22 +223,78 @@ async function ensureUserHasTenant(user) {
   return user;
 }
 
+// Free-mail-providers waarvoor de email-domain géén goede tenant-naam
+// is (bv. gmail.com, hotmail.com). Voor deze accounts vallen we terug
+// op de displayName van de user of de email-prefix.
+const FREE_EMAIL_DOMAINS = new Set([
+  'gmail.com', 'googlemail.com', 'hotmail.com', 'outlook.com',
+  'live.com', 'yahoo.com', 'icloud.com', 'me.com',
+  'protonmail.com', 'proton.me', 'aol.com', 'mac.com',
+]);
+
+// Leid een natuurlijke tenant-naam + slug-base af voor B2B-SSO. Bij een
+// custom email-domain (vanameyde.nl, anthropic.com, etc.) is dat domein
+// veruit de logischste werkomgeving-naam — beter dan de Google/Microsoft
+// displayName, die vaak persoonlijk is ('Jan de Vries', 'GeriCall', …).
+function deriveTenantInfoFromEmail(email, fallbackName) {
+  const e = String(email || '').toLowerCase().trim();
+  const domain = e.split('@')[1] || '';
+  if (domain && !FREE_EMAIL_DOMAINS.has(domain)) {
+    const base = domain.split('.')[0]; // 'vanameyde.nl' → 'vanameyde'
+    const naam = base.charAt(0).toUpperCase() + base.slice(1);
+    return { naam, slugBase: base };
+  }
+  const name = String(fallbackName || '').trim();
+  if (name) {
+    return { naam: name, slugBase: auth.slugifyName(name) };
+  }
+  const prefix = e.split('@')[0] || 'workspace';
+  return { naam: prefix, slugBase: prefix };
+}
+
 async function createTenant(tenantId, naam, founderEmail, requestedSlug) {
+  // Slug-keuze: probeer in volgorde gevraagde-slug → tenantNaam → email-
+  // domain (voor B2B-SSO de natuurlijkste fallback) → email-prefix →
+  // 'workspace'. Een kandidaat kan ook null teruggeven (bv. omdat 'ie
+  // op de gereserveerde gericall-family valt); we lopen dan door naar
+  // de volgende kandidaat. Tenant.naam vervangen we óók als de gegeven
+  // naam tot 'gericall' zou slugifien — dat voorkomt 'GeriCall' in een
+  // Van-Ameyde-werkomgeving die per ongeluk dezelfde displayName had.
+  const derived = deriveTenantInfoFromEmail(founderEmail, naam);
+  const requestedSlugged = requestedSlug && auth.slugifyName(requestedSlug);
+  const naamSlugged = auth.slugifyName(naam);
+  const candidates = [
+    requestedSlugged,
+    naamSlugged,
+    derived.slugBase,
+    auth.slugifyName((founderEmail || '').split('@')[0]),
+    'workspace',
+  ].filter(Boolean);
+
+  let slug = null;
+  for (const c of candidates) {
+    slug = await ensureUniqueSlug(c, tenantId);
+    if (slug) break;
+  }
+
+  // Als de display-naam slugified naar gericall (of variant), gebruik
+  // dan ook de van-domein afgeleide naam — anders blijft 'GeriCall' in
+  // de werkomgeving-titel staan ondanks dat 'ie op een andere slug
+  // belandt.
+  let finalNaam = naam || 'MarktRadar';
+  if (naamSlugged && /^gericall(-|$)/.test(naamSlugged) && tenantId !== auth.LEGACY_TENANT_ID) {
+    finalNaam = derived.naam || 'MarktRadar';
+  }
+
   const tenant = {
     id: tenantId,
-    naam: naam || 'MarktRadar',
+    naam: finalNaam,
     slug: null,
     createdAt: Date.now(),
     createdBy: founderEmail,
     market: null,            // null = volledige baseline; array = subset instelling-IDs
     marketDefined: false,
   };
-  // Slug bepalen: gevraagde slug → tenantNaam → email-prefix
-  const baseSlug = (requestedSlug && auth.slugifyName(requestedSlug))
-    || auth.slugifyName(naam)
-    || auth.slugifyName((founderEmail || '').split('@')[0])
-    || 'workspace';
-  const slug = await ensureUniqueSlug(baseSlug, tenantId);
   if (slug) {
     tenant.slug = slug;
     await auth.kvSet(auth.tenantSlugKey(slug), tenantId);
@@ -655,7 +719,13 @@ async function oauthCallback(providerKey, req, res) {
       const baseTenantId = auth.slugifyEmailForTenant(u.email);
       const tenantsList = await getTenantsIndex();
       tenantId = tenantsList.includes(baseTenantId) ? (baseTenantId + '_' + auth.makeId('').slice(0, 6)) : baseTenantId;
-      const tenantNaam = naam || u.email.split('@')[0] || 'Mijn werkomgeving';
+      // Tenant-naam afgeleid van het email-domein (B2B): 'jan@vanameyde.nl'
+      // wordt 'Vanameyde'. Voor free-mail-accounts (gmail, hotmail) valt
+      // 'ie terug op de Google/MS displayName of de email-prefix. Anders
+      // zou een collega van GeriCall die een Van-Ameyde-account aanmaakt
+      // de werkomgeving 'GeriCall' krijgen omdat dat z'n displayName is.
+      const derived = deriveTenantInfoFromEmail(u.email, naam);
+      const tenantNaam = derived.naam || naam || u.email.split('@')[0] || 'Mijn werkomgeving';
       await createTenant(tenantId, tenantNaam, u.email, '');
       const tempPw = generateTempPassword(20);
       user = await newUserRecord(u.email, naam, tempPw, {

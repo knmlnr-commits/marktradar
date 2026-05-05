@@ -1671,7 +1671,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.3",
+    "version": "1.16.4",
     "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1866,6 +1866,12 @@ const DATA = {
         "codename": "Quasar",
         "date": "2026-05-04",
         "note": "Multi-tenant audit pass 2: GeriCall-data en zorg-jargon weg uit niet-GeriCall tenants. (1) Snapshots/Trends: snapshotCount, snapshotsForInst, leadScoreHistoryForInst, findMovers, findStale, renderTrendsTab, renderTrendsList retourneren nu leeg voor non-GeriCall via nieuwe snapshotsAvailable()-helper. Trends-tab toont 'geen snapshots' i.p.v. 64 niet-bestaande VVT-instellingen. (2) Signalen: annotateNewSignals, signalsForInst en KPI sigDezeWeek-lookup gebruiken nu getMarketSignalen() i.p.v. DATA.signalen — zo krijgt een Van-Ameyde-instelling z'n eigen handmatige signalen wel in 't klantbeeld te zien, en geen GeriCall-signaal-IDs in z'n signalHistory. (3) Leveranciers: tabCountLev gebruikt getEffectiveLeveranciers() (tenant-tombstones + eigen entries). (4) Dropdowns: DROPDOWN_REGISTRY heeft nu legacyOnly-flag. Voor non-GeriCall tenants worden ANW-leveranciers, ECD-leveranciers, anwModelKort, grootte (g/k = bedden), regio (Noord/Oost/Midden/etc.) en de zorg-bronTypes (verenso, big-register) verborgen in Beheer > Dropdowns. Dropdown 'GeriCall-status' hernoemd naar 'Lead-status' en 'DMU-rol' naar 'Contact-rol'. Custom-waarden die de tenant zelf heeft toegevoegd blijven altijd zichtbaar (geen verlies van user-content)."
+      },
+      {
+        "version": "1.16.4",
+        "codename": "Quasar",
+        "date": "2026-05-04",
+        "note": "Tenant-creatie via SSO genereerde slugs als 'gericall-2' wanneer de Google/MS-displayName toevallig 'GeriCall' was — en de tenant-naam zelf werd ook letterlijk 'GeriCall'. Drie-stappen-fix in api/auth.js: (1) ensureUniqueSlug retourneert null voor de gereserveerde 'gericall'-family (gericall, gericall-2, gericall-3, …) zodat de caller doorvalt naar de volgende kandidaat. (2) createTenant probeert nu meerdere slug-kandidaten in volgorde: gevraagde slug → display-naam → email-domein → email-prefix → 'workspace'. (3) Nieuwe deriveTenantInfoFromEmail()-helper leidt naam + slug-base af uit het email-domein voor B2B (vanameyde.nl → 'Vanameyde'); voor free-mail-providers (gmail/hotmail/outlook/etc.) valt 'ie terug op de displayName. Tenant.naam wordt óók via deze helper bepaald als de display-naam tot 'gericall' zou slugifien. OAuth-callback gebruikt deze nieuwe logica zodat een collega die met @vanameyde.nl-account inlogt direct een tenant 'Vanameyde' / slug 'vanameyde' krijgt. Bestaande 'gericall-2'-tenant kan via Beheer > Werkomgeving handmatig hernoemd worden (slug-veld + werkomgeving-naam)."
       }
     ],
     "totalInstellingen": 64,
