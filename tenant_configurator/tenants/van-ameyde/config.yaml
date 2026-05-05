@@ -1,0 +1,88 @@
+tenant_id: van-ameyde
+tenant_naam: "Van Ameyde Group"
+klant_terminologie: "verzekeraar"
+markt: "Europese non-life en composite insurance"
+
+customer_definition:
+  required_fields: [naam, land]
+  custom_fields:
+    - id: va_footprint
+      type: boolean
+      label: "Van Ameyde operationeel aanwezig"
+      default: false
+    - id: ssp_potentieel
+      type: enum
+      label: "SSP potentieel"
+      values: [hoog, middel, laag]
+      default: middel
+
+type_taxonomy: [Composite, Non-Life, Life, Reinsurer, Health, Specialty, Marine]
+
+instelling_referentie:
+  pad: "data/INSTELLING_LIJST.txt"
+  format: pipe
+  fuzzy_threshold: 0.85
+
+source_adapters:
+  - id: zoho_crm_export
+    type: csv
+    pad_pattern: "exports/zoho_*.csv"
+    field_mapping:
+      "Account Name": naam
+      "Billing Country": land
+      "Industry": type
+      "Parent Account": groep
+      "Account Owner": "velden.account_owner"
+    default_status: customer
+
+  - id: xls_contacts
+    type: xlsx
+    field_mapping:
+      "Bedrijf": naam
+      "Land": land
+      "Functie": "_contact.functie"
+      "Naam": "_contact.naam"
+      "Email": "_contact.email"
+      "Telefoon zakelijk": "_contact.telefoon"
+      "LinkedIn": "_contact.linkedin"
+    default_status: prospect
+
+contact_role_mapping:
+  decider:
+    - "CEO"
+    - "Voorzitter RvB"
+    - "Bestuurder"
+    - "Directievoorzitter"
+    - "Managing Director"
+  champion:
+    - "Lid RvB"
+    - "Manager Behandeling"
+    - "Hoofd Behandelzaken"
+    - "Director Claims"
+    - "Head of Claims"
+  influencer:
+    - "CIO"
+    - "Manager IT"
+    - "IT Director"
+    - "Innovation Manager"
+    - "Kwaliteitsmanager"
+    - "Procesmanager"
+  gatekeeper:
+    - "Inkoopmanager"
+    - "Bestuurssecretaris"
+    - "Executive Assistant"
+    - "Office Manager"
+  blocker:
+    - "Compliance Officer"
+    - "DPO"
+    - "Functionaris Gegevensbescherming"
+
+gdpr:
+  freemail_domeinen: [gmail.com, hotmail.com, outlook.com, icloud.com, yahoo.com, live.nl]
+  freemail_actie: verlaag_vertrouwen
+  prive_telefoon_actie: verwijder
+
+output:
+  format: json
+  pad: "output/klantbeeld_{tenant_id}_{timestamp}.json"
+  pretty: true

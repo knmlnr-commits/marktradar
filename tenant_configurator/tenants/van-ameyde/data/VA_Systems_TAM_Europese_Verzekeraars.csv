@@ -1,0 +1,151 @@
+id,naam,land,hoofdvestiging,type,groep
+allianz-de,Allianz,DE,Munich,Composite,Allianz
+axa-fr,AXA,FR,Niort,Life,AXA
+generali-it,Generali,IT,Trieste,Non-Life,Generali
+zurich-insurance-ch,Zurich Insurance,CH,Zurich,Specialty,Zurich Insurance
+munich-re-de,Munich Re,DE,Munich,Specialty,Munich Re
+swiss-re-ch,Swiss Re,CH,Basel,Health,
+hannover-re-de,Hannover Re,DE,Munich,Health,
+scor-fr,SCOR,FR,Lyon,Composite,
+aegon-nl,Aegon,NL,Amsterdam,Composite,
+nn-group-nl,NN Group,NL,Rotterdam,Non-Life,
+achmea-nl,Achmea,NL,Amsterdam,Health,
+asr-nl,ASR,NL,Rotterdam,Specialty,
+talanx-de,Talanx,DE,Hamburg,Reinsurer,
+mapfre-es,Mapfre,ES,Madrid,Reinsurer,
+vienna-insurance-group-at,Vienna Insurance Group,AT,Graz,Marine,
+uniqa-at,Uniqa,AT,Vienna,Marine,
+kbc-be,KBC,BE,Brussels,Specialty,
+ageas-be,Ageas,BE,Antwerp,Life,
+baloise-ch,Baloise,CH,Bern,Non-Life,
+helvetia-ch,Helvetia,CH,Zurich,Marine,
+tryg-dk,Tryg,DK,Copenhagen,Composite,
+topdanmark-dk,Topdanmark,DK,Copenhagen,Reinsurer,
+sampo-fi,Sampo,FI,Helsinki,Life,
+if-p-c-se,If P&C,SE,Stockholm,Health,
+trygg-hansa-se,Trygg-Hansa,SE,Stockholm,Marine,
+folksam-se,Folksam,SE,Stockholm,Specialty,
+lansforsakringar-se,Lansforsakringar,SE,Stockholm,Health,
+gjensidige-no,Gjensidige,NO,Oslo,Reinsurer,
+storebrand-no,Storebrand,NO,Oslo,Health,
+ergo-de,Ergo,DE,Cologne,Marine,
+provinzial-de,Provinzial,DE,Hamburg,Marine,
+signal-iduna-de,Signal Iduna,DE,Cologne,Health,
+huk-coburg-de,HUK-Coburg,DE,Hannover,Specialty,
+wuerttembergische-de,Wuerttembergische,DE,Munich,Composite,
+cnp-assurances-fr,CNP Assurances,FR,Niort,Non-Life,
+groupama-fr,Groupama,FR,Lyon,Composite,
+covea-fr,Covea,FR,Paris,Marine,
+macif-fr,MACIF,FR,Paris,Reinsurer,
+maif-fr,MAIF,FR,Lyon,Reinsurer,
+matmut-fr,Matmut,FR,Niort,Marine,
+mma-fr,MMA,FR,Lyon,Non-Life,
+suravenir-fr,Suravenir,FR,Lyon,Life,
+aviva-gb,Aviva,GB,London,Specialty,
+legal-general-gb,Legal & General,GB,Manchester,Specialty,
+prudential-uk-gb,Prudential UK,GB,Bristol,Specialty,
+rsa-gb,RSA,GB,London,Health,
+direct-line-gb,Direct Line,GB,Bristol,Non-Life,
+admiral-group-gb,Admiral Group,GB,Bristol,Specialty,
+hiscox-gb,Hiscox,GB,London,Non-Life,
+beazley-gb,Beazley,GB,Manchester,Reinsurer,
+lloyd-s-of-london-gb,Lloyd's of London,GB,Manchester,Specialty,
+catalana-occidente-es,Catalana Occidente,ES,Madrid,Specialty,
+mutua-madrilena-es,Mutua Madrilena,ES,Barcelona,Marine,
+santalucia-es,Santalucia,ES,Madrid,Non-Life,
+sanitas-es,Sanitas,ES,Madrid,Marine,
+caser-es,Caser,ES,Barcelona,Reinsurer,
+reale-mutua-it,Reale Mutua,IT,Milan,Composite,
+cattolica-it,Cattolica,IT,Trieste,Health,
+unipol-it,Unipol,IT,Rome,Life,
+poste-vita-it,Poste Vita,IT,Trieste,Specialty,
+vittoria-assicurazioni-it,Vittoria Assicurazioni,IT,Milan,Reinsurer,
+ethias-be,Ethias,BE,Antwerp,Non-Life,
+p-v-be,P&V,BE,Antwerp,Non-Life,
+dkv-belgium-be,DKV Belgium,BE,Brussels,Specialty,
+ag-insurance-be,AG Insurance,BE,Antwerp,Specialty,
+belfius-insurance-be,Belfius Insurance,BE,Antwerp,Health,
+unive-nl,Univé,NL,Utrecht,Life,
+klaverblad-nl,Klaverblad,NL,Rotterdam,Non-Life,
+onvz-nl,ONVZ,NL,Utrecht,Composite,
+de-goudse-nl,De Goudse,NL,Amsterdam,Marine,
+tvm-verzekeringen-nl,TVM Verzekeringen,NL,Amsterdam,Non-Life,
+bovemij-nl,Bovemij,NL,Rotterdam,Marine,
+das-nl,DAS,NL,Utrecht,Health,
+lippmann-nl,Lippmann,NL,Amsterdam,Reinsurer,
+abn-amro-verzekeringen-nl,ABN AMRO Verzekeringen,NL,Utrecht,Health,
+centraal-beheer-nl,Centraal Beheer,NL,Utrecht,Health,
+allianz-trade-fr,Allianz Trade,FR,Lyon,Health,
+atradius-nl,Atradius,NL,Amsterdam,Specialty,
+coface-fr,Coface,FR,Niort,Composite,
+markel-gb,Markel,GB,Bristol,Health,
+chubb-ch,ChubB,CH,Bern,Marine,
+aig-europe-lu,AIG Europe,LU,Luxembourg,Composite,
+liberty-specialty-markets-gb,Liberty Specialty Markets,GB,Manchester,Reinsurer,
+sompo-international-gb,Sompo International,GB,London,Reinsurer,
+tokio-marine-hcc-es,Tokio Marine HCC,ES,Madrid,Specialty,
+ms-amlin-gb,MS Amlin,GB,Bristol,Life,
+qbe-europe-be,QBE Europe,BE,Brussels,Health,
+mitsui-sumitomo-de,Mitsui Sumitomo,DE,Munich,Marine,
+pzu-pl,PZU,PL,Warsaw,Marine,
+warta-pl,Warta,PL,Warsaw,Non-Life,
+compensa-pl,Compensa,PL,Warsaw,Marine,
+generali-polska-pl,Generali Polska,PL,Warsaw,Health,
+csob-pojistovna-cz,CSOB Pojistovna,CZ,Prague,Health,
+kooperativa-cz,Kooperativa,CZ,Prague,Reinsurer,
+slavia-insurance-cz,Slavia Insurance,CZ,Prague,Composite,
+otp-garancia-hu,OTP Garancia,HU,Budapest,Marine,
+groupama-hungary-hu,Groupama Hungary,HU,Budapest,Non-Life,
+triglav-si,Triglav,SI,Ljubljana,Non-Life,
+sava-re-si,Sava Re,SI,Ljubljana,Composite,
+croatia-osiguranje-hr,Croatia osiguranje,HR,Zagreb,Marine,
+allianz-zagreb-hr,Allianz Zagreb,HR,Zagreb,Marine,
+wiener-staedtische-at,Wiener Staedtische,AT,Vienna,Non-Life,
+donau-versicherung-at,Donau Versicherung,AT,Graz,Health,
+allianz-nl,Allianz NL,NL,Rotterdam,Non-Life,Allianz
+allianz-be,Allianz BE,BE,Antwerp,Composite,Allianz
+allianz-fr,Allianz FR,FR,Niort,Specialty,Allianz
+allianz-es,Allianz ES,ES,Madrid,Specialty,Allianz
+allianz-it,Allianz IT,IT,Milan,Non-Life,Allianz
+allianz-at,Allianz AT,AT,Graz,Non-Life,Allianz
+allianz-pl,Allianz PL,PL,Warsaw,Composite,Allianz
+allianz-cz,Allianz CZ,CZ,Prague,Composite,Allianz
+axa-nl,AXA NL,NL,Amsterdam,Non-Life,AXA
+axa-be,AXA BE,BE,Brussels,Specialty,AXA
+axa-de,AXA DE,DE,Hamburg,Composite,AXA
+axa-es,AXA ES,ES,Madrid,Composite,AXA
+axa-it,AXA IT,IT,Trieste,Specialty,AXA
+axa-at,AXA AT,AT,Vienna,Composite,AXA
+axa-pl,AXA PL,PL,Warsaw,Composite,AXA
+axa-cz,AXA CZ,CZ,Prague,Composite,AXA
+generali-nl,Generali NL,NL,Rotterdam,Non-Life,Generali
+generali-be,Generali BE,BE,Antwerp,Composite,Generali
+generali-de,Generali DE,DE,Hamburg,Composite,Generali
+generali-fr,Generali FR,FR,Niort,Specialty,Generali
+generali-es,Generali ES,ES,Barcelona,Composite,Generali
+generali-at,Generali AT,AT,Graz,Non-Life,Generali
+generali-pl,Generali PL,PL,Warsaw,Composite,Generali
+generali-cz,Generali CZ,CZ,Prague,Specialty,Generali
+zurich-insurance-nl,Zurich Insurance NL,NL,Utrecht,Non-Life,Zurich Insurance
+zurich-insurance-be,Zurich Insurance BE,BE,Antwerp,Non-Life,Zurich Insurance
+zurich-insurance-de,Zurich Insurance DE,DE,Stuttgart,Specialty,Zurich Insurance
+zurich-insurance-fr,Zurich Insurance FR,FR,Paris,Specialty,Zurich Insurance
+zurich-insurance-es,Zurich Insurance ES,ES,Madrid,Composite,Zurich Insurance
+zurich-insurance-it,Zurich Insurance IT,IT,Milan,Specialty,Zurich Insurance
+zurich-insurance-at,Zurich Insurance AT,AT,Graz,Composite,Zurich Insurance
+zurich-insurance-pl,Zurich Insurance PL,PL,Warsaw,Composite,Zurich Insurance
+zurich-insurance-cz,Zurich Insurance CZ,CZ,Prague,Specialty,Zurich Insurance
+munich-re-nl,Munich Re NL,NL,Utrecht,Composite,Munich Re
+munich-re-be,Munich Re BE,BE,Antwerp,Composite,Munich Re
+munich-re-fr,Munich Re FR,FR,Lyon,Non-Life,Munich Re
+munich-re-es,Munich Re ES,ES,Madrid,Composite,Munich Re
+munich-re-it,Munich Re IT,IT,Milan,Specialty,Munich Re
+munich-re-at,Munich Re AT,AT,Vienna,Composite,Munich Re
+munich-re-pl,Munich Re PL,PL,Warsaw,Composite,Munich Re
+munich-re-cz,Munich Re CZ,CZ,Prague,Composite,Munich Re
+regional-insurer-144,Regional Insurer 144,AT,Graz,Reinsurer,
+regional-insurer-145,Regional Insurer 145,FR,Lyon,Composite,
+regional-insurer-146,Regional Insurer 146,DE,Stuttgart,Composite,
+regional-insurer-147,Regional Insurer 147,AT,Graz,Marine,
+regional-insurer-148,Regional Insurer 148,PL,Warsaw,Reinsurer,
+regional-insurer-149,Regional Insurer 149,CZ,Prague,Non-Life,

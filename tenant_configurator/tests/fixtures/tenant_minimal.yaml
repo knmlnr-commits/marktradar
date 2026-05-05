@@ -1,0 +1,63 @@
+tenant_id: minimal
+tenant_naam: "Minimal Test Tenant"
+klant_terminologie: "klant"
+markt: "test"
+
+customer_definition:
+  required_fields: [naam, land]
+  custom_fields: []
+
+type_taxonomy: [Standard]
+
+instelling_referentie:
+  pad: "data/INSTELLING_LIJST.txt"
+  format: pipe
+  fuzzy_threshold: 0.85
+
+source_adapters:
+  - id: test_xlsx
+    type: xlsx
+    field_mapping:
+      "Bedrijf": naam
+      "Land": land
+      "Functie": "_contact.functie"
+      "Naam": "_contact.naam"
+      "Email": "_contact.email"
+      "Telefoon zakelijk": "_contact.telefoon"
+      "LinkedIn": "_contact.linkedin"
+    default_status: prospect
+  - id: test_csv
+    type: csv
+    field_mapping:
+      "naam": naam
+      "land": land
+      "functie": "_contact.functie"
+      "contact_naam": "_contact.naam"
+      "email": "_contact.email"
+    default_status: prospect
+  - id: test_json
+    type: json
+    field_mapping:
+      "naam": naam
+      "land": land
+      "functie": "_contact.functie"
+      "contact_naam": "_contact.naam"
+      "email": "_contact.email"
+    default_status: prospect
+
+contact_role_mapping:
+  decider: ["CEO", "Bestuurder"]
+  champion: ["Director Claims", "Manager Behandeling"]
+  influencer: ["CIO", "Manager IT"]
+  gatekeeper: ["Inkoopmanager"]
+  blocker: ["Compliance Officer", "DPO"]
+
+gdpr:
+  freemail_domeinen: [gmail.com, hotmail.com]
+  freemail_actie: verlaag_vertrouwen
+  prive_telefoon_actie: verwijder
+
+output:
+  format: json
+  pad: "output/klantbeeld_{tenant_id}_{timestamp}.json"
+  pretty: true

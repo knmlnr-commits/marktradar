@@ -1,0 +1,151 @@
+# id | naam | hoofdvestiging
+allianz-de | Allianz | Munich
+axa-fr | AXA | Niort
+generali-it | Generali | Trieste
+zurich-insurance-ch | Zurich Insurance | Zurich
+munich-re-de | Munich Re | Munich
+swiss-re-ch | Swiss Re | Basel
+hannover-re-de | Hannover Re | Munich
+scor-fr | SCOR | Lyon
+aegon-nl | Aegon | Amsterdam
+nn-group-nl | NN Group | Rotterdam
+achmea-nl | Achmea | Amsterdam
+asr-nl | ASR | Rotterdam
+talanx-de | Talanx | Hamburg
+mapfre-es | Mapfre | Madrid
+vienna-insurance-group-at | Vienna Insurance Group | Graz
+uniqa-at | Uniqa | Vienna
+kbc-be | KBC | Brussels
+ageas-be | Ageas | Antwerp
+baloise-ch | Baloise | Bern
+helvetia-ch | Helvetia | Zurich
+tryg-dk | Tryg | Copenhagen
+topdanmark-dk | Topdanmark | Copenhagen
+sampo-fi | Sampo | Helsinki
+if-p-c-se | If P&C | Stockholm
+trygg-hansa-se | Trygg-Hansa | Stockholm
+folksam-se | Folksam | Stockholm
+lansforsakringar-se | Lansforsakringar | Stockholm
+gjensidige-no | Gjensidige | Oslo
+storebrand-no | Storebrand | Oslo
+ergo-de | Ergo | Cologne
+provinzial-de | Provinzial | Hamburg
+signal-iduna-de | Signal Iduna | Cologne
+huk-coburg-de | HUK-Coburg | Hannover
+wuerttembergische-de | Wuerttembergische | Munich
+cnp-assurances-fr | CNP Assurances | Niort
+groupama-fr | Groupama | Lyon
+covea-fr | Covea | Paris
+macif-fr | MACIF | Paris
+maif-fr | MAIF | Lyon
+matmut-fr | Matmut | Niort
+mma-fr | MMA | Lyon
+suravenir-fr | Suravenir | Lyon
+aviva-gb | Aviva | London
+legal-general-gb | Legal & General | Manchester
+prudential-uk-gb | Prudential UK | Bristol
+rsa-gb | RSA | London
+direct-line-gb | Direct Line | Bristol
+admiral-group-gb | Admiral Group | Bristol
+hiscox-gb | Hiscox | London
+beazley-gb | Beazley | Manchester
+lloyd-s-of-london-gb | Lloyd's of London | Manchester
+catalana-occidente-es | Catalana Occidente | Madrid
+mutua-madrilena-es | Mutua Madrilena | Barcelona
+santalucia-es | Santalucia | Madrid
+sanitas-es | Sanitas | Madrid
+caser-es | Caser | Barcelona
+reale-mutua-it | Reale Mutua | Milan
+cattolica-it | Cattolica | Trieste
+unipol-it | Unipol | Rome
+poste-vita-it | Poste Vita | Trieste
+vittoria-assicurazioni-it | Vittoria Assicurazioni | Milan
+ethias-be | Ethias | Antwerp
+p-v-be | P&V | Antwerp
+dkv-belgium-be | DKV Belgium | Brussels
+ag-insurance-be | AG Insurance | Antwerp
+belfius-insurance-be | Belfius Insurance | Antwerp
+unive-nl | Univé | Utrecht
+klaverblad-nl | Klaverblad | Rotterdam
+onvz-nl | ONVZ | Utrecht
+de-goudse-nl | De Goudse | Amsterdam
+tvm-verzekeringen-nl | TVM Verzekeringen | Amsterdam
+bovemij-nl | Bovemij | Rotterdam
+das-nl | DAS | Utrecht
+lippmann-nl | Lippmann | Amsterdam
+abn-amro-verzekeringen-nl | ABN AMRO Verzekeringen | Utrecht
+centraal-beheer-nl | Centraal Beheer | Utrecht
+allianz-trade-fr | Allianz Trade | Lyon
+atradius-nl | Atradius | Amsterdam
+coface-fr | Coface | Niort
+markel-gb | Markel | Bristol
+chubb-ch | ChubB | Bern
+aig-europe-lu | AIG Europe | Luxembourg
+liberty-specialty-markets-gb | Liberty Specialty Markets | Manchester
+sompo-international-gb | Sompo International | London
+tokio-marine-hcc-es | Tokio Marine HCC | Madrid
+ms-amlin-gb | MS Amlin | Bristol
+qbe-europe-be | QBE Europe | Brussels
+mitsui-sumitomo-de | Mitsui Sumitomo | Munich
+pzu-pl | PZU | Warsaw
+warta-pl | Warta | Warsaw
+compensa-pl | Compensa | Warsaw
+generali-polska-pl | Generali Polska | Warsaw
+csob-pojistovna-cz | CSOB Pojistovna | Prague
+kooperativa-cz | Kooperativa | Prague
+slavia-insurance-cz | Slavia Insurance | Prague
+otp-garancia-hu | OTP Garancia | Budapest
+groupama-hungary-hu | Groupama Hungary | Budapest
+triglav-si | Triglav | Ljubljana
+sava-re-si | Sava Re | Ljubljana
+croatia-osiguranje-hr | Croatia osiguranje | Zagreb
+allianz-zagreb-hr | Allianz Zagreb | Zagreb
+wiener-staedtische-at | Wiener Staedtische | Vienna
+donau-versicherung-at | Donau Versicherung | Graz
+allianz-nl | Allianz NL | Rotterdam
+allianz-be | Allianz BE | Antwerp
+allianz-fr | Allianz FR | Niort
+allianz-es | Allianz ES | Madrid
+allianz-it | Allianz IT | Milan
+allianz-at | Allianz AT | Graz
+allianz-pl | Allianz PL | Warsaw
+allianz-cz | Allianz CZ | Prague
+axa-nl | AXA NL | Amsterdam
+axa-be | AXA BE | Brussels
+axa-de | AXA DE | Hamburg
+axa-es | AXA ES | Madrid
+axa-it | AXA IT | Trieste
+axa-at | AXA AT | Vienna
+axa-pl | AXA PL | Warsaw
+axa-cz | AXA CZ | Prague
+generali-nl | Generali NL | Rotterdam
+generali-be | Generali BE | Antwerp
+generali-de | Generali DE | Hamburg
+generali-fr | Generali FR | Niort
+generali-es | Generali ES | Barcelona
+generali-at | Generali AT | Graz
+generali-pl | Generali PL | Warsaw
+generali-cz | Generali CZ | Prague
+zurich-insurance-nl | Zurich Insurance NL | Utrecht
+zurich-insurance-be | Zurich Insurance BE | Antwerp
+zurich-insurance-de | Zurich Insurance DE | Stuttgart
+zurich-insurance-fr | Zurich Insurance FR | Paris
+zurich-insurance-es | Zurich Insurance ES | Madrid
+zurich-insurance-it | Zurich Insurance IT | Milan
+zurich-insurance-at | Zurich Insurance AT | Graz
+zurich-insurance-pl | Zurich Insurance PL | Warsaw
+zurich-insurance-cz | Zurich Insurance CZ | Prague
+munich-re-nl | Munich Re NL | Utrecht
+munich-re-be | Munich Re BE | Antwerp
+munich-re-fr | Munich Re FR | Lyon
+munich-re-es | Munich Re ES | Madrid
+munich-re-it | Munich Re IT | Milan
+munich-re-at | Munich Re AT | Vienna
+munich-re-pl | Munich Re PL | Warsaw
+munich-re-cz | Munich Re CZ | Prague
+regional-insurer-144 | Regional Insurer 144 | Graz
+regional-insurer-145 | Regional Insurer 145 | Lyon
+regional-insurer-146 | Regional Insurer 146 | Stuttgart
+regional-insurer-147 | Regional Insurer 147 | Graz
+regional-insurer-148 | Regional Insurer 148 | Warsaw
+regional-insurer-149 | Regional Insurer 149 | Prague

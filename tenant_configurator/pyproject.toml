@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "marktradar-tenant-configurator"
+version = "0.1.0"
+description = "Tenant configurator for MarktRadar; per-tenant customer definition and ingestion pipeline."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "MarktRadar" }]
+
+dependencies = [
+    "pydantic>=2.6,<3",
+    "email-validator>=2.1",
+    "pyyaml>=6.0",
+    "pandas>=2.2",
+    "openpyxl>=3.1",
+    "rapidfuzz>=3.6",
+    "click>=8.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+]
+
+[project.scripts]
+marktradar-ingest = "marktradar.cli:ingest_command"
+marktradar-init-tenant = "marktradar.cli:init_tenant_command"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+
+[tool.coverage.run]
+source = ["src/marktradar"]
+omit = ["*/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]

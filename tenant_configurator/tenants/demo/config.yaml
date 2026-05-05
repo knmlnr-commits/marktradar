@@ -1,0 +1,49 @@
+tenant_id: demo
+tenant_naam: "Demo Tenant BV"
+klant_terminologie: "klant"
+markt: "Demo only; small synthetic universe"
+
+customer_definition:
+  required_fields: [naam, land]
+  custom_fields:
+    - id: priority
+      type: enum
+      label: "Priority"
+      values: [hoog, middel, laag]
+      default: laag
+
+type_taxonomy: [Standard, Premium]
+
+instelling_referentie:
+  pad: "data/INSTELLING_LIJST.txt"
+  format: pipe
+  fuzzy_threshold: 0.8
+
+source_adapters:
+  - id: demo_csv
+    type: csv
+    field_mapping:
+      "naam": naam
+      "land": land
+      "type": type
+      "rol_titel": "_contact.functie"
+      "contact_naam": "_contact.naam"
+      "contact_email": "_contact.email"
+    default_status: prospect
+
+contact_role_mapping:
+  decider: ["CEO"]
+  champion: ["Director"]
+  influencer: ["Manager"]
+  gatekeeper: ["Inkoop"]
+  blocker: ["Compliance"]
+
+gdpr:
+  freemail_domeinen: [gmail.com]
+  freemail_actie: verlaag_vertrouwen
+  prive_telefoon_actie: verwijder
+
+output:
+  format: json
+  pad: "output/klantbeeld_{tenant_id}_{timestamp}.json"
+  pretty: true
