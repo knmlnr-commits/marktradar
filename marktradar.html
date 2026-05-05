@@ -480,6 +480,46 @@ body{
   box-shadow:0 30px 80px -20px rgba(40,40,40,.45);overflow:hidden;transform:translateY(20px);
   transition:transform .25s cubic-bezier(.2,.8,.2,1);}
 .overlay.show .overlay-panel{transform:translateY(0)}
+
+/* Split-view op brede schermen: klantbeeld dokt rechts, lijst blijft
+   links zichtbaar. Outlook-stijl. Onder 1400px valt 'ie terug op de
+   bestaande full-overlay die over de hele app komt. */
+@media (min-width: 1400px){
+  .overlay{
+    inset:auto; top:0; right:0; bottom:0; left:auto;
+    width:640px;
+    background:transparent;
+    backdrop-filter:none;
+    padding:0;
+    overflow-y:auto;
+    border-left:1px solid var(--grey-200);
+    z-index:90;
+  }
+  .overlay-panel{
+    width:100%;
+    max-width:none;
+    min-height:100%;
+    border-radius:0;
+    box-shadow:-12px 0 30px -20px rgba(40,40,40,.2);
+    transform:translateX(20px);
+  }
+  .overlay.show .overlay-panel{transform:translateX(0)}
+  /* App schuift in zodra de side-pane open is. Topbar (sticky) krijgt
+     dezelfde rechter-padding zodat 'ie niet onder de pane verdwijnt. */
+  .app.has-side-overlay .main{padding-right:664px}
+  .app.has-side-overlay .topbar,
+  .app.has-side-overlay .tabs,
+  .app.has-side-overlay .scope-bar{padding-right:664px}
+  /* Compactere instelling-rij wanneer de lijst smaller wordt: alleen
+     Instelling-naam, Status, Lead-score; provincie/ANW/bedden vouwen
+     onder de naam (inst-name-sub doet dit al). */
+  .app.has-side-overlay .inst-head,
+  .app.has-side-overlay .inst-row{grid-template-columns:minmax(180px,2.4fr) 1fr 1fr 70px}
+  .app.has-side-overlay .inst-head > div:nth-child(2),
+  .app.has-side-overlay .inst-head > div:nth-child(3),
+  .app.has-side-overlay .inst-row > .inst-cell:nth-child(2),
+  .app.has-side-overlay .inst-row > .inst-cell:nth-child(3){display:none}
+}
 .overlay-head{padding:22px 28px;
   background:linear-gradient(135deg, var(--orange-pale) 0%, var(--white) 100%);
   border-bottom:1px solid var(--grey-200);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;}
@@ -1672,7 +1712,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.5",
+    "version": "1.16.6",
     "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1879,6 +1919,12 @@ const DATA = {
         "codename": "Quasar",
         "date": "2026-05-05",
         "note": "Beheer is geen modal-overlay meer maar een volwaardige 7e hoofd-tab in de tab-bar (naast Acties / Signalen / Instellingen / Opportunities / Trends / Leveranciers). Reactie op feedback dat de layover-popup vervelend was. Het tab-pane bevat exact dezelfde sub-navigatie (Werkomgeving / Markt / Gebruikers / Contacten / Dropdowns / Data & sync) en alle bindings; alleen de modal-wrapper, het 'Sluiten'-knopje en de outside-click/escape-handlers zijn weggehaald. De topbar-Beheer-knop blijft als shortcut maar activeert nu de tab i.p.v. de modal. UI-state-persistence onthoudt automatisch dat je op de Beheer-tab stond bij een page-reload (via het bestaande mechanisme uit v1.15.7). KV-health-check + dropdown-registry + resource-list zijn lazy-loaded — pas wanneer je de Beheer-tab opent worden ze geladen, zodat de eerste page-load niet vertraagd wordt voor gebruikers die dat zelden bezoeken."
+      },
+      {
+        "version": "1.16.6",
+        "codename": "Quasar",
+        "date": "2026-05-05",
+        "note": "Klantbeeld als Outlook-stijl side-pane op brede schermen. Op viewports ≥1400px schuift het klantbeeld niet meer als modal over de app heen, maar dokt 't aan de rechterkant (640px breed) en blijft de lijst van signalen/instellingen/todo's/opportunities links zichtbaar. Topbar + tabs + scope-bar krijgen padding-right zodat ze niet onder de side-pane verdwijnen, en de instellingen-lijst gaat compact (alleen naam + status + lead-score, provincie/ANW kolommen verborgen) zodat 'ie comfortabel past in de smallere left-pane. Smaller dan 1400px (mobile + kleinere laptops) blijft het klantbeeld een full-overlay zoals voorheen — geen UX-degradatie. Implementatie via een .has-side-overlay-class op .app die bij openInstelling wordt gezet en bij closeOverlay wordt gehaald; alle layout-effecten zitten in een @media (min-width:1400px) CSS-blok, zodat de sidepane-styling kleine schermen niet raakt."
       }
     ],
     "totalInstellingen": 64,
@@ -15016,6 +15062,11 @@ function openInstelling(id, ctx){
     </div>`;
   document.getElementById('overlayPanel').innerHTML = html;
   document.getElementById('overlay').classList.add('show');
+  // Side-pane mode op brede schermen: schuift de app in zodat lijst
+  // én klantbeeld naast elkaar leesbaar zijn (zie .has-side-overlay
+  // in de CSS-blok hierboven). Op smalle schermen valt dit terug op
+  // de bestaande full-overlay.
+  document.querySelector('.app')?.classList.add('has-side-overlay');
   bindOverlayChrome(i);
   const ownerSel = document.getElementById('ownerSelect-' + i.id);
   if(ownerSel){
@@ -16656,6 +16707,7 @@ function bindTodoHandlers(i){
 }
 function closeOverlay(){
   document.getElementById('overlay').classList.remove('show');
+  document.querySelector('.app')?.classList.remove('has-side-overlay');
   currentInstellingId = null;
   saveUiState();
 }
