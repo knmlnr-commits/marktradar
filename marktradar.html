@@ -1294,7 +1294,6 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <button class="admin-tab active" data-admin-tab="tenant" data-i18n="admin.tab.tenant">Werkomgeving</button>
     <button class="admin-tab" data-admin-tab="market" data-i18n="admin.tab.market">Markt</button>
     <button class="admin-tab" data-admin-tab="users" data-i18n="admin.tab.users">Gebruikers</button>
-    <button class="admin-tab" data-admin-tab="contacts" data-i18n="admin.tab.contacts">Contacten</button>
     <button class="admin-tab" data-admin-tab="dropdowns" data-i18n="admin.tab.dropdowns">Dropdowns</button>
     <button class="admin-tab" data-admin-tab="data" data-i18n="admin.tab.data">Data &amp; sync</button>
     </div>
@@ -1419,19 +1418,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div id="userAddResult" style="margin-top:8px;font-size:.82rem"></div>
     </div>
     </div>
-    <div id="adminPaneContacts" class="admin-pane" style="display:none">
-    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Plak hieronder de JSON-output die de Claude mapping-prompt voor jouw XLS heeft gegenereerd. Het import voegt contacten toe aan de DMU van de juiste instellingen, met email en telefoon klikbaar.</p>
-    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-    <button class="btn-secondary" id="copyImportPromptBtn">Mapping-prompt kopi&euml;ren</button>
-    <button class="btn-secondary" id="showSchemaBtn">Toon JSON-voorbeeld</button>
-    </div>
-    <textarea id="importJsonInput" placeholder='{"contacten":[{"instellingId":"carintreggeland","naam":"...","functie":"...","rol":"champion","email":"...","telefoon":"...","bron":"...","bronType":"website","vertrouwen":"hoog"}]}' style="width:100%;min-height:200px;padding:12px;font-family:'DM Mono',monospace;font-size:.78rem;border:1px solid var(--grey-200);border-radius:8px;background:var(--grey-50);color:var(--grey-900);outline:none;resize:vertical"></textarea>
-    <div id="importPreview" style="margin-top:12px;font-size:.82rem;color:var(--grey-700)"></div>
-    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-    <button class="btn-secondary" id="previewImportBtn">Preview</button>
-    <button class="btn-primary" id="applyImportBtn" disabled>Importeren</button>
-    </div>
-    </div>
+    <!-- adminPaneContacts (XLS contact-import via JSON-paste) is in
+         v1.16.7 verwijderd. Bulk contact-import gaat nu via de Python
+         tenant_configurator-pipeline; importeren binnen de app gaat
+         via de Data & Sync-tab (volledige state-import). -->
     <div id="adminPaneDropdowns" class="admin-pane" style="display:none">
     <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Defaults zijn ingebouwd en niet wisbaar; toegevoegde custom-waarden kunnen verwijderd worden. Wijzigingen worden cross-device gesynchroniseerd via Vercel KV.</p>
     <div id="adminModalBody"></div>
@@ -1717,7 +1707,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.6",
+    "version": "1.16.7",
     "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1930,6 +1920,12 @@ const DATA = {
         "codename": "Quasar",
         "date": "2026-05-05",
         "note": "Klantbeeld als Outlook-stijl side-pane op brede schermen. Op viewports ≥1400px schuift het klantbeeld niet meer als modal over de app heen, maar dokt 't aan de rechterkant (640px breed) en blijft de lijst van signalen/instellingen/todo's/opportunities links zichtbaar. Topbar + tabs + scope-bar krijgen padding-right zodat ze niet onder de side-pane verdwijnen, en de instellingen-lijst gaat compact (alleen naam + status + lead-score, provincie/ANW kolommen verborgen) zodat 'ie comfortabel past in de smallere left-pane. Smaller dan 1400px (mobile + kleinere laptops) blijft het klantbeeld een full-overlay zoals voorheen — geen UX-degradatie. Implementatie via een .has-side-overlay-class op .app die bij openInstelling wordt gezet en bij closeOverlay wordt gehaald; alle layout-effecten zitten in een @media (min-width:1400px) CSS-blok, zodat de sidepane-styling kleine schermen niet raakt."
+      },
+      {
+        "version": "1.16.7",
+        "codename": "Quasar",
+        "date": "2026-05-05",
+        "note": "Multi-tenant data-isolation in Beheer > Data & Sync + één import-plek. (1) Data & Sync toonde de in-memory state van de browser-sessie, en die kon nog data uit een eerdere tenant-login bevatten (assignments, todos, dropdowns, etc. zaten in localStorage onder niet-gescoped sleutels). Nieuwe clearStateOnTenantChange-helper detecteert tenant-id-wissel via localStorage-key marktradar.lastTenantId, wist alle data-storage-keys (assignments, todos, dmu-overrides, opportunities, signal-history, overrides, dropdowns, supplier-overrides, dirty-flag) en reset de in-memory variabelen naar leeg; KV-sync vult ze daarna opnieuw met de juiste tenant-data. Auth-token + UI-state-key blijven staan (geen onnodig uitloggen). (2) Beheer > Contacten-tab verwijderd: de XLS-contact-import via JSON-paste is vervangen door de Python tenant_configurator-pipeline (zie tenant_configurator/). State-import binnen de app gaat nu nog maar op één plek: Beheer > Data & Sync. JS-bindings voor Contacten-elementen waren al null-safe via early-return; geen functionele breuk."
       }
     ],
     "totalInstellingen": 64,
@@ -11795,6 +11791,14 @@ function consumeOAuthFragment(){
     if(typeof detect === 'object' && detect.user){
       currentUser = detect.user;
       currentTenant = detect.tenant || currentTenant;
+      // Multi-tenant data-isolation: localStorage caches uit een eerdere
+      // sessie van een ándere tenant moeten weg, anders zie je in
+      // Beheer > Data & Sync (en in de in-memory state) restjes van
+      // GeriCall terwijl je op Van Ameyde bent ingelogd, totdat de
+      // KV-sync klaar is. Deze helper checkt op tenant-id-wissel,
+      // wist alle data-storage-keys en reset de in-memory variabelen
+      // naar leeg; sync-functions vullen ze daarna opnieuw vanuit KV.
+      try { clearStateOnTenantChange(currentTenant.id); } catch(e){}
       rebuildMarketScope();
       saveAuthToStorage(authToken, currentUser);
       // Als de URL niet matcht met onze eigen tenant, stuur door
@@ -11931,6 +11935,44 @@ async function syncOwnersList(){
       openInstelling(currentInstellingId);
     }
   } catch(e){}
+}
+
+// Multi-tenant data-isolation helper. Onthoudt welke tenant het laatst
+// is geladen op dit apparaat; bij een wisseling worden alle in-memory
+// state-variabelen + localStorage-caches gereset zodat je geen data
+// uit een ander werkomgeving meer ziet bij login. KV-sync vult ze
+// daarna opnieuw met de juiste tenant-data.
+const LAST_TENANT_KEY = 'marktradar.lastTenantId';
+function clearStateOnTenantChange(newTenantId){
+  if(!newTenantId) return;
+  let last = null;
+  try { last = localStorage.getItem(LAST_TENANT_KEY); } catch(e){}
+  if(last && last === newTenantId) return; // zelfde tenant; niets doen
+  // Wis localStorage-data-caches; auth-token + ui-state blijven staan.
+  const dataKeys = [
+    'marktradar.assignments.v1',
+    'marktradar.assignments.dirty.v1',
+    'marktradar.todos.v1',
+    'marktradar.dmu-overrides.v1',
+    'marktradar.opportunities.v1',
+    'marktradar.signal-history.v1',
+    'marktradar.overrides.v1',
+    'marktradar.dropdowns.v1',
+    'marktradar.supplier-overrides.v1',
+  ];
+  dataKeys.forEach(k => { try { localStorage.removeItem(k); } catch(e){} });
+  // Reset de in-memory state. KV-sync herhydrateert ze aansluitend.
+  try {
+    if(typeof assignments !== 'undefined') assignments = {};
+    if(typeof todos !== 'undefined') todos = {};
+    if(typeof dmuOverrides !== 'undefined') dmuOverrides = {};
+    if(typeof opportunities !== 'undefined') opportunities = {};
+    if(typeof signalHistory !== 'undefined') signalHistory = {};
+    if(typeof overrides !== 'undefined') overrides = {};
+    if(typeof dropdowns !== 'undefined') dropdowns = {};
+    if(typeof supplierOverrides !== 'undefined') supplierOverrides = {};
+  } catch(e){}
+  try { localStorage.setItem(LAST_TENANT_KEY, newTenantId); } catch(e){}
 }
 
 const STORAGE_KEY = 'marktradar.assignments.v1';
