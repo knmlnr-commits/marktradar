@@ -1666,7 +1666,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.2",
+    "version": "1.16.3",
     "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1855,6 +1855,12 @@ const DATA = {
         "codename": "Quasar",
         "date": "2026-05-04",
         "note": "Critical multi-tenant data-leak fix. Bij Beheer > Markt-tab werden voor élke tenant (incl. Van Ameyde) de 64 GeriCall-VVT-instellingen getoond i.p.v. de eigen tenant.entiteiten[]. Oorzaak: refreshMarketPane / renderMarketList / updateMarketStatus / Select-Alles-knop lazen direct uit DATA.instellingen (de hardcoded GeriCall-baseline) i.p.v. de tenant-aware getEntiteitenUniverse(). Idem voor findDropdownUsages, migrateDropdownValue en instellingenAllMerged — alle plekken zijn nu omgezet naar getEntiteitenUniverse(). De getEntiteitenUniverse-helper bestond al; hij werd gewoon op deze plekken niet gebruikt. Resultaat: Beheer is nu volledig gescheiden per tenant en kan multi-tenant ingezet worden zonder dat data tussen werkomgevingen lekt."
+      },
+      {
+        "version": "1.16.3",
+        "codename": "Quasar",
+        "date": "2026-05-04",
+        "note": "Multi-tenant audit pass 2: GeriCall-data en zorg-jargon weg uit niet-GeriCall tenants. (1) Snapshots/Trends: snapshotCount, snapshotsForInst, leadScoreHistoryForInst, findMovers, findStale, renderTrendsTab, renderTrendsList retourneren nu leeg voor non-GeriCall via nieuwe snapshotsAvailable()-helper. Trends-tab toont 'geen snapshots' i.p.v. 64 niet-bestaande VVT-instellingen. (2) Signalen: annotateNewSignals, signalsForInst en KPI sigDezeWeek-lookup gebruiken nu getMarketSignalen() i.p.v. DATA.signalen — zo krijgt een Van-Ameyde-instelling z'n eigen handmatige signalen wel in 't klantbeeld te zien, en geen GeriCall-signaal-IDs in z'n signalHistory. (3) Leveranciers: tabCountLev gebruikt getEffectiveLeveranciers() (tenant-tombstones + eigen entries). (4) Dropdowns: DROPDOWN_REGISTRY heeft nu legacyOnly-flag. Voor non-GeriCall tenants worden ANW-leveranciers, ECD-leveranciers, anwModelKort, grootte (g/k = bedden), regio (Noord/Oost/Midden/etc.) en de zorg-bronTypes (verenso, big-register) verborgen in Beheer > Dropdowns. Dropdown 'GeriCall-status' hernoemd naar 'Lead-status' en 'DMU-rol' naar 'Contact-rol'. Custom-waarden die de tenant zelf heeft toegevoegd blijven altijd zichtbaar (geen verlies van user-content)."
       }
     ],
     "totalInstellingen": 64,
@@ -12329,7 +12335,13 @@ function annotateNewSignals(){
   const runVersion = (DATA.meta.version || '?') + ' ' + (DATA.meta.codename || '');
   let changed = false;
   let newSignalsCount = 0;
-  DATA.signalen.forEach(s => {
+  // Tenant-aware: gebruik dezelfde merged-bron als de Signalen-tab.
+  // Anders krijgt Van Ameyde GeriCall-signaal-IDs in z'n signalHistory
+  // en autoCreateSignalTodo voor instellingen die hij niet kent.
+  const sourceList = (typeof getMarketSignalen === 'function')
+    ? getMarketSignalen()
+    : (Array.isArray(DATA.signalen) ? DATA.signalen : []);
+  sourceList.forEach(s => {
     if(!signalHistory[s.id]){
       signalHistory[s.id] = { addedAt: today, runVersion: runVersion.trim() };
       changed = true;
@@ -12450,7 +12462,12 @@ function instellingenMerged(){ return getMarketInstellingen().map(applyOverrides
 function instellingenAllMerged(){ return getEntiteitenUniverse().map(applyOverrides); }
 function signalenInScope(){ return getMarketSignalen(); }
 function urgencyOrder(u){ return {hoog:3, middel:2, laag:1}[u] || 0; }
-function signalsForInst(id){ return DATA.signalen.filter(s => s.instellingId === id); }
+function signalsForInst(id){
+  // Tenant-aware: bevat zowel baseline (alleen GeriCall) als auto/usr-
+  // signalen uit remoteSignals. Anders zou een Van-Ameyde-instelling
+  // nooit z'n eigen handmatig aangemaakte signalen in 't klantbeeld zien.
+  return getMarketSignalen().filter(s => s.instellingId === id);
+}
 function inMyOwnerScope(instId){
   if(scopeMode !== 'mine' || !currentUser) return true;
   return ownerForInst(instId) === currentUser.id;
@@ -12460,8 +12477,17 @@ function leadScoreClass(score){
   if(score >= 50) return '';
   return 'cold';
 }
-function snapshotCount(){ return (DATA.snapshots || []).length; }
+// Snapshots zijn historische lead-score-momentopnames van de GeriCall-
+// baseline (handmatig gevuld in de oorspronkelijke seed). Voor andere
+// tenants bestaan die nog niet — we retourneren leeg zodat de Trends-
+// tab netjes 'geen data' toont i.p.v. GeriCall-instellingen die niets
+// zeggen voor de huidige tenant.
+function snapshotsAvailable(){
+  return currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+}
+function snapshotCount(){ return snapshotsAvailable() ? (DATA.snapshots || []).length : 0; }
 function snapshotsForInst(id, lens){
+  if(!snapshotsAvailable()) return [];
   return (DATA.snapshots || []).map(s => {
     const inst = s.instellingen[id];
     if(!inst) return null;
@@ -12470,6 +12496,7 @@ function snapshotsForInst(id, lens){
   }).filter(Boolean);
 }
 function leadScoreHistoryForInst(id){
+  if(!snapshotsAvailable()) return [];
   return (DATA.snapshots || []).map(s => s.instellingen[id]?.leadScore ?? 0);
 }
 
@@ -13020,7 +13047,7 @@ function renderKpiRow(){
   const today = new Date().toISOString().slice(0,10);
   const sigDezeWeek = Object.entries(signalHistory || {}).filter(([sid, h]) => {
     if(!h || !(h.addedAt >= addDaysISO(today, -7))) return false;
-    const sig = DATA.signalen.find(s => String(s.id) === String(sid));
+    const sig = getMarketSignalen().find(s => String(s.id) === String(sid));
     return !sig || !sig.instellingId || scopeIds.has(String(sig.instellingId));
   }).length;
   const openActies = allTodosFlat().filter(t => !t.done && scopeIds.has(String(t.instellingId))).length;
@@ -13108,8 +13135,15 @@ function renderTabs(){
     (scopeMode !== 'mine' || !currentUser || t.ownerId === currentUser.id || (!t.ownerId && ownerForInst(t.instellingId) === currentUser.id)));
   document.getElementById('tabCountSignalen').textContent = scopeSig.length;
   document.getElementById('tabCountInst').textContent = scopeInst.length;
-  document.getElementById('tabCountLev').textContent = DATA.leveranciers.length;
-  document.getElementById('tabCountTrends').textContent = (DATA.snapshots || []).length;
+  // Tenant-aware: leveranciers-baseline is GeriCall-eigen, andere tenants
+  // hebben hun eigen lijst via supplier-overrides. getEffectiveLeveranciers
+  // dedupliceert + verbergt baseline-records die door deze tenant zijn
+  // verwijderd via tombstone.
+  document.getElementById('tabCountLev').textContent =
+    (typeof getEffectiveLeveranciers === 'function' ? getEffectiveLeveranciers() : (DATA.leveranciers || [])).length;
+  // Trends-tab toont alleen GeriCall-historische snapshots; voor andere
+  // tenants is dit nog leeg.
+  document.getElementById('tabCountTrends').textContent = snapshotCount();
   const oppEl = document.getElementById('tabCountOpp');
   if(oppEl) oppEl.textContent = scopeOpp.length;
   const actiesEl = document.getElementById('tabCountActies');
@@ -14027,18 +14061,41 @@ function renderSpecSection(i){
 }
 
 /* ---------------- Dropdown-registry (managed, KV-synced) ---------------- */
+// Dropdown-registry. Sommige dropdowns zijn zorg/VVT-specifiek (ANW,
+// ECD, anwModelKort, grootte met "bedden", regio met NL-windrichtingen,
+// gericallStatus, bronType.verenso/big-register) en horen niet thuis bij
+// een verzekerings- of retail-tenant. Per-tenant filtering via
+// legacyOnly: true. Een non-legacy tenant ziet die dropdowns niet in
+// Beheer en de defaults worden ook niet als opties gepresenteerd;
+// hun custom-waardes blijven wel werken als de gebruiker er ooit eigen
+// dropdownitems aan toegevoegd heeft.
 const DROPDOWN_REGISTRY = {
-  regio:           { label: 'Regio',                 defaults: ['Noord','Oost','Midden','West','Zuid','Landelijk'] },
-  gericallStatus:  { label: 'GeriCall-status',       defaults: ['klant','prospect','lead','cold'] },
-  anwModelKort:    { label: 'ANW-model (kort)',      defaults: ['eigen','samen','extern','onbekend'] },
-  grootte:         { label: 'Grootte',               defaults: ['g','k'], labelMap: { g: 'Groot (>=500 bedden)', k: 'Klein/middelgroot' } },
-  ecdLeverancier:  { label: 'ECD-leveranciers',      defaults: ['Nedap ONS','PinkRoccade Ysis','Gerimedica Ysis','Mextra','ChipSoft','Onbekend'] },
-  anwLeverancier:  { label: 'ANW-leveranciers',      defaults: ['GeriCall','GeriCall (ANW Nederland)','GeriCall (vermoedelijk)','ThoeZ Twente (samenwerkingsverband)','AWIZ-verband','NOB Green Deal','Archipel ZHE','WSD Rotterdam','Verwijspunt 020','Triage.nu','Nonna Reco','Extern bureau (onbekend)','Onbekend'] },
-  dmuRol:          { label: 'DMU-rol',               defaults: ['decider','champion','influencer','gatekeeper','blocker'] },
+  regio:           { label: 'Regio',                 legacyOnly: true,  defaults: ['Noord','Oost','Midden','West','Zuid','Landelijk'] },
+  gericallStatus:  { label: 'Lead-status',           defaults: ['klant','prospect','lead','cold'], labelMap: {} },
+  anwModelKort:    { label: 'ANW-model (kort)',      legacyOnly: true,  defaults: ['eigen','samen','extern','onbekend'] },
+  grootte:         { label: 'Grootte',               legacyOnly: true,  defaults: ['g','k'], labelMap: { g: 'Groot (>=500 bedden)', k: 'Klein/middelgroot' } },
+  ecdLeverancier:  { label: 'ECD-leveranciers',      legacyOnly: true,  defaults: ['Nedap ONS','PinkRoccade Ysis','Gerimedica Ysis','Mextra','ChipSoft','Onbekend'] },
+  anwLeverancier:  { label: 'ANW-leveranciers',      legacyOnly: true,  defaults: ['GeriCall','GeriCall (ANW Nederland)','GeriCall (vermoedelijk)','ThoeZ Twente (samenwerkingsverband)','AWIZ-verband','NOB Green Deal','Archipel ZHE','WSD Rotterdam','Verwijspunt 020','Triage.nu','Nonna Reco','Extern bureau (onbekend)','Onbekend'] },
+  dmuRol:          { label: 'Contact-rol',           defaults: ['decider','champion','influencer','gatekeeper','blocker'] },
   vertrouwen:      { label: 'Vertrouwen-rating',     defaults: ['hoog','middel','laag'] },
-  bronType:        { label: 'Bron-type',             defaults: ['jaarverslag','website','persbericht','linkedin-publiek','verenso','big-register','kvk','pipedrive','xls-import','anders'] },
+  bronType:        { label: 'Bron-type',             defaults: ['jaarverslag','website','persbericht','linkedin-publiek','kvk','pipedrive','xls-import','anders'], legacyExtraDefaults: ['verenso','big-register'] },
   opportunityStatus:{label: 'Opportunity-status',    defaults: ['Lead','Suspect','Prospect','Contract'] }
 };
+function isLegacyTenant(){
+  return currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+}
+function visibleDropdownKeys(){
+  // Filter zorg-jargon dropdowns weg voor niet-GeriCall tenants. Indien
+  // er custom-waarden bestaan in dropdowns[key], laten we de dropdown
+  // wel zien (anders verbergen we onbedoeld user-content).
+  return Object.keys(DROPDOWN_REGISTRY).filter(k => {
+    const reg = DROPDOWN_REGISTRY[k];
+    if(!reg.legacyOnly) return true;
+    if(isLegacyTenant()) return true;
+    if(Array.isArray(dropdowns[k]) && dropdowns[k].length > 0) return true;
+    return false;
+  });
+}
 const DROPDOWNS_STORAGE = 'marktradar.dropdowns.v1';
 let dropdowns = (function(){
   try { return JSON.parse(localStorage.getItem(DROPDOWNS_STORAGE) || '{}'); }
@@ -14082,10 +14139,21 @@ function getDropdownOptions(key){
   // (defaults + custom + edits). Anders fallback op hardcoded defaults.
   const stored = dropdowns[key];
   if(Array.isArray(stored) && stored.length > 0) return stored.slice();
-  return (DROPDOWN_REGISTRY[key]?.defaults || []).slice();
+  const reg = DROPDOWN_REGISTRY[key];
+  if(!reg) return [];
+  // legacyOnly + non-legacy tenant: geen defaults aanbieden, alleen wat
+  // de tenant zelf heeft toegevoegd (en als er niets is: lege lijst).
+  if(reg.legacyOnly && !isLegacyTenant()) return [];
+  const base = (reg.defaults || []).slice();
+  if(reg.legacyExtraDefaults && isLegacyTenant()) base.push(...reg.legacyExtraDefaults);
+  return base;
 }
 function isDefaultOption(key, value){
-  return (DROPDOWN_REGISTRY[key]?.defaults || []).includes(value);
+  const reg = DROPDOWN_REGISTRY[key];
+  if(!reg) return false;
+  if((reg.defaults || []).includes(value)) return true;
+  if(reg.legacyExtraDefaults && isLegacyTenant() && reg.legacyExtraDefaults.includes(value)) return true;
+  return false;
 }
 function saveDropdownList(key, list){
   dropdowns[key] = list.slice();
@@ -15530,7 +15598,7 @@ async function importAllStateJson(jsonText, mergeMode){
 }
 
 function renderAdminBody(){
-  return Object.keys(DROPDOWN_REGISTRY).map(key => {
+  return visibleDropdownKeys().map(key => {
     const reg = DROPDOWN_REGISTRY[key];
     const all = getDropdownOptions(key);
     const isCustomized = Array.isArray(dropdowns[key]) && dropdowns[key].length > 0;
@@ -16842,6 +16910,7 @@ function deleteSupplierEdit(){
 }
 
 function findMovers(){
+  if(!snapshotsAvailable()) return [];
   const snaps = DATA.snapshots || [];
   if(snaps.length < 2) return [];
   const last = snaps[snaps.length-1];
@@ -16864,6 +16933,7 @@ function findMovers(){
 }
 
 function findStale(thresholdSnapshots){
+  if(!snapshotsAvailable()) return [];
   const snaps = DATA.snapshots || [];
   if(snaps.length < thresholdSnapshots) return [];
   const recent = snaps.slice(-thresholdSnapshots);
@@ -16885,7 +16955,7 @@ function findStale(thresholdSnapshots){
 }
 
 function renderTrendsTab(){
-  const snaps = DATA.snapshots || [];
+  const snaps = snapshotsAvailable() ? (DATA.snapshots || []) : [];
   const meta = document.getElementById('trendsMeta');
   if(snaps.length === 0){
     meta.innerHTML = '<div class="trends-no-history">Nog geen snapshots beschikbaar; trends verschijnen vanaf de eerste wekelijkse update.</div>';
@@ -16940,7 +17010,7 @@ function renderTrendsTab(){
 }
 
 function renderTrendsList(){
-  const snaps = DATA.snapshots || [];
+  const snaps = snapshotsAvailable() ? (DATA.snapshots || []) : [];
   if(snaps.length === 0){ document.getElementById('trendsList').innerHTML=''; return; }
   const lensKey = trendsLens === 'auto' ? null : trendsLens;
   const items = instellingenMerged().map(inst => {
