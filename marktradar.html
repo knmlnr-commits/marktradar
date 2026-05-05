@@ -1192,6 +1192,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       <span class="tab-label" data-i18n="tab.suppliers">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
     </button>
+    <button class="tab" data-tab="beheer" title="Beheer" aria-label="Beheer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="tab-label" data-i18n="tab.admin">Beheer</span>
+    </button>
   </div>
 
   <div class="main">
@@ -1308,9 +1312,12 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   </div>
 </div>
 
-<div class="refresh-modal" id="adminModal">
-  <div class="refresh-modal-panel" style="max-width:880px">
-    <h3 data-i18n="admin.title">Beheer</h3>
+<!-- Beheer woont nu in de hoofd-tabbar i.p.v. een modal-overlay (v1.16.5).
+     Het pane-beheer-element verhuist later in de bouw-flow naar binnen
+     <div class="main">; om de diff klein te houden laten we 'm hier
+     staan, css 'tab-pane.active{display:block}' werkt los van DOM-positie. -->
+<div class="tab-pane" id="pane-beheer">
+  <div style="max-width:1100px;margin:14px auto;padding:0 24px">
     <div id="adminSyncStatus" style="margin-bottom:14px"></div>
     <div class="admin-tabs">
       <button class="admin-tab active" data-admin-tab="tenant" data-i18n="admin.tab.tenant">Werkomgeving</button>
@@ -1467,9 +1474,6 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <input type="file" id="importAllFileInput" accept=".json,application/json" style="display:none">
       </div>
       <div id="importResult" style="margin-top:12px;font-size:.82rem"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn-primary" id="closeAdminBtn">Sluiten</button>
     </div>
   </div>
 </div>
@@ -1671,7 +1675,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.4",
+    "version": "1.16.5",
     "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1872,6 +1876,12 @@ const DATA = {
         "codename": "Quasar",
         "date": "2026-05-04",
         "note": "Tenant-creatie via SSO genereerde slugs als 'gericall-2' wanneer de Google/MS-displayName toevallig 'GeriCall' was — en de tenant-naam zelf werd ook letterlijk 'GeriCall'. Drie-stappen-fix in api/auth.js: (1) ensureUniqueSlug retourneert null voor de gereserveerde 'gericall'-family (gericall, gericall-2, gericall-3, …) zodat de caller doorvalt naar de volgende kandidaat. (2) createTenant probeert nu meerdere slug-kandidaten in volgorde: gevraagde slug → display-naam → email-domein → email-prefix → 'workspace'. (3) Nieuwe deriveTenantInfoFromEmail()-helper leidt naam + slug-base af uit het email-domein voor B2B (vanameyde.nl → 'Vanameyde'); voor free-mail-providers (gmail/hotmail/outlook/etc.) valt 'ie terug op de displayName. Tenant.naam wordt óók via deze helper bepaald als de display-naam tot 'gericall' zou slugifien. OAuth-callback gebruikt deze nieuwe logica zodat een collega die met @vanameyde.nl-account inlogt direct een tenant 'Vanameyde' / slug 'vanameyde' krijgt. Bestaande 'gericall-2'-tenant kan via Beheer > Werkomgeving handmatig hernoemd worden (slug-veld + werkomgeving-naam)."
+      },
+      {
+        "version": "1.16.5",
+        "codename": "Quasar",
+        "date": "2026-05-05",
+        "note": "Beheer is geen modal-overlay meer maar een volwaardige 7e hoofd-tab in de tab-bar (naast Acties / Signalen / Instellingen / Opportunities / Trends / Leveranciers). Reactie op feedback dat de layover-popup vervelend was. Het tab-pane bevat exact dezelfde sub-navigatie (Werkomgeving / Markt / Gebruikers / Contacten / Dropdowns / Data & sync) en alle bindings; alleen de modal-wrapper, het 'Sluiten'-knopje en de outside-click/escape-handlers zijn weggehaald. De topbar-Beheer-knop blijft als shortcut maar activeert nu de tab i.p.v. de modal. UI-state-persistence onthoudt automatisch dat je op de Beheer-tab stond bij een page-reload (via het bestaande mechanisme uit v1.15.7). KV-health-check + dropdown-registry + resource-list zijn lazy-loaded — pas wanneer je de Beheer-tab opent worden ze geladen, zodat de eerste page-load niet vertraagd wordt voor gebruikers die dat zelden bezoeken."
       }
     ],
     "totalInstellingen": 64,
@@ -12821,7 +12831,7 @@ function goHome(){
   // Sluit alles wat over de hoofdpagina heen ligt en navigeer naar de
   // default-tab (Acties / Todo). Zonder reload — snappy.
   try { closeOverlay && closeOverlay(); } catch(e){}
-  ['adminModal','versionModal','contactEditModal','passwordModal','signalDetailModal','onboardingModal','ddDeleteModal']
+  ['versionModal','contactEditModal','passwordModal','signalDetailModal','onboardingModal','ddDeleteModal']
     .forEach(id => { const m = document.getElementById(id); if(m) m.classList.remove('show'); });
   const home = document.querySelector('.tab[data-tab="acties"]');
   if(home) home.click();
@@ -12846,6 +12856,7 @@ const I18N = {
     // Tabs
     'tab.todo': 'Todo', 'tab.signals': 'Signalen', 'tab.orgs': 'Organisaties',
     'tab.suppliers': 'Leveranciers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends',
+    'tab.admin': 'Beheer',
     // User menu
     'menu.password': 'Wachtwoord wijzigen', 'menu.logout': 'Uitloggen',
     // Beheer-modal
@@ -12923,6 +12934,7 @@ const I18N = {
     'scope.help': 'Filters todos, organisations and signals on ownership.',
     'tab.todo': 'Todos', 'tab.signals': 'Signals', 'tab.orgs': 'Organisations',
     'tab.suppliers': 'Suppliers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends',
+    'tab.admin': 'Admin',
     'menu.password': 'Change password', 'menu.logout': 'Log out',
     'admin.title': 'Admin',
     'admin.tab.tenant': 'Workspace', 'admin.tab.market': 'Market',
@@ -13176,6 +13188,11 @@ function activateTab(target){
   if(target === 'trends'){ renderTrendsLensChips(); renderTrendsTab(); }
   if(target === 'opportunities'){ renderOppLensChips(); renderOpportunities(); }
   if(target === 'acties'){ renderActiesOwnerChips(); renderActies(); }
+  // Beheer-tab is lazy-loaded zodat de KV-health-check pas draait wanneer
+  // de gebruiker er werkelijk naartoe navigeert.
+  if(target === 'beheer' && typeof loadAdminPane === 'function'){
+    loadAdminPane().catch(() => {});
+  }
   saveUiState();
 }
 function bindTabs(){
@@ -16214,23 +16231,33 @@ async function onUserAdd(){
     out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
   }
 }
+// Open de Beheer-tab. Sinds v1.16.5 is Beheer een hoofd-tab i.p.v. modal,
+// dus 'open' = tab activeren + lazy-load van de admin-data (KV-health,
+// dropdown-registry, resource-list). De activateTab-helper roept
+// loadAdminPane() automatisch aan wanneer target === 'beheer'.
+async function loadAdminPane(){
+  const body = document.getElementById('adminModalBody');
+  if(body) body.innerHTML = renderAdminBody();
+  const resList = document.getElementById('adminResourceList');
+  if(resList) resList.innerHTML = renderResourceList();
+  const sync = document.getElementById('adminSyncStatus');
+  if(sync) sync.innerHTML = renderSyncStatus({ ok: false, reason: 'controleren…' });
+  showAdminTab(authMode === 'multi' ? 'tenant' : 'dropdowns');
+  const health = await checkKvHealth();
+  if(sync) sync.innerHTML = renderSyncStatus(health);
+  if(resList) resList.innerHTML = renderResourceList();
+  toggleKvBanner(!health.ok);
+}
+
 function bindAdminModal(){
   const btn = document.getElementById('adminBtn');
-  if(!btn) return;
-  const open = async () => {
-    document.getElementById('adminModalBody').innerHTML = renderAdminBody();
-    document.getElementById('adminResourceList').innerHTML = renderResourceList();
-    document.getElementById('adminSyncStatus').innerHTML = renderSyncStatus({ ok: false, reason: 'controleren…' });
-    document.getElementById('adminModal').classList.add('show');
-    showAdminTab(authMode === 'multi' ? 'tenant' : 'dropdowns');
-    const health = await checkKvHealth();
-    document.getElementById('adminSyncStatus').innerHTML = renderSyncStatus(health);
-    document.getElementById('adminResourceList').innerHTML = renderResourceList();
-    toggleKvBanner(!health.ok);
-  };
-  btn.addEventListener('click', open);
+  if(btn) btn.addEventListener('click', () => activateTab('beheer'));
   const link = document.getElementById('kvBannerLink');
-  if(link) link.addEventListener('click', (e) => { e.preventDefault(); open().then(() => showAdminTab('data')); });
+  if(link) link.addEventListener('click', (e) => {
+    e.preventDefault();
+    activateTab('beheer');
+    setTimeout(() => showAdminTab('data'), 50);
+  });
   document.querySelectorAll('.admin-tab').forEach(t => {
     t.addEventListener('click', () => showAdminTab(t.dataset.adminTab));
   });
@@ -16256,18 +16283,12 @@ function bindAdminModal(){
     }
     e.target.value = '';
   });
-  document.getElementById('closeAdminBtn').addEventListener('click', () => {
-    document.getElementById('adminModal').classList.remove('show');
-  });
   const addBtn = document.getElementById('userAddBtn');
   if(addBtn) addBtn.addEventListener('click', onUserAdd);
   const tenantSaveBtn = document.getElementById('tenantSaveBtn');
   if(tenantSaveBtn) tenantSaveBtn.addEventListener('click', onTenantSave);
   const tenantObBtn = document.getElementById('tenantOnboardingBtn');
-  if(tenantObBtn) tenantObBtn.addEventListener('click', () => {
-    document.getElementById('adminModal').classList.remove('show');
-    openOnboarding();
-  });
+  if(tenantObBtn) tenantObBtn.addEventListener('click', () => openOnboarding());
   const feedAddBtn = document.getElementById('feedAddBtn');
   if(feedAddBtn) feedAddBtn.addEventListener('click', onFeedAdd);
   const feedRefreshBtn = document.getElementById('feedRefreshNowBtn');
@@ -16302,8 +16323,7 @@ function bindAdminModal(){
     let to = null;
     mSearch.addEventListener('input', () => { clearTimeout(to); to = setTimeout(renderMarketList, 150); });
   }
-  document.getElementById('adminModal').addEventListener('click', (e) => {
-    if(e.target.id === 'adminModal') document.getElementById('adminModal').classList.remove('show');
+  document.getElementById('pane-beheer').addEventListener('click', (e) => {
     const optBtn = e.target.closest('.admin-option button');
     if(optBtn){
       const chip = optBtn.closest('.admin-option');
@@ -16332,7 +16352,7 @@ function bindAdminModal(){
       }
     }
   });
-  document.getElementById('adminModal').addEventListener('keydown', (e) => {
+  document.getElementById('pane-beheer').addEventListener('keydown', (e) => {
     if(e.key === 'Enter' && e.target.matches('input[data-add-input]')){
       e.preventDefault();
       const key = e.target.dataset.addInput;
@@ -16650,7 +16670,6 @@ document.addEventListener('keydown', (e) => {
     closeOverlay();
     const vm = document.getElementById('versionModal'); if(vm) vm.classList.remove('show');
     const cm = document.getElementById('contactEditModal'); if(cm) cm.classList.remove('show');
-    const am = document.getElementById('adminModal'); if(am) am.classList.remove('show');
     const pm = document.getElementById('passwordModal'); if(pm && !(currentUser && currentUser.mustChangePassword)) pm.classList.remove('show');
   }
   const overlay = document.getElementById('overlay');
