@@ -1242,6 +1242,168 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <div id="levContainer"></div>
     </div>
 
+    <div class="tab-pane" id="pane-beheer">
+    <div style="max-width:1100px;margin:14px auto;padding:0 24px">
+    <div id="adminSyncStatus" style="margin-bottom:14px"></div>
+    <div class="admin-tabs">
+    <button class="admin-tab active" data-admin-tab="tenant" data-i18n="admin.tab.tenant">Werkomgeving</button>
+    <button class="admin-tab" data-admin-tab="market" data-i18n="admin.tab.market">Markt</button>
+    <button class="admin-tab" data-admin-tab="users" data-i18n="admin.tab.users">Gebruikers</button>
+    <button class="admin-tab" data-admin-tab="contacts" data-i18n="admin.tab.contacts">Contacten</button>
+    <button class="admin-tab" data-admin-tab="dropdowns" data-i18n="admin.tab.dropdowns">Dropdowns</button>
+    <button class="admin-tab" data-admin-tab="data" data-i18n="admin.tab.data">Data &amp; sync</button>
+    </div>
+    <div id="adminPaneTenant" class="admin-pane active">
+    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:14px">Beheer je werkomgeving in vier blokken: identiteit & propositie, logo, automatische signalen en geavanceerd.</p>
+
+    <details class="acc admin-acc" name="admin-tenant-acc" open>
+    <summary>
+    <span class="acc-icon">①</span>
+    <span class="acc-title">Identiteit &amp; propositie</span>
+    <span class="acc-chev">&#9662;</span>
+    </summary>
+    <div class="acc-body">
+    <div class="contact-edit-grid" style="margin-bottom:6px">
+    <div class="edit-field"><label>Naam werkomgeving</label><input type="text" id="tenant-naam" placeholder="bijv. GeriCall"></div>
+    <div class="edit-field"><label>URL-slug (<code>/app/&lt;slug&gt;</code>)</label><input type="text" id="tenant-slug" placeholder="bijv. gericall"></div>
+    <div class="edit-field full"><label>Propositie — wat verkoop je en aan wie?</label><textarea id="tenant-propositie" style="width:100%;min-height:80px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Eén zin: wat is je product, wie is je doelklant?"></textarea></div>
+    <div class="edit-field"><label>Markt-naam</label><input type="text" id="tenant-markt-naam" placeholder="bijv. VVT, B2B SaaS, retailers"></div>
+    <div class="edit-field full"><label>Markt-beschrijving (optioneel)</label><textarea id="tenant-markt-beschrijving" style="width:100%;min-height:60px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Welke segmenten, regio, omvang?"></textarea></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+    <button class="btn-primary" id="tenantSaveBtn">Opslaan</button>
+    </div>
+    <div id="tenantResult" style="font-size:.82rem"></div>
+    <div id="tenantStats" style="margin-top:10px;font-size:.78rem;color:var(--grey-700);padding:10px 12px;background:var(--grey-50);border-radius:6px;border:1px solid var(--grey-150)"></div>
+    </div>
+    </details>
+
+    <details class="acc admin-acc" name="admin-tenant-acc">
+    <summary>
+    <span class="acc-icon">②</span>
+    <span class="acc-title">Logo</span>
+    <span class="acc-chev">&#9662;</span>
+    </summary>
+    <div class="acc-body">
+    <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">
+    Upload een SVG, PNG of WEBP — vervangt het radar-logo in de gate en topbar. Aanbevolen: vierkant, 256×256 of groter, transparante achtergrond. Max 75 KB.
+    </p>
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+    <div id="tenant-logo-preview" style="width:64px;height:64px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--grey-200);border-radius:10px;background:var(--white);overflow:hidden"></div>
+    <div style="flex:1;min-width:200px">
+    <label class="btn-secondary" for="tenant-logo-file" style="cursor:pointer;display:inline-block">Upload logo&hellip;</label>
+    <input type="file" id="tenant-logo-file" accept="image/svg+xml,image/png,image/jpeg,image/webp" style="display:none">
+    <button type="button" class="btn-secondary" id="tenant-logo-clear" style="margin-left:6px;border-color:var(--red);color:var(--red)">Verwijder</button>
+    <div id="tenant-logo-status" style="margin-top:6px;font-size:.74rem;color:var(--grey-600)"></div>
+    </div>
+    </div>
+    </div>
+    </details>
+
+    <details class="acc admin-acc" name="admin-tenant-acc">
+    <summary>
+    <span class="acc-icon">③</span>
+    <span class="acc-title">Automatische signalen</span>
+    <span class="acc-chev">&#9662;</span>
+    </summary>
+    <div class="acc-body">
+    <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--orange-pale);border:1px solid var(--orange);border-radius:8px;cursor:pointer;margin-bottom:14px">
+    <input type="checkbox" id="tenant-use-llm" style="margin-top:3px">
+    <span style="font-size:.84rem;color:var(--grey-900);line-height:1.45">
+    <strong>LLM-curator (Claude + web search)</strong><br>
+    <span style="color:var(--grey-700);font-size:.78rem">Brede zoekslag op het web in plaats van alleen RSS. Vindt bestuurswisselingen, aanbestedingen en persberichten ook van bronnen zonder feed. Vereist <code>ANTHROPIC_API_KEY</code> in Vercel-env. Kost ~$0.20–$1 per refresh.</span>
+    </span>
+    </label>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
+    <strong style="font-size:.82rem;color:var(--grey-900)">RSS-feeds</strong>
+    <button class="btn-secondary" id="feedRefreshNowBtn" style="margin-left:auto;font-size:.74rem;padding:4px 10px">Refresh nu</button>
+    </div>
+    <p style="font-size:.74rem;color:var(--grey-700);margin-bottom:10px">
+    Elke maandagochtend 06:00 UTC fetcht de cron deze feeds, filtert artikelen van de laatste 7 dagen en matcht op je organisaties. RSS + LLM kunnen samen lopen — resultaten worden gemerged.
+    </p>
+    <div id="tenantFeedsList" style="margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+    <div class="edit-field" style="flex:2;min-width:240px"><label>Feed-URL</label><input type="url" id="feed-url" placeholder="https://www.example.com/feed/"></div>
+    <div class="edit-field" style="flex:1;min-width:140px"><label>Label</label><input type="text" id="feed-label" placeholder="bv. Skipr"></div>
+    <button class="btn-primary" id="feedAddBtn" style="height:38px">+ Feed</button>
+    </div>
+    <div id="tenantFeedsStatus" style="margin-top:10px;font-size:.78rem"></div>
+    </div>
+    </details>
+
+    <details class="acc admin-acc" name="admin-tenant-acc">
+    <summary>
+    <span class="acc-icon">④</span>
+    <span class="acc-title">Geavanceerd</span>
+    <span class="acc-chev">&#9662;</span>
+    </summary>
+    <div class="acc-body">
+    <div class="edit-field" style="margin-bottom:10px"><label>Tenant-ID</label><input type="text" id="tenant-id" readonly style="background:var(--grey-100);color:var(--grey-600)"></div>
+    <button class="btn-secondary" id="tenantOnboardingBtn">Onboarding opnieuw doorlopen</button>
+    </div>
+    </details>
+    </div>
+    <div id="adminPaneMarket" class="admin-pane" style="display:none">
+    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Definieer welke instellingen tot jouw markt behoren. Alleen geselecteerde instellingen tellen mee in lijsten, signalen, opportunities, acties en KPI's. Standaard staat alles aan; je kunt verfijnen op provincie/regio of individueel selecteren.</p>
+    <div id="marketStatusBar" style="margin-bottom:10px;font-size:.78rem;padding:8px 12px;border-radius:6px;border:1px solid var(--grey-150);background:var(--grey-50);display:flex;align-items:center;gap:8px;flex-wrap:wrap"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+    <button class="btn-secondary" id="marketSelectAllBtn">Selecteer alles</button>
+    <button class="btn-secondary" id="marketSelectNoneBtn">Deselecteer alles</button>
+    <button class="btn-secondary" id="marketResetBtn">Reset naar volledige baseline</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+    <select class="sort-select" id="marketProvFilter"><option value="all">Alle provincies</option></select>
+    <select class="sort-select" id="marketRegioFilter"><option value="all">Alle regio's</option></select>
+    <input type="text" id="marketSearchInput" placeholder="Zoek instelling…" style="flex:1;min-width:160px;padding:6px 10px;border:1px solid var(--grey-200);border-radius:6px;font-size:.82rem">
+    </div>
+    <div id="marketList" style="max-height:380px;overflow-y:auto;border:1px solid var(--grey-150);border-radius:6px;padding:8px;background:var(--white)"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn-primary" id="marketSaveBtn">Markt opslaan</button></div>
+    <div id="marketSaveResult" style="margin-top:8px;font-size:.82rem"></div>
+    </div>
+    <div id="adminPaneUsers" class="admin-pane" style="display:none">
+    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Beheer accounts; alle gebruikers verschijnen automatisch in de eigenaar-dropdown bij toewijzingen en acties. Een nieuwe gebruiker krijgt een tijdelijk wachtwoord en moet dat bij eerste login wijzigen.</p>
+    <div id="adminUsersList" style="margin-bottom:14px"></div>
+    <div class="admin-section">
+    <div class="admin-section-head"><div class="admin-section-title">Nieuwe gebruiker toevoegen</div></div>
+    <div class="contact-edit-grid" style="margin-bottom:6px">
+    <div class="edit-field"><label>Naam</label><input type="text" id="user-add-naam" placeholder="Voornaam Achternaam"></div>
+    <div class="edit-field"><label>Email</label><input type="email" id="user-add-email" placeholder="naam@gericall.nl"></div>
+    <div class="edit-field full"><label>Tijdelijk wachtwoord (optioneel)</label><input type="text" id="user-add-pw" placeholder="Laat leeg voor automatisch genereren"></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end"><button class="btn-primary" id="userAddBtn">Account aanmaken</button></div>
+    <div id="userAddResult" style="margin-top:8px;font-size:.82rem"></div>
+    </div>
+    </div>
+    <div id="adminPaneContacts" class="admin-pane" style="display:none">
+    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Plak hieronder de JSON-output die de Claude mapping-prompt voor jouw XLS heeft gegenereerd. Het import voegt contacten toe aan de DMU van de juiste instellingen, met email en telefoon klikbaar.</p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+    <button class="btn-secondary" id="copyImportPromptBtn">Mapping-prompt kopi&euml;ren</button>
+    <button class="btn-secondary" id="showSchemaBtn">Toon JSON-voorbeeld</button>
+    </div>
+    <textarea id="importJsonInput" placeholder='{"contacten":[{"instellingId":"carintreggeland","naam":"...","functie":"...","rol":"champion","email":"...","telefoon":"...","bron":"...","bronType":"website","vertrouwen":"hoog"}]}' style="width:100%;min-height:200px;padding:12px;font-family:'DM Mono',monospace;font-size:.78rem;border:1px solid var(--grey-200);border-radius:8px;background:var(--grey-50);color:var(--grey-900);outline:none;resize:vertical"></textarea>
+    <div id="importPreview" style="margin-top:12px;font-size:.82rem;color:var(--grey-700)"></div>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+    <button class="btn-secondary" id="previewImportBtn">Preview</button>
+    <button class="btn-primary" id="applyImportBtn" disabled>Importeren</button>
+    </div>
+    </div>
+    <div id="adminPaneDropdowns" class="admin-pane" style="display:none">
+    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Defaults zijn ingebouwd en niet wisbaar; toegevoegde custom-waarden kunnen verwijderd worden. Wijzigingen worden cross-device gesynchroniseerd via Vercel KV.</p>
+    <div id="adminModalBody"></div>
+    </div>
+    <div id="adminPaneData" class="admin-pane" style="display:none">
+    <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Backup en handmatige overdracht naar een ander apparaat als Vercel KV (nog) niet beschikbaar is. Lokaal staat alles in localStorage.</p>
+    <div id="adminResourceList" style="margin-bottom:14px"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn-primary" id="exportAllBtn">Download alle data als JSON</button>
+    <button class="btn-secondary" id="importAllBtn">Importeer JSON&hellip;</button>
+    <input type="file" id="importAllFileInput" accept=".json,application/json" style="display:none">
+    </div>
+    <div id="importResult" style="margin-top:12px;font-size:.82rem"></div>
+    </div>
+    </div>
+    </div>
+
     <div class="tab-pane active" id="pane-acties">
       <div class="toolbar">
         <div class="chip-row" id="actiesOwnerChips"></div>
@@ -1312,171 +1474,6 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   </div>
 </div>
 
-<!-- Beheer woont nu in de hoofd-tabbar i.p.v. een modal-overlay (v1.16.5).
-     Het pane-beheer-element verhuist later in de bouw-flow naar binnen
-     <div class="main">; om de diff klein te houden laten we 'm hier
-     staan, css 'tab-pane.active{display:block}' werkt los van DOM-positie. -->
-<div class="tab-pane" id="pane-beheer">
-  <div style="max-width:1100px;margin:14px auto;padding:0 24px">
-    <div id="adminSyncStatus" style="margin-bottom:14px"></div>
-    <div class="admin-tabs">
-      <button class="admin-tab active" data-admin-tab="tenant" data-i18n="admin.tab.tenant">Werkomgeving</button>
-      <button class="admin-tab" data-admin-tab="market" data-i18n="admin.tab.market">Markt</button>
-      <button class="admin-tab" data-admin-tab="users" data-i18n="admin.tab.users">Gebruikers</button>
-      <button class="admin-tab" data-admin-tab="contacts" data-i18n="admin.tab.contacts">Contacten</button>
-      <button class="admin-tab" data-admin-tab="dropdowns" data-i18n="admin.tab.dropdowns">Dropdowns</button>
-      <button class="admin-tab" data-admin-tab="data" data-i18n="admin.tab.data">Data &amp; sync</button>
-    </div>
-    <div id="adminPaneTenant" class="admin-pane active">
-      <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:14px">Beheer je werkomgeving in vier blokken: identiteit & propositie, logo, automatische signalen en geavanceerd.</p>
-
-      <details class="acc admin-acc" name="admin-tenant-acc" open>
-        <summary>
-          <span class="acc-icon">①</span>
-          <span class="acc-title">Identiteit &amp; propositie</span>
-          <span class="acc-chev">&#9662;</span>
-        </summary>
-        <div class="acc-body">
-          <div class="contact-edit-grid" style="margin-bottom:6px">
-            <div class="edit-field"><label>Naam werkomgeving</label><input type="text" id="tenant-naam" placeholder="bijv. GeriCall"></div>
-            <div class="edit-field"><label>URL-slug (<code>/app/&lt;slug&gt;</code>)</label><input type="text" id="tenant-slug" placeholder="bijv. gericall"></div>
-            <div class="edit-field full"><label>Propositie — wat verkoop je en aan wie?</label><textarea id="tenant-propositie" style="width:100%;min-height:80px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Eén zin: wat is je product, wie is je doelklant?"></textarea></div>
-            <div class="edit-field"><label>Markt-naam</label><input type="text" id="tenant-markt-naam" placeholder="bijv. VVT, B2B SaaS, retailers"></div>
-            <div class="edit-field full"><label>Markt-beschrijving (optioneel)</label><textarea id="tenant-markt-beschrijving" style="width:100%;min-height:60px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Welke segmenten, regio, omvang?"></textarea></div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-            <button class="btn-primary" id="tenantSaveBtn">Opslaan</button>
-          </div>
-          <div id="tenantResult" style="font-size:.82rem"></div>
-          <div id="tenantStats" style="margin-top:10px;font-size:.78rem;color:var(--grey-700);padding:10px 12px;background:var(--grey-50);border-radius:6px;border:1px solid var(--grey-150)"></div>
-        </div>
-      </details>
-
-      <details class="acc admin-acc" name="admin-tenant-acc">
-        <summary>
-          <span class="acc-icon">②</span>
-          <span class="acc-title">Logo</span>
-          <span class="acc-chev">&#9662;</span>
-        </summary>
-        <div class="acc-body">
-          <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">
-            Upload een SVG, PNG of WEBP — vervangt het radar-logo in de gate en topbar. Aanbevolen: vierkant, 256×256 of groter, transparante achtergrond. Max 75 KB.
-          </p>
-          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-            <div id="tenant-logo-preview" style="width:64px;height:64px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--grey-200);border-radius:10px;background:var(--white);overflow:hidden"></div>
-            <div style="flex:1;min-width:200px">
-              <label class="btn-secondary" for="tenant-logo-file" style="cursor:pointer;display:inline-block">Upload logo&hellip;</label>
-              <input type="file" id="tenant-logo-file" accept="image/svg+xml,image/png,image/jpeg,image/webp" style="display:none">
-              <button type="button" class="btn-secondary" id="tenant-logo-clear" style="margin-left:6px;border-color:var(--red);color:var(--red)">Verwijder</button>
-              <div id="tenant-logo-status" style="margin-top:6px;font-size:.74rem;color:var(--grey-600)"></div>
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <details class="acc admin-acc" name="admin-tenant-acc">
-        <summary>
-          <span class="acc-icon">③</span>
-          <span class="acc-title">Automatische signalen</span>
-          <span class="acc-chev">&#9662;</span>
-        </summary>
-        <div class="acc-body">
-          <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--orange-pale);border:1px solid var(--orange);border-radius:8px;cursor:pointer;margin-bottom:14px">
-            <input type="checkbox" id="tenant-use-llm" style="margin-top:3px">
-            <span style="font-size:.84rem;color:var(--grey-900);line-height:1.45">
-              <strong>LLM-curator (Claude + web search)</strong><br>
-              <span style="color:var(--grey-700);font-size:.78rem">Brede zoekslag op het web in plaats van alleen RSS. Vindt bestuurswisselingen, aanbestedingen en persberichten ook van bronnen zonder feed. Vereist <code>ANTHROPIC_API_KEY</code> in Vercel-env. Kost ~$0.20–$1 per refresh.</span>
-            </span>
-          </label>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
-            <strong style="font-size:.82rem;color:var(--grey-900)">RSS-feeds</strong>
-            <button class="btn-secondary" id="feedRefreshNowBtn" style="margin-left:auto;font-size:.74rem;padding:4px 10px">Refresh nu</button>
-          </div>
-          <p style="font-size:.74rem;color:var(--grey-700);margin-bottom:10px">
-            Elke maandagochtend 06:00 UTC fetcht de cron deze feeds, filtert artikelen van de laatste 7 dagen en matcht op je organisaties. RSS + LLM kunnen samen lopen — resultaten worden gemerged.
-          </p>
-          <div id="tenantFeedsList" style="margin-bottom:10px"></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-            <div class="edit-field" style="flex:2;min-width:240px"><label>Feed-URL</label><input type="url" id="feed-url" placeholder="https://www.example.com/feed/"></div>
-            <div class="edit-field" style="flex:1;min-width:140px"><label>Label</label><input type="text" id="feed-label" placeholder="bv. Skipr"></div>
-            <button class="btn-primary" id="feedAddBtn" style="height:38px">+ Feed</button>
-          </div>
-          <div id="tenantFeedsStatus" style="margin-top:10px;font-size:.78rem"></div>
-        </div>
-      </details>
-
-      <details class="acc admin-acc" name="admin-tenant-acc">
-        <summary>
-          <span class="acc-icon">④</span>
-          <span class="acc-title">Geavanceerd</span>
-          <span class="acc-chev">&#9662;</span>
-        </summary>
-        <div class="acc-body">
-          <div class="edit-field" style="margin-bottom:10px"><label>Tenant-ID</label><input type="text" id="tenant-id" readonly style="background:var(--grey-100);color:var(--grey-600)"></div>
-          <button class="btn-secondary" id="tenantOnboardingBtn">Onboarding opnieuw doorlopen</button>
-        </div>
-      </details>
-    </div>
-    <div id="adminPaneMarket" class="admin-pane" style="display:none">
-      <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Definieer welke instellingen tot jouw markt behoren. Alleen geselecteerde instellingen tellen mee in lijsten, signalen, opportunities, acties en KPI's. Standaard staat alles aan; je kunt verfijnen op provincie/regio of individueel selecteren.</p>
-      <div id="marketStatusBar" style="margin-bottom:10px;font-size:.78rem;padding:8px 12px;border-radius:6px;border:1px solid var(--grey-150);background:var(--grey-50);display:flex;align-items:center;gap:8px;flex-wrap:wrap"></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-        <button class="btn-secondary" id="marketSelectAllBtn">Selecteer alles</button>
-        <button class="btn-secondary" id="marketSelectNoneBtn">Deselecteer alles</button>
-        <button class="btn-secondary" id="marketResetBtn">Reset naar volledige baseline</button>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-        <select class="sort-select" id="marketProvFilter"><option value="all">Alle provincies</option></select>
-        <select class="sort-select" id="marketRegioFilter"><option value="all">Alle regio's</option></select>
-        <input type="text" id="marketSearchInput" placeholder="Zoek instelling…" style="flex:1;min-width:160px;padding:6px 10px;border:1px solid var(--grey-200);border-radius:6px;font-size:.82rem">
-      </div>
-      <div id="marketList" style="max-height:380px;overflow-y:auto;border:1px solid var(--grey-150);border-radius:6px;padding:8px;background:var(--white)"></div>
-      <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn-primary" id="marketSaveBtn">Markt opslaan</button></div>
-      <div id="marketSaveResult" style="margin-top:8px;font-size:.82rem"></div>
-    </div>
-    <div id="adminPaneUsers" class="admin-pane" style="display:none">
-      <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Beheer accounts; alle gebruikers verschijnen automatisch in de eigenaar-dropdown bij toewijzingen en acties. Een nieuwe gebruiker krijgt een tijdelijk wachtwoord en moet dat bij eerste login wijzigen.</p>
-      <div id="adminUsersList" style="margin-bottom:14px"></div>
-      <div class="admin-section">
-        <div class="admin-section-head"><div class="admin-section-title">Nieuwe gebruiker toevoegen</div></div>
-        <div class="contact-edit-grid" style="margin-bottom:6px">
-          <div class="edit-field"><label>Naam</label><input type="text" id="user-add-naam" placeholder="Voornaam Achternaam"></div>
-          <div class="edit-field"><label>Email</label><input type="email" id="user-add-email" placeholder="naam@gericall.nl"></div>
-          <div class="edit-field full"><label>Tijdelijk wachtwoord (optioneel)</label><input type="text" id="user-add-pw" placeholder="Laat leeg voor automatisch genereren"></div>
-        </div>
-        <div style="display:flex;justify-content:flex-end"><button class="btn-primary" id="userAddBtn">Account aanmaken</button></div>
-        <div id="userAddResult" style="margin-top:8px;font-size:.82rem"></div>
-      </div>
-    </div>
-    <div id="adminPaneContacts" class="admin-pane" style="display:none">
-      <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Plak hieronder de JSON-output die de Claude mapping-prompt voor jouw XLS heeft gegenereerd. Het import voegt contacten toe aan de DMU van de juiste instellingen, met email en telefoon klikbaar.</p>
-      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-        <button class="btn-secondary" id="copyImportPromptBtn">Mapping-prompt kopi&euml;ren</button>
-        <button class="btn-secondary" id="showSchemaBtn">Toon JSON-voorbeeld</button>
-      </div>
-      <textarea id="importJsonInput" placeholder='{"contacten":[{"instellingId":"carintreggeland","naam":"...","functie":"...","rol":"champion","email":"...","telefoon":"...","bron":"...","bronType":"website","vertrouwen":"hoog"}]}' style="width:100%;min-height:200px;padding:12px;font-family:'DM Mono',monospace;font-size:.78rem;border:1px solid var(--grey-200);border-radius:8px;background:var(--grey-50);color:var(--grey-900);outline:none;resize:vertical"></textarea>
-      <div id="importPreview" style="margin-top:12px;font-size:.82rem;color:var(--grey-700)"></div>
-      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-        <button class="btn-secondary" id="previewImportBtn">Preview</button>
-        <button class="btn-primary" id="applyImportBtn" disabled>Importeren</button>
-      </div>
-    </div>
-    <div id="adminPaneDropdowns" class="admin-pane" style="display:none">
-      <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Defaults zijn ingebouwd en niet wisbaar; toegevoegde custom-waarden kunnen verwijderd worden. Wijzigingen worden cross-device gesynchroniseerd via Vercel KV.</p>
-      <div id="adminModalBody"></div>
-    </div>
-    <div id="adminPaneData" class="admin-pane" style="display:none">
-      <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Backup en handmatige overdracht naar een ander apparaat als Vercel KV (nog) niet beschikbaar is. Lokaal staat alles in localStorage.</p>
-      <div id="adminResourceList" style="margin-bottom:14px"></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn-primary" id="exportAllBtn">Download alle data als JSON</button>
-        <button class="btn-secondary" id="importAllBtn">Importeer JSON&hellip;</button>
-        <input type="file" id="importAllFileInput" accept=".json,application/json" style="display:none">
-      </div>
-      <div id="importResult" style="margin-top:12px;font-size:.82rem"></div>
-    </div>
-  </div>
-</div>
 
 <div class="refresh-modal" id="ddDeleteModal">
   <div class="refresh-modal-panel" style="max-width:520px">
