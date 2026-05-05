@@ -124,8 +124,11 @@ body{
   font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-500);}
 .app{display:none;min-height:100vh}
 .app.active{display:block}
+/* z-index 130: hoger dan de admin/refresh-modal-overlay (z:120) zodat
+   topbar + tabs zichtbaar én klikbaar blijven terwijl de Beheer-modal
+   open is. Klik op een tab sluit de modal automatisch. */
 .topbar{background:var(--white);border-bottom:1px solid var(--grey-200);padding:14px 24px;
-  display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:50;}
+  display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:130;}
 .topbar-brand{display:flex;align-items:center;gap:10px}
 .topbar-home-btn{display:inline-flex;align-items:center;gap:10px;padding:4px 8px;border:0;background:transparent;color:inherit;cursor:pointer;font:inherit;border-radius:8px;transition:background .12s}
 .topbar-home-btn:hover{background:var(--grey-100)}
@@ -178,7 +181,8 @@ body{
 .user-menu-lang button.active{background:var(--orange-pale);border-color:var(--orange);color:var(--orange-dark);font-weight:600}
 .user-menu-lang button:hover{background:var(--grey-100)}
 .scope-bar{background:var(--orange-pale);border-bottom:1px solid var(--orange);
-  padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--orange-dark);flex-wrap:wrap}
+  padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--orange-dark);flex-wrap:wrap;
+  position:relative;z-index:130;}
 .scope-label{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.66rem}
 .scope-pill{padding:3px 10px;border-radius:14px;background:white;border:1px solid var(--orange-light);
   color:var(--orange-dark);font-family:inherit;font-size:.74rem;font-weight:600;cursor:pointer}
@@ -202,7 +206,8 @@ body{
 .kpi.kpi-secondary .kpi-value-small{font-size:.78rem;color:var(--grey-700);font-weight:600;line-height:1.4}
 .kpi.kpi-secondary .kpi-value-small small{font-weight:500;color:var(--grey-500);font-size:.7rem;letter-spacing:0;display:inline}
 .kpi.kpi-primary[data-goto]{cursor:pointer}
-.tabs{background:var(--white);padding:0 24px;border-bottom:1px solid var(--grey-200);display:flex;gap:0;}
+.tabs{background:var(--white);padding:0 24px;border-bottom:1px solid var(--grey-200);display:flex;gap:0;
+  position:relative;z-index:130;}
 .tab{padding:14px 14px;font-family:inherit;font-size:.88rem;font-weight:600;color:var(--grey-600);
   background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent;
   transition:color .15s,border-color .15s,padding .15s;display:inline-flex;align-items:center;gap:8px;}
@@ -13154,6 +13159,10 @@ function activateTab(target){
   const btn = document.querySelector('.tab[data-tab="' + target + '"]');
   const pane = document.getElementById('pane-' + target);
   if(!btn || !pane) return;
+  // Sluit een eventueel openstaande admin/refresh-modal: bij klik op
+  // een tab navigeert de gebruiker bewust weg uit de modal-context.
+  // Beter dan ze zelf eerst op X laten klikken.
+  document.querySelectorAll('.refresh-modal.show').forEach(m => m.classList.remove('show'));
   document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
