@@ -472,7 +472,7 @@ body{
 .version-note{color:var(--grey-700);line-height:1.45}
 .version-date{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--grey-500);text-align:right}
 .inst-arrow{font-size:1rem;color:var(--grey-400);text-align:right}
-.overlay{position:fixed;inset:0;z-index:100;background:rgba(45,45,45,.5);backdrop-filter:blur(4px);
+.overlay{position:fixed;inset:0;z-index:140;background:rgba(45,45,45,.5);backdrop-filter:blur(4px);
   display:flex;align-items:flex-start;justify-content:center;padding:60px 24px 24px;
   opacity:0;visibility:hidden;transition:opacity .2s, visibility .2s;overflow-y:auto;}
 .overlay.show{opacity:1;visibility:visible}
@@ -493,7 +493,6 @@ body{
     padding:0;
     overflow-y:auto;
     border-left:1px solid var(--grey-200);
-    z-index:90;
   }
   .overlay-panel{
     width:100%;
@@ -504,6 +503,12 @@ body{
     transform:translateX(20px);
   }
   .overlay.show .overlay-panel{transform:translateX(0)}
+  /* Sticky head met prominent zichtbare sluit-knop zodat de gebruiker
+     altijd terug naar de volle lijst kan, ook na ver scrollen in
+     het klantbeeld. */
+  .overlay-head{position:sticky;top:0;z-index:5;background:var(--white)}
+  .overlay-close{width:40px;height:40px;background:var(--orange-pale);border-color:var(--orange);color:var(--orange-dark);font-size:1.3rem}
+  .overlay-close:hover{background:var(--orange);color:#fff;border-color:var(--orange)}
   /* App schuift in zodra de side-pane open is — content houdt 1/3
      van de viewport. Topbar/tabs/scope-bar (sticky) krijgen dezelfde
      rechter-padding zodat ze niet onder de pane verdwijnen. */
@@ -511,11 +516,14 @@ body{
   .app.has-side-overlay .topbar,
   .app.has-side-overlay .tabs,
   .app.has-side-overlay .scope-bar{padding-right:66.66vw}
-  /* Compactere instelling-rij in side-pane mode: alleen naam, status,
-     lead-score zichtbaar (provincie/ANW/bedden/pijl verborgen). De
-     hoofdvestiging staat al als sub-regel onder de naam. */
+  /* Lijsten compact maken in de smalle 1/3-pane: secundaire kolommen
+     verbergen, tekst niet wrappen (single-line met ellipsis) zodat de
+     rijen er als tabel blijven uitzien i.p.v. multi-line tekst-blobs.
+     Acties-tab, Instellingen, Signalen, Opportunities, Trends en
+     Leveranciers krijgen elk een eigen compact-variant. */
+  /* Instellingen */
   .app.has-side-overlay .inst-head,
-  .app.has-side-overlay .inst-row{grid-template-columns:minmax(140px,2fr) 90px 70px}
+  .app.has-side-overlay .inst-row{grid-template-columns:minmax(140px,2fr) 90px 70px;padding-left:10px;padding-right:10px}
   .app.has-side-overlay .inst-head > div:nth-child(2),
   .app.has-side-overlay .inst-head > div:nth-child(3),
   .app.has-side-overlay .inst-head > div:nth-child(6),
@@ -524,6 +532,53 @@ body{
   .app.has-side-overlay .inst-row > .inst-cell:nth-child(3),
   .app.has-side-overlay .inst-row > .inst-cell:nth-child(6),
   .app.has-side-overlay .inst-row > .inst-arrow{display:none}
+  .app.has-side-overlay .inst-name-main{font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .app.has-side-overlay .inst-name-sub{font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .app.has-side-overlay .signal-badge,
+  .app.has-side-overlay .owner-chip-name{display:none}
+
+  /* Acties / todos */
+  .app.has-side-overlay .actie-row{grid-template-columns:18px 1fr 24px;padding:6px 10px}
+  .app.has-side-overlay .actie-row > .actie-owner-select,
+  .app.has-side-overlay .actie-row > .actie-opp-select{display:none}
+  .app.has-side-overlay .actie-text{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .app.has-side-overlay .actie-meta{font-size:.66rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* Signalen */
+  .app.has-side-overlay .signal{padding:10px 12px;grid-template-columns:auto 1fr;gap:10px}
+  .app.has-side-overlay .signal-side{display:none}
+  .app.has-side-overlay .signal-headline{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+  .app.has-side-overlay .signal-summary{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.74rem}
+  .app.has-side-overlay .signal-instelling{font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:100%}
+  .app.has-side-overlay .signal-meta-row{gap:6px}
+  .app.has-side-overlay .signal-run-tag{display:none}
+
+  /* Opportunities */
+  .app.has-side-overlay .opp-card{grid-template-columns:1fr 90px;padding:10px 12px;gap:10px}
+  .app.has-side-overlay .opp-card > *:nth-child(n+3){display:none}
+  .app.has-side-overlay .opp-card-titel{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .app.has-side-overlay .opp-card-inst{font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* Trends-tab */
+  .app.has-side-overlay .trends-list-row{grid-template-columns:1fr 70px}
+  .app.has-side-overlay .trends-list-row > div:nth-child(2),
+  .app.has-side-overlay .trends-list-row > div:nth-child(3),
+  .app.has-side-overlay .trends-list-row > div:nth-child(5){display:none}
+  .app.has-side-overlay .mover-row{grid-template-columns:1fr 80px}
+  .app.has-side-overlay .mover-row > div:nth-child(n+3){display:none}
+  .app.has-side-overlay .stale-row{grid-template-columns:1fr 60px}
+  .app.has-side-overlay .stale-row > div:nth-child(n+3){display:none}
+
+  /* Leveranciers (lev-card grid) wordt niet compact gemaakt: het 1/3
+     vlak is te smal voor dit soort kaarten; we laten de hele grid
+     verticaal stacken via flex. */
+  .app.has-side-overlay .lev-grid{grid-template-columns:1fr}
+
+  /* Toolbars: filters + dropdowns op kleinere font zodat ze in de
+     smallere left-pane passen zonder afbreken. */
+  .app.has-side-overlay .toolbar .sort-select,
+  .app.has-side-overlay .toolbar input{font-size:.74rem;padding:4px 8px}
+  .app.has-side-overlay .toolbar .btn-secondary{font-size:.72rem;padding:4px 8px}
 }
 .overlay-head{padding:22px 28px;
   background:linear-gradient(135deg, var(--orange-pale) 0%, var(--white) 100%);
@@ -916,7 +971,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
 .whitespace-tag:hover{background:var(--orange);color:#fff;border-color:var(--orange)}
 .tab-pane{display:none}
 .tab-pane.active{display:block}
-.refresh-modal{position:fixed;inset:0;z-index:120;background:rgba(45,45,45,.5);backdrop-filter:blur(4px);
+.refresh-modal{position:fixed;inset:0;z-index:160;background:rgba(45,45,45,.5);backdrop-filter:blur(4px);
   display:none;align-items:center;justify-content:center;padding:24px;}
 .refresh-modal.show{display:flex}
 .refresh-modal-panel{background:var(--white);border-radius:16px;width:100%;max-width:680px;
@@ -1435,6 +1490,12 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <input type="file" id="importAllFileInput" accept=".json,application/json" style="display:none">
     </div>
     <div id="importResult" style="margin-top:12px;font-size:.82rem"></div>
+    <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--grey-200)">
+      <h4 style="font-size:.86rem;color:var(--red);margin-bottom:6px">Gevarenzone &middot; Reset werkomgeving</h4>
+      <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">Als deze werkomgeving data uit een andere tenant heeft opgepikt (bv. tijdens een onbedoelde cross-tenant sessie), kun je hier alle data van déze werkomgeving wissen op de server (Vercel KV). Daarna start je leeg. <strong>Dit gaat niet automatisch ongedaan</strong>; download eerst een JSON-backup als je twijfelt.</p>
+      <button class="btn-secondary" id="resetTenantBtn" style="border-color:var(--red);color:var(--red)">Wis alle data van deze werkomgeving</button>
+      <div id="resetTenantResult" style="margin-top:8px;font-size:.82rem"></div>
+    </div>
     </div>
     </div>
     </div>
@@ -1707,7 +1768,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.7",
+    "version": "1.16.8",
     "codename": "Quasar",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -1926,6 +1987,12 @@ const DATA = {
         "codename": "Quasar",
         "date": "2026-05-05",
         "note": "Multi-tenant data-isolation in Beheer > Data & Sync + één import-plek. (1) Data & Sync toonde de in-memory state van de browser-sessie, en die kon nog data uit een eerdere tenant-login bevatten (assignments, todos, dropdowns, etc. zaten in localStorage onder niet-gescoped sleutels). Nieuwe clearStateOnTenantChange-helper detecteert tenant-id-wissel via localStorage-key marktradar.lastTenantId, wist alle data-storage-keys (assignments, todos, dmu-overrides, opportunities, signal-history, overrides, dropdowns, supplier-overrides, dirty-flag) en reset de in-memory variabelen naar leeg; KV-sync vult ze daarna opnieuw met de juiste tenant-data. Auth-token + UI-state-key blijven staan (geen onnodig uitloggen). (2) Beheer > Contacten-tab verwijderd: de XLS-contact-import via JSON-paste is vervangen door de Python tenant_configurator-pipeline (zie tenant_configurator/). State-import binnen de app gaat nu nog maar op één plek: Beheer > Data & Sync. JS-bindings voor Contacten-elementen waren al null-safe via early-return; geen functionele breuk."
+      },
+      {
+        "version": "1.16.8",
+        "codename": "Quasar",
+        "date": "2026-05-05",
+        "note": "Side-pane finetuning + 'Reset werkomgeving'-knop. (1) Z-index-stack opgeschoond: side-pane naar z:140 zodat 'ie boven topbar (z:130) staat (eerder lekte de topbar er overheen). Modals naar z:160 zodat ze altijd boven side-pane én topbar zitten. Overlay-head sticky in side-pane mode + sluit-knop wordt prominenter (40x40, oranje achtergrond) zodat 'ie altijd vindbaar is na scrollen. (2) Lijsten in 1/3 left-pane krijgen een agressieve compact-layout: actie-row hides owner+opp-dropdown en truncate de tekst; signal hide de bron-side en line-clamp:2 op summary; opp-card grid:1fr+90px met alleen titel en status; trends/movers/stale stripped naar 2 kolommen. Toolbar-controls (sort/filter dropdowns) gaan kleiner. Lev-grid stackt verticaal. (3) Toggle-close: in side-pane mode klikken op de al-geopende rij sluit het klantbeeld (Outlook-stijl). (4) Nieuwe 'Wis alle data van deze werkomgeving'-knop in Beheer > Data & Sync (gevarenzone): POSTt empty payload naar elke tenant-state-KV-key (todos, overrides, dropdowns, owners, signal-history, opportunities, supplier-overrides, dmu-overrides, spec-overrides) + assignments + signals/list. Voor wanneer een werkomgeving rommelig is geraakt door pre-v1.16.7-cross-tenant-leaks. Andere werkomgevingen blijven intact omdat de endpoints tenant-scoped zijn."
       }
     ],
     "totalInstellingen": 64,
@@ -13972,6 +14039,14 @@ function renderInstellingen(){
     const handle = (target) => {
       const row = target.closest('.inst-row');
       if(!row || !row.dataset.instId) return false;
+      // Toggle-close: in side-pane mode klikken op de al-geopende rij
+      // sluit het klantbeeld zodat de lijst weer volle breedte krijgt.
+      // Outlook-stijl: klik nogmaals om te de-selecteren.
+      const isSidePane = document.querySelector('.app')?.classList.contains('has-side-overlay');
+      if(isSidePane && row.dataset.instId === currentInstellingId){
+        closeOverlay();
+        return true;
+      }
       openInstelling(row.dataset.instId, 'instelling');
       return true;
     };
@@ -15037,7 +15112,7 @@ function openInstelling(id, ctx){
         <button class="overlay-nav-btn" id="overlayPrev" title="Vorige instelling (←)" aria-label="Vorige">&lsaquo;</button>
         <span class="overlay-nav-pos" id="overlayNavPos"></span>
         <button class="overlay-nav-btn" id="overlayNext" title="Volgende instelling (→)" aria-label="Volgende">&rsaquo;</button>
-        <button class="overlay-close" id="overlayClose" title="Sluiten (Esc)">&times;</button>
+        <button class="overlay-close" id="overlayClose" title="Sluit klantbeeld; lijst krijgt volle breedte (Esc)" aria-label="Sluit klantbeeld">&times;</button>
       </div>
     </div>`;
   // v1.14.x: geen view/edit-toggle meer. Het klantbeeld is altijd in
@@ -15724,6 +15799,46 @@ async function importAllStateJson(jsonText, mergeMode){
   return counts;
 }
 
+// Wis alle tenant-data op de server (Vercel KV) + lokaal. Aanleiding:
+// als de KV-data van deze werkomgeving rommelig is (bv. door een
+// gemixte cross-tenant sessie uit pre-v1.16.7-versies van de app)
+// wil je een schone start zonder een nieuw account aan te maken.
+async function resetCurrentTenantData(){
+  const stateKeys = ['todos','dmu-overrides','spec-overrides','overrides',
+    'dropdowns','owners','signal-history','opportunities','supplier-overrides'];
+  const errors = [];
+  for(const key of stateKeys){
+    try {
+      const r = await apiFetch(STATE_API, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, value: {} })
+      });
+      if(!r.ok && r.status !== 503) errors.push(key + ' (' + r.status + ')');
+    } catch(e){ errors.push(key + ' (' + (e.message || e) + ')'); }
+  }
+  // assignments + signals hebben eigen endpoints.
+  try {
+    const r = await apiFetch(ASSIGNMENTS_API, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ assignments: {} })
+    });
+    if(!r.ok && r.status !== 503) errors.push('assignments (' + r.status + ')');
+  } catch(e){ errors.push('assignments'); }
+  try {
+    const r = await apiFetch('/api/signals/list', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ signals: [] })
+    });
+    if(!r.ok && r.status !== 503) errors.push('signals (' + r.status + ')');
+  } catch(e){ errors.push('signals'); }
+  // Reset in-memory + localStorage door clearStateOnTenantChange te
+  // forceren (eerst met dummy-id zodat de check 'last !== new' triggert,
+  // daarna meteen de echte tenant-id zetten).
+  try { clearStateOnTenantChange('__force_reset_' + Date.now()); } catch(e){}
+  try { clearStateOnTenantChange((currentTenant && currentTenant.id) || 'default'); } catch(e){}
+  return { errors };
+}
+
 function renderAdminBody(){
   return visibleDropdownKeys().map(key => {
     const reg = DROPDOWN_REGISTRY[key];
@@ -16357,6 +16472,32 @@ function bindAdminModal(){
     t.addEventListener('click', () => showAdminTab(t.dataset.adminTab));
   });
   document.getElementById('exportAllBtn').addEventListener('click', downloadAllStateJson);
+  const resetBtn = document.getElementById('resetTenantBtn');
+  if(resetBtn) resetBtn.addEventListener('click', async () => {
+    const naam = (currentTenant && currentTenant.naam) || 'deze werkomgeving';
+    const id = (currentTenant && currentTenant.id) || '?';
+    if(!confirm('Wis ALLE data van "' + naam + '" (id: ' + id + ')?\n\nDit wist:\n  - todos, dropdowns, overrides, contact-overrides\n  - eigenaar-toewijzingen\n  - signaal-historie\n  - opportunities, leveranciers-overrides\n\nDit kan niet ongedaan worden. Andere werkomgevingen blijven intact.')) return;
+    const out = document.getElementById('resetTenantResult');
+    if(out) out.innerHTML = '<span style="color:var(--grey-700)">Bezig met wissen…</span>';
+    try {
+      const r = await resetCurrentTenantData();
+      if(r.errors && r.errors.length){
+        if(out) out.innerHTML = '<span style="color:var(--amber-dark)">Deels gelukt; fouten: ' + escapeHtml(r.errors.join(', ')) + '</span>';
+      } else {
+        if(out) out.innerHTML = '<span style="color:var(--green)"><strong>Werkomgeving gewist.</strong> Reload de pagina voor een schone start.</span>';
+      }
+      // Re-render Beheer-pane zodat de counts naar 0 gaan.
+      const body = document.getElementById('adminModalBody');
+      if(body) body.innerHTML = renderAdminBody();
+      const resList = document.getElementById('adminResourceList');
+      if(resList) resList.innerHTML = renderResourceList();
+      try { if(typeof renderInstellingen === 'function') renderInstellingen(); } catch(e){}
+      try { if(typeof renderActies === 'function') renderActies(); } catch(e){}
+      try { if(typeof renderSignals === 'function') renderSignals(); } catch(e){}
+    } catch(err){
+      if(out) out.innerHTML = '<span style="color:var(--red)">Fout: ' + escapeHtml(err.message || String(err)) + '</span>';
+    }
+  });
   document.getElementById('importAllBtn').addEventListener('click', () => {
     document.getElementById('importAllFileInput').click();
   });
