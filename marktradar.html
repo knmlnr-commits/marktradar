@@ -485,14 +485,19 @@ body{
    viewport), lijst houdt 1/3 over. Outlook-stijl. Onder 1400px valt
    'ie terug op de full-overlay die de hele app bedekt. */
 @media (min-width: 1400px){
+  /* Side-pane start onder de header (topbar + scope-bar + tabs) zodat
+     de navigatie volledig zichtbaar blijft en niet overlapt wordt.
+     De CSS-var --side-pane-top wordt dynamisch gezet door
+     updateSidePaneTop() op basis van de werkelijke header-hoogte. */
   .overlay{
-    inset:auto; top:0; right:0; bottom:0; left:auto;
+    inset:auto; top:var(--side-pane-top, 0); right:0; bottom:0; left:auto;
     width:66.66vw;
     background:transparent;
     backdrop-filter:none;
     padding:0;
     overflow-y:auto;
     border-left:1px solid var(--grey-200);
+    border-top:1px solid var(--grey-200);
   }
   .overlay-panel{
     width:100%;
@@ -15225,6 +15230,26 @@ const OVERLAY_CTX = {
   notities:    { label: 'Notities',            icon: '&#9998;', open: ['notities'], color: 'var(--grey-600)' },
 };
 
+// Side-pane start onder de header. Meet de gecombineerde hoogte van
+// topbar + scope-bar (als zichtbaar) + tabs en zet die als CSS-var
+// zodat de @media-rule 'overlay { top: var(--side-pane-top) }' meet
+// scrollt. Aangeroepen bij open/close + window-resize.
+function updateSidePaneTop(){
+  let h = 0;
+  const topbar = document.querySelector('.topbar');
+  const scope = document.querySelector('.scope-bar');
+  const tabs = document.querySelector('.tabs');
+  if(topbar && topbar.offsetParent !== null) h += topbar.offsetHeight;
+  // Scope-bar is alleen zichtbaar als display !== 'none'.
+  if(scope){
+    const cs = window.getComputedStyle(scope);
+    if(cs.display !== 'none') h += scope.offsetHeight;
+  }
+  if(tabs && tabs.offsetParent !== null) h += tabs.offsetHeight;
+  document.documentElement.style.setProperty('--side-pane-top', h + 'px');
+}
+window.addEventListener('resize', () => { try { updateSidePaneTop(); } catch(e){} });
+
 function openInstelling(id, ctx){
   if(ctx) currentOverlayContext = ctx;
   const i = getInstelling(id);
@@ -15336,6 +15361,7 @@ function openInstelling(id, ctx){
   // in de CSS-blok hierboven). Op smalle schermen valt dit terug op
   // de bestaande full-overlay.
   document.querySelector('.app')?.classList.add('has-side-overlay');
+  try { updateSidePaneTop(); } catch(e){}
   bindOverlayChrome(i);
   const ownerSel = document.getElementById('ownerSelect-' + i.id);
   if(ownerSel){
@@ -17787,6 +17813,7 @@ function openSupplierInOverlay(id){
   document.getElementById('overlayPanel').innerHTML = headHtml + _supplierEditFormHtml(!id);
   document.getElementById('overlay').classList.add('show');
   document.querySelector('.app')?.classList.add('has-side-overlay');
+  try { updateSidePaneTop(); } catch(e){}
   currentSupplierId = id || _supEditId;
   currentInstellingId = null;
   // Vul inputs (zelfde DOM-ids als de oude modal).
