@@ -1514,6 +1514,32 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <details class="acc admin-acc" name="admin-tenant-acc">
     <summary>
     <span class="acc-icon">⑤</span>
+    <span class="acc-title">Kleurenschema</span>
+    <span class="acc-chev">&#9662;</span>
+    </summary>
+    <div class="acc-body">
+      <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">Pas het kleurenschema aan; het wordt direct toegepast in topbar, knoppen en accenten. Klik op een preset of stel zelf in. Default = GeriCall oranje.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <button class="btn-secondary" data-theme-preset="gericall" style="font-size:.78rem;padding:5px 10px">GeriCall (oranje)</button>
+        <button class="btn-secondary" data-theme-preset="van-ameyde" style="font-size:.78rem;padding:5px 10px">Van Ameyde (navy + turquoise)</button>
+        <button class="btn-secondary" id="themeResetBtn" style="font-size:.78rem;padding:5px 10px;border-color:var(--red);color:var(--red);margin-left:auto">Reset naar default</button>
+      </div>
+      <div class="contact-edit-grid" style="margin-bottom:10px">
+        <div class="edit-field"><label>Primair (hoofdkleur)</label><input type="color" id="theme-primary" style="width:100%;height:34px;padding:0;border:1px solid var(--grey-200);border-radius:6px;background:var(--white)"></div>
+        <div class="edit-field"><label>Primair donker (hover)</label><input type="color" id="theme-primaryDark" style="width:100%;height:34px;padding:0;border:1px solid var(--grey-200);border-radius:6px;background:var(--white)"></div>
+        <div class="edit-field"><label>Primair licht (gradient)</label><input type="color" id="theme-primaryLight" style="width:100%;height:34px;padding:0;border:1px solid var(--grey-200);border-radius:6px;background:var(--white)"></div>
+        <div class="edit-field"><label>Primair pastel (achtergrond)</label><input type="color" id="theme-primaryPale" style="width:100%;height:34px;padding:0;border:1px solid var(--grey-200);border-radius:6px;background:var(--white)"></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end">
+        <button class="btn-primary" id="themeSaveBtn">Kleurenschema opslaan</button>
+      </div>
+      <div id="themeSaveResult" style="margin-top:8px;font-size:.82rem"></div>
+    </div>
+    </details>
+
+    <details class="acc admin-acc" name="admin-tenant-acc">
+    <summary>
+    <span class="acc-icon">⑥</span>
     <span class="acc-title">Geavanceerd</span>
     <span class="acc-chev">&#9662;</span>
     </summary>
@@ -1849,7 +1875,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.4",
+    "version": "1.17.6",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -11890,6 +11916,7 @@ document.getElementById('gate-form-auth').addEventListener('submit', async (e) =
       location.replace(tenantUrl(currentTenant.slug));
       return;
     }
+    try { applyTenantTheme(); } catch(e){}
     openApp();
   } catch(err){
     errEl.querySelector('span').textContent = '⚠ ' + (err.message || 'Inloggen mislukt');
@@ -11970,6 +11997,7 @@ function consumeOAuthFragment(){
       // Als de URL niet matcht met onze eigen tenant, stuur door
       if(redirectToOwnTenantIfNeeded()) return;
       applyGateBranding(currentTenant);
+      try { applyTenantTheme(); } catch(e){}
       openApp();
       return;
     }
@@ -12858,6 +12886,7 @@ function initApp(){
   bindAssignmentsPane();
   bindContactsPane();
   bindSchemaPane();
+  bindThemePane();
   bindUserMenu();
   bindVersionModal();
   renderVersion();
@@ -16157,6 +16186,45 @@ function bindUserMenu(){
   });
 }
 
+/* ===== Theme per tenant ===== */
+// Default-theme = GeriCall oranje. tenant.theme overschrijft de
+// CSS-variabelen --orange / --orange-dark / --orange-light /
+// --orange-pale (en optioneel een accent). Aangeroepen op login en
+// na een save in de Beheer-UI.
+const THEME_PRESETS = {
+  gericall: {
+    label: 'GeriCall (oranje)',
+    primary: '#E8732A',
+    primaryDark: '#C45E1E',
+    primaryLight: '#F09A5E',
+    primaryPale: '#FFF3EB',
+    accent: '#E8732A',
+  },
+  'van-ameyde': {
+    label: 'Van Ameyde (navy + turquoise)',
+    primary: '#07017E',
+    primaryDark: '#050061',
+    primaryLight: '#00D8B9',
+    primaryPale: '#E5D3D1',
+    accent: '#00D8B9',
+  },
+};
+function applyTenantTheme(){
+  const t = (currentTenant && currentTenant.theme) || null;
+  const root = document.documentElement;
+  // Reset eerst, anders blijven kleuren van een vorige tenant hangen
+  // bij snelle wisseling.
+  ['--orange','--orange-dark','--orange-light','--orange-pale','--accent'].forEach(v => {
+    root.style.removeProperty(v);
+  });
+  if(!t) return; // val terug op de in :root gedefinieerde defaults
+  if(t.primary)      root.style.setProperty('--orange',       t.primary);
+  if(t.primaryDark)  root.style.setProperty('--orange-dark',  t.primaryDark);
+  if(t.primaryLight) root.style.setProperty('--orange-light', t.primaryLight);
+  if(t.primaryPale)  root.style.setProperty('--orange-pale',  t.primaryPale);
+  if(t.accent)       root.style.setProperty('--accent',       t.accent);
+}
+
 /* ===== Logo-upload per tenant ===== */
 function applyTenantLogo(){
   // Vervangt het inline radar-SVG in topbar en gate door tenant.logoDataUri
@@ -16408,6 +16476,8 @@ async function refreshTenantPane(){
   loadLastRun().then(lr => renderFeedsStatus(lr));
   // Schema-editor draft initialiseren met de huidige tenant.klantSchema.
   refreshSchemaPane();
+  // Theme-pane initialiseren met de huidige tenant.theme (of GeriCall-default).
+  refreshThemePane();
   if(stats){
     const universe = getEntiteitenUniverse();
     const baseN = universe.length;
@@ -16850,6 +16920,103 @@ async function applyEntiteitenCsvImport(text){
 // editor kan laden + reviewen + opslaan. Per template een complete
 // veldset met sectie-grouping. Bedoeld als snelle start; kan altijd
 // achteraf worden aangepast.
+// Theme-pane: 4 color-pickers + presets + save naar tenant.theme.
+function refreshThemePane(){
+  // Vul color-inputs met de huidige tenant.theme of, als die niet
+  // gezet is, met de waarden uit de :root CSS-vars (= GeriCall-default).
+  const t = (currentTenant && currentTenant.theme) || null;
+  const cs = window.getComputedStyle(document.documentElement);
+  const fallback = {
+    primary: cs.getPropertyValue('--orange').trim() || '#E8732A',
+    primaryDark: cs.getPropertyValue('--orange-dark').trim() || '#C45E1E',
+    primaryLight: cs.getPropertyValue('--orange-light').trim() || '#F09A5E',
+    primaryPale: cs.getPropertyValue('--orange-pale').trim() || '#FFF3EB',
+  };
+  const cur = { ...fallback, ...(t || {}) };
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = _toHex6(val); };
+  set('theme-primary',      cur.primary);
+  set('theme-primaryDark',  cur.primaryDark);
+  set('theme-primaryLight', cur.primaryLight);
+  set('theme-primaryPale',  cur.primaryPale);
+}
+function _toHex6(v){
+  // Color-input wil 6-char hex zonder alpha.
+  const s = String(v || '').trim();
+  if(/^#[0-9a-fA-F]{6}$/.test(s)) return s;
+  if(/^#[0-9a-fA-F]{3}$/.test(s)){
+    return '#' + s.slice(1).split('').map(c => c + c).join('');
+  }
+  return '#000000';
+}
+function bindThemePane(){
+  document.querySelectorAll('[data-theme-preset]').forEach(b => {
+    b.addEventListener('click', () => {
+      const preset = THEME_PRESETS[b.dataset.themePreset];
+      if(!preset) return;
+      ['primary','primaryDark','primaryLight','primaryPale'].forEach(k => {
+        const el = document.getElementById('theme-' + k);
+        if(el) el.value = _toHex6(preset[k]);
+      });
+      // Live-preview meteen toepassen (klantbeeld + topbar verkleuren
+      // direct), zonder save.
+      _previewThemeFromInputs();
+    });
+  });
+  ['theme-primary','theme-primaryDark','theme-primaryLight','theme-primaryPale'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('input', _previewThemeFromInputs);
+  });
+  const reset = document.getElementById('themeResetBtn');
+  if(reset) reset.addEventListener('click', async () => {
+    if(!confirm('Reset het kleurenschema naar de default (GeriCall oranje)?')) return;
+    try {
+      const r = await apiFetch('/api/tenant?action=update', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ theme: null }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if(!r.ok) throw new Error(j.error || 'Reset mislukt');
+      if(j.tenant) currentTenant = j.tenant;
+      applyTenantTheme();
+      refreshThemePane();
+      const out = document.getElementById('themeSaveResult');
+      if(out) out.innerHTML = '<span style="color:var(--green)">Default theme actief.</span>';
+    } catch(err){
+      const out = document.getElementById('themeSaveResult');
+      if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+    }
+  });
+  const save = document.getElementById('themeSaveBtn');
+  if(save) save.addEventListener('click', async () => {
+    const theme = {
+      primary:      document.getElementById('theme-primary').value,
+      primaryDark:  document.getElementById('theme-primaryDark').value,
+      primaryLight: document.getElementById('theme-primaryLight').value,
+      primaryPale:  document.getElementById('theme-primaryPale').value,
+    };
+    const out = document.getElementById('themeSaveResult');
+    try {
+      const r = await apiFetch('/api/tenant?action=update', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ theme }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if(!r.ok) throw new Error(j.error || 'Opslaan mislukt');
+      if(j.tenant) currentTenant = j.tenant;
+      applyTenantTheme();
+      if(out) out.innerHTML = '<span style="color:var(--green)">Kleurenschema opgeslagen + toegepast.</span>';
+    } catch(err){
+      if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+    }
+  });
+}
+function _previewThemeFromInputs(){
+  const root = document.documentElement;
+  const v = (id) => document.getElementById(id)?.value;
+  const map = { 'theme-primary':'--orange','theme-primaryDark':'--orange-dark','theme-primaryLight':'--orange-light','theme-primaryPale':'--orange-pale' };
+  Object.entries(map).forEach(([id, css]) => { const x = v(id); if(x) root.style.setProperty(css, x); });
+}
+
 const SCHEMA_TEMPLATES = {
   'van-ameyde-insurance': [
     // A. Identiteit

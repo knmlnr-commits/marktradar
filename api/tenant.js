@@ -44,6 +44,7 @@ function publicTenant(t) {
     market: Array.isArray(t.market) ? t.market : null,
     marketDefined: !!t.marketDefined,
     klantSchema: Array.isArray(t.klantSchema) ? t.klantSchema : [],
+    theme: t.theme && typeof t.theme === 'object' ? t.theme : null,
   };
 }
 
@@ -166,6 +167,19 @@ module.exports = async function handler(req, res) {
       const t = await loadOrCreate(session.tenantId);
       if (typeof body.naam === 'string') t.naam = String(body.naam).trim() || t.naam;
       if (typeof body.useLlmCurator === 'boolean') t.useLlmCurator = body.useLlmCurator;
+      if (body.theme === null) {
+        // Reset naar default-theme.
+        t.theme = null;
+      } else if (body.theme && typeof body.theme === 'object') {
+        // Whitelist hex-velden zodat we geen garbage in de KV krijgen.
+        const hex = (v) => typeof v === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(v.trim()) ? v.trim() : null;
+        const cleaned = {};
+        ['primary', 'primaryDark', 'primaryLight', 'primaryPale', 'accent'].forEach((k) => {
+          const v = hex(body.theme[k]);
+          if (v) cleaned[k] = v;
+        });
+        t.theme = Object.keys(cleaned).length ? cleaned : null;
+      }
       if (Array.isArray(body.klantSchema)) {
         // Validate + normalise: each entry needs id+label+type. We strip
         // unknown keys and cap at 60 fields om mis-imports te voorkomen.

@@ -68,6 +68,7 @@ function publicTenant(t) {
     market: Array.isArray(t.market) ? t.market : null,
     marketDefined: !!t.marketDefined,
     klantSchema: Array.isArray(t.klantSchema) ? t.klantSchema : [],
+    theme: t.theme && typeof t.theme === 'object' ? t.theme : null,
   };
 }
 
