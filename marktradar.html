@@ -1489,6 +1489,20 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <button class="btn-primary" id="schemaSaveBtn">Schema opslaan</button>
     </div>
     <div id="schemaSaveResult" style="margin-top:8px;font-size:.82rem"></div>
+
+    <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--grey-200)">
+      <h4 style="font-size:.86rem;color:var(--grey-900);margin-bottom:6px">Bulk import</h4>
+      <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">
+        Genereer een CSV-template met alle standaard- en schema-velden als kolommen. Vul in Excel (één rij per organisatie), upload terug, en de records komen rechtstreeks in je werkomgeving — inclusief alle eigen klantbeeld-velden.
+      </p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn-secondary" id="csvTemplateBtn">Download CSV-template</button>
+        <button class="btn-secondary" id="csvImportBtn">Importeer ingevulde CSV&hellip;</button>
+        <input type="file" id="csvImportFile" accept=".csv,text/csv" style="display:none">
+        <span style="font-size:.74rem;color:var(--grey-600);margin-left:auto">Kolomheaders zijn de schema-veld-ids (kun je herkennen aan a-z0-9_)</span>
+      </div>
+      <div id="csvImportResult" style="margin-top:10px;font-size:.82rem"></div>
+    </div>
     </div>
     </details>
 
@@ -1830,7 +1844,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.3",
+    "version": "1.17.4",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -16569,6 +16583,241 @@ function bindSchemaPane(){
     _schemaDraft = JSON.parse(JSON.stringify(tpl));
     renderSchemaList();
   });
+  const tplDl = document.getElementById('csvTemplateBtn');
+  if(tplDl) tplDl.addEventListener('click', downloadEntiteitenCsvTemplate);
+  const csvImpBtn = document.getElementById('csvImportBtn');
+  const csvImpFile = document.getElementById('csvImportFile');
+  if(csvImpBtn && csvImpFile){
+    csvImpBtn.addEventListener('click', () => csvImpFile.click());
+    csvImpFile.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const text = await file.text();
+      e.target.value = '';
+      try { await applyEntiteitenCsvImport(text); }
+      catch(err){
+        const out = document.getElementById('csvImportResult');
+        if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message || String(err)) + '</span>';
+      }
+    });
+  }
+}
+
+// CSV-template + import voor bulk-load van organisaties met de tenant-
+// eigen schema-velden als extra kolommen.
+const ENTITEIT_STANDARD_COLS = ['id','naam','hoofdvestiging','provincie','regio','website','klant','notes'];
+
+function _csvEscape(v){
+  const s = String(v == null ? '' : v);
+  if(/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+function downloadEntiteitenCsvTemplate(){
+  const schema = Array.isArray(currentTenant?.klantSchema) ? currentTenant.klantSchema : [];
+  const schemaCols = schema.map(f => f.id);
+  const allCols = ENTITEIT_STANDARD_COLS.concat(schemaCols);
+
+  // Header-row = ids (machine-friendly, zodat een re-export of een
+  // Python-pipeline 1:1 kan mappen).
+  const lines = [allCols.map(_csvEscape).join(',')];
+
+  // Voorbeeld-rij die alle veld-types laat zien zodat de gebruiker
+  // de juiste invoer-format herkent (komma's voor lists, true/false
+  // voor booleans, etc.).
+  const example = {
+    id:'',
+    naam: 'Voorbeeld BV',
+    hoofdvestiging: 'Amsterdam',
+    provincie: 'Noord-Holland',
+    regio: '',
+    website: 'https://voorbeeld.nl',
+    klant: 'false',
+    notes: 'Verwijder deze rij voor je import',
+  };
+  schema.forEach(f => {
+    if(f.type === 'enum' && f.values && f.values.length) example[f.id] = f.values[0];
+    else if(f.type === 'list-enum' && f.values && f.values.length) example[f.id] = f.values.slice(0, 2).join(', ');
+    else if(f.type === 'list-text') example[f.id] = 'item1, item2';
+    else if(f.type === 'boolean') example[f.id] = 'false';
+    else if(f.type === 'number') example[f.id] = '0';
+    else if(f.type === 'date') example[f.id] = '';
+    else if(f.type === 'url') example[f.id] = 'https://';
+    else example[f.id] = '';
+  });
+  lines.push(allCols.map(c => _csvEscape(example[c] || '')).join(','));
+
+  // Lege starter-rij.
+  lines.push(allCols.map(() => '').join(','));
+
+  // Sidecar README als comment-rijen onderaan worden door Excel als
+  // data ingelezen, dus liever apart aanbieden via een mini-info-blok
+  // op de pagina. We zetten daarom alleen de twee rijen + de blanco
+  // rij in de CSV.
+
+  const csv = lines.join('\n');
+  const slug = currentTenant?.slug || currentTenant?.id || 'tenant';
+  const date = new Date().toISOString().slice(0, 10);
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `marktradar-import-template_${slug}_${date}.csv`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+
+  // Toon ook de label-mapping op de pagina zodat de gebruiker weet
+  // welke kolom-id bij welk schema-veld hoort.
+  const out = document.getElementById('csvImportResult');
+  if(out){
+    const rows = [
+      '<strong>Template gedownload.</strong> Kolom-id&rsquo;s:',
+      '<table style="font-size:.74rem;border-collapse:collapse;margin-top:6px"><tr><th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--grey-200)">id</th><th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--grey-200)">label</th><th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--grey-200)">type</th></tr>' +
+        allCols.map(c => {
+          const f = schema.find(x => x.id === c);
+          const label = f ? f.label : ({ id:'ID (slug, optioneel)', naam:'Naam *', hoofdvestiging:'Hoofdvestiging', provincie:'Provincie', regio:'Regio', website:'Website', klant:'Klant (true/false)', notes:'Notities' })[c] || c;
+          const type = f ? (f.type + (f.values ? ' [' + f.values.join('|').slice(0, 60) + ']' : '')) : 'standard';
+          return `<tr><td style="padding:3px 8px;font-family:'DM Mono',monospace">${escapeHtml(c)}</td><td style="padding:3px 8px">${escapeHtml(label)}</td><td style="padding:3px 8px;color:var(--grey-600)">${escapeHtml(type)}</td></tr>`;
+        }).join('') +
+        '</table>',
+      '<div style="margin-top:6px;color:var(--grey-600)">Vul aan in Excel, sla op als CSV (komma-gescheiden, UTF-8) en klik <strong>Importeer ingevulde CSV</strong>.</div>',
+    ];
+    out.innerHTML = rows.join('');
+  }
+}
+
+function _parseCsv(text){
+  // Minimal RFC-4180 parser: ondersteunt quoted fields, escaped quotes
+  // ("") en CRLF/LF line-endings. Voor onze use-case (Excel-export) is
+  // dat ruim voldoende.
+  const rows = [];
+  let i = 0, field = '', row = [], inQuotes = false;
+  const n = text.length;
+  while(i < n){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i + 1] === '"'){ field += '"'; i += 2; continue; }
+        inQuotes = false; i++; continue;
+      }
+      field += c; i++; continue;
+    }
+    if(c === '"'){ inQuotes = true; i++; continue; }
+    if(c === ','){ row.push(field); field = ''; i++; continue; }
+    if(c === '\r'){ i++; continue; }
+    if(c === '\n'){ row.push(field); rows.push(row); row = []; field = ''; i++; continue; }
+    field += c; i++;
+  }
+  if(field !== '' || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+
+async function applyEntiteitenCsvImport(text){
+  const out = document.getElementById('csvImportResult');
+  const rows = _parseCsv(text);
+  if(rows.length < 2) throw new Error('CSV is leeg of bevat alleen header-rij.');
+  const headers = rows[0].map(h => h.trim());
+  if(!headers.includes('naam')) throw new Error('Verplichte kolom \'naam\' ontbreekt.');
+  const schema = Array.isArray(currentTenant?.klantSchema) ? currentTenant.klantSchema : [];
+  const schemaIds = new Set(schema.map(f => f.id));
+  const standardSet = new Set(ENTITEIT_STANDARD_COLS);
+
+  const dataRows = rows.slice(1).filter(r => r.some(c => String(c || '').trim() !== ''));
+  if(dataRows.length === 0) throw new Error('Geen gevulde data-rijen gevonden.');
+
+  const existingEnts = Array.isArray(currentTenant?.entiteiten) ? currentTenant.entiteiten.slice() : [];
+  const existingById = new Map(existingEnts.map(e => [String(e.id), e]));
+  const newEnts = [];
+  const cfPerInst = {};
+  let added = 0, updated = 0, errors = [];
+
+  for(const row of dataRows){
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = (row[idx] || '').trim(); });
+    if(!obj.naam){ errors.push('Rij overgeslagen: lege naam.'); continue; }
+
+    // Standaard-velden naar entiteit.
+    const entity = {
+      id: obj.id || '',
+      naam: obj.naam,
+      hoofdvestiging: obj.hoofdvestiging || null,
+      provincie: obj.provincie || null,
+      regio: obj.regio || null,
+      website: obj.website || null,
+      klant: ['true','1','ja','yes','y'].includes(String(obj.klant || '').toLowerCase()),
+      notes: obj.notes || null,
+    };
+
+    // Schema-velden naar customFields (per organisatie).
+    const customFields = {};
+    headers.forEach((h, idx) => {
+      if(standardSet.has(h)) return;
+      const raw = (row[idx] || '').trim();
+      if(!raw) return;
+      const f = schema.find(x => x.id === h);
+      if(!f){
+        // Onbekende kolom — niet in schema, niet standaard. Sla over
+        // (veilig); zou anders cross-tenant rommel kunnen importeren.
+        return;
+      }
+      let v;
+      if(f.type === 'number'){ const n = Number(raw); v = isNaN(n) ? null : n; }
+      else if(f.type === 'boolean') v = ['true','1','ja','yes','y'].includes(raw.toLowerCase());
+      else if(f.type === 'list-text' || f.type === 'list-enum') v = raw.split(',').map(s => s.trim()).filter(Boolean);
+      else v = raw;
+      if(v !== null && v !== undefined && v !== '' && !(Array.isArray(v) && v.length === 0)){
+        customFields[h] = v;
+      }
+    });
+
+    if(entity.id && existingById.has(entity.id)){
+      // Merge in plaats van duplicaat.
+      Object.assign(existingById.get(entity.id), entity);
+      updated++;
+    } else {
+      newEnts.push(entity);
+      added++;
+    }
+    if(Object.keys(customFields).length > 0){
+      cfPerInst[entity.id || ('__pending_' + added)] = { entity, customFields };
+    }
+  }
+
+  // Append + dedupliceren laat de server doen via set-entiteiten
+  // (slugify + uniqueness).
+  const merged = existingEnts.concat(newEnts);
+  const r = await apiFetch('/api/tenant?action=set-entiteiten', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ entiteiten: merged }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if(!r.ok) throw new Error(j.error || 'set-entiteiten mislukte');
+  if(j.tenant) currentTenant = j.tenant;
+
+  // Schrijf customFields per nieuwe organisatie. We pakken de id terug
+  // uit currentTenant.entiteiten (server heeft 'm geslugified als 'ie
+  // leeg was). Match op naam.
+  const overridesPatch = { ...overrides };
+  Object.values(cfPerInst).forEach(({ entity, customFields }) => {
+    let id = entity.id;
+    if(!id){
+      const found = (currentTenant.entiteiten || []).find(e => e.naam === entity.naam);
+      if(found) id = found.id;
+    }
+    if(!id) return;
+    overridesPatch[id] = { ...(overridesPatch[id] || {}), customFields: { ...((overridesPatch[id] || {}).customFields || {}), ...customFields } };
+  });
+  // Schrijf de hele overrides-blob.
+  if(Object.keys(cfPerInst).length > 0){
+    overrides = overridesPatch;
+    saveOverridesLocal();
+    pushRemoteOverrides();
+  }
+
+  // Re-render.
+  try { if(typeof renderInstellingen === 'function') renderInstellingen(); } catch(e){}
+
+  const summary = `<strong style="color:var(--green)">Import gelukt.</strong> ${added} nieuw, ${updated} bijgewerkt, ${Object.keys(cfPerInst).length} met schema-velden gevuld.`;
+  if(out) out.innerHTML = summary + (errors.length ? '<br><span style="color:var(--amber-dark);font-size:.78rem">Waarschuwingen: ' + escapeHtml(errors.slice(0, 3).join(' · ')) + (errors.length > 3 ? ' (+' + (errors.length - 3) + ' meer)' : '') + '</span>' : '');
 }
 
 // Voorbeeld-templates die de tenant-admin met één klik in de schema-
