@@ -43,6 +43,7 @@ function publicTenant(t) {
     onboardingDone: !!t.onboardingDone,
     market: Array.isArray(t.market) ? t.market : null,
     marketDefined: !!t.marketDefined,
+    klantSchema: Array.isArray(t.klantSchema) ? t.klantSchema : [],
   };
 }
 
@@ -165,6 +166,25 @@ module.exports = async function handler(req, res) {
       const t = await loadOrCreate(session.tenantId);
       if (typeof body.naam === 'string') t.naam = String(body.naam).trim() || t.naam;
       if (typeof body.useLlmCurator === 'boolean') t.useLlmCurator = body.useLlmCurator;
+      if (Array.isArray(body.klantSchema)) {
+        // Validate + normalise: each entry needs id+label+type. We strip
+        // unknown keys and cap at 30 fields om mis-imports te voorkomen.
+        const allowedTypes = new Set(['text', 'number', 'date', 'enum', 'boolean']);
+        const seen = new Set();
+        t.klantSchema = body.klantSchema.slice(0, 30).map((f) => {
+          const id = String(f.id || '').trim().toLowerCase().replace(/[^a-z0-9_]+/g, '_').slice(0, 40);
+          const label = String(f.label || '').trim().slice(0, 80);
+          const type = allowedTypes.has(f.type) ? f.type : 'text';
+          if (!id || !label || seen.has(id)) return null;
+          seen.add(id);
+          const out = { id, label, type };
+          if (type === 'enum' && Array.isArray(f.values)) {
+            out.values = f.values.map((v) => String(v).slice(0, 60)).slice(0, 20);
+          }
+          if (f.placeholder) out.placeholder = String(f.placeholder).slice(0, 120);
+          return out;
+        }).filter(Boolean);
+      }
       if (typeof body.slug === 'string' && body.slug.trim()) {
         // Legacy 'gericall' slug is gereserveerd voor de seed-tenant
         const desired = auth.slugifyName(body.slug.trim());

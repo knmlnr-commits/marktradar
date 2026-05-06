@@ -1134,7 +1134,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       </div>
       <div id="gate-tenant-row" style="display:none">
         <label for="gate-tenant">Naam van je werkomgeving</label>
-        <input type="text" id="gate-tenant" autocomplete="organization" placeholder="bijv. GeriCall, Mijn praktijk">
+        <input type="text" id="gate-tenant" autocomplete="organization" placeholder="bv. Mijn werkomgeving">
       </div>
       <label for="gate-email">Email</label>
       <input type="email" id="gate-email" autocomplete="email" placeholder="naam@gericall.nl" required>
@@ -1363,10 +1363,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     </summary>
     <div class="acc-body">
     <div class="contact-edit-grid" style="margin-bottom:6px">
-    <div class="edit-field"><label>Naam werkomgeving</label><input type="text" id="tenant-naam" placeholder="bijv. GeriCall"></div>
+    <div class="edit-field"><label>Naam werkomgeving</label><input type="text" id="tenant-naam" placeholder="bv. Van Ameyde Group"></div>
     <div class="edit-field"><label>URL-slug (<code>/app/&lt;slug&gt;</code>)</label><input type="text" id="tenant-slug" placeholder="bijv. gericall"></div>
     <div class="edit-field full"><label>Propositie — wat verkoop je en aan wie?</label><textarea id="tenant-propositie" style="width:100%;min-height:80px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Eén zin: wat is je product, wie is je doelklant?"></textarea></div>
-    <div class="edit-field"><label>Markt-naam</label><input type="text" id="tenant-markt-naam" placeholder="bijv. VVT, B2B SaaS, retailers"></div>
+    <div class="edit-field"><label>Markt-naam</label><input type="text" id="tenant-markt-naam" placeholder="bv. Europese verzekeraars, B2B SaaS, retailers"></div>
     <div class="edit-field full"><label>Markt-beschrijving (optioneel)</label><textarea id="tenant-markt-beschrijving" style="width:100%;min-height:60px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Welke segmenten, regio, omvang?"></textarea></div>
     </div>
     <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
@@ -1423,7 +1423,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div id="tenantFeedsList" style="margin-bottom:10px"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
     <div class="edit-field" style="flex:2;min-width:240px"><label>Feed-URL</label><input type="url" id="feed-url" placeholder="https://www.example.com/feed/"></div>
-    <div class="edit-field" style="flex:1;min-width:140px"><label>Label</label><input type="text" id="feed-label" placeholder="bv. Skipr"></div>
+    <div class="edit-field" style="flex:1;min-width:140px"><label>Label</label><input type="text" id="feed-label" placeholder="bv. NRC, Insurance Insider"></div>
     <button class="btn-primary" id="feedAddBtn" style="height:38px">+ Feed</button>
     </div>
     <div id="tenantFeedsStatus" style="margin-top:10px;font-size:.78rem"></div>
@@ -1433,6 +1433,38 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <details class="acc admin-acc" name="admin-tenant-acc">
     <summary>
     <span class="acc-icon">④</span>
+    <span class="acc-title">Eigen velden voor klantbeeld</span>
+    <span class="acc-chev">&#9662;</span>
+    </summary>
+    <div class="acc-body">
+    <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">
+      Definieer welke extra velden er bij <em>elke</em> organisatie in deze werkomgeving te zien zijn (in het Bedrijfsinfo-blok). Ad-hoc velden per organisatie kun je nog steeds toevoegen via <strong>+ Veld</strong> in het klantbeeld; deze schema-velden verschijnen automatisch op alle records.
+    </p>
+    <div id="schemaList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+      <div class="edit-field" style="flex:2;min-width:160px"><label>Label</label><input type="text" id="schema-add-label" placeholder="bv. Premium-volume"></div>
+      <div class="edit-field" style="flex:1;min-width:120px"><label>Type</label>
+        <select id="schema-add-type" style="width:100%;padding:6px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem">
+          <option value="text">Tekst</option>
+          <option value="number">Getal</option>
+          <option value="date">Datum</option>
+          <option value="enum">Keuzelijst</option>
+          <option value="boolean">Ja/Nee</option>
+        </select>
+      </div>
+      <div class="edit-field" style="flex:2;min-width:160px"><label>Keuze-waarden <small>(komma's, alleen voor Keuzelijst)</small></label><input type="text" id="schema-add-values" placeholder="bv. hoog, middel, laag"></div>
+      <button class="btn-primary" id="schemaAddBtn" style="height:34px">+ Veld</button>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:10px">
+      <button class="btn-primary" id="schemaSaveBtn">Schema opslaan</button>
+    </div>
+    <div id="schemaSaveResult" style="margin-top:8px;font-size:.82rem"></div>
+    </div>
+    </details>
+
+    <details class="acc admin-acc" name="admin-tenant-acc">
+    <summary>
+    <span class="acc-icon">⑤</span>
     <span class="acc-title">Geavanceerd</span>
     <span class="acc-chev">&#9662;</span>
     </summary>
@@ -1606,7 +1638,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <h3>Nieuwe opportunity</h3>
     <p style="font-size:.84rem;color:var(--grey-700);margin-bottom:14px">Een verkoopkans gekoppeld aan een organisatie. Je kunt er later todo's onder hangen en de status doorlopen.</p>
     <div class="edit-field"><label>Organisatie</label><select id="oppCreate-inst" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></select></div>
-    <div class="edit-field" style="margin-top:10px"><label>Titel</label><input type="text" id="oppCreate-titel" placeholder="bv. Pilot ANW Q4 2026" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    <div class="edit-field" style="margin-top:10px"><label>Titel</label><input type="text" id="oppCreate-titel" placeholder="bv. Pilot Q4 2026, contract verlenging, RFP-deelname" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
     <div class="edit-field" style="margin-top:10px"><label>Status</label><select id="oppCreate-status" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></select></div>
     <div class="btn-row">
       <button class="btn-secondary" id="oppCreateCancel">Annuleren</button>
@@ -1673,7 +1705,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   <div class="refresh-modal-panel" style="max-width:640px">
     <h3 style="margin-bottom:6px">Nieuwe organisatie</h3>
     <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:14px">Voeg een organisatie toe aan deze werkomgeving. Verschijnt direct in het overzicht en is daar bewerkbaar voor verdere details.</p>
-    <div class="edit-field"><label>Naam</label><input type="text" id="instCreate-naam" placeholder="bv. Zorgvilla Nederland" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+    <div class="edit-field"><label>Naam</label><input type="text" id="instCreate-naam" placeholder="bv. Allianz NL" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
       <div class="edit-field"><label>Hoofdvestiging</label><input type="text" id="instCreate-hoofd" placeholder="bv. Utrecht" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
       <div class="edit-field"><label>Provincie</label><input type="text" id="instCreate-provincie" placeholder="bv. Utrecht" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
@@ -1706,7 +1738,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div class="edit-field" style="margin-top:10px"><label>Headline</label><input type="text" id="sigCreate-headline" placeholder="bv. Nieuwe CEO benoemd per 1 juli 2026" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
     <div class="edit-field" style="margin-top:10px"><label>Samenvatting</label><textarea id="sigCreate-summary" placeholder="Achtergrond, context, waarom relevant..." style="width:100%;min-height:80px;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></textarea></div>
     <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-top:10px">
-      <div class="edit-field"><label>Bron <small>(naam)</small></label><input type="text" id="sigCreate-source" placeholder="bv. Skipr, eigen contact" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+      <div class="edit-field"><label>Bron <small>(naam)</small></label><input type="text" id="sigCreate-source" placeholder="bv. NRC, eigen contact, persbericht" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
       <div class="edit-field"><label>Bron-URL <small>(optioneel)</small></label><input type="url" id="sigCreate-sourceUrl" placeholder="https://" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
     </div>
     <div class="btn-row" style="margin-top:18px">
@@ -1768,8 +1800,8 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.16.9",
-    "codename": "Quasar",
+    "version": "1.17.0",
+    "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
       {
@@ -1993,6 +2025,18 @@ const DATA = {
         "codename": "Quasar",
         "date": "2026-05-05",
         "note": "Side-pane finetuning + 'Reset werkomgeving'-knop. (1) Z-index-stack opgeschoond: side-pane naar z:140 zodat 'ie boven topbar (z:130) staat (eerder lekte de topbar er overheen). Modals naar z:160 zodat ze altijd boven side-pane én topbar zitten. Overlay-head sticky in side-pane mode + sluit-knop wordt prominenter (40x40, oranje achtergrond) zodat 'ie altijd vindbaar is na scrollen. (2) Lijsten in 1/3 left-pane krijgen een agressieve compact-layout: actie-row hides owner+opp-dropdown en truncate de tekst; signal hide de bron-side en line-clamp:2 op summary; opp-card grid:1fr+90px met alleen titel en status; trends/movers/stale stripped naar 2 kolommen. Toolbar-controls (sort/filter dropdowns) gaan kleiner. Lev-grid stackt verticaal. (3) Toggle-close: in side-pane mode klikken op de al-geopende rij sluit het klantbeeld (Outlook-stijl). (4) Nieuwe 'Wis alle data van deze werkomgeving'-knop in Beheer > Data & Sync (gevarenzone): POSTt empty payload naar elke tenant-state-KV-key (todos, overrides, dropdowns, owners, signal-history, opportunities, supplier-overrides, dmu-overrides, spec-overrides) + assignments + signals/list. Voor wanneer een werkomgeving rommelig is geraakt door pre-v1.16.7-cross-tenant-leaks. Andere werkomgevingen blijven intact omdat de endpoints tenant-scoped zijn."
+      },
+      {
+        "version": "1.16.9",
+        "codename": "Quasar",
+        "date": "2026-05-05",
+        "note": "Leveranciers-baseline (DATA.leveranciers, hardcoded GeriCall ANW/ECD/zorg-IT-vendors zoals 'GeriCall (ANW Nederland)', 'PinkRoccade Ysis', 'Mextra') werd voor élke tenant getoond als startpunt. Daardoor zag bv. Van Ameyde zorg-leveranciers in z'n Leveranciers-tab terwijl die niets met verzekeringen te maken hebben. Fix: legacy-detectie op slug/id in getEffectiveLeveranciers; alleen GeriCall krijgt nog de baseline. Andere tenants zien uitsluitend hun eigen aangemaakte leveranciers via supplierOverrides._new (de '+ Nieuwe leverancier'-flow). Pre-bestaande tombstones (_deleted) op baseline-ids worden voor non-legacy tenants genegeerd."
+      },
+      {
+        "version": "1.17.0",
+        "codename": "Rigel",
+        "date": "2026-05-06",
+        "note": "Tenant-schema-editor + generieke placeholders. (1) Nieuwe accordion in Beheer > Werkomgeving: 'Eigen velden voor klantbeeld'. Daar definieert de tenant-admin een lijst custom-fields ({id, label, type, values?}) die op élke organisatie in 't Bedrijfsinfo-blok verschijnen — geen ad-hoc velden meer per organisatie maar één centraal schema. Types: tekst, getal, datum, keuzelijst (enum), ja/nee (boolean). Inputs zijn type-bewust: getal-velden als number-input, datum als date-picker, enum als select met de gedefinieerde waardes, boolean als checkbox. Schema wordt opgeslagen in tenant.klantSchema (KV via api/tenant?action=update; ook in publicTenant van zowel api/tenant.js als api/auth.js). Nieuwe ie-schema-cf-class in saveInlineEdit routeert wijzigingen naar overrides[i.id].customFields[fieldId]. De bestaande ad-hoc 'Eigen velden'-sectie blijft bestaan (voor uitzonderingen) maar heet nu 'Ad-hoc velden' en filtert schema-keys uit zodat ze niet dubbel verschijnen. (2) Zorg-jargon placeholders generiek gemaakt: gate/Beheer/onboarding/instCreate/sigCreate/oppCreate/feed-add — geen 'GeriCall', 'Skipr', 'VVT', 'ANW' meer in de hints. Voorbeelden zijn nu sector-neutraal (verzekeraars / B2B / SaaS) of context-vrij. Voor markt-specifieke onboarding-hints kan in een vervolg-iteratie de tenant.marktNaam dynamisch in de placeholders gehydreerd worden."
       }
     ],
     "totalInstellingen": 64,
@@ -12758,6 +12802,7 @@ function initApp(){
   bindRefreshPane();
   bindAssignmentsPane();
   bindContactsPane();
+  bindSchemaPane();
   bindUserMenu();
   bindVersionModal();
   renderVersion();
@@ -12854,7 +12899,7 @@ function obRender(){
       <div class="ob-step-sub">In één zin: wat verkoop je en aan wie? Dit helpt MarktRadar om signalen te scoren op relevantie voor jouw aanbod.</div>
       <div class="ob-field">
         <label>Propositie</label>
-        <textarea id="ob-propositie" placeholder="Bijv: Wij leveren ANW-bereikbaarheidsdiensten aan VVT-organisaties met 200+ cliënten zodat hun specialisten ouderengeneeskunde 's nachts geen dienst hoeven te draaien.">${escapeHtml(_obData.propositie)}</textarea>
+        <textarea id="ob-propositie" placeholder="bv. Wij leveren claim-handling-software aan Europese verzekeraars zodat hun behandelaars schadeclaims 30% sneller afhandelen.">${escapeHtml(_obData.propositie)}</textarea>
       </div>`;
   } else if(_obStep === 2){
     body.innerHTML = `
@@ -12862,7 +12907,7 @@ function obRender(){
       <div class="ob-step-sub">Geef je markt een naam en beschrijf hem kort. Dit wordt zichtbaar in je werkomgeving en als context voor signalen-scoring.</div>
       <div class="ob-field">
         <label>Naam van je markt</label>
-        <input type="text" id="ob-marktnaam" placeholder="bijv. VVT Nederland, Nederlandse retailers, B2B SaaS scale-ups" value="${escapeHtml(_obData.marktNaam)}">
+        <input type="text" id="ob-marktnaam" placeholder="bv. Europese verzekeraars, Nederlandse retailers, B2B SaaS scale-ups" value="${escapeHtml(_obData.marktNaam)}">
       </div>
       <div class="ob-field">
         <label>Korte beschrijving (optioneel)</label>
@@ -14681,10 +14726,16 @@ function ieSegment(instId, segKey, on, label){
 function renderKerngetallenBody(i){
   const segLabels = [{key:'vvt',label:'VVT'},{key:'vpt',label:'VPT'},{key:'thuiszorg',label:'Thuiszorg'},{key:'elv',label:'ELV'},{key:'grz',label:'GRZ'}];
   const isLegacy = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
-  // Eigen velden: vrij key/value-paar dat de tenant zelf definieert. Bv.
-  // van Ameyde: { 'Aantal claims': '1.200', 'Premium-volume': 'EUR 50M' }.
+  // Custom-fields-laag heeft twee bronnen: het tenant-schema (definieert
+  // welke velden er voor élke organisatie te zien zijn — beheerbaar via
+  // Beheer > Werkomgeving) én ad-hoc velden die de gebruiker per
+  // organisatie heeft toegevoegd. Beide leven in dezelfde customFields-
+  // map; het schema bepaalt alleen welke ids 'gestructureerd' worden
+  // gerendered.
+  const schema = (Array.isArray(currentTenant?.klantSchema) ? currentTenant.klantSchema : []);
+  const schemaIds = new Set(schema.map(f => f.id));
   const cfMap = (overrides[i.id] && overrides[i.id].customFields) || i.customFields || {};
-  const cfEntries = Object.entries(cfMap);
+  const cfEntries = Object.entries(cfMap).filter(([k]) => !schemaIds.has(k));
   const cfHtml = cfEntries.map(([k, v], idx) => `
     <div style="display:grid;grid-template-columns:1fr 1fr 28px;gap:8px;align-items:center;padding:6px 8px;border:1px solid var(--grey-200);border-radius:6px;margin-bottom:6px;background:var(--white)">
       <input type="text" class="inline-edit-input ie ie-cf" data-inst-id="${escapeHtml(i.id)}" data-cf-idx="${idx}" data-cf-field="key" value="${escapeHtml(k || '')}" placeholder="Veldnaam" style="font-weight:500">
@@ -14723,22 +14774,51 @@ function renderKerngetallenBody(i){
         ${segLabels.map(s => ieSegment(i.id, s.key, !!(i.segmenten && i.segmenten[s.key]), s.label)).join('')}
       </div>
     </div>`;
+  // Schema-driven werkomgeving-velden: beheerbaar via Beheer >
+  // Werkomgeving > Eigen velden voor klantbeeld. Wordt op élke
+  // organisatie getoond met de juiste input per type.
+  const schemaHtml = schema.length === 0 ? '' : `
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)">
+      <div class="acc-sub-title" style="margin-bottom:8px">Werkomgeving-velden</div>
+      <div style="display:grid;gap:8px">
+        ${schema.map(f => {
+          const v = cfMap[f.id];
+          const idAttr = `data-inst-id="${escapeHtml(i.id)}" data-schema-field-id="${escapeHtml(f.id)}"`;
+          const cls = 'inline-edit-input ie ie-schema-cf';
+          let input;
+          if(f.type === 'number'){
+            input = `<input type="number" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}" placeholder="${escapeHtml(f.placeholder || '')}">`;
+          } else if(f.type === 'date'){
+            input = `<input type="date" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}">`;
+          } else if(f.type === 'boolean'){
+            input = `<label style="display:inline-flex;align-items:center;gap:8px;font-size:.84rem"><input type="checkbox" class="${cls}" ${idAttr} ${v ? 'checked' : ''}> ja</label>`;
+          } else if(f.type === 'enum'){
+            const opts = (f.values || []).map(o => `<option value="${escapeHtml(o)}" ${v === o ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('');
+            input = `<select class="${cls}" ${idAttr}><option value="">— Niet gezet —</option>${opts}</select>`;
+          } else {
+            input = `<input type="text" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}" placeholder="${escapeHtml(f.placeholder || '')}">`;
+          }
+          return `<div><div class="acc-sub-title" style="font-size:.7rem;color:var(--grey-700);margin-bottom:4px;text-transform:none;letter-spacing:0">${escapeHtml(f.label)}</div>${input}</div>`;
+        }).join('')}
+      </div>
+    </div>`;
   return statHtml + segHtml + `
     <div>
       <div class="acc-sub-title">Verband / fusie</div>
-      ${ieText(i.id, 'fusie', i.fusie, 'bv. onderdeel van groep, fusie 2025')}
+      ${ieText(i.id, 'fusie', i.fusie, 'bv. moederbedrijf, recente fusie of overname')}
     </div>
     <div>
       <div class="acc-sub-title">Recente uitbreiding / wijziging</div>
-      ${ieText(i.id, 'recenteUitbreiding', i.recenteUitbreiding, 'beschrijving recente locatie/dienst/contract')}
+      ${ieText(i.id, 'recenteUitbreiding', i.recenteUitbreiding, 'recente vestiging, contract, productlancering, etc.')}
     </div>
+    ${schemaHtml}
     <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)">
       <div class="acc-sub-title" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        Eigen velden
+        Ad-hoc velden
         <button type="button" class="add-people-btn" data-add-cf="1" data-inst-id="${escapeHtml(i.id)}" style="margin-left:auto">+ Veld</button>
       </div>
       ${cfEntries.length === 0
-        ? '<div class="dmu-empty" style="padding:8px 12px">Geen eigen velden. Voor markt-specifieke metrics zoals <em>Aantal claims</em>, <em>Premium-volume</em>, <em>NPS</em> klik <strong>+ Veld</strong>.</div>'
+        ? '<div class="dmu-empty" style="padding:8px 12px">Geen ad-hoc velden. Voor structurele velden voor élke organisatie: zie <strong>Beheer &rsaquo; Werkomgeving &rsaquo; Eigen velden voor klantbeeld</strong>.</div>'
         : cfHtml}
     </div>`;
 }
@@ -15301,13 +15381,19 @@ function bindOverlayChrome(i){
       const idx = parseInt(btn.dataset.cfIdx, 10);
       const inst = getInstellingRaw(instId);
       const cur = (overrides[instId] && overrides[instId].customFields) || (inst && inst.customFields) || {};
-      const tuples = Object.entries(cur);
-      if(!tuples[idx]) return;
-      const [k] = tuples[idx];
+      // De cfIdx in de UI verwijst naar de ad-hoc subset (schema-keys
+      // uitgefilterd), dus splice op de gefilterde tuples en herbouw
+      // de map met schema-keys + overgebleven ad-hoc.
+      const schema = Array.isArray(currentTenant?.klantSchema) ? currentTenant.klantSchema : [];
+      const schemaIds = new Set(schema.map(x => x.id));
+      const adhoc = Object.entries(cur).filter(([k]) => !schemaIds.has(k));
+      if(!adhoc[idx]) return;
+      const [k] = adhoc[idx];
       if(!confirm('Verwijder veld "' + (k || 'zonder naam') + '"?')) return;
-      tuples.splice(idx, 1);
+      adhoc.splice(idx, 1);
       const next = {};
-      tuples.forEach(([kk, vv]) => { if(kk) next[kk] = vv; });
+      Object.entries(cur).forEach(([kk, vv]) => { if(schemaIds.has(kk)) next[kk] = vv; });
+      adhoc.forEach(([kk, vv]) => { if(kk) next[kk] = vv; });
       setOverrides(instId, { customFields: next });
       openInstelling(instId, 'bedrijfsinfo');
     });
@@ -15395,28 +15481,51 @@ function saveInlineEdit(instId, el){
     flashInlineSaved(el);
     return;
   }
+  if(el.classList.contains('ie-schema-cf')){
+    // Schema-veld (gedefinieerd in tenant.klantSchema, beheerbaar via
+    // Beheer > Werkomgeving). Schrijft direct naar
+    // overrides[instId].customFields[fieldId] — geen rename mogelijk
+    // (id is vast vanuit het schema).
+    const fieldId = el.dataset.schemaFieldId;
+    if(!fieldId) return;
+    const inst = getInstellingRaw(instId);
+    const cur = (overrides[instId] && overrides[instId].customFields) || (inst && inst.customFields) || {};
+    const next = { ...cur };
+    let v;
+    if(el.type === 'checkbox') v = !!el.checked;
+    else if(el.type === 'number') v = el.value === '' ? null : Number(el.value);
+    else { v = el.value; if(typeof v === 'string') v = v.trim() || null; }
+    if(v === null || v === '' || v === false) delete next[fieldId];
+    else next[fieldId] = v;
+    setOverrides(instId, { customFields: next });
+    flashInlineSaved(el);
+    return;
+  }
   if(el.classList.contains('ie-cf')){
-    // Eigen velden — markt-specifieke key/value-paren. Map blijft een
+    // Ad-hoc velden — markt-specifieke key/value-paren. Map blijft een
     // object, maar we serialiseren intern via [key, value]-tuples
-    // (cfOrder) zodat bewerken van de key de andere entries niet
-    // opnieuw indexeert. Bij rename: oude key droppen, nieuwe key
-    // toevoegen; lege key + lege value = stilzwijgend negeren.
+    // zodat bewerken van de key de andere entries niet opnieuw indexeert.
+    // Bij rename: oude key droppen, nieuwe key toevoegen; lege key
+    // + lege value = stilzwijgend negeren. Schema-velden worden bij
+    // het render uitgefilterd uit deze list (zie renderKerngetallenBody).
     const idx = parseInt(el.dataset.cfIdx, 10);
     const f = el.dataset.cfField;
     const inst = getInstellingRaw(instId);
     const cur = (overrides[instId] && overrides[instId].customFields) || (inst && inst.customFields) || {};
-    const tuples = Object.entries(cur);
-    if(!tuples[idx]) return;
+    // Werk alleen met de ad-hoc subset (schema-keys uitfilteren) zodat
+    // de cfIdx van de UI klopt met onze interne tuples.
+    const schema = Array.isArray(currentTenant?.klantSchema) ? currentTenant.klantSchema : [];
+    const schemaIds = new Set(schema.map(x => x.id));
+    const adhoc = Object.entries(cur).filter(([k]) => !schemaIds.has(k));
+    if(!adhoc[idx]) return;
     let v = el.value;
     if(typeof v === 'string') v = v.trim();
-    if(f === 'key'){
-      const [oldKey, oldVal] = tuples[idx];
-      tuples[idx] = [v, oldVal];
-    } else {
-      tuples[idx] = [tuples[idx][0], v];
-    }
+    if(f === 'key'){ adhoc[idx] = [v, adhoc[idx][1]]; }
+    else { adhoc[idx] = [adhoc[idx][0], v]; }
+    // Reconstrueer: schema-keys uit cur + adhoc.
     const next = {};
-    tuples.forEach(([k, vv]) => { if(k) next[k] = vv; });
+    Object.entries(cur).forEach(([k, vv]) => { if(schemaIds.has(k)) next[k] = vv; });
+    adhoc.forEach(([k, vv]) => { if(k) next[k] = vv; });
     setOverrides(instId, { customFields: next });
     flashInlineSaved(el);
     return;
@@ -16192,6 +16301,8 @@ async function refreshTenantPane(){
   // Render feed-list + status uit laatste cron-run
   renderFeedsList();
   loadLastRun().then(lr => renderFeedsStatus(lr));
+  // Schema-editor draft initialiseren met de huidige tenant.klantSchema.
+  refreshSchemaPane();
   if(stats){
     const universe = getEntiteitenUniverse();
     const baseN = universe.length;
@@ -16246,6 +16357,106 @@ async function onTenantSave(){
   } catch(err){
     out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
   }
+}
+
+// ---------------- Tenant schema editor (eigen velden klantbeeld) ----------
+// Het schema is een lijst {id, label, type, values?}. Wordt opgeslagen
+// op tenant-niveau (currentTenant.klantSchema) en gerenderd in het
+// Bedrijfsinfo-blok van het klantbeeld voor élke organisatie. Waarden
+// per organisatie blijven in overrides[i.id].customFields[fieldId].
+let _schemaDraft = [];
+function tenantSchema(){
+  return Array.isArray(currentTenant?.klantSchema) ? currentTenant.klantSchema.slice() : [];
+}
+function refreshSchemaPane(){
+  _schemaDraft = tenantSchema();
+  renderSchemaList();
+}
+function renderSchemaList(){
+  const wrap = document.getElementById('schemaList');
+  if(!wrap) return;
+  if(_schemaDraft.length === 0){
+    wrap.innerHTML = '<div class="dmu-empty" style="padding:10px 12px">Nog geen schema-velden. Voeg er beneden een toe; ze verschijnen daarna automatisch op alle organisaties in het Bedrijfsinfo-blok.</div>';
+    return;
+  }
+  wrap.innerHTML = _schemaDraft.map((f, idx) => `
+    <div style="display:grid;grid-template-columns:1fr 1fr 110px 1.4fr 28px;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--grey-200);border-radius:6px;background:var(--white)">
+      <input type="text" data-schema-idx="${idx}" data-schema-field="label" value="${escapeHtml(f.label || '')}" placeholder="Label" style="padding:6px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.84rem">
+      <input type="text" data-schema-idx="${idx}" data-schema-field="id" value="${escapeHtml(f.id || '')}" placeholder="id (a-z0-9_)" style="padding:6px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.78rem;font-family:'DM Mono',monospace">
+      <select data-schema-idx="${idx}" data-schema-field="type" style="padding:6px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.84rem">
+        ${['text','number','date','enum','boolean'].map(t => `<option value="${t}" ${f.type===t?'selected':''}>${({text:'Tekst',number:'Getal',date:'Datum',enum:'Keuzelijst','boolean':'Ja/Nee'})[t]}</option>`).join('')}
+      </select>
+      <input type="text" data-schema-idx="${idx}" data-schema-field="values" value="${escapeHtml((f.values||[]).join(', '))}" placeholder="${f.type === 'enum' ? 'opt1, opt2' : '—'}" style="padding:6px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.78rem" ${f.type !== 'enum' ? 'disabled' : ''}>
+      <button type="button" class="dir-delete-btn" data-schema-delete="${idx}" title="Veld verwijderen">&times;</button>
+    </div>`).join('');
+  wrap.querySelectorAll('input[data-schema-idx],select[data-schema-idx]').forEach(el => {
+    el.addEventListener('change', () => {
+      const i = parseInt(el.dataset.schemaIdx, 10);
+      const f = el.dataset.schemaField;
+      if(!_schemaDraft[i]) return;
+      if(f === 'values') _schemaDraft[i].values = el.value.split(',').map(v => v.trim()).filter(Boolean);
+      else _schemaDraft[i][f] = el.value;
+      if(f === 'type') renderSchemaList();
+    });
+  });
+  wrap.querySelectorAll('[data-schema-delete]').forEach(b => {
+    b.addEventListener('click', () => {
+      const i = parseInt(b.dataset.schemaDelete, 10);
+      _schemaDraft.splice(i, 1);
+      renderSchemaList();
+    });
+  });
+}
+function _slugifyFieldId(s){
+  return String(s || '').toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 40);
+}
+async function onSchemaSave(){
+  const seen = new Set();
+  const cleaned = _schemaDraft
+    .map(f => ({
+      id: _slugifyFieldId(f.id || f.label),
+      label: String(f.label || '').trim(),
+      type: ['text','number','date','enum','boolean'].includes(f.type) ? f.type : 'text',
+      values: Array.isArray(f.values) ? f.values : undefined,
+    }))
+    .filter(f => f.id && f.label && !seen.has(f.id) && (seen.add(f.id), true));
+  const out = document.getElementById('schemaSaveResult');
+  try {
+    const r = await apiFetch('/api/tenant?action=update', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ klantSchema: cleaned })
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || 'Schema opslaan mislukt');
+    if(j.tenant) currentTenant = j.tenant;
+    if(out) out.innerHTML = '<span style="color:var(--green)">Schema opgeslagen (' + cleaned.length + ' velden). Open een organisatie om de velden te zien in Bedrijfsinfo.</span>';
+    refreshSchemaPane();
+    if(currentInstellingId) try { openInstelling(currentInstellingId); } catch(e){}
+  } catch(err){
+    if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  }
+}
+function bindSchemaPane(){
+  const addBtn = document.getElementById('schemaAddBtn');
+  if(addBtn) addBtn.addEventListener('click', () => {
+    const labelEl = document.getElementById('schema-add-label');
+    const typeEl = document.getElementById('schema-add-type');
+    const valuesEl = document.getElementById('schema-add-values');
+    const label = (labelEl?.value || '').trim();
+    if(!label){ alert('Label is verplicht.'); return; }
+    const id = _slugifyFieldId(label);
+    if(_schemaDraft.some(f => f.id === id)){ alert('Veld met id "' + id + '" bestaat al.'); return; }
+    const type = typeEl?.value || 'text';
+    const values = type === 'enum'
+      ? (valuesEl?.value || '').split(',').map(v => v.trim()).filter(Boolean)
+      : undefined;
+    _schemaDraft.push({ id, label, type, ...(values ? { values } : {}) });
+    if(labelEl) labelEl.value = '';
+    if(valuesEl) valuesEl.value = '';
+    renderSchemaList();
+  });
+  const saveBtn = document.getElementById('schemaSaveBtn');
+  if(saveBtn) saveBtn.addEventListener('click', onSchemaSave);
 }
 
 let _marketPendingSel = null; // Set<string> tijdens bewerken

@@ -52,6 +52,7 @@ function publicTenant(t) {
     onboardingDone: !!t.onboardingDone,
     market: Array.isArray(t.market) ? t.market : null,
     marketDefined: !!t.marketDefined,
+    klantSchema: Array.isArray(t.klantSchema) ? t.klantSchema : [],
   };
 }
 
