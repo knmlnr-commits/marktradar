@@ -1879,7 +1879,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.8",
+    "version": "1.17.9",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -11473,6 +11473,11 @@ function parseUrlSlug(){
   return decodeURIComponent(m[1]).toLowerCase().replace(/[^a-z0-9-]/g, '');
 }
 const URL_SLUG = parseUrlSlug();
+// Synchroon: pas eventueel gecached theme toe vóór ANY async-werk.
+// Voorkomt dat de gate flasht in default-oranje voordat het API-call
+// voor branding klaar is. Cache wordt opgebouwd in applyTenantTheme()
+// na elke succesvolle login + theme-change.
+try { applyCachedThemeForSlug(URL_SLUG); } catch(e){}
 
 async function fetchTenantBranding(slug){
   if(!slug) return null;
@@ -16257,6 +16262,32 @@ function applyTenantTheme(){
   if(rgb) root.style.setProperty('--orange-rgb', rgb);
   const lightRgb = _hexToRgb(t.primaryLight);
   if(lightRgb) root.style.setProperty('--orange-light-rgb', lightRgb);
+  // Cache het thema lokaal per slug zodat de volgende page-load
+  // synchroon mag inkleuren — vóórdat de API-call voor branding klaar
+  // is — en je geen flash van default-oranje meer ziet.
+  try {
+    const slug = (currentTenant && currentTenant.slug) || (typeof URL_SLUG !== 'undefined' ? URL_SLUG : null);
+    if(slug) localStorage.setItem(THEME_CACHE_KEY + ':' + slug, JSON.stringify(t));
+  } catch(e){}
+}
+const THEME_CACHE_KEY = 'marktradar.theme.v1';
+function applyCachedThemeForSlug(slug){
+  // Synchroon (geen network) — leest uit localStorage en zet vars.
+  // Aangeroepen bij allereerste boot vóór ANY async-werk, zodat de
+  // gate al in tenant-kleur paintert.
+  if(!slug) return;
+  let t = null;
+  try { const raw = localStorage.getItem(THEME_CACHE_KEY + ':' + slug); t = raw ? JSON.parse(raw) : null; } catch(e){}
+  if(!t) return;
+  const root = document.documentElement;
+  if(t.primary)      root.style.setProperty('--orange',       t.primary);
+  if(t.primaryDark)  root.style.setProperty('--orange-dark',  t.primaryDark);
+  if(t.primaryLight) root.style.setProperty('--orange-light', t.primaryLight);
+  if(t.primaryPale)  root.style.setProperty('--orange-pale',  t.primaryPale);
+  const rgb = _hexToRgb(t.primary);
+  if(rgb) root.style.setProperty('--orange-rgb', rgb);
+  const lightRgb = _hexToRgb(t.primaryLight);
+  if(lightRgb) root.style.setProperty('--orange-light-rgb', lightRgb);
 }
 
 /* ===== Logo-upload per tenant ===== */
@@ -17754,7 +17785,13 @@ function bindTodoHandlers(i){
         openInstelling(i.id);
       });
     }
-    if(cb) cb.addEventListener('change', () => { toggleTodo(i.id, tid); openInstelling(i.id); });
+    if(cb) cb.addEventListener('change', () => {
+      toggleTodo(i.id, tid);
+      openInstelling(i.id);
+      try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+      try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
+      try { if(typeof renderActies === 'function') renderActies(); } catch(e){}
+    });
     if(del) del.addEventListener('click', () => { deleteTodo(i.id, tid); openInstelling(i.id); });
   });
 }
@@ -18395,6 +18432,10 @@ function renderActies(){
       toggleTodo(row.dataset.instId, row.dataset.todoId);
       renderActiesOwnerChips();
       renderActies();
+      // Refresh nav-counters: het Todo-tab-cijfer telt 'open' todos
+      // en moet meeschuiven zodra we eentje afvinken; idem KPI-rij.
+      try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+      try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
     });
   });
   document.querySelectorAll('#actiesList .todo-delete').forEach(btn => {
@@ -18403,6 +18444,8 @@ function renderActies(){
       deleteTodo(btn.dataset.instId, btn.dataset.todoId);
       renderActiesOwnerChips();
       renderActies();
+      try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+      try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
     });
   });
   document.querySelectorAll('#actiesList .actie-owner-select:not(.actie-opp-select)').forEach(sel => {
