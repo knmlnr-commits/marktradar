@@ -364,7 +364,7 @@ body{
 .opp-card.lens-retention{border-left-color:#b94a3c}
 .opp-card.lens-expansion{border-left-color:#5a8a5a}
 .opp-card.lens-consolidatie{border-left-color:#6b6b8c}
-.opp-naam{font-size:.92rem;font-weight:700;color:var(--grey-900);letter-spacing:-.01em}
+.opp-naam{font-size:1.05rem;font-weight:700;color:var(--grey-900);letter-spacing:-.01em;line-height:1.3;margin-bottom:6px}
 .opp-meta-row{display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap}
 .opp-lens-badge{font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   padding:2px 8px;border-radius:4px;background:var(--orange-pale);color:var(--orange-dark)}
@@ -563,10 +563,10 @@ body{
   .app.has-side-overlay .signal-run-tag{display:none}
 
   /* Opportunities */
-  .app.has-side-overlay .opp-card{grid-template-columns:1fr 90px;padding:10px 12px;gap:10px}
-  .app.has-side-overlay .opp-card > *:nth-child(n+3){display:none}
-  .app.has-side-overlay .opp-card-titel{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .app.has-side-overlay .opp-card-inst{font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .app.has-side-overlay .opp-card{padding:10px 12px;gap:6px}
+  .app.has-side-overlay .opp-card .opp-naam{font-size:.86rem;margin-bottom:0}
+  .app.has-side-overlay .opp-card .opp-meta-row{font-size:.7rem}
+  .app.has-side-overlay .opp-card .opp-text{display:none}
 
   /* Trends-tab */
   .app.has-side-overlay .trends-list-row{grid-template-columns:1fr 70px}
@@ -1879,7 +1879,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.10",
+    "version": "1.17.11",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -18569,19 +18569,19 @@ function renderOpportunities(){
     const linkedTodos = (todos[o.instellingId] || []).filter(t => t.opportunityId === o.id);
     const openCount = linkedTodos.filter(t => !t.done).length;
     return `
-      <div class="opp-card" data-inst-id="${i.id}" data-opp-id="${escapeHtml(o.id)}" style="grid-template-columns:1.6fr 110px 1fr 90px 18px">
-        <div>
-          <div class="opp-naam">${escapeHtml(o.titel || '(zonder titel)')}</div>
-          <div class="opp-meta-row">
-            <strong style="font-size:.78rem;color:var(--grey-700)">${escapeHtml(i.naam)}</strong>
-            <span style="font-size:.72rem;color:var(--grey-500)">${escapeHtml(i.provincie || i.regio || '')}</span>
-            ${owner ? `<span class="owner-chip" style="font-size:.66rem"><span class="owner-mini">${owner.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase()}</span><span class="owner-chip-name">${escapeHtml(owner.naam)}</span></span>` : ''}
-          </div>
+      <div class="opp-card" data-inst-id="${i.id}" data-opp-id="${escapeHtml(o.id)}" style="display:flex;flex-direction:column;gap:8px">
+        <div class="opp-naam" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="flex:1;min-width:0">${escapeHtml(o.titel || '(zonder titel)')}</span>
+          <span class="opp-lens-badge" style="background:var(--orange-pale);color:var(--orange-dark);border-color:var(--orange);flex-shrink:0">${escapeHtml(o.status || '')}</span>
+          <span class="opp-arrow" style="color:var(--grey-400);font-size:1.1rem;flex-shrink:0">&rsaquo;</span>
         </div>
-        <div><span class="opp-lens-badge" style="background:var(--orange-pale);color:var(--orange-dark);border-color:var(--orange)">${escapeHtml(o.status || '')}</span></div>
-        <div class="opp-text">${escapeHtml(o.omschrijving || '')}</div>
-        <div style="font-size:.74rem;color:var(--grey-700)">${openCount > 0 ? `<strong>${openCount}</strong> open` : (linkedTodos.length > 0 ? linkedTodos.length + ' afgerond' : '<em style="color:var(--grey-500)">geen todos</em>')}</div>
-        <div class="opp-arrow">&rsaquo;</div>
+        <div class="opp-meta-row" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.78rem;color:var(--grey-700)">
+          <strong>${escapeHtml(i.naam)}</strong>
+          <span style="color:var(--grey-500)">${escapeHtml(i.provincie || i.regio || '')}</span>
+          ${owner ? `<span class="owner-chip" style="font-size:.66rem"><span class="owner-mini">${owner.naam.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase()}</span><span class="owner-chip-name">${escapeHtml(owner.naam)}</span></span>` : ''}
+          <span style="margin-left:auto;font-size:.74rem">${openCount > 0 ? `<strong>${openCount}</strong> open` : (linkedTodos.length > 0 ? linkedTodos.length + ' afgerond' : '<em style="color:var(--grey-500)">geen todos</em>')}</span>
+        </div>
+        ${o.omschrijving ? `<div class="opp-text" style="font-size:.82rem;color:var(--grey-700);line-height:1.45">${escapeHtml(o.omschrijving)}</div>` : ''}
       </div>`;
   }).join('');
   const empty = '<div class="no-data" style="padding:32px">Nog geen opportunities. Open een organisatie en klik <strong>+ Opportunity</strong> in de Pipeline-accordion om er een te starten — of gebruik de + Opportunity-knop hierboven.</div>';
