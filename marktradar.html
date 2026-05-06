@@ -1830,7 +1830,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.2",
+    "version": "1.17.3",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -16750,14 +16750,29 @@ async function refreshUsersList(){
       out.innerHTML = '<div class="dmu-empty">Nog geen gebruikers; voeg er een toe.</div>';
       return;
     }
-    out.innerHTML = users.map(u => {
+    // Sorteer op meest-recente login bovenin; nooit-ingelogde users
+     // (loginCount=0) staan onderaan op aangemaakt-datum.
+     const sortedUsers = users.slice().sort((a, b) => {
+       const aTs = a.lastLogin || 0;
+       const bTs = b.lastLogin || 0;
+       if(bTs !== aTs) return bTs - aTs;
+       return (b.createdAt || 0) - (a.createdAt || 0);
+     });
+    out.innerHTML = sortedUsers.map(u => {
       const created = u.createdAt ? new Date(u.createdAt).toLocaleDateString('nl-NL') : '—';
       const isMe = currentUser && u.email === currentUser.email;
+      const last = u.lastLogin
+        ? new Date(u.lastLogin).toLocaleString('nl-NL', { dateStyle:'short', timeStyle:'short' })
+        : 'nog niet ingelogd';
+      const methodLabel = ({ password:'wachtwoord', google:'Google', microsoft:'Microsoft', register:'registratie' })[u.lastLoginMethod] || u.lastLoginMethod || '';
+      const count = u.loginCount || 0;
+      const stats = `${count} login${count === 1 ? '' : 's'} · laatste ${escapeHtml(last)}${methodLabel ? ' (' + escapeHtml(methodLabel) + ')' : ''}`;
       return `
         <div class="user-row">
           <div>
             <div class="user-row-naam">${escapeHtml(u.naam)}${isMe ? ' <span class="user-row-me">jij</span>' : ''}${u.mustChangePassword ? ' <span class="user-row-tag" title="Moet wachtwoord nog wijzigen">tijdelijk pw</span>' : ''}</div>
             <div class="user-row-email">${escapeHtml(u.email)} &middot; aangemaakt ${created}</div>
+            <div class="user-row-email" style="font-family:'DM Mono',monospace;font-size:.7rem;color:${count === 0 ? 'var(--grey-500)' : 'var(--grey-700)'}">${stats}</div>
           </div>
           <button class="btn-secondary user-action" data-action="reset" data-email="${escapeHtml(u.email)}">Reset wachtwoord</button>
           <button class="btn-secondary user-action" data-action="delete" data-email="${escapeHtml(u.email)}" ${isMe ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}>Verwijderen</button>

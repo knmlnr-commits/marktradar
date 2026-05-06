@@ -31,7 +31,22 @@ function publicUser(u) {
     role: u.role || 'admin',
     createdAt: u.createdAt,
     mustChangePassword: !!u.mustChangePassword,
+    loginCount: u.loginCount || 0,
+    lastLogin: u.lastLogin || null,
+    lastLoginMethod: u.lastLoginMethod || null,
   };
+}
+
+// Eenmalige login-stats-update; idempotent en best-effort. Faalt deze
+// schrijfactie dan blokkeert dat de login niet — auth blijft werken
+// ook al kunnen we de stats niet bijhouden.
+async function recordLogin(user, method) {
+  try {
+    user.loginCount = (user.loginCount || 0) + 1;
+    user.lastLogin = Date.now();
+    user.lastLoginMethod = method || 'password';
+    await auth.kvSet(auth.KV_USER_PREFIX + user.email, user);
+  } catch (e) { /* swallow */ }
 }
 
 function publicTenant(t) {
@@ -338,6 +353,7 @@ async function registerNewTenant(req, res) {
   await appendGlobalUserIndex(email);
   await appendTenantUserIndex(finalTenantId, email);
   const token = await createSession(email, user.id, finalTenantId);
+  await recordLogin(user, 'register');
   return res.status(200).json({ user: publicUser(user), tenant: publicTenant(tenant), token });
 }
 
@@ -376,6 +392,7 @@ async function login(req, res) {
   user = await ensureUserHasTenant(user);
   const tenant = await loadTenant(user.tenantId);
   const token = await createSession(email, user.id, user.tenantId);
+  await recordLogin(user, 'password');
   return res.status(200).json({ user: publicUser(user), tenant: publicTenant(tenant), token });
 }
 
@@ -740,6 +757,7 @@ async function oauthCallback(providerKey, req, res) {
       await appendTenantUserIndex(tenantId, u.email);
     }
     const token = await createSession(u.email, user.id, tenantId);
+    await recordLogin(user, providerKey === 'google' ? 'google' : providerKey === 'microsoft' ? 'microsoft' : 'oauth');
     return redirectToGate(res, { token, email: u.email });
   } catch (e) {
     return redirectToGate(res, { oauthError: String(e.message || e).slice(0, 200) });
