@@ -518,13 +518,13 @@ body{
   .overlay-head{position:sticky;top:0;z-index:5;background:var(--white)}
   .overlay-close{width:40px;height:40px;background:var(--orange-pale);border-color:var(--orange);color:var(--orange-dark);font-size:1.3rem}
   .overlay-close:hover{background:var(--orange);color:#fff;border-color:var(--orange)}
-  /* App schuift in zodra de side-pane open is — content houdt 1/3
-     van de viewport. Topbar/tabs/scope-bar (sticky) krijgen dezelfde
-     rechter-padding zodat ze niet onder de pane verdwijnen. */
-  .app.has-side-overlay .main,
-  .app.has-side-overlay .topbar,
-  .app.has-side-overlay .tabs,
-  .app.has-side-overlay .scope-bar{padding-right:66.66vw}
+  /* App-content schuift in zodra de side-pane open is — content houdt
+     1/3 van de viewport. Topbar/tabs/scope-bar blijven volle breedte
+     en STABIEL bij open/close van de pane (geen layout-shift bij
+     klikken op signaal/todo/instelling). De pane start sowieso onder
+     de header (top:var(--side-pane-top), v1.17.5) dus visueel geen
+     overlap. */
+  .app.has-side-overlay .main{padding-right:66.66vw}
   /* Lijsten compact maken in de smalle 1/3-pane: secundaire kolommen
      verbergen, tekst niet wrappen (single-line met ellipsis) zodat de
      rijen er als tabel blijven uitzien i.p.v. multi-line tekst-blobs.
@@ -1879,7 +1879,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.9",
+    "version": "1.17.10",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
