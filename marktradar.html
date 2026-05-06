@@ -1440,19 +1440,33 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">
       Definieer welke extra velden er bij <em>elke</em> organisatie in deze werkomgeving te zien zijn (in het Bedrijfsinfo-blok). Ad-hoc velden per organisatie kun je nog steeds toevoegen via <strong>+ Veld</strong> in het klantbeeld; deze schema-velden verschijnen automatisch op alle records.
     </p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+      <select id="schemaTemplateSel" style="padding:6px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.82rem">
+        <option value="">— Importeer voorbeeld-template —</option>
+        <option value="van-ameyde-insurance">Van Ameyde · verzekeraar (27 velden, 5 secties)</option>
+        <option value="generic-b2b">Generiek B2B (8 velden)</option>
+      </select>
+      <button class="btn-secondary" id="schemaTemplateBtn" style="font-size:.78rem;padding:5px 10px">Importeer in editor</button>
+      <span style="font-size:.74rem;color:var(--grey-600);margin-left:auto">Vervangt huidige draft (niet opgeslagen tot je op Schema opslaan klikt)</span>
+    </div>
     <div id="schemaList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px"></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-      <div class="edit-field" style="flex:2;min-width:160px"><label>Label</label><input type="text" id="schema-add-label" placeholder="bv. Premium-volume"></div>
-      <div class="edit-field" style="flex:1;min-width:120px"><label>Type</label>
+    <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.5fr auto;gap:8px;align-items:flex-end">
+      <div class="edit-field"><label>Label</label><input type="text" id="schema-add-label" placeholder="bv. Premium-volume"></div>
+      <div class="edit-field"><label>Sectie <small>(optioneel)</small></label><input type="text" id="schema-add-section" placeholder="bv. Identiteit"></div>
+      <div class="edit-field"><label>Type</label>
         <select id="schema-add-type" style="width:100%;padding:6px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem">
           <option value="text">Tekst</option>
           <option value="number">Getal</option>
           <option value="date">Datum</option>
           <option value="enum">Keuzelijst</option>
           <option value="boolean">Ja/Nee</option>
+          <option value="url">URL</option>
+          <option value="list-text">Lijst tekst</option>
+          <option value="list-enum">Lijst keuzelijst</option>
         </select>
       </div>
-      <div class="edit-field" style="flex:2;min-width:160px"><label>Keuze-waarden <small>(komma's, alleen voor Keuzelijst)</small></label><input type="text" id="schema-add-values" placeholder="bv. hoog, middel, laag"></div>
+      <div class="edit-field"><label>Placeholder <small>(optioneel)</small></label><input type="text" id="schema-add-placeholder" placeholder="bv. EUR 50M"></div>
+      <div class="edit-field"><label>Waardes <small>(komma's, voor Keuzelijst)</small></label><input type="text" id="schema-add-values" placeholder="bv. hoog, middel, laag"></div>
       <button class="btn-primary" id="schemaAddBtn" style="height:34px">+ Veld</button>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-top:10px">
@@ -1800,7 +1814,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.0",
+    "version": "1.17.1",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -2037,6 +2051,12 @@ const DATA = {
         "codename": "Rigel",
         "date": "2026-05-06",
         "note": "Tenant-schema-editor + generieke placeholders. (1) Nieuwe accordion in Beheer > Werkomgeving: 'Eigen velden voor klantbeeld'. Daar definieert de tenant-admin een lijst custom-fields ({id, label, type, values?}) die op élke organisatie in 't Bedrijfsinfo-blok verschijnen — geen ad-hoc velden meer per organisatie maar één centraal schema. Types: tekst, getal, datum, keuzelijst (enum), ja/nee (boolean). Inputs zijn type-bewust: getal-velden als number-input, datum als date-picker, enum als select met de gedefinieerde waardes, boolean als checkbox. Schema wordt opgeslagen in tenant.klantSchema (KV via api/tenant?action=update; ook in publicTenant van zowel api/tenant.js als api/auth.js). Nieuwe ie-schema-cf-class in saveInlineEdit routeert wijzigingen naar overrides[i.id].customFields[fieldId]. De bestaande ad-hoc 'Eigen velden'-sectie blijft bestaan (voor uitzonderingen) maar heet nu 'Ad-hoc velden' en filtert schema-keys uit zodat ze niet dubbel verschijnen. (2) Zorg-jargon placeholders generiek gemaakt: gate/Beheer/onboarding/instCreate/sigCreate/oppCreate/feed-add — geen 'GeriCall', 'Skipr', 'VVT', 'ANW' meer in de hints. Voorbeelden zijn nu sector-neutraal (verzekeraars / B2B / SaaS) of context-vrij. Voor markt-specifieke onboarding-hints kan in een vervolg-iteratie de tenant.marktNaam dynamisch in de placeholders gehydreerd worden."
+      },
+      {
+        "version": "1.17.1",
+        "codename": "Rigel",
+        "date": "2026-05-06",
+        "note": "Schema-editor uitgebreid met secties + nieuwe types + voorbeeld-templates. (1) Drie nieuwe veld-types: 'url' (url-input met validatie), 'list-text' (komma-gescheiden lijst, zoals merken/aliases), 'list-enum' (multi-select uit een vaste set, zoals lines-of-business). API-validatie in api/tenant.js accepteert deze types + cap verhoogd naar 60 fields. (2) Sectie-grouping: schema-velden krijgen een optionele section-string (bv. 'A. Identiteit'). Editor groepeert visueel per sectie zodat 27+ velden scanbaar blijven; klantbeeld rendert ook per sectie met responsive auto-fit grid (220px-min per veld). (3) 'Importeer voorbeeld-template'-dropdown bovenin de editor met twee templates: 'Van Ameyde · verzekeraar' (27 velden, 5 secties: Identiteit / Classificatie / Schadekenmerken / Commercieel / Operationeel — exact volgens de spec) en 'Generiek B2B' (8 velden, 4 secties). Eén klik laadt de template in de draft; reviewen + opslaan om actief te maken. (4) Save-handler is nu type-bewust: list-text splitst op komma's, list-enum leest uit selectedOptions, url + text blijven string. Lege waarden worden uit customFields verwijderd."
       }
     ],
     "totalInstellingen": 64,
@@ -14775,33 +14795,50 @@ function renderKerngetallenBody(i){
       </div>
     </div>`;
   // Schema-driven werkomgeving-velden: beheerbaar via Beheer >
-  // Werkomgeving > Eigen velden voor klantbeeld. Wordt op élke
-  // organisatie getoond met de juiste input per type.
-  const schemaHtml = schema.length === 0 ? '' : `
+  // Werkomgeving > Eigen velden voor klantbeeld. Per sectie gegroepeerd
+  // zodat 27+ velden scanbaar blijven. Type-bewuste inputs.
+  const renderSchemaField = (f) => {
+    const v = cfMap[f.id];
+    const idAttr = `data-inst-id="${escapeHtml(i.id)}" data-schema-field-id="${escapeHtml(f.id)}"`;
+    const cls = 'inline-edit-input ie ie-schema-cf';
+    let input;
+    if(f.type === 'number'){
+      input = `<input type="number" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}" placeholder="${escapeHtml(f.placeholder || '')}">`;
+    } else if(f.type === 'date'){
+      input = `<input type="date" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}">`;
+    } else if(f.type === 'boolean'){
+      input = `<label style="display:inline-flex;align-items:center;gap:8px;font-size:.84rem;padding:6px 0"><input type="checkbox" class="${cls}" ${idAttr} ${v ? 'checked' : ''}> ja</label>`;
+    } else if(f.type === 'enum'){
+      const opts = (f.values || []).map(o => `<option value="${escapeHtml(o)}" ${v === o ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('');
+      input = `<select class="${cls}" ${idAttr}><option value="">— Niet gezet —</option>${opts}</select>`;
+    } else if(f.type === 'list-text'){
+      const display = Array.isArray(v) ? v.join(', ') : (v == null ? '' : String(v));
+      input = `<input type="text" class="${cls}" ${idAttr} data-list="text" value="${escapeHtml(display)}" placeholder="${escapeHtml(f.placeholder || 'item1, item2, item3')}">`;
+    } else if(f.type === 'list-enum'){
+      const cur = Array.isArray(v) ? v : (v ? [v] : []);
+      const tags = cur.map(x => `<span style="background:var(--orange-pale);color:var(--orange-dark);padding:2px 8px;border-radius:10px;font-size:.72rem;margin-right:4px">${escapeHtml(x)}</span>`).join('');
+      const opts = (f.values || []).map(o => `<option value="${escapeHtml(o)}" ${cur.includes(o) ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('');
+      input = `<div>${tags ? `<div style="margin-bottom:4px">${tags}</div>` : ''}<select multiple class="${cls}" ${idAttr} data-list="enum" style="min-height:60px;width:100%">${opts}</select><div style="font-size:.66rem;color:var(--grey-500);margin-top:2px">Ctrl/Cmd-klik voor meerkeuze</div></div>`;
+    } else if(f.type === 'url'){
+      input = `<input type="url" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}" placeholder="${escapeHtml(f.placeholder || 'https://...')}">`;
+    } else {
+      input = `<input type="text" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}" placeholder="${escapeHtml(f.placeholder || '')}">`;
+    }
+    return `<div><div class="acc-sub-title" style="font-size:.7rem;color:var(--grey-700);margin-bottom:4px;text-transform:none;letter-spacing:0">${escapeHtml(f.label)}${f.help ? ` <span style="color:var(--grey-500);font-weight:400">· ${escapeHtml(f.help)}</span>` : ''}</div>${input}</div>`;
+  };
+  const schemaBySection = {};
+  schema.forEach(f => {
+    const sec = (f.section || 'Werkomgeving-velden').trim() || 'Werkomgeving-velden';
+    (schemaBySection[sec] = schemaBySection[sec] || []).push(f);
+  });
+  const sectionOrder = Object.keys(schemaBySection).sort();
+  const schemaHtml = schema.length === 0 ? '' : sectionOrder.map(sec => `
     <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-150)">
-      <div class="acc-sub-title" style="margin-bottom:8px">Werkomgeving-velden</div>
-      <div style="display:grid;gap:8px">
-        ${schema.map(f => {
-          const v = cfMap[f.id];
-          const idAttr = `data-inst-id="${escapeHtml(i.id)}" data-schema-field-id="${escapeHtml(f.id)}"`;
-          const cls = 'inline-edit-input ie ie-schema-cf';
-          let input;
-          if(f.type === 'number'){
-            input = `<input type="number" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}" placeholder="${escapeHtml(f.placeholder || '')}">`;
-          } else if(f.type === 'date'){
-            input = `<input type="date" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}">`;
-          } else if(f.type === 'boolean'){
-            input = `<label style="display:inline-flex;align-items:center;gap:8px;font-size:.84rem"><input type="checkbox" class="${cls}" ${idAttr} ${v ? 'checked' : ''}> ja</label>`;
-          } else if(f.type === 'enum'){
-            const opts = (f.values || []).map(o => `<option value="${escapeHtml(o)}" ${v === o ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('');
-            input = `<select class="${cls}" ${idAttr}><option value="">— Niet gezet —</option>${opts}</select>`;
-          } else {
-            input = `<input type="text" class="${cls}" ${idAttr} value="${v == null ? '' : escapeHtml(String(v))}" placeholder="${escapeHtml(f.placeholder || '')}">`;
-          }
-          return `<div><div class="acc-sub-title" style="font-size:.7rem;color:var(--grey-700);margin-bottom:4px;text-transform:none;letter-spacing:0">${escapeHtml(f.label)}</div>${input}</div>`;
-        }).join('')}
+      <div class="acc-sub-title" style="margin-bottom:8px">${escapeHtml(sec)}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+        ${schemaBySection[sec].map(renderSchemaField).join('')}
       </div>
-    </div>`;
+    </div>`).join('');
   return statHtml + segHtml + `
     <div>
       <div class="acc-sub-title">Verband / fusie</div>
@@ -15483,18 +15520,30 @@ function saveInlineEdit(instId, el){
   }
   if(el.classList.contains('ie-schema-cf')){
     // Schema-veld (gedefinieerd in tenant.klantSchema, beheerbaar via
-    // Beheer > Werkomgeving). Schrijft direct naar
-    // overrides[instId].customFields[fieldId] — geen rename mogelijk
-    // (id is vast vanuit het schema).
+    // Beheer > Werkomgeving). Type-bewust serialiseren:
+    //   - checkbox → boolean
+    //   - number → number | null
+    //   - data-list="text" → array gesplitst op komma's
+    //   - data-list="enum" multi-select → array van geselecteerde opts
+    //   - rest → string | null
     const fieldId = el.dataset.schemaFieldId;
     if(!fieldId) return;
     const inst = getInstellingRaw(instId);
     const cur = (overrides[instId] && overrides[instId].customFields) || (inst && inst.customFields) || {};
     const next = { ...cur };
+    const listType = el.dataset.list;
     let v;
     if(el.type === 'checkbox') v = !!el.checked;
     else if(el.type === 'number') v = el.value === '' ? null : Number(el.value);
-    else { v = el.value; if(typeof v === 'string') v = v.trim() || null; }
+    else if(listType === 'text'){
+      v = el.value.split(',').map(s => s.trim()).filter(Boolean);
+      if(v.length === 0) v = null;
+    } else if(listType === 'enum' && el.tagName === 'SELECT'){
+      v = Array.from(el.selectedOptions).map(o => o.value).filter(Boolean);
+      if(v.length === 0) v = null;
+    } else {
+      v = el.value; if(typeof v === 'string') v = v.trim() || null;
+    }
     if(v === null || v === '' || v === false) delete next[fieldId];
     else next[fieldId] = v;
     setOverrides(instId, { customFields: next });
@@ -16372,23 +16421,41 @@ function refreshSchemaPane(){
   _schemaDraft = tenantSchema();
   renderSchemaList();
 }
+const SCHEMA_TYPE_LABEL = {
+  text:'Tekst', number:'Getal', date:'Datum', enum:'Keuzelijst',
+  'boolean':'Ja/Nee', url:'URL', 'list-text':'Lijst tekst', 'list-enum':'Lijst keuzelijst'
+};
 function renderSchemaList(){
   const wrap = document.getElementById('schemaList');
   if(!wrap) return;
   if(_schemaDraft.length === 0){
-    wrap.innerHTML = '<div class="dmu-empty" style="padding:10px 12px">Nog geen schema-velden. Voeg er beneden een toe; ze verschijnen daarna automatisch op alle organisaties in het Bedrijfsinfo-blok.</div>';
+    wrap.innerHTML = '<div class="dmu-empty" style="padding:10px 12px">Nog geen schema-velden. Voeg er beneden een toe of importeer een template; ze verschijnen daarna automatisch op alle organisaties in het Bedrijfsinfo-blok.</div>';
     return;
   }
-  wrap.innerHTML = _schemaDraft.map((f, idx) => `
-    <div style="display:grid;grid-template-columns:1fr 1fr 110px 1.4fr 28px;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--grey-200);border-radius:6px;background:var(--white)">
-      <input type="text" data-schema-idx="${idx}" data-schema-field="label" value="${escapeHtml(f.label || '')}" placeholder="Label" style="padding:6px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.84rem">
-      <input type="text" data-schema-idx="${idx}" data-schema-field="id" value="${escapeHtml(f.id || '')}" placeholder="id (a-z0-9_)" style="padding:6px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.78rem;font-family:'DM Mono',monospace">
-      <select data-schema-idx="${idx}" data-schema-field="type" style="padding:6px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.84rem">
-        ${['text','number','date','enum','boolean'].map(t => `<option value="${t}" ${f.type===t?'selected':''}>${({text:'Tekst',number:'Getal',date:'Datum',enum:'Keuzelijst','boolean':'Ja/Nee'})[t]}</option>`).join('')}
-      </select>
-      <input type="text" data-schema-idx="${idx}" data-schema-field="values" value="${escapeHtml((f.values||[]).join(', '))}" placeholder="${f.type === 'enum' ? 'opt1, opt2' : '—'}" style="padding:6px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.78rem" ${f.type !== 'enum' ? 'disabled' : ''}>
-      <button type="button" class="dir-delete-btn" data-schema-delete="${idx}" title="Veld verwijderen">&times;</button>
+  // Groep zichtbaar per sectie zodat de editor scanbaar blijft bij 27+
+  // velden. Velden zonder sectie staan onderaan in 'Overig'.
+  const bySection = {};
+  _schemaDraft.forEach((f, idx) => {
+    const sec = (f.section || 'Overig').trim() || 'Overig';
+    (bySection[sec] = bySection[sec] || []).push({...f, _idx: idx});
+  });
+  const order = Object.keys(bySection).sort();
+  const html = order.map(sec => `
+    <div style="background:var(--grey-50);border-radius:6px;padding:8px 10px">
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-600);margin-bottom:6px">${escapeHtml(sec)} <span style="color:var(--grey-500);font-weight:500">(${bySection[sec].length})</span></div>
+      ${bySection[sec].map(f => `
+        <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1.4fr 28px;gap:6px;align-items:center;padding:6px 0">
+          <input type="text" data-schema-idx="${f._idx}" data-schema-field="label" value="${escapeHtml(f.label || '')}" placeholder="Label" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.82rem;background:white">
+          <input type="text" data-schema-idx="${f._idx}" data-schema-field="section" value="${escapeHtml(f.section || '')}" placeholder="Sectie" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.78rem;background:white">
+          <input type="text" data-schema-idx="${f._idx}" data-schema-field="id" value="${escapeHtml(f.id || '')}" placeholder="id" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.74rem;font-family:'DM Mono',monospace;background:white">
+          <select data-schema-idx="${f._idx}" data-schema-field="type" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.82rem;background:white">
+            ${Object.keys(SCHEMA_TYPE_LABEL).map(t => `<option value="${t}" ${f.type===t?'selected':''}>${SCHEMA_TYPE_LABEL[t]}</option>`).join('')}
+          </select>
+          <input type="text" data-schema-idx="${f._idx}" data-schema-field="values" value="${escapeHtml((f.values||[]).join(', '))}" placeholder="${(f.type === 'enum' || f.type === 'list-enum') ? 'opt1, opt2' : '—'}" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.78rem;background:white" ${(f.type !== 'enum' && f.type !== 'list-enum') ? 'disabled' : ''}>
+          <button type="button" class="dir-delete-btn" data-schema-delete="${f._idx}" title="Veld verwijderen">&times;</button>
+        </div>`).join('')}
     </div>`).join('');
+  wrap.innerHTML = html;
   wrap.querySelectorAll('input[data-schema-idx],select[data-schema-idx]').forEach(el => {
     el.addEventListener('change', () => {
       const i = parseInt(el.dataset.schemaIdx, 10);
@@ -16396,7 +16463,7 @@ function renderSchemaList(){
       if(!_schemaDraft[i]) return;
       if(f === 'values') _schemaDraft[i].values = el.value.split(',').map(v => v.trim()).filter(Boolean);
       else _schemaDraft[i][f] = el.value;
-      if(f === 'type') renderSchemaList();
+      if(f === 'type' || f === 'section') renderSchemaList();
     });
   });
   wrap.querySelectorAll('[data-schema-delete]').forEach(b => {
@@ -16412,13 +16479,20 @@ function _slugifyFieldId(s){
 }
 async function onSchemaSave(){
   const seen = new Set();
+  const allowedTypes = new Set(['text','number','date','enum','boolean','url','list-text','list-enum']);
   const cleaned = _schemaDraft
-    .map(f => ({
-      id: _slugifyFieldId(f.id || f.label),
-      label: String(f.label || '').trim(),
-      type: ['text','number','date','enum','boolean'].includes(f.type) ? f.type : 'text',
-      values: Array.isArray(f.values) ? f.values : undefined,
-    }))
+    .map(f => {
+      const out = {
+        id: _slugifyFieldId(f.id || f.label),
+        label: String(f.label || '').trim(),
+        type: allowedTypes.has(f.type) ? f.type : 'text',
+      };
+      if(Array.isArray(f.values) && f.values.length) out.values = f.values;
+      if(f.section && String(f.section).trim()) out.section = String(f.section).trim();
+      if(f.placeholder) out.placeholder = String(f.placeholder).trim();
+      if(f.help) out.help = String(f.help).trim();
+      return out;
+    })
     .filter(f => f.id && f.label && !seen.has(f.id) && (seen.add(f.id), true));
   const out = document.getElementById('schemaSaveResult');
   try {
@@ -16440,24 +16514,94 @@ function bindSchemaPane(){
   const addBtn = document.getElementById('schemaAddBtn');
   if(addBtn) addBtn.addEventListener('click', () => {
     const labelEl = document.getElementById('schema-add-label');
+    const sectionEl = document.getElementById('schema-add-section');
     const typeEl = document.getElementById('schema-add-type');
     const valuesEl = document.getElementById('schema-add-values');
+    const placeholderEl = document.getElementById('schema-add-placeholder');
     const label = (labelEl?.value || '').trim();
     if(!label){ alert('Label is verplicht.'); return; }
     const id = _slugifyFieldId(label);
     if(_schemaDraft.some(f => f.id === id)){ alert('Veld met id "' + id + '" bestaat al.'); return; }
     const type = typeEl?.value || 'text';
-    const values = type === 'enum'
+    const values = (type === 'enum' || type === 'list-enum')
       ? (valuesEl?.value || '').split(',').map(v => v.trim()).filter(Boolean)
       : undefined;
-    _schemaDraft.push({ id, label, type, ...(values ? { values } : {}) });
+    const section = (sectionEl?.value || '').trim();
+    const placeholder = (placeholderEl?.value || '').trim();
+    _schemaDraft.push({
+      id, label, type,
+      ...(values && values.length ? { values } : {}),
+      ...(section ? { section } : {}),
+      ...(placeholder ? { placeholder } : {}),
+    });
     if(labelEl) labelEl.value = '';
+    if(sectionEl) sectionEl.value = section; // hou sectie staan voor batch-invoer
     if(valuesEl) valuesEl.value = '';
+    if(placeholderEl) placeholderEl.value = '';
     renderSchemaList();
   });
   const saveBtn = document.getElementById('schemaSaveBtn');
   if(saveBtn) saveBtn.addEventListener('click', onSchemaSave);
+  const tplBtn = document.getElementById('schemaTemplateBtn');
+  if(tplBtn) tplBtn.addEventListener('click', () => {
+    const sel = document.getElementById('schemaTemplateSel');
+    const key = sel?.value;
+    if(!key) return;
+    const tpl = SCHEMA_TEMPLATES[key];
+    if(!tpl){ alert('Onbekende template.'); return; }
+    if(_schemaDraft.length > 0 && !confirm('Vervang de huidige draft met de "' + key + '"-template? (' + tpl.length + ' velden)')) return;
+    _schemaDraft = JSON.parse(JSON.stringify(tpl));
+    renderSchemaList();
+  });
 }
+
+// Voorbeeld-templates die de tenant-admin met één klik in de schema-
+// editor kan laden + reviewen + opslaan. Per template een complete
+// veldset met sectie-grouping. Bedoeld als snelle start; kan altijd
+// achteraf worden aangepast.
+const SCHEMA_TEMPLATES = {
+  'van-ameyde-insurance': [
+    // A. Identiteit
+    { id:'bedrijf_id',  label:'Bedrijf-ID',         type:'text', section:'A. Identiteit', placeholder:'slug, bv. allianz-nl' },
+    { id:'aliases',     label:'Handelsnamen / merken', type:'list-text', section:'A. Identiteit', placeholder:'merk1, merk2' },
+    { id:'land',        label:'Land',                type:'text', section:'A. Identiteit', placeholder:'ISO-2, bv. NL' },
+    { id:'website',     label:'Website',             type:'url',  section:'A. Identiteit', placeholder:'https://...' },
+    { id:'lei_code',    label:'LEI-code',            type:'text', section:'A. Identiteit', placeholder:'20 chars (GLEIF.org)' },
+    { id:'parent_groep', label:'Parent groep',       type:'text', section:'A. Identiteit', placeholder:'bv. Allianz Group' },
+    // B. Classificatie
+    { id:'verzekeraar_type', label:'Type verzekeraar', type:'enum', section:'B. Classificatie', values:['Composite','Non-Life','Life','Reinsurer','Health','Specialty','Marine'] },
+    { id:'va_tier',     label:'VA Tier',             type:'enum', section:'B. Classificatie', values:['1','2','3'] },
+    { id:'va_footprint', label:'VA operationeel in dit land', type:'boolean', section:'B. Classificatie' },
+    { id:'cross_border_actief', label:'Cross-border actief', type:'boolean', section:'B. Classificatie' },
+    { id:'markt_segment', label:'Marktsegment',     type:'enum', section:'B. Classificatie', values:['Consumer','SME','Corporate','Specialty','Reinsurance'] },
+    { id:'branches',    label:'Branches / lines of business', type:'list-enum', section:'B. Classificatie', values:['Motor','Property','Liability','Marine','Aviation','Cyber','Health','Life','Travel','Credit'] },
+    // C. Schadekenmerken
+    { id:'schadevolume_eur_m', label:'Schadevolume per jaar (M EUR)', type:'number', section:'C. Schadekenmerken', placeholder:'bron: SFCR' },
+    { id:'schade_aantal_per_jaar', label:'Aantal schades per jaar', type:'number', section:'C. Schadekenmerken' },
+    { id:'schadebehandelaren_aantal', label:'Aantal schadebehandelaren', type:'number', section:'C. Schadekenmerken', placeholder:'LinkedIn-search' },
+    { id:'schade_outsourcing_status', label:'Outsourcing status schade', type:'enum', section:'C. Schadekenmerken', values:['Volledig in-house','Gedeeltelijk uitbesteed','Volledig uitbesteed','Onbekend'] },
+    { id:'complexiteit_profiel', label:'Complexiteit schadeprofiel', type:'enum', section:'C. Schadekenmerken', values:['Laag','Middel','Hoog','Specialty / Lloyds'] },
+    // D. Commercieel
+    { id:'va_relatiehouder', label:'VA relatiehouder',  type:'text', section:'D. Commercieel', placeholder:'naam VA-employee' },
+    { id:'bestaande_va_relatie', label:'Bestaande VA-relatie (OPCOs)', type:'list-text', section:'D. Commercieel', placeholder:'OPCO1, OPCO2' },
+    { id:'propositie_match', label:'VA propositie match', type:'list-enum', section:'D. Commercieel', values:['Surveying','Claims handling','TPA','Salvage','Subrogation','SaaS / tooling'] },
+    { id:'deal_potentieel_band', label:'Deal-potentieel', type:'enum', section:'D. Commercieel', values:['XS (<50k)','S (50-250k)','M (250k-1M)','L (1-5M)','XL (>5M)'] },
+    // E. Operationeel
+    { id:'claims_systeem', label:'Huidig claims-systeem', type:'text', section:'E. Operationeel', placeholder:'bv. Guidewire, Duck Creek' },
+    { id:'surveying_partner', label:'Huidige surveying-partner', type:'text', section:'E. Operationeel' },
+    { id:'tech_volwassenheid', label:'Tech volwassenheid', type:'enum', section:'E. Operationeel', values:['Laag','Middel','Hoog','Digital-native'] },
+  ],
+  'generic-b2b': [
+    { id:'website',         label:'Website',         type:'url',     section:'Identiteit' },
+    { id:'land',            label:'Land',            type:'text',    section:'Identiteit', placeholder:'ISO-2, bv. NL' },
+    { id:'segment',         label:'Markt-segment',   type:'enum',    section:'Classificatie', values:['Consumer','SMB','Mid-market','Enterprise'] },
+    { id:'omzet_eur_m',     label:'Omzet (M EUR)',   type:'number',  section:'Commercieel' },
+    { id:'fte',             label:'Aantal medewerkers (FTE)', type:'number', section:'Commercieel' },
+    { id:'deal_band',       label:'Deal-potentieel', type:'enum',    section:'Commercieel', values:['S','M','L','XL'] },
+    { id:'tech_stack',      label:'Tech-stack',      type:'list-text', section:'Operationeel', placeholder:'product1, product2' },
+    { id:'beslissers',      label:'Beslissers (titels)', type:'list-text', section:'Operationeel' },
+  ],
+};
 
 let _marketPendingSel = null; // Set<string> tijdens bewerken
 async function refreshMarketPane(){

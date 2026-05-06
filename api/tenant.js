@@ -168,20 +168,22 @@ module.exports = async function handler(req, res) {
       if (typeof body.useLlmCurator === 'boolean') t.useLlmCurator = body.useLlmCurator;
       if (Array.isArray(body.klantSchema)) {
         // Validate + normalise: each entry needs id+label+type. We strip
-        // unknown keys and cap at 30 fields om mis-imports te voorkomen.
-        const allowedTypes = new Set(['text', 'number', 'date', 'enum', 'boolean']);
+        // unknown keys and cap at 60 fields om mis-imports te voorkomen.
+        const allowedTypes = new Set(['text', 'number', 'date', 'enum', 'boolean', 'url', 'list-text', 'list-enum']);
         const seen = new Set();
-        t.klantSchema = body.klantSchema.slice(0, 30).map((f) => {
+        t.klantSchema = body.klantSchema.slice(0, 60).map((f) => {
           const id = String(f.id || '').trim().toLowerCase().replace(/[^a-z0-9_]+/g, '_').slice(0, 40);
           const label = String(f.label || '').trim().slice(0, 80);
           const type = allowedTypes.has(f.type) ? f.type : 'text';
           if (!id || !label || seen.has(id)) return null;
           seen.add(id);
           const out = { id, label, type };
-          if (type === 'enum' && Array.isArray(f.values)) {
-            out.values = f.values.map((v) => String(v).slice(0, 60)).slice(0, 20);
+          if ((type === 'enum' || type === 'list-enum') && Array.isArray(f.values)) {
+            out.values = f.values.map((v) => String(v).slice(0, 60)).slice(0, 30);
           }
           if (f.placeholder) out.placeholder = String(f.placeholder).slice(0, 120);
+          if (f.section) out.section = String(f.section).slice(0, 60);
+          if (f.help) out.help = String(f.help).slice(0, 200);
           return out;
         }).filter(Boolean);
       }
