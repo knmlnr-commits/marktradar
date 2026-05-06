@@ -59,13 +59,17 @@ const GERICALL_DEFAULT_FEEDS = [
   { url: 'https://www.nationalezorggids.nl/rss-nieuws.xml', label: 'NationaleZorggids', type: 'rss' },
 ];
 
-// Versie zonder gevoelige velden voor publieke (unauth) lookup: alleen
-// brandings-informatie zodat /app/<slug> de juiste naam kan tonen.
+// Versie zonder gevoelige velden voor publieke (unauth) lookup: branding
+// + theme zodat /app/<slug> bij eerste paint al de tenant-kleuren toont
+// (anders flasht de gate eerst in default-oranje en daarna pas in de
+// juiste kleurset). Theme is niet-gevoelig — alleen hex-codes.
 function publicTenantBranding(t) {
   if (!t) return null;
   return {
     naam: t.naam || 'MarktRadar',
     slug: t.slug || null,
+    logoDataUri: t.logoDataUri || null,
+    theme: t.theme && typeof t.theme === 'object' ? t.theme : null,
   };
 }
 

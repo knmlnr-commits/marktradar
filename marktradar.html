@@ -1879,7 +1879,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.7",
+    "version": "1.17.8",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12007,6 +12007,18 @@ function consumeOAuthFragment(){
     }
     const branding = await brandingPromise;
     applyGateBranding(branding);
+    // Apply tenant kleuren ook op de gate (voor login). Branding bevat
+    // sinds v1.17.8 ook theme zodat /app/<slug> bij eerste paint al de
+    // juiste kleuren toont.
+    if(branding && branding.theme){
+      try {
+        const wasTenant = currentTenant;
+        currentTenant = { ...(currentTenant || {}), theme: branding.theme };
+        applyTenantTheme();
+        // Restore vorige currentTenant-shape; theme blijft dankzij CSS-vars
+        currentTenant = wasTenant;
+      } catch(e){}
+    }
     const needs = await authNeedsBootstrap();
     // Default-modus: login. Als de URL slug niet bestaat én er bestaan al
     // users, preselecteer 'register' zodat een nieuwe werkomgeving direct
