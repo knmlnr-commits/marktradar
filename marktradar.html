@@ -573,6 +573,11 @@ body{
      vlak is te smal voor dit soort kaarten; we laten de hele grid
      verticaal stacken via flex. */
   .app.has-side-overlay .lev-grid{grid-template-columns:1fr}
+  .app.has-side-overlay .lev-row{grid-template-columns:minmax(120px,2fr) 70px 24px;padding:8px 10px}
+  .app.has-side-overlay .lev-row > *:nth-child(2),
+  .app.has-side-overlay .lev-row > *:nth-child(4){display:none}
+  .app.has-side-overlay .lev-row-naam{font-size:.82rem}
+  .app.has-side-overlay .lev-row-sub{font-size:.68rem}
 
   /* Toolbars: filters + dropdowns op kleinere font zodat ze in de
      smallere left-pane passen zonder afbreken. */
@@ -940,6 +945,17 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
 .lev-cat-title{font-size:1.05rem;font-weight:700;color:var(--grey-900);letter-spacing:-.01em;}
 .lev-cat-meta{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--grey-500);}
 .lev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;}
+.lev-list{display:flex;flex-direction:column;border:1px solid var(--grey-200);border-radius:8px;background:var(--white);overflow:hidden}
+.lev-row{display:grid;grid-template-columns:minmax(180px,2fr) 1fr 90px 80px 24px;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--grey-150);cursor:pointer;transition:background .12s}
+.lev-row:last-child{border-bottom:none}
+.lev-row:hover{background:var(--grey-50)}
+.lev-row:active{background:var(--orange-pale)}
+.lev-row-name{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lev-row-naam{font-weight:700;color:var(--grey-900);font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lev-row-sub{font-size:.7rem;color:var(--grey-600);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lev-row-type{font-size:.78rem;color:var(--grey-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lev-row-stat{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--grey-700);text-align:right}
+.lev-row-arrow{color:var(--grey-400);font-size:1.1rem;text-align:center}
 .lev-card{background:var(--white);border:1px solid var(--grey-200);border-radius:10px;
   padding:14px 16px;transition:border-color .15s, box-shadow .15s;}
 .lev-card:hover{border-color:var(--grey-300);box-shadow:0 6px 18px -8px rgba(60,60,60,.15)}
@@ -1814,7 +1830,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.1",
+    "version": "1.17.2",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -17252,6 +17268,7 @@ function closeOverlay(){
   document.getElementById('overlay').classList.remove('show');
   document.querySelector('.app')?.classList.remove('has-side-overlay');
   currentInstellingId = null;
+  if(typeof currentSupplierId !== 'undefined') currentSupplierId = null;
   saveUiState();
 }
 document.getElementById('overlay').addEventListener('click', (e) => {
@@ -17367,33 +17384,20 @@ function renderLeveranciers(){
           <div class="lev-cat-title">${escapeHtml(cat)}</div>
           <div class="lev-cat-meta">${items.length} leveranciers &middot; ${totalCustomers} bekende klanten in DB</div>
         </div>
-        <div class="lev-grid">
+        <div class="lev-list">
           ${items.map(l => {
             const scopedKlanten = (l.klanten||[]).filter(id => scopedSet.has(String(id)));
-            const klantNamen = scopedKlanten.map(id => getInstelling(id)?.naam).filter(Boolean);
-            const likelyNamen = (l.klantenLikely||[]).filter(id => scopedSet.has(String(id))).map(id => getInstelling(id)?.naam).filter(Boolean);
-            const sharePct = totalInst > 0 ? Math.round((scopedKlanten.length / totalInst) * 100) : 0;
-            const hasMarketShare = typeof l.marktaandeelPct === 'number';
             const isOverridden = !!supplierOverrides[l.id];
             return `
-              <div class="lev-card" data-supplier-id="${escapeHtml(l.id)}" role="button" tabindex="0" title="Klik om te bewerken" style="cursor:pointer">
-                <div class="lev-card-head">
-                  <div>
-                    <div class="lev-name">${escapeHtml(l.naam)}${isOverridden ? ' <span style="font-size:.65rem;color:var(--orange-dark);font-weight:600">(aangepast)</span>' : ''}</div>
-                    <div class="lev-type">${escapeHtml(l.type || '')}</div>
-                  </div>
-                  <span class="partner-pill partner-${l.partnerStatus || 'onbekend'}">${escapeHtml(l.partnerStatus || 'onbekend')}</span>
+              <div class="lev-row" data-supplier-id="${escapeHtml(l.id)}" role="button" tabindex="0" title="Klik om te bewerken">
+                <div class="lev-row-name">
+                  <div class="lev-row-naam">${escapeHtml(l.naam)}${isOverridden ? ' <span style="font-size:.65rem;color:var(--orange-dark);font-weight:600">(aangepast)</span>' : ''}</div>
+                  ${l.notes ? `<div class="lev-row-sub">${escapeHtml(l.notes.slice(0, 90))}${l.notes.length > 90 ? '…' : ''}</div>` : ''}
                 </div>
-                <div class="lev-stat-row">
-                  <div class="lev-stat"><div class="lev-stat-label">In DB</div><div class="lev-stat-value">${scopedKlanten.length}<small>/${totalInst}</small></div></div>
-                  ${hasMarketShare ? `<div class="lev-stat"><div class="lev-stat-label">Markt-aandeel</div><div class="lev-stat-value">${l.marktaandeelPct}<small>%</small></div></div>` : ''}
-                  <div class="lev-stat"><div class="lev-stat-label">Dekking DB</div><div class="lev-stat-value">${sharePct}<small>%</small></div></div>
-                </div>
-                <div class="lev-customers">
-                  ${klantNamen.length > 0 ? `<strong>Klanten in DB:</strong> ${escapeHtml(klantNamen.join(', '))}` : '<span class="muted">Nog geen klanten in DB gemapt.</span>'}
-                  ${likelyNamen.length > 0 ? `<div style="margin-top:6px;color:var(--grey-600)"><strong>Vermoedelijk:</strong> ${escapeHtml(likelyNamen.join(', '))}</div>` : ''}
-                </div>
-                ${l.notes ? `<div class="lev-notes">${escapeHtml(l.notes)}</div>` : ''}
+                <div class="lev-row-type">${escapeHtml(l.type || '')}</div>
+                <div><span class="partner-pill partner-${l.partnerStatus || 'onbekend'}">${escapeHtml(l.partnerStatus || 'onbekend')}</span></div>
+                <div class="lev-row-stat">${scopedKlanten.length}<small>/${totalInst}</small></div>
+                <div class="lev-row-arrow">&rsaquo;</div>
               </div>`;
           }).join('')}
         </div>
@@ -17418,20 +17422,138 @@ function renderLeveranciers(){
   document.querySelectorAll('.whitespace-tag').forEach(t => {
     t.addEventListener('click', () => openInstelling(t.dataset.instId));
   });
-  document.querySelectorAll('.lev-card').forEach(card => {
-    const open = () => openSupplierEditor(card.dataset.supplierId);
-    card.addEventListener('click', open);
-    card.addEventListener('keydown', (e) => {
+  document.querySelectorAll('.lev-row').forEach(row => {
+    const open = () => openSupplierInOverlay(row.dataset.supplierId);
+    // Toggle-close: klik op al-geopende rij in side-pane mode sluit
+    // de overlay zodat de lijst weer volle breedte krijgt (Outlook-stijl,
+    // zelfde gedrag als inst-rows).
+    row.addEventListener('click', () => {
+      const isSidePane = document.querySelector('.app')?.classList.contains('has-side-overlay');
+      if(isSidePane && row.dataset.supplierId === currentSupplierId){
+        closeOverlay();
+        return;
+      }
+      open();
+    });
+    row.addEventListener('keydown', (e) => {
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); }
     });
   });
   const addBtn = document.getElementById('supAddBtn');
-  if(addBtn) addBtn.addEventListener('click', () => openSupplierEditor(null));
+  if(addBtn) addBtn.addEventListener('click', () => openSupplierInOverlay(null));
 }
 
-// Edit-modal voor leveranciers. id=null → nieuwe entry (krijgt 'cust-'-id).
+// Edit-detail voor leveranciers. id=null → nieuwe entry (krijgt 'cust-'-id).
+// Sinds v1.17.2 wordt de detail in dezelfde side-pane (#overlay) gerendered
+// als het klantbeeld; openSupplierEditor (legacy modal) blijft als fallback
+// voor smalle schermen via dezelfde DOM-ids zodat saveSupplierEdit etc.
+// onveranderd kunnen blijven.
 let _supEditId = null;
 let _supEditDraft = null;
+let currentSupplierId = null;
+
+function _supplierEditFormHtml(isNew){
+  // Dezelfde inputs (zelfde DOM-ids) als in supplierEditModal zodat de
+  // bestaande save/delete-handlers ongewijzigd blijven werken.
+  return `
+    <div class="overlay-body" style="padding:24px 28px">
+      <div class="edit-field"><label>Naam</label><input type="text" id="supEdit-naam" placeholder="bv. ChipSoft, Nedap" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div class="edit-field"><label>Categorie</label><input type="text" id="supEdit-categorie" placeholder="bv. Claims-platform" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+        <div class="edit-field"><label>Type</label><input type="text" id="supEdit-type" placeholder="bv. SaaS, on-prem, gespecialiseerd" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div class="edit-field"><label>Partner-status</label><select id="supEdit-partnerStatus" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit">
+          <option value="eigen">eigen</option>
+          <option value="partner">partner</option>
+          <option value="competitor">competitor</option>
+          <option value="onbekend">onbekend</option>
+        </select></div>
+        <div class="edit-field"><label>Markt-aandeel (%)</label><input type="number" min="0" max="100" id="supEdit-marktaandeel" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></div>
+      </div>
+      <div class="edit-field" style="margin-top:10px"><label>Notities</label><textarea id="supEdit-notes" style="width:100%;min-height:60px;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></textarea></div>
+      <div class="edit-field" style="margin-top:14px">
+        <label>Klanten in DB <span style="color:var(--grey-600);font-weight:400">(klik om te verwijderen)</span></label>
+        <div id="supEdit-klantenTags" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid var(--grey-200);border-radius:6px;background:var(--grey-50);min-height:40px"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <select id="supEdit-klantAdd" style="flex:1;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></select>
+          <button type="button" class="btn-secondary" id="supEdit-klantAddBtn">+ Toevoegen</button>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
+        ${isNew ? '' : '<button class="btn-secondary" id="supEditDelete" style="border-color:#b94a3c;color:#b94a3c;margin-right:auto">Verwijderen</button>'}
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn-secondary" id="supEditCancel">Annuleren</button>
+          <button class="btn-primary" id="supEditSave">Opslaan</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function openSupplierInOverlay(id){
+  const all = getEffectiveLeveranciers();
+  let lev = id ? all.find(x => x.id === id) : null;
+  if(id && !lev) return;
+  if(!id){
+    _supEditId = 'cust-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,6);
+    lev = { id: _supEditId, naam: '', categorie: '', type: '', partnerStatus: 'onbekend', notes: '', klanten: [], klantenLikely: [] };
+  } else {
+    _supEditId = id;
+  }
+  _supEditDraft = {
+    naam: lev.naam || '', categorie: lev.categorie || '', type: lev.type || '',
+    partnerStatus: lev.partnerStatus || 'onbekend',
+    marktaandeelPct: typeof lev.marktaandeelPct === 'number' ? lev.marktaandeelPct : '',
+    notes: lev.notes || '',
+    klanten: Array.isArray(lev.klanten) ? lev.klanten.slice() : [],
+  };
+  const headHtml = `
+    <div class="overlay-head">
+      <div class="overlay-title-block">
+        <h2>${escapeHtml(lev.naam || (id ? '(naamloos)' : 'Nieuwe leverancier'))}</h2>
+        <div class="overlay-meta">
+          <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--grey-600)">${escapeHtml(lev.categorie || '—')}</span>
+          ${lev.partnerStatus ? `<span class="overlay-meta-dot"></span><span class="partner-pill partner-${lev.partnerStatus}">${escapeHtml(lev.partnerStatus)}</span>` : ''}
+        </div>
+      </div>
+      <div class="overlay-nav">
+        <button class="overlay-close" id="overlayClose" title="Sluit detail; lijst krijgt volle breedte (Esc)" aria-label="Sluiten">&times;</button>
+      </div>
+    </div>`;
+  document.getElementById('overlayPanel').innerHTML = headHtml + _supplierEditFormHtml(!id);
+  document.getElementById('overlay').classList.add('show');
+  document.querySelector('.app')?.classList.add('has-side-overlay');
+  currentSupplierId = id || _supEditId;
+  currentInstellingId = null;
+  // Vul inputs (zelfde DOM-ids als de oude modal).
+  document.getElementById('supEdit-naam').value = _supEditDraft.naam;
+  document.getElementById('supEdit-categorie').value = _supEditDraft.categorie;
+  document.getElementById('supEdit-type').value = _supEditDraft.type;
+  document.getElementById('supEdit-partnerStatus').value = _supEditDraft.partnerStatus;
+  document.getElementById('supEdit-marktaandeel').value = _supEditDraft.marktaandeelPct;
+  document.getElementById('supEdit-notes').value = _supEditDraft.notes;
+  renderSupKlantenTags();
+  populateSupKlantAdd();
+  // Bind handlers — overlayClose, save, cancel, delete, klantAdd. Die
+  // klikken nemen aan dat de modal sluiten betekent overlay sluiten,
+  // dus we patchen tijdelijk closeSupplierEditor naar closeOverlay.
+  document.getElementById('overlayClose').addEventListener('click', closeOverlay);
+  document.getElementById('supEditCancel').addEventListener('click', closeOverlay);
+  document.getElementById('supEditSave').addEventListener('click', saveSupplierEdit);
+  const delBtn = document.getElementById('supEditDelete');
+  if(delBtn) delBtn.addEventListener('click', deleteSupplierEdit);
+  const addBtn = document.getElementById('supEdit-klantAddBtn');
+  if(addBtn) addBtn.addEventListener('click', () => {
+    const sel = document.getElementById('supEdit-klantAdd');
+    const v = sel && sel.value;
+    if(!v) return;
+    if(!_supEditDraft.klanten.includes(v)) _supEditDraft.klanten.push(v);
+    renderSupKlantenTags();
+    populateSupKlantAdd();
+  });
+  saveUiState();
+}
+
 function openSupplierEditor(id){
   const all = getEffectiveLeveranciers();
   let lev = id ? all.find(x => x.id === id) : null;
@@ -17497,7 +17619,14 @@ function populateSupKlantAdd(){
   sel.innerHTML = '<option value="">— Kies organisatie —</option>' + opts;
 }
 function closeSupplierEditor(){
-  document.getElementById('supplierEditModal').classList.remove('show');
+  // Sluit zowel de legacy modal als de nieuwe overlay-mode (v1.17.2).
+  // Beide kunnen niet tegelijk open zijn maar voor robustheid spreken
+  // we beide kanalen aan.
+  const m = document.getElementById('supplierEditModal');
+  if(m) m.classList.remove('show');
+  if(currentSupplierId){
+    closeOverlay();
+  }
   _supEditId = null;
   _supEditDraft = null;
 }
