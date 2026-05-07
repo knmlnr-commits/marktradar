@@ -894,6 +894,8 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
 .todo-delete:hover{background:var(--red-light);color:var(--red);border-color:var(--red)}
 .todo-divider{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   color:var(--grey-500);margin-top:8px;padding-top:6px;border-top:1px solid var(--grey-150)}
+.todo-done-fold > summary::-webkit-details-marker{display:none}
+.todo-done-fold[open] .todo-done-chev{transform:rotate(90deg)}
 .actie-list{display:flex;flex-direction:column;gap:6px}
 .actie-row{display:grid;grid-template-columns:18px 1fr 150px 130px 24px;gap:10px;align-items:center;
   padding:10px 14px;background:var(--white);border:1px solid var(--grey-200);border-radius:8px;
@@ -1911,7 +1913,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.13",
+    "version": "1.17.14",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -14404,7 +14406,7 @@ function renderTodosBodyOnly(inst){
       <div class="todo-list" style="margin-top:10px">
         ${open.length === 0 && done.length === 0 ? '<div class="dmu-empty">Geen todo\'s; voeg er een toe.</div>' : ''}
         ${open.map(renderOne).join('')}
-        ${done.length ? `<div class="todo-divider">Afgerond (${done.length})</div>${done.map(renderOne).join('')}` : ''}
+        ${done.length ? `<details class="todo-done-fold" style="margin-top:10px"><summary class="todo-divider" style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px"><span class="todo-done-chev" style="display:inline-block;transition:transform .15s">&#9656;</span> Afgerond (${done.length})</summary><div style="margin-top:6px">${done.map(renderOne).join('')}</div></details>` : ''}
       </div>
     </div>`;
 }
