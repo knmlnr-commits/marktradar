@@ -146,6 +146,14 @@ async function callAnthropicWithSearch(tenant, recentDateIso) {
   const entsList = ents.map(e => `- ${e.naam}${e.regio ? ' (' + e.regio + ')' : ''}`).join('\n') || '(nog geen organisaties geconfigureerd)';
 
   const sys = 'Je bent een sales-intelligence-analist voor MarktRadar. Doe doelgericht web-onderzoek, vind marktsignalen van de afgelopen 14 dagen die relevant zijn voor de propositie, en geef ze terug als strikt JSON. Geen prose, alleen het JSON-array.';
+  // Tenant-specifieke prompt-extensie. Beheerder kan via Beheer >
+  // Werkomgeving > Automatische signalen > Prompt-aanpassing extra
+  // instructies meegeven aan de LLM, bv. 'focus op claims-systeem-
+  // vervangingen' of 'negeer signalen jonger dan 30 dagen'.
+  const overrideRaw = String(tenant.signalPromptOverride || '').trim();
+  const overrideBlock = overrideRaw
+    ? `\n\n**Extra instructies van werkomgeving-beheerder:**\n${overrideRaw.slice(0, 4000)}`
+    : '';
   const userMessage = `**Werkomgeving:** ${tenant.naam || ''}
 **Propositie:** ${tenant.propositie || '(niet gezet)'}
 **Markt:** ${tenant.marktNaam || '(niet gezet)'}
@@ -154,7 +162,7 @@ async function callAnthropicWithSearch(tenant, recentDateIso) {
 **Te volgen organisaties:**
 ${entsList}
 
-**Opdracht:** Zoek op het web naar marktsignalen na ${recentDateIso} voor deze organisaties. Type signalen: bestuurswisselingen, fusies/overnames, financiële alerts, aanbestedingen (TenderNed), CAO/sector-bewegingen, nieuwe locaties/uitbreiding. Filter strikt op datum (laatste 14 dagen). Voor elk signaal: datum (YYYY-MM-DD), urgentie (laag|middel|hoog), type, instellingNaam (matcht een van bovenstaande organisaties OF leeg voor sector-signaal), headline (max 200 chars), summary (max 500 chars), source (bron-naam), sourceUrl (volledige URL).
+**Opdracht:** Zoek op het web naar marktsignalen na ${recentDateIso} voor deze organisaties. Type signalen: bestuurswisselingen, fusies/overnames, financiële alerts, aanbestedingen (TenderNed), CAO/sector-bewegingen, nieuwe locaties/uitbreiding. Filter strikt op datum (laatste 14 dagen). Voor elk signaal: datum (YYYY-MM-DD), urgentie (laag|middel|hoog), type, instellingNaam (matcht een van bovenstaande organisaties OF leeg voor sector-signaal), headline (max 200 chars), summary (max 500 chars), source (bron-naam), sourceUrl (volledige URL).${overrideBlock}
 
 **Output: alleen JSON-array, geen prose:**
 [{"datum":"2026-04-23","urgentie":"middel","type":"...","instellingNaam":"...","headline":"...","summary":"...","source":"...","sourceUrl":"..."}]`;

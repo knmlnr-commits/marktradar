@@ -1455,6 +1455,21 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <button class="btn-primary" id="feedAddBtn" style="height:38px">+ Feed</button>
     </div>
     <div id="tenantFeedsStatus" style="margin-top:10px;font-size:.78rem"></div>
+
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--grey-200)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
+        <strong style="font-size:.82rem;color:var(--grey-900)">Prompt-aanpassing voor LLM-curator</strong>
+        <button class="btn-secondary" id="signalPromptPreviewBtn" style="margin-left:auto;font-size:.72rem;padding:4px 10px">Bekijk volledige prompt</button>
+      </div>
+      <p style="font-size:.74rem;color:var(--grey-700);margin-bottom:10px">
+        Extra instructies die aan de standaard-prompt worden toegevoegd. Bijvoorbeeld <em>"Let extra op claims-systeem-vervangingen of gunningen rond TPA-contracten. Negeer signalen die louter promotioneel zijn."</em> Werkt alleen bij LLM-curator (vinkje hierboven). Max 4000 tekens.
+      </p>
+      <textarea id="signalPromptOverride" placeholder="bv. 'Focus op verzekeraars die in 2026 hun claims-systeem aanbesteden. Negeer signalen ouder dan 30 dagen. Geef voorrang aan organisaties met >EUR 500M premium-volume.'" style="width:100%;min-height:90px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem;font-family:'DM Mono',monospace;resize:vertical"></textarea>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+        <button class="btn-primary" id="signalPromptSaveBtn" style="font-size:.78rem;padding:5px 12px">Opslaan</button>
+      </div>
+      <div id="signalPromptResult" style="margin-top:6px;font-size:.78rem"></div>
+    </div>
     </div>
     </details>
 
@@ -1896,7 +1911,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.12",
+    "version": "1.17.13",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -16510,6 +16525,47 @@ async function onRefreshNow(){
   }
 }
 
+async function onSignalPromptSave(){
+  const txt = (document.getElementById('signalPromptOverride')?.value || '').trim();
+  const out = document.getElementById('signalPromptResult');
+  try {
+    const r = await apiFetch('/api/tenant?action=update', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ signalPromptOverride: txt }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || 'Opslaan mislukt');
+    if(j.tenant) currentTenant = j.tenant;
+    if(out) out.innerHTML = '<span style="color:var(--green)">Prompt-aanpassing opgeslagen. Wordt meegegeven aan de eerstvolgende cron-run + bij Refresh nu.</span>';
+  } catch(err){
+    if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  }
+}
+
+function onSignalPromptPreview(){
+  // Toon de volledige prompt zoals 'ie nu naar Claude wordt gestuurd,
+  // inclusief tenant-context + de extra-instructies. Bedoeld als debug-
+  // hulp zodat de admin ziet wat de LLM precies leest.
+  const t = currentTenant || {};
+  const ents = (Array.isArray(t.entiteiten) ? t.entiteiten : []).slice(0, 30);
+  const entsList = ents.map(e => '- ' + e.naam + (e.regio ? ' (' + e.regio + ')' : '')).join('\n') || '(nog geen organisaties geconfigureerd)';
+  const recentDateIso = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
+  const overrideRaw = String(t.signalPromptOverride || (document.getElementById('signalPromptOverride')?.value) || '').trim();
+  const overrideBlock = overrideRaw ? '\n\n**Extra instructies van werkomgeving-beheerder:**\n' + overrideRaw : '';
+  const userMessage = '**Werkomgeving:** ' + (t.naam || '') + '\n' +
+    '**Propositie:** ' + (t.propositie || '(niet gezet)') + '\n' +
+    '**Markt:** ' + (t.marktNaam || '(niet gezet)') + '\n' +
+    '**Markt-beschrijving:** ' + (t.marktBeschrijving || '(niet gezet)') + '\n\n' +
+    '**Te volgen organisaties:**\n' + entsList + '\n\n' +
+    '**Opdracht:** Zoek op het web naar marktsignalen na ' + recentDateIso + ' voor deze organisaties. Type signalen: bestuurswisselingen, fusies/overnames, financiële alerts, aanbestedingen (TenderNed), CAO/sector-bewegingen, nieuwe locaties/uitbreiding. Filter strikt op datum (laatste 14 dagen). Voor elk signaal: datum (YYYY-MM-DD), urgentie (laag|middel|hoog), type, instellingNaam, headline (max 200 chars), summary (max 500 chars), source, sourceUrl.' + overrideBlock + '\n\n' +
+    '**Output: alleen JSON-array, geen prose.**';
+  const sys = 'Je bent een sales-intelligence-analist voor MarktRadar. Doe doelgericht web-onderzoek, vind marktsignalen van de afgelopen 14 dagen die relevant zijn voor de propositie, en geef ze terug als strikt JSON. Geen prose, alleen het JSON-array.';
+  const out = document.getElementById('signalPromptResult');
+  if(out){
+    out.innerHTML = '<details style="margin-top:8px"><summary style="cursor:pointer;font-weight:600">Volledige prompt (klik om te tonen)</summary><div style="margin-top:6px"><strong>System:</strong><pre style="background:var(--grey-50);padding:10px;border-radius:6px;font-family:\'DM Mono\',monospace;font-size:.74rem;white-space:pre-wrap;border:1px solid var(--grey-200)">' + escapeHtml(sys) + '</pre><strong style="margin-top:8px;display:block">User:</strong><pre style="background:var(--grey-50);padding:10px;border-radius:6px;font-family:\'DM Mono\',monospace;font-size:.74rem;white-space:pre-wrap;border:1px solid var(--grey-200);max-height:380px;overflow:auto">' + escapeHtml(userMessage) + '</pre></div></details>';
+  }
+}
+
 async function refreshTenantPane(){
   const naamEl = document.getElementById('tenant-naam');
   const slugEl = document.getElementById('tenant-slug');
@@ -16529,6 +16585,8 @@ async function refreshTenantPane(){
   if(mNaamEl) mNaamEl.value = currentTenant?.marktNaam || '';
   if(mDescEl) mDescEl.value = currentTenant?.marktBeschrijving || '';
   if(idEl) idEl.value = currentTenant?.id || '—';
+  const promptEl = document.getElementById('signalPromptOverride');
+  if(promptEl) promptEl.value = currentTenant?.signalPromptOverride || '';
   const llmEl = document.getElementById('tenant-use-llm');
   if(llmEl){
     llmEl.checked = !!currentTenant?.useLlmCurator;
@@ -17443,6 +17501,10 @@ function bindAdminModal(){
   if(feedAddBtn) feedAddBtn.addEventListener('click', onFeedAdd);
   const feedRefreshBtn = document.getElementById('feedRefreshNowBtn');
   if(feedRefreshBtn) feedRefreshBtn.addEventListener('click', onRefreshNow);
+  const promptSave = document.getElementById('signalPromptSaveBtn');
+  if(promptSave) promptSave.addEventListener('click', onSignalPromptSave);
+  const promptPreview = document.getElementById('signalPromptPreviewBtn');
+  if(promptPreview) promptPreview.addEventListener('click', onSignalPromptPreview);
   const logoFile = document.getElementById('tenant-logo-file');
   if(logoFile) logoFile.addEventListener('change', e => onTenantLogoUpload(e.target.files?.[0]));
   const logoClear = document.getElementById('tenant-logo-clear');
@@ -17861,12 +17923,29 @@ function bindTodoHandlers(i){
     }
     if(cb) cb.addEventListener('change', () => {
       toggleTodo(i.id, tid);
-      openInstelling(i.id);
+      // Visueel direct toggelen zonder full overlay re-render. Een
+      // volle openInstelling() re-render heropende soms de Todo-
+      // accordion niet snappy waardoor het visueel niet leek dat de
+      // toggle was geregistreerd.
+      const row = cb.closest('.todo-item');
+      if(row){
+        row.classList.toggle('done', cb.checked);
+        const txt = row.querySelector('.todo-text');
+        if(txt) txt.style.textDecoration = cb.checked ? 'line-through' : '';
+      }
       try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
       try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
       try { if(typeof renderActies === 'function') renderActies(); } catch(e){}
     });
-    if(del) del.addEventListener('click', () => { deleteTodo(i.id, tid); openInstelling(i.id); });
+    if(del) del.addEventListener('click', () => {
+      const row = del.closest('.todo-item');
+      deleteTodo(i.id, tid);
+      // Verwijder de rij direct uit de DOM; geen volle re-render nodig.
+      if(row) row.remove();
+      try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+      try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
+      try { if(typeof renderActies === 'function') renderActies(); } catch(e){}
+    });
   });
 }
 function closeOverlay(){

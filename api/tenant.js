@@ -45,6 +45,7 @@ function publicTenant(t) {
     marketDefined: !!t.marketDefined,
     klantSchema: Array.isArray(t.klantSchema) ? t.klantSchema : [],
     theme: t.theme && typeof t.theme === 'object' ? t.theme : null,
+    signalPromptOverride: typeof t.signalPromptOverride === 'string' ? t.signalPromptOverride : '',
   };
 }
 
@@ -171,6 +172,9 @@ module.exports = async function handler(req, res) {
       const t = await loadOrCreate(session.tenantId);
       if (typeof body.naam === 'string') t.naam = String(body.naam).trim() || t.naam;
       if (typeof body.useLlmCurator === 'boolean') t.useLlmCurator = body.useLlmCurator;
+      if (typeof body.signalPromptOverride === 'string') {
+        t.signalPromptOverride = String(body.signalPromptOverride).slice(0, 4000);
+      }
       if (body.theme === null) {
         // Reset naar default-theme.
         t.theme = null;
