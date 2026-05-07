@@ -1346,6 +1346,9 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <select class="sort-select filter-compact" id="instProv" title="Filter op provincie">
           <option value="all">Alle provincies</option>
         </select>
+        <select class="sort-select filter-compact" id="instRegio" title="Filter op regio">
+          <option value="all">Alle regio's</option>
+        </select>
         <select class="sort-select filter-compact" id="instOwner" title="Filter op eigenaar">
           <option value="all">Alle eigenaren</option>
         </select>
@@ -1569,6 +1572,20 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div id="marketList" style="max-height:380px;overflow-y:auto;border:1px solid var(--grey-150);border-radius:6px;padding:8px;background:var(--white)"></div>
     <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn-primary" id="marketSaveBtn">Markt opslaan</button></div>
     <div id="marketSaveResult" style="margin-top:8px;font-size:.82rem"></div>
+
+    <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--grey-200)">
+      <h4 style="font-size:.86rem;color:var(--grey-900);margin-bottom:6px">Bulk eigenaar toewijzen</h4>
+      <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">Wijs in één klik een eigenaar toe aan alle organisaties die binnen de huidige filter (provincie / regio / zoekterm) vallen. Bestaande eigenaren worden overschreven. Werkt alleen op organisaties die ook in je markt-selectie zitten.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <label style="font-size:.78rem;color:var(--grey-700)">Toewijzen aan:</label>
+        <select id="marketBulkOwner" style="flex:1;min-width:180px;padding:6px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem">
+          <option value="">— Kies eigenaar —</option>
+        </select>
+        <button class="btn-secondary" id="marketBulkAssignBtn" style="font-size:.78rem;padding:6px 12px;border-color:var(--orange);color:var(--orange-dark)">Toewijzen aan filterresultaat</button>
+        <button class="btn-secondary" id="marketBulkClearBtn" style="font-size:.78rem;padding:6px 12px">Eigenaar wissen voor filterresultaat</button>
+      </div>
+      <div id="marketBulkResult" style="margin-top:10px;font-size:.82rem"></div>
+    </div>
     </div>
     <div id="adminPaneUsers" class="admin-pane" style="display:none">
     <p style="font-size:.82rem;color:var(--grey-700);margin-bottom:10px">Beheer accounts; alle gebruikers verschijnen automatisch in de eigenaar-dropdown bij toewijzingen en acties. Een nieuwe gebruiker krijgt een tijdelijk wachtwoord en moet dat bij eerste login wijzigen.</p>
@@ -1879,7 +1896,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.11",
+    "version": "1.17.12",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12878,6 +12895,7 @@ function initApp(){
     setVal('signalSort', _savedUi.signalSort);
     setVal('instSort', _savedUi.instSort);
     setVal('instProv', _savedUi.instProv);
+    setVal('instRegio', _savedUi.instRegio);
     setVal('instOwner', _savedUi.instOwner);
     setVal('trendsSort', _savedUi.trendsSort);
     setVal('actiesFilter', _savedUi.actiesFilter);
@@ -17455,6 +17473,62 @@ function bindAdminModal(){
     let to = null;
     mSearch.addEventListener('input', () => { clearTimeout(to); to = setTimeout(renderMarketList, 150); });
   }
+  // Bulk eigenaar-toewijzing op basis van het huidige filter (provincie /
+  // regio / zoekterm) in Beheer > Markt. Werkt op intersection met
+  // _marketPendingSel zodat alleen organisaties in de markt-selectie
+  // worden geraakt — anders kun je per ongeluk eigenaren toewijzen aan
+  // baseline-organisaties die je niet eens volgt.
+  const ownerSel = document.getElementById('marketBulkOwner');
+  if(ownerSel){
+    const fillOwners = () => {
+      const opts = OWNERS.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.naam)}</option>`).join('');
+      ownerSel.innerHTML = '<option value="">— Kies eigenaar —</option>' + opts;
+    };
+    fillOwners();
+    // Ook her-fillen wanneer Markt-pane zichtbaar wordt (OWNERS wordt
+    // async gehydrateerd).
+    const obs = new MutationObserver(fillOwners);
+    obs.observe(ownerSel, { childList: true });
+  }
+  function _filteredMarketIds(){
+    const provSel = document.getElementById('marketProvFilter')?.value || 'all';
+    const regioSel = document.getElementById('marketRegioFilter')?.value || 'all';
+    const q = (document.getElementById('marketSearchInput')?.value || '').toLowerCase().trim();
+    return getEntiteitenUniverse().filter(i => {
+      if(provSel !== 'all' && i.provincie !== provSel) return false;
+      if(regioSel !== 'all' && i.regio !== regioSel) return false;
+      if(q && !(String(i.naam || '').toLowerCase().includes(q))) return false;
+      // Alleen organisaties die in de markt zitten (of zo geselecteerd
+      // staan in de pending-selectie).
+      if(_marketPendingSel && _marketPendingSel.size > 0 && !_marketPendingSel.has(String(i.id))) return false;
+      return true;
+    }).map(i => String(i.id));
+  }
+  const bulkAssign = document.getElementById('marketBulkAssignBtn');
+  if(bulkAssign) bulkAssign.addEventListener('click', () => {
+    const out = document.getElementById('marketBulkResult');
+    const ownerId = document.getElementById('marketBulkOwner')?.value;
+    if(!ownerId){ if(out) out.innerHTML = '<span style="color:var(--red)">Kies eerst een eigenaar.</span>'; return; }
+    const ids = _filteredMarketIds();
+    if(ids.length === 0){ if(out) out.innerHTML = '<span style="color:var(--red)">Geen organisaties in het huidige filter.</span>'; return; }
+    const owner = ownerById(ownerId);
+    if(!confirm('Wijs ' + (owner ? owner.naam : ownerId) + ' toe als eigenaar van ' + ids.length + ' organisatie' + (ids.length === 1 ? '' : 's') + '? Bestaande eigenaren worden overschreven.')) return;
+    let n = 0;
+    ids.forEach(id => { setOwner(id, ownerId); n++; });
+    if(out) out.innerHTML = '<span style="color:var(--green)"><strong>' + n + '</strong> organisatie' + (n === 1 ? '' : 's') + ' toegewezen aan ' + escapeHtml(owner ? owner.naam : ownerId) + '.</span>';
+    try { if(typeof renderInstellingen === 'function') renderInstellingen(); } catch(e){}
+  });
+  const bulkClear = document.getElementById('marketBulkClearBtn');
+  if(bulkClear) bulkClear.addEventListener('click', () => {
+    const out = document.getElementById('marketBulkResult');
+    const ids = _filteredMarketIds();
+    if(ids.length === 0){ if(out) out.innerHTML = '<span style="color:var(--red)">Geen organisaties in het huidige filter.</span>'; return; }
+    if(!confirm('Wis de eigenaar van ' + ids.length + ' organisatie' + (ids.length === 1 ? '' : 's') + '?')) return;
+    let n = 0;
+    ids.forEach(id => { if(assignments[id]) n++; setOwner(id, null); });
+    if(out) out.innerHTML = '<span style="color:var(--green)">Eigenaar verwijderd voor <strong>' + n + '</strong> organisatie' + (n === 1 ? '' : 's') + ' (' + (ids.length - n) + ' hadden er al geen).</span>';
+    try { if(typeof renderInstellingen === 'function') renderInstellingen(); } catch(e){}
+  });
   document.getElementById('pane-beheer').addEventListener('click', (e) => {
     const optBtn = e.target.closest('.admin-option button');
     if(optBtn){
