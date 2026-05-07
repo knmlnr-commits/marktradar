@@ -1913,7 +1913,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.14",
+    "version": "1.17.15",
     "codename": "Rigel",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12889,6 +12889,8 @@ function relevantLensesFor(status){
 
 function initApp(){
   document.getElementById('lastUpdated').textContent = `${fmtFullDate(DATA.meta.lastUpdated)} · WK ${DATA.meta.weekNumber}`;
+  // De pill wordt opnieuw gevuld zodra remoteSignalsLastRun (via cron-
+  // metadata uit /api/signals/list) binnen is — zie refreshLastUpdatedPill.
   // Filters/sorts uit localStorage herstellen vóór de eerste render zodat
   // de gebruiker zijn vorige filtering meteen terugziet (geen flash).
   const _savedUi = loadUiState();
@@ -12959,6 +12961,7 @@ function initApp(){
     try { if(typeof renderSignals === 'function') renderSignals(); } catch(e){}
     try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
     try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
+    try { if(typeof refreshLastUpdatedPill === 'function') refreshLastUpdatedPill(); } catch(e){}
   });
   syncSupplierOverrides().then(() => {
     try { if(typeof renderLeveranciers === 'function') renderLeveranciers(); } catch(e){}
@@ -13443,6 +13446,29 @@ function renderKpiRow(){
 function addDaysISO(iso, days){
   const d = new Date(iso); d.setDate(d.getDate() + days);
   return d.toISOString().slice(0,10);
+}
+
+function refreshLastUpdatedPill(){
+  // Tenant-specifiek: laatste cron-run-tijd is leidend (de baseline-
+  // datum DATA.meta.lastUpdated geldt alleen voor de hardcoded GeriCall
+  // seed-data). Zo zie je in de topbar wanneer de auto-cron voor déze
+  // werkomgeving voor het laatst signalen heeft binnengetrokken.
+  const el = document.getElementById('lastUpdated');
+  if(!el) return;
+  if(remoteSignalsLastRun && remoteSignalsLastRun.ranAt){
+    const d = new Date(remoteSignalsLastRun.ranAt);
+    const dateStr = d.toISOString().slice(0, 10);
+    const time = d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+    const mode = remoteSignalsLastRun.mode || '?';
+    const newCount = remoteSignalsLastRun.newSaved || 0;
+    el.textContent = `${fmtFullDate(dateStr)} ${time}`;
+    el.title = `Laatste signaal-refresh (${mode}); ${newCount} nieuw opgeslagen`;
+    return;
+  }
+  // Fallback: GeriCall baseline-datum als er nog geen cron-run is
+  // geweest voor deze tenant.
+  el.textContent = `${fmtFullDate(DATA.meta.lastUpdated)} · WK ${DATA.meta.weekNumber}`;
+  el.title = 'Baseline-datum; nog geen tenant-specifieke cron-run gedraaid.';
 }
 
 function renderVersion(){
@@ -16520,6 +16546,7 @@ async function onRefreshNow(){
     renderFeedsStatus({ ranAt: Date.now(), ...result });
     // Trigger ook frontend re-fetch van signalen
     try { await syncRemoteSignals(); if(typeof renderSignals === 'function') renderSignals(); if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+    try { if(typeof refreshLastUpdatedPill === 'function') refreshLastUpdatedPill(); } catch(e){}
   } catch(err){
     if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
   } finally {
