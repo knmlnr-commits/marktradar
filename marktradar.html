@@ -1936,7 +1936,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.18.0",
+    "version": "1.18.1",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -15764,10 +15764,27 @@ function saveInlineEdit(instId, el){
       v = null;
     }
     updateOpportunity(instId, oppId, { [f]: v });
-    // Status-wissel: deadline-badge moet ge-update worden, dus re-render
-    // de pipeline-accordion. Renderfunnel onder Opportunities-tab ook.
+    // Bij status-wissel: deadline-badge in-place updaten zodat de
+    // accordions niet inklappen (full openInstelling-re-render zou dat
+    // wel doen). Funnel + tab-counters worden ook ge-update.
     if(f === 'status'){
-      try { openInstelling(instId, currentOverlayContext); } catch(e){}
+      try {
+        const opp = (opportunities[instId] || []).find(o => o.id === oppId);
+        if(opp){
+          const row = el.closest('.opp-row');
+          if(row){
+            // Vervang oude deadline-badge door een nieuwe op basis van
+            // de net-geüpdate stage_entered_at.
+            const oldBadge = row.querySelector('span[title^="Deadline"]');
+            if(oldBadge){
+              const tmp = document.createElement('div');
+              tmp.innerHTML = _renderDeadlineBadge(opp);
+              const newBadge = tmp.firstElementChild;
+              if(newBadge) oldBadge.replaceWith(newBadge);
+            }
+          }
+        }
+      } catch(e){}
       try { if(typeof renderOpportunities === 'function') renderOpportunities(); } catch(e){}
     }
     flashInlineSaved(el);
