@@ -1968,7 +1968,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.19.1",
+    "version": "1.19.2",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -15262,17 +15262,34 @@ function renderOpportunitiesSection(i){
     const statusOpts = statusKeys.map(s => `<option value="${escapeHtml(s)}" ${o.status === s ? 'selected' : ''}>${escapeHtml(statusLabels[s] || s)}</option>`).join('');
     const ownerOpts = `<option value="">— Geen —</option>` +
       OWNERS.map(ow => `<option value="${ow.id}" ${o.ownerId === ow.id ? 'selected' : ''}>${escapeHtml(ow.naam)}</option>`).join('');
+    // Owner-options voor de quick-add: default = current user; verder
+    // alle OWNERS. Compact gerendered zodat de hele add-rij op mobile
+    // niet te breed wordt.
+    const todoOwnerOpts = ['<option value="">— Geen eigenaar —</option>']
+      .concat(OWNERS.map(ow => {
+        const sel = currentUser && ow.id === currentUser.id ? ' selected' : '';
+        return `<option value="${escapeHtml(ow.id)}"${sel}>${escapeHtml(ow.naam)}${currentUser && ow.id === currentUser.id ? ' (jij)' : ''}</option>`;
+      })).join('');
     const linkedTodos = (todos[i.id] || []).filter(t => t.opportunityId === o.id);
     const linkedCount = linkedTodos.length;
     const openCount = linkedTodos.filter(t => !t.done).length;
+    const _ownerChipFor = (ownerId) => {
+      if(!ownerId) return '';
+      const ow = OWNERS.find(x => x.id === ownerId);
+      if(!ow) return '';
+      const initials = ow.naam.split(' ').map(s => s[0]).join('').slice(0,2).toUpperCase();
+      return `<span class="owner-chip" style="font-size:.62rem;padding:1px 6px 1px 1px" title="Eigenaar: ${escapeHtml(ow.naam)}"><span class="owner-mini" style="width:14px;height:14px;font-size:.55rem">${initials}</span><span class="owner-chip-name" style="font-size:.62rem">${escapeHtml(ow.naam)}</span></span>`;
+    };
     const linkedItemsHtml = linkedTodos.map(t => `
       <label class="opp-todo-item" data-inst-id="${escapeHtml(i.id)}" data-todo-id="${escapeHtml(t.id)}" style="display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:.78rem;${t.done ? 'opacity:.55' : ''}">
         <input type="checkbox" class="opp-todo-check" data-inst-id="${escapeHtml(i.id)}" data-todo-id="${escapeHtml(t.id)}" ${t.done ? 'checked' : ''} style="cursor:pointer;accent-color:var(--orange)">
-        <span style="flex:1;${t.done ? 'text-decoration:line-through;color:var(--grey-600)' : ''}">${escapeHtml(t.text)}</span>
+        <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${t.done ? 'text-decoration:line-through;color:var(--grey-600)' : ''}">${escapeHtml(t.text)}</span>
+        ${_ownerChipFor(t.ownerId)}
       </label>`).join('');
     const quickAddHtml = `
-      <div class="opp-todo-add" style="display:flex;gap:6px;margin-top:6px;align-items:center">
-        <input type="text" class="opp-todo-input" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" placeholder="+ Nieuwe todo (Enter om toe te voegen)" style="flex:1;padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.78rem;background:var(--grey-50)">
+      <div class="opp-todo-add" style="display:flex;gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap">
+        <input type="text" class="opp-todo-input" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" placeholder="+ Nieuwe todo" style="flex:1;min-width:140px;padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.78rem;background:var(--grey-50)">
+        <select class="opp-todo-owner-select" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" title="Eigenaar van de nieuwe todo" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.74rem;background:white;max-width:140px">${todoOwnerOpts}</select>
         <button type="button" class="opp-todo-add-btn" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" style="padding:5px 10px;border:1px solid var(--orange);background:var(--orange-pale);color:var(--orange-dark);border-radius:4px;font-size:.74rem;font-weight:600;cursor:pointer">Toevoegen</button>
       </div>`;
     const linkedTodosHtml = `
@@ -15763,29 +15780,41 @@ function bindOverlayChrome(i){
   // Quick-add todo onder een opp. Submit op Enter of klik op
   // 'Toevoegen'. Genereert een nieuwe todo met opportunityId-link en
   // injecteert 'm direct in de DOM (geen full re-render). Eigenaar
-  // valt terug op de huidige user (default voor nieuwe todos).
+  // wordt gelezen uit de owner-select naast het input-veld; default
+  // staat op currentUser maar kan per-todo overschreven worden.
   const _addOppTodo = (instId, oppId, inputEl) => {
     const text = (inputEl.value || '').trim();
     if(!text) return;
-    const owner = (currentUser && currentUser.id) || null;
+    const addBlock = inputEl.closest('.opp-todo-add');
+    const ownerSel = addBlock ? addBlock.querySelector('.opp-todo-owner-select') : null;
+    const owner = (ownerSel && ownerSel.value) ? ownerSel.value : ((currentUser && currentUser.id) || null);
     const t = addTodo(instId, text, owner, { opportunityId: oppId });
     inputEl.value = '';
     // Inject de nieuwe todo-row direct boven het quick-add-blok.
-    const addBlock = inputEl.closest('.opp-todo-add');
     if(addBlock && t){
+      // Render een owner-chip voor de nieuwe rij (compact). OWNERS
+      // is globaal; ownerById is de canonical lookup.
+      let ownerChipHtml = '';
+      if(t.ownerId){
+        const ow = (typeof ownerById === 'function') ? ownerById(t.ownerId) : OWNERS.find(x => x.id === t.ownerId);
+        if(ow){
+          const initials = ow.naam.split(' ').map(s => s[0]).join('').slice(0,2).toUpperCase();
+          ownerChipHtml = `<span class="owner-chip" style="font-size:.62rem;padding:1px 6px 1px 1px" title="Eigenaar: ${escapeHtml(ow.naam)}"><span class="owner-mini" style="width:14px;height:14px;font-size:.55rem">${initials}</span><span class="owner-chip-name" style="font-size:.62rem">${escapeHtml(ow.naam)}</span></span>`;
+        }
+      }
       const row = document.createElement('label');
       row.className = 'opp-todo-item';
       row.dataset.instId = instId;
       row.dataset.todoId = t.id;
       row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:.78rem';
-      row.innerHTML = `<input type="checkbox" class="opp-todo-check" data-inst-id="${escapeHtml(instId)}" data-todo-id="${escapeHtml(t.id)}" style="cursor:pointer;accent-color:var(--orange)"><span style="flex:1">${escapeHtml(t.text)}</span>`;
+      row.innerHTML = `<input type="checkbox" class="opp-todo-check" data-inst-id="${escapeHtml(instId)}" data-todo-id="${escapeHtml(t.id)}" style="cursor:pointer;accent-color:var(--orange)"><span class="opp-todo-text" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(t.text)}</span>${ownerChipHtml}`;
       addBlock.parentNode.insertBefore(row, addBlock);
       // Bind check op de nieuwe rij.
       const cb = row.querySelector('.opp-todo-check');
       cb.addEventListener('change', () => {
         toggleTodo(instId, t.id);
         row.style.opacity = cb.checked ? '.55' : '';
-        const txt = row.querySelector('span:last-child');
+        const txt = row.querySelector('.opp-todo-text');
         if(txt) txt.style.textDecoration = cb.checked ? 'line-through' : '';
         try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
         try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
