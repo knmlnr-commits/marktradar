@@ -1936,7 +1936,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.18.3",
+    "version": "1.18.4",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -19123,44 +19123,32 @@ function renderOpportunities(){
   const totalSum = perStage.reduce((a, x) => a + x.sum, 0);
   const totalWeighted = perStage.reduce((a, x) => a + x.weighted, 0);
   const totalCount = perStage.reduce((a, x) => a + x.count, 0);
-  // Funnel-breedte per fase: gebaseerd op count, maar met een
-  // monotonisch dalend max (zodat 't ook visueel een trechter blijft
-  // wanneer een latere fase toevallig MEER opps heeft, wat in praktijk
-  // soms gebeurt door directe-binnenkomers).
+  // Funnel-frame: vaste pyramide-vorm zodat de visualisatie er ook
+  // met kleine aantallen netjes uitziet. De FRAME-breedte is gebaseerd
+  // op stage-positie (lineair afnemend van 100% naar 40%); de FILL-
+  // breedte binnen de frame is gebaseerd op count relatief tot maxCount.
+  // Op 0 opps zie je nog steeds de pyramide-silhouette (dashed border).
+  const N = stages.length;
+  const frameWidths = stages.map((_, i) => N <= 1 ? 90 : Math.round(100 - (i / (N - 1)) * 60));
   const maxCount = Math.max(1, ...perStage.map(x => x.count));
-  let runningMax = maxCount;
-  const widths = perStage.map(p => {
-    runningMax = Math.min(runningMax, p.count > 0 ? p.count : runningMax);
-    return p.count === 0 ? 8 : Math.max(8, Math.round((p.count / maxCount) * 100));
-  });
-  // Forceer monotone afname zodat de pyramide-vorm klopt: elke volgende
-  // bar is even breed of smaller dan de voorgaande.
-  for(let i = 1; i < widths.length; i++){
-    if(widths[i] > widths[i - 1]) widths[i] = widths[i - 1];
-  }
   const fmtEur = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M'
                     : n >= 1e3 ? Math.round(n / 1e3) + 'k'
                     : Math.round(n).toString();
   const funnelRowsHtml = perStage.map((p, idx) => {
-    const w = widths[idx];
-    const prevCount = idx > 0 ? perStage[idx - 1].count : null;
-    const lost = prevCount !== null ? Math.max(0, prevCount - p.count) : null;
+    const frameW = frameWidths[idx];
+    const fillPct = p.count === 0 ? 0 : Math.max(8, Math.round((p.count / maxCount) * 100));
     return `
-      <div style="display:grid;grid-template-columns:200px 1fr 90px;gap:14px;align-items:center;padding:6px 0">
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:center;padding:6px 0">
         <div style="text-align:right;padding-right:10px">
           <div style="font-size:.84rem;font-weight:700;color:var(--grey-900)">${escapeHtml(p.stage.label)}</div>
           <div style="font-size:.7rem;color:var(--grey-600);font-family:'DM Mono',monospace">${p.count} &middot; ${p.stage.probability_pct}%</div>
           <div style="font-size:.66rem;color:var(--grey-500);font-family:'DM Mono',monospace">€ ${fmtEur(p.sum)} → € ${fmtEur(p.weighted)}</div>
         </div>
         <div style="display:flex;justify-content:center">
-          <div style="width:${w}%;min-width:60px;height:38px;background:linear-gradient(180deg, var(--orange-light), var(--orange));color:#fff;display:flex;align-items:center;justify-content:center;border-radius:4px;font-weight:700;font-size:.86rem;letter-spacing:-.01em;box-shadow:0 2px 6px rgba(var(--orange-rgb),.18);transition:width .25s">
-            <span style="white-space:nowrap;text-shadow:0 1px 1px rgba(0,0,0,.2)">${escapeHtml(p.stage.label)} &middot; ${p.count}</span>
+          <div style="width:${frameW}%;height:38px;background:var(--grey-50);border:1px dashed var(--grey-300);border-radius:4px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden">
+            ${fillPct > 0 ? `<div style="position:absolute;left:50%;top:0;bottom:0;width:${fillPct}%;transform:translateX(-50%);background:linear-gradient(180deg, var(--orange-light), var(--orange));box-shadow:0 2px 6px rgba(var(--orange-rgb),.18);transition:width .25s;border-radius:3px"></div>` : ''}
+            <span style="position:relative;z-index:1;font-weight:700;font-size:.86rem;letter-spacing:-.01em;color:${fillPct > 0 ? '#fff' : 'var(--grey-500)'};text-shadow:${fillPct > 0 ? '0 1px 1px rgba(0,0,0,.2)' : 'none'};white-space:nowrap">${escapeHtml(p.stage.label)} &middot; ${p.count}</span>
           </div>
-        </div>
-        <div style="font-size:.78rem;color:var(--grey-700);text-align:left">
-          ${lost === null ? '<span style="color:var(--grey-400)">—</span>' :
-            lost === 0 ? '<span style="color:var(--green);font-weight:600">0 verloren</span>' :
-            `<span style="color:var(--red);font-weight:600">−${lost}</span> <span style="color:var(--grey-500);font-size:.7rem">verloren</span>`}
         </div>
       </div>`;
   }).join('');
@@ -19169,7 +19157,7 @@ function renderOpportunities(){
       <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:14px;flex-wrap:wrap;border-bottom:1px solid var(--grey-150);padding-bottom:10px">
         <strong style="font-size:1rem;color:var(--grey-900);letter-spacing:-.01em">Pipeline-funnel</strong>
         <span style="font-size:.78rem;color:var(--grey-600)"><strong>${totalCount}</strong> opp${totalCount === 1 ? '' : 's'} &middot; € ${fmtEur(totalSum)} totaal &middot; <strong style="color:var(--orange-dark)">€ ${fmtEur(totalWeighted)}</strong> weighted</span>
-        <span style="margin-left:auto;font-size:.66rem;color:var(--grey-500);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Fase &middot; Pijplijn &middot; Verloren</span>
+        <span style="margin-left:auto;font-size:.66rem;color:var(--grey-500);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Fase &middot; Pijplijn</span>
       </div>
       ${funnelRowsHtml}
     </div>`;
