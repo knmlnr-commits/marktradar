@@ -1936,7 +1936,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.18.2",
+    "version": "1.18.3",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -15232,16 +15232,22 @@ function renderOpportunitiesSection(i){
     const linkedTodos = (todos[i.id] || []).filter(t => t.opportunityId === o.id);
     const linkedCount = linkedTodos.length;
     const openCount = linkedTodos.filter(t => !t.done).length;
-    const linkedTodosHtml = linkedCount === 0
-      ? '<div style="margin-top:8px;font-size:.72rem;color:var(--grey-500);font-style:italic">Nog geen gekoppelde todos</div>'
-      : `<div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;border-top:1px dashed var(--grey-200);padding-top:8px">
-          <div style="font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600)">Gekoppelde todo's <span style="color:var(--grey-500);font-weight:500">(${openCount} open / ${linkedCount} totaal)</span></div>
-          ${linkedTodos.map(t => `
-            <label class="opp-todo-item" data-inst-id="${escapeHtml(i.id)}" data-todo-id="${escapeHtml(t.id)}" style="display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:.78rem;${t.done ? 'opacity:.55' : ''}">
-              <input type="checkbox" class="opp-todo-check" data-inst-id="${escapeHtml(i.id)}" data-todo-id="${escapeHtml(t.id)}" ${t.done ? 'checked' : ''} style="cursor:pointer;accent-color:var(--orange)">
-              <span style="flex:1;${t.done ? 'text-decoration:line-through;color:var(--grey-600)' : ''}">${escapeHtml(t.text)}</span>
-            </label>`).join('')}
-        </div>`;
+    const linkedItemsHtml = linkedTodos.map(t => `
+      <label class="opp-todo-item" data-inst-id="${escapeHtml(i.id)}" data-todo-id="${escapeHtml(t.id)}" style="display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:.78rem;${t.done ? 'opacity:.55' : ''}">
+        <input type="checkbox" class="opp-todo-check" data-inst-id="${escapeHtml(i.id)}" data-todo-id="${escapeHtml(t.id)}" ${t.done ? 'checked' : ''} style="cursor:pointer;accent-color:var(--orange)">
+        <span style="flex:1;${t.done ? 'text-decoration:line-through;color:var(--grey-600)' : ''}">${escapeHtml(t.text)}</span>
+      </label>`).join('');
+    const quickAddHtml = `
+      <div class="opp-todo-add" style="display:flex;gap:6px;margin-top:6px;align-items:center">
+        <input type="text" class="opp-todo-input" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" placeholder="+ Nieuwe todo (Enter om toe te voegen)" style="flex:1;padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.78rem;background:var(--grey-50)">
+        <button type="button" class="opp-todo-add-btn" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" style="padding:5px 10px;border:1px solid var(--orange);background:var(--orange-pale);color:var(--orange-dark);border-radius:4px;font-size:.74rem;font-weight:600;cursor:pointer">Toevoegen</button>
+      </div>`;
+    const linkedTodosHtml = `
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;border-top:1px dashed var(--grey-200);padding-top:8px">
+        <div style="font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600)">Gekoppelde todo's${linkedCount > 0 ? ` <span style="color:var(--grey-500);font-weight:500">(${openCount} open / ${linkedCount} totaal)</span>` : ''}</div>
+        ${linkedCount === 0 ? '<div style="font-size:.72rem;color:var(--grey-500);font-style:italic;padding:2px 0">Nog geen todos. Voeg er eentje toe ↓</div>' : linkedItemsHtml}
+        ${quickAddHtml}
+      </div>`;
     return `
       <div class="opp-row" data-opp-id="${escapeHtml(o.id)}" style="padding:10px;border:1px solid var(--grey-200);border-radius:8px;margin-bottom:8px;background:var(--white)">
         <div style="display:grid;grid-template-columns:1.6fr 110px 130px 28px;gap:8px;align-items:start">
@@ -15718,6 +15724,60 @@ function bindOverlayChrome(i){
       try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
       try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
       try { if(typeof renderActies === 'function') renderActies(); } catch(e){}
+    });
+  });
+  // Quick-add todo onder een opp. Submit op Enter of klik op
+  // 'Toevoegen'. Genereert een nieuwe todo met opportunityId-link en
+  // injecteert 'm direct in de DOM (geen full re-render). Eigenaar
+  // valt terug op de huidige user (default voor nieuwe todos).
+  const _addOppTodo = (instId, oppId, inputEl) => {
+    const text = (inputEl.value || '').trim();
+    if(!text) return;
+    const owner = (currentUser && currentUser.id) || null;
+    const t = addTodo(instId, text, owner, { opportunityId: oppId });
+    inputEl.value = '';
+    // Inject de nieuwe todo-row direct boven het quick-add-blok.
+    const addBlock = inputEl.closest('.opp-todo-add');
+    if(addBlock && t){
+      const row = document.createElement('label');
+      row.className = 'opp-todo-item';
+      row.dataset.instId = instId;
+      row.dataset.todoId = t.id;
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:.78rem';
+      row.innerHTML = `<input type="checkbox" class="opp-todo-check" data-inst-id="${escapeHtml(instId)}" data-todo-id="${escapeHtml(t.id)}" style="cursor:pointer;accent-color:var(--orange)"><span style="flex:1">${escapeHtml(t.text)}</span>`;
+      addBlock.parentNode.insertBefore(row, addBlock);
+      // Bind check op de nieuwe rij.
+      const cb = row.querySelector('.opp-todo-check');
+      cb.addEventListener('change', () => {
+        toggleTodo(instId, t.id);
+        row.style.opacity = cb.checked ? '.55' : '';
+        const txt = row.querySelector('span:last-child');
+        if(txt) txt.style.textDecoration = cb.checked ? 'line-through' : '';
+        try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+        try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
+        try { if(typeof renderActies === 'function') renderActies(); } catch(e){}
+      });
+      // Verwijder de 'nog geen todos' placeholder als 'ie er stond.
+      const placeholder = addBlock.parentNode.querySelector('div[style*="font-style:italic"]');
+      if(placeholder) placeholder.remove();
+    }
+    try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+    try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
+    try { if(typeof renderActies === 'function') renderActies(); } catch(e){}
+  };
+  document.querySelectorAll('#overlayPanel .opp-todo-add-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = btn.parentNode.querySelector('.opp-todo-input');
+      if(input) _addOppTodo(btn.dataset.instId, btn.dataset.oppId, input);
+    });
+  });
+  document.querySelectorAll('#overlayPanel .opp-todo-input').forEach(inp => {
+    inp.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        _addOppTodo(inp.dataset.instId, inp.dataset.oppId, inp);
+      }
     });
   });
   // Verwijder-knoppen voor bestuurders.
