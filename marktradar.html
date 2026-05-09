@@ -1587,6 +1587,26 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <details class="acc admin-acc" name="admin-tenant-acc">
     <summary>
     <span class="acc-icon">⑦</span>
+    <span class="acc-title">Pipeline-targets per jaar</span>
+    <span class="acc-chev">&#9662;</span>
+    </summary>
+    <div class="acc-body">
+      <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">Stel per fase een target aantal opportunities + gemiddelde waarde (€) in voor het huidige en/of volgende jaar. De totaal-€ wordt afgeleid (count × avg). Targets verschijnen als referentie-marker in de funnel onder de Opportunities-tab.</p>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+        <label style="font-size:.78rem;color:var(--grey-700)">Jaar:</label>
+        <select id="oppTargetYearSel" style="padding:5px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem"></select>
+      </div>
+      <div id="oppTargetsList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn-primary" id="oppTargetSaveBtn">Targets opslaan</button>
+      </div>
+      <div id="oppTargetResult" style="margin-top:8px;font-size:.82rem"></div>
+    </div>
+    </details>
+
+    <details class="acc admin-acc" name="admin-tenant-acc">
+    <summary>
+    <span class="acc-icon">⑧</span>
     <span class="acc-title">Geavanceerd</span>
     <span class="acc-chev">&#9662;</span>
     </summary>
@@ -1936,7 +1956,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.18.6",
+    "version": "1.19.0",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12985,6 +13005,7 @@ function initApp(){
   bindSchemaPane();
   bindThemePane();
   bindOppStagesPane();
+  bindOppTargetsPane();
   bindUserMenu();
   bindVersionModal();
   renderVersion();
@@ -16832,6 +16853,8 @@ async function refreshTenantPane(){
   refreshThemePane();
   // Opportunity-fases-pane initialiseren met tenant.oppStages of defaults.
   refreshOppStagesPane();
+  // Pipeline-targets-pane initialiseren met tenant.oppTargets.
+  refreshOppTargetsPane();
   if(stats){
     const universe = getEntiteitenUniverse();
     const baseN = universe.length;
@@ -17024,6 +17047,128 @@ function bindOppStagesPane(){
   });
   const save = document.getElementById('oppStageSaveBtn');
   if(save) save.addEventListener('click', onOppStagesSave);
+}
+
+// ---------------- Pipeline-targets per jaar ----------------
+// Per (year, stage_key) een target aantal + avg-€. Geen historische
+// jaren in v1 — alleen huidig + komend kalenderjaar selecteerbaar.
+function tenantOppTargets(){
+  const arr = currentTenant && currentTenant.oppTargets;
+  return Array.isArray(arr) ? arr.slice() : [];
+}
+function getOppTargetsForYear(year){
+  // Returns Map<stage_key, {target_count, target_avg_value_eur}>
+  const out = new Map();
+  tenantOppTargets()
+    .filter(t => String(t.year) === String(year))
+    .forEach(t => out.set(t.stage_key, t));
+  return out;
+}
+let _oppTargetDraft = []; // working copy voor de huidige jaar-tab in de UI
+let _oppTargetCurrentYear = null;
+function _availableTargetYears(){
+  const now = new Date().getFullYear();
+  // Huidig + komend jaar. Als er al targets bestaan voor andere jaren
+  // (bv. door API-import), neem die ook mee.
+  const set = new Set([String(now), String(now + 1)]);
+  tenantOppTargets().forEach(t => set.add(String(t.year)));
+  return Array.from(set).sort();
+}
+function refreshOppTargetsPane(){
+  const sel = document.getElementById('oppTargetYearSel');
+  if(!sel) return;
+  const years = _availableTargetYears();
+  const cur = _oppTargetCurrentYear || String(new Date().getFullYear());
+  sel.innerHTML = years.map(y => `<option value="${y}" ${y === cur ? 'selected' : ''}>${y}</option>`).join('');
+  _oppTargetCurrentYear = sel.value;
+  // Draft = bestaande targets voor dit jaar, aangevuld met lege rijen
+  // voor stages zonder target zodat alle fases zichtbaar zijn.
+  const stages = tenantOppStages();
+  const existing = getOppTargetsForYear(_oppTargetCurrentYear);
+  _oppTargetDraft = stages.map(s => {
+    const t = existing.get(s.key);
+    return {
+      stage_key: s.key,
+      stage_label: s.label,
+      target_count: t ? t.target_count : 0,
+      target_avg_value_eur: t ? t.target_avg_value_eur : 0,
+    };
+  });
+  renderOppTargetsList();
+}
+function renderOppTargetsList(){
+  const wrap = document.getElementById('oppTargetsList');
+  if(!wrap) return;
+  if(_oppTargetDraft.length === 0){
+    wrap.innerHTML = '<div class="dmu-empty" style="padding:10px 12px">Geen funnel-fases gedefinieerd. Configureer eerst Opportunity-fases hierboven.</div>';
+    return;
+  }
+  const fmtEur = (n) => n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : Math.round(n).toString();
+  wrap.innerHTML = `
+    <div style="display:grid;grid-template-columns:1.4fr 100px 130px 110px;gap:8px;align-items:center;padding:6px 0;font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-500);font-weight:700">
+      <div>Fase</div><div>Target count</div><div>Avg €/opp</div><div style="text-align:right">Totaal €</div>
+    </div>` +
+    _oppTargetDraft.map((t, idx) => {
+      const total = (t.target_count || 0) * (t.target_avg_value_eur || 0);
+      return `
+      <div style="display:grid;grid-template-columns:1.4fr 100px 130px 110px;gap:8px;align-items:center;padding:6px 0">
+        <div style="font-size:.84rem;font-weight:600;color:var(--grey-900)">${escapeHtml(t.stage_label || t.stage_key)}</div>
+        <input type="number" min="0" data-target-idx="${idx}" data-target-field="target_count" value="${t.target_count}" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.82rem;background:white">
+        <input type="number" min="0" step="1000" data-target-idx="${idx}" data-target-field="target_avg_value_eur" value="${t.target_avg_value_eur}" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.82rem;background:white">
+        <div style="text-align:right;font-family:'DM Mono',monospace;font-size:.82rem;color:var(--grey-700)" data-target-total="${idx}">€ ${fmtEur(total)}</div>
+      </div>`;
+    }).join('');
+  wrap.querySelectorAll('input[data-target-idx]').forEach(el => {
+    el.addEventListener('input', () => {
+      const i = parseInt(el.dataset.targetIdx, 10);
+      const f = el.dataset.targetField;
+      if(!_oppTargetDraft[i]) return;
+      _oppTargetDraft[i][f] = Math.max(0, Number(el.value) || 0);
+      // Live-update van afgeleide totaal-€-cel.
+      const totalEl = wrap.querySelector('[data-target-total="' + i + '"]');
+      if(totalEl){
+        const total = (_oppTargetDraft[i].target_count || 0) * (_oppTargetDraft[i].target_avg_value_eur || 0);
+        totalEl.textContent = '€ ' + (total >= 1e6 ? (total / 1e6).toFixed(2) + 'M' : total >= 1e3 ? (total / 1e3).toFixed(1) + 'k' : Math.round(total).toString());
+      }
+    });
+  });
+}
+async function onOppTargetsSave(){
+  const out = document.getElementById('oppTargetResult');
+  // Combineer bestaande targets uit ANDERE jaren met de huidige draft.
+  const others = tenantOppTargets().filter(t => String(t.year) !== String(_oppTargetCurrentYear));
+  const drafted = _oppTargetDraft
+    .filter(t => (t.target_count || 0) > 0 || (t.target_avg_value_eur || 0) > 0)
+    .map(t => ({
+      year: String(_oppTargetCurrentYear),
+      stage_key: t.stage_key,
+      target_count: t.target_count || 0,
+      target_avg_value_eur: t.target_avg_value_eur || 0,
+    }));
+  const oppTargets = others.concat(drafted);
+  try {
+    const r = await apiFetch('/api/tenant?action=update', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oppTargets })
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || 'Opslaan mislukt');
+    if(j.tenant) currentTenant = j.tenant;
+    if(out) out.innerHTML = '<span style="color:var(--green)">Targets opgeslagen voor ' + escapeHtml(_oppTargetCurrentYear) + ' (' + drafted.length + ' fase' + (drafted.length === 1 ? '' : 's') + ').</span>';
+    refreshOppTargetsPane();
+    try { if(typeof renderOpportunities === 'function') renderOpportunities(); } catch(e){}
+  } catch(err){
+    if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  }
+}
+function bindOppTargetsPane(){
+  const sel = document.getElementById('oppTargetYearSel');
+  if(sel) sel.addEventListener('change', () => {
+    _oppTargetCurrentYear = sel.value;
+    refreshOppTargetsPane();
+  });
+  const save = document.getElementById('oppTargetSaveBtn');
+  if(save) save.addEventListener('click', onOppTargetsSave);
 }
 
 function tenantSchema(){
@@ -19168,30 +19313,59 @@ function renderOpportunities(){
   const fmtEur = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M'
                     : n >= 1e3 ? Math.round(n / 1e3) + 'k'
                     : Math.round(n).toString();
+  // Targets voor het huidige kalenderjaar — als referentie-marker en
+  // 'vs target'-readout in de funnel.
+  const currentYear = String(new Date().getFullYear());
+  const targetMap = (typeof getOppTargetsForYear === 'function') ? getOppTargetsForYear(currentYear) : new Map();
+  const totalTargetCount = perStage.reduce((a, p) => a + ((targetMap.get(p.stage.key) || {}).target_count || 0), 0);
+  const totalTargetValue = perStage.reduce((a, p) => {
+    const t = targetMap.get(p.stage.key) || {};
+    return a + ((t.target_count || 0) * (t.target_avg_value_eur || 0));
+  }, 0);
+  const hasTargets = totalTargetCount > 0 || totalTargetValue > 0;
   const funnelRowsHtml = perStage.map((p, idx) => {
     const frameW = frameWidths[idx];
     const fillPct = p.count === 0 ? 0 : Math.max(8, Math.round((p.count / maxCount) * 100));
+    const tgt = targetMap.get(p.stage.key);
+    const tgtCount = tgt ? (tgt.target_count || 0) : 0;
+    const tgtTotal = tgt ? (tgtCount * (tgt.target_avg_value_eur || 0)) : 0;
+    // Target-marker: dunne verticale lijn op de positie waar
+    // count = target_count zou liggen, gecentreerd in de frame.
+    // % van frame-breedte = target_count / maxCount.
+    const tgtPct = (tgtCount > 0 && maxCount > 0)
+      ? Math.min(100, Math.round((tgtCount / maxCount) * 100))
+      : null;
+    // Vs-target readout-color: groen als ≥, amber 70-100%, grijs/rood < 70%.
+    let vsColor = 'var(--grey-500)';
+    if(tgtCount > 0){
+      const ratio = p.count / tgtCount;
+      vsColor = ratio >= 1 ? 'var(--green)' : ratio >= 0.7 ? '#8a6a1c' : '#9c2f2f';
+    }
     return `
       <div style="display:grid;grid-template-columns:130px 1fr;gap:10px;align-items:center;padding:5px 0">
         <div style="text-align:right;padding-right:8px;min-width:0">
           <div style="font-size:.74rem;font-weight:700;color:var(--grey-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.stage.label)}</div>
-          <div style="font-size:.64rem;color:var(--grey-600);font-family:'DM Mono',monospace">${p.count} &middot; ${p.stage.probability_pct}%</div>
-          <div style="font-size:.6rem;color:var(--grey-500);font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">€ ${fmtEur(p.sum)} → € ${fmtEur(p.weighted)}</div>
+          <div style="font-size:.64rem;color:var(--grey-600);font-family:'DM Mono',monospace">${p.count}${tgtCount > 0 ? ` <span style="color:${vsColor}">/ ${tgtCount}</span>` : ''} &middot; ${p.stage.probability_pct}%</div>
+          <div style="font-size:.6rem;color:var(--grey-500);font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="Actual € totaal → weighted${tgtTotal > 0 ? ' &middot; doel € ' + fmtEur(tgtTotal) : ''}">€ ${fmtEur(p.sum)} → € ${fmtEur(p.weighted)}${tgtTotal > 0 ? ` <span style="color:var(--grey-400)">/ € ${fmtEur(tgtTotal)}</span>` : ''}</div>
         </div>
         <div style="display:flex;justify-content:center;min-width:0">
           <div style="width:${frameW}%;max-width:100%;height:32px;background:var(--grey-50);border:1px dashed var(--grey-300);border-radius:4px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden">
             ${fillPct > 0 ? `<div style="position:absolute;left:50%;top:0;bottom:0;width:${fillPct}%;transform:translateX(-50%);background:linear-gradient(180deg, var(--orange-light), var(--orange));box-shadow:0 2px 6px rgba(var(--orange-rgb),.18);transition:width .25s;border-radius:3px"></div>` : ''}
-            <span style="position:relative;z-index:1;font-weight:700;font-size:.74rem;letter-spacing:-.01em;color:${fillPct > 0 ? '#fff' : 'var(--grey-500)'};text-shadow:${fillPct > 0 ? '0 1px 1px rgba(0,0,0,.2)' : 'none'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96%;padding:0 6px">${escapeHtml(p.stage.label)} &middot; ${p.count}</span>
+            ${tgtPct !== null ? `<div title="Doel ${currentYear}: ${tgtCount} opps" style="position:absolute;top:-4px;bottom:-4px;left:${50 - tgtPct/2}%;width:2px;background:var(--grey-700);z-index:2"></div><div title="Doel ${currentYear}: ${tgtCount} opps" style="position:absolute;top:-4px;bottom:-4px;left:${50 + tgtPct/2}%;width:2px;background:var(--grey-700);z-index:2"></div>` : ''}
+            <span style="position:relative;z-index:3;font-weight:700;font-size:.74rem;letter-spacing:-.01em;color:${fillPct > 0 ? '#fff' : 'var(--grey-500)'};text-shadow:${fillPct > 0 ? '0 1px 1px rgba(0,0,0,.2)' : 'none'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96%;padding:0 6px">${escapeHtml(p.stage.label)} &middot; ${p.count}</span>
           </div>
         </div>
       </div>`;
   }).join('');
+  const targetSummary = hasTargets
+    ? ` <span style="margin-left:8px;color:var(--grey-500)">|</span> <span style="color:var(--grey-700);font-size:.74rem">Doel ${currentYear}: <strong>${totalTargetCount}</strong> opp${totalTargetCount === 1 ? '' : 's'} &middot; € ${fmtEur(totalTargetValue)}</span>`
+    : '';
   const funnelHtml = `
     <div style="background:var(--white);border:1px solid var(--grey-200);border-radius:10px;padding:18px 20px;margin-bottom:18px">
       <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:14px;flex-wrap:wrap;border-bottom:1px solid var(--grey-150);padding-bottom:10px">
         <strong style="font-size:1rem;color:var(--grey-900);letter-spacing:-.01em">Pipeline-funnel</strong>
-        <span style="font-size:.78rem;color:var(--grey-600)"><strong>${totalCount}</strong> opp${totalCount === 1 ? '' : 's'} &middot; € ${fmtEur(totalSum)} totaal &middot; <strong style="color:var(--orange-dark)">€ ${fmtEur(totalWeighted)}</strong> weighted</span>
-        <span style="margin-left:auto;font-size:.66rem;color:var(--grey-500);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Fase &middot; Pijplijn</span>
+        <span style="font-size:.78rem;color:var(--grey-600)"><strong>${totalCount}</strong> opp${totalCount === 1 ? '' : 's'} &middot; € ${fmtEur(totalSum)} totaal &middot; <strong style="color:var(--orange-dark)">€ ${fmtEur(totalWeighted)}</strong> weighted${targetSummary}</span>
+        <span style="margin-left:auto;font-size:.66rem;color:var(--grey-500);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Fase &middot; Pijplijn${hasTargets ? ' &middot; Doel' : ''}</span>
       </div>
       ${funnelRowsHtml}
     </div>`;

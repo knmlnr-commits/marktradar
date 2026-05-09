@@ -47,6 +47,7 @@ function publicTenant(t) {
     theme: t.theme && typeof t.theme === 'object' ? t.theme : null,
     signalPromptOverride: typeof t.signalPromptOverride === 'string' ? t.signalPromptOverride : '',
     oppStages: Array.isArray(t.oppStages) ? t.oppStages : null,
+    oppTargets: Array.isArray(t.oppTargets) ? t.oppTargets : [],
   };
 }
 
@@ -175,6 +176,29 @@ module.exports = async function handler(req, res) {
       if (typeof body.useLlmCurator === 'boolean') t.useLlmCurator = body.useLlmCurator;
       if (typeof body.signalPromptOverride === 'string') {
         t.signalPromptOverride = String(body.signalPromptOverride).slice(0, 4000);
+      }
+      if (Array.isArray(body.oppTargets)) {
+        // Per (year, stage_key) een target_count + target_avg_value_eur.
+        // Year is 4-digit kalenderjaar als string. Stage_key wordt
+        // niet gevalideerd tegen oppStages — als de stage later wordt
+        // hernoemd of verwijderd blijft de historische target staan.
+        const seen = new Set();
+        t.oppTargets = body.oppTargets.slice(0, 200).map((tg) => {
+          const year = String(tg.year || '').trim();
+          if (!/^[0-9]{4}$/.test(year)) return null;
+          const stage_key = String(tg.stage_key || '').trim().slice(0, 40);
+          if (!stage_key) return null;
+          const composite = year + '|' + stage_key;
+          if (seen.has(composite)) return null;
+          seen.add(composite);
+          let count = parseInt(tg.target_count, 10);
+          if (isNaN(count) || count < 0) count = 0;
+          if (count > 100000) count = 100000;
+          let avg = parseFloat(tg.target_avg_value_eur);
+          if (isNaN(avg) || avg < 0) avg = 0;
+          if (avg > 1e12) avg = 1e12;
+          return { year, stage_key, target_count: count, target_avg_value_eur: avg };
+        }).filter(Boolean);
       }
       if (Array.isArray(body.oppStages)) {
         // Whitelist + normaliseer per fase. Stage-key wordt gebruikt
