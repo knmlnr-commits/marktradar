@@ -1564,6 +1564,29 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <details class="acc admin-acc" name="admin-tenant-acc">
     <summary>
     <span class="acc-icon">⑥</span>
+    <span class="acc-title">Opportunity-fases</span>
+    <span class="acc-chev">&#9662;</span>
+    </summary>
+    <div class="acc-body">
+      <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">Configureer per fase een SLA (target-dagen voordat een opportunity 'overdue' is) en een kans-percentage (gebruikt voor de weighted-pipeline-funnel onder de Opportunities-tab). Standaard: Lead → Suspect → Prospect → Contract.</p>
+      <div id="oppStagesList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px">
+        <div class="edit-field" style="flex:1;min-width:120px"><label>Label</label><input type="text" id="oppStage-add-label" placeholder="bv. Kwalificatie"></div>
+        <div class="edit-field" style="width:110px"><label>SLA (dagen)</label><input type="number" id="oppStage-add-days" min="0" max="365" value="30"></div>
+        <div class="edit-field" style="width:90px"><label>Kans (%)</label><input type="number" id="oppStage-add-prob" min="0" max="100" value="25"></div>
+        <button class="btn-secondary" id="oppStageAddBtn" style="height:34px">+ Fase</button>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn-secondary" id="oppStageResetBtn" style="font-size:.78rem;padding:6px 12px">Reset naar default</button>
+        <button class="btn-primary" id="oppStageSaveBtn">Fases opslaan</button>
+      </div>
+      <div id="oppStageResult" style="margin-top:8px;font-size:.82rem"></div>
+    </div>
+    </details>
+
+    <details class="acc admin-acc" name="admin-tenant-acc">
+    <summary>
+    <span class="acc-icon">⑦</span>
     <span class="acc-title">Geavanceerd</span>
     <span class="acc-chev">&#9662;</span>
     </summary>
@@ -1913,8 +1936,8 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.17.15",
-    "codename": "Rigel",
+    "version": "1.18.0",
+    "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
       {
@@ -12621,14 +12644,19 @@ function allOpportunitiesFlat(){
   return out;
 }
 function addOpportunity(instId, partial){
+  const stages = (typeof tenantOppStages === 'function') ? tenantOppStages() : [];
+  const defaultStatus = (stages[0] && stages[0].key) || (getDropdownOptions('opportunityStatus')[0] || 'Lead');
+  const now = Date.now();
   const opp = {
     id: makeOppId(),
     titel: partial.titel || 'Nieuwe opportunity',
     omschrijving: partial.omschrijving || '',
-    status: partial.status || (getDropdownOptions('opportunityStatus')[0] || 'Lead'),
+    status: partial.status || defaultStatus,
     ownerId: partial.ownerId || (currentUser && currentUser.id) || null,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    value_eur: typeof partial.value_eur === 'number' ? partial.value_eur : null,
+    createdAt: now,
+    updatedAt: now,
+    stage_entered_at: now,
   };
   if(!Array.isArray(opportunities[instId])) opportunities[instId] = [];
   opportunities[instId].push(opp);
@@ -12640,7 +12668,18 @@ function updateOpportunity(instId, oppId, patch){
   const arr = opportunities[instId] || [];
   const idx = arr.findIndex(o => o && o.id === oppId);
   if(idx < 0) return;
-  arr[idx] = { ...arr[idx], ...patch, updatedAt: Date.now() };
+  // Normaliseer value_eur (kan number of leeg-string komen).
+  const next = { ...arr[idx], ...patch, updatedAt: Date.now() };
+  if('value_eur' in patch){
+    const n = patch.value_eur === '' || patch.value_eur == null ? null : Number(patch.value_eur);
+    next.value_eur = (typeof n === 'number' && !isNaN(n)) ? n : null;
+  }
+  // Bij status-wissel: reset stage_entered_at zodat de SLA-deadline
+  // herberekend wordt vanaf het huidige moment voor de nieuwe fase.
+  if('status' in patch && patch.status !== arr[idx].status){
+    next.stage_entered_at = Date.now();
+  }
+  arr[idx] = next;
   saveOpportunitiesLocal();
   if(opportunitiesRemoteAvailable) pushRemoteOpportunities();
 }
@@ -12945,6 +12984,7 @@ function initApp(){
   bindContactsPane();
   bindSchemaPane();
   bindThemePane();
+  bindOppStagesPane();
   bindUserMenu();
   bindVersionModal();
   renderVersion();
@@ -15168,26 +15208,60 @@ function renderPipelineBody(i){
   return summaryHtml + renderOpportunitiesSection(i) + renderGericallContextBody(i) + crmPipelineHtml;
 }
 
+function _renderDeadlineBadge(opp){
+  // Visuele richtlijn per opp: SLA-deadline op basis van stage.target_days.
+  // Groen >7 dagen, amber 0-7, rood < 0 (overdue).
+  const daysLeft = oppDaysToDeadline(opp);
+  let bg, color, label;
+  if(daysLeft < 0){ bg='#FCEAEA'; color='#9c2f2f'; label = Math.abs(daysLeft) + ' dagen over deadline'; }
+  else if(daysLeft <= 7){ bg='#FBF1DD'; color='#8a6a1c'; label = daysLeft + ' dagen tot deadline'; }
+  else { bg='#E8F5F0'; color='var(--green)'; label = daysLeft + ' dagen tot deadline'; }
+  const target = new Date(oppTargetCloseDate(opp)).toISOString().slice(0, 10);
+  return `<span title="Deadline ${target}" style="font-size:.66rem;font-weight:600;padding:2px 8px;border-radius:10px;background:${bg};color:${color};white-space:nowrap">${label}</span>`;
+}
+
 function renderOpportunitiesSection(i){
   const opps = getOppsForInst(i.id);
-  const statusOptions = getDropdownOptions('opportunityStatus');
+  const stages = tenantOppStages();
+  const statusKeys = stages.map(s => s.key);
+  const statusLabels = Object.fromEntries(stages.map(s => [s.key, s.label]));
   const rowsHtml = opps.map(o => {
-    const statusOpts = statusOptions.map(s => `<option value="${escapeHtml(s)}" ${o.status === s ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('');
+    const statusOpts = statusKeys.map(s => `<option value="${escapeHtml(s)}" ${o.status === s ? 'selected' : ''}>${escapeHtml(statusLabels[s] || s)}</option>`).join('');
     const ownerOpts = `<option value="">— Geen —</option>` +
       OWNERS.map(ow => `<option value="${ow.id}" ${o.ownerId === ow.id ? 'selected' : ''}>${escapeHtml(ow.naam)}</option>`).join('');
     const linkedTodos = (todos[i.id] || []).filter(t => t.opportunityId === o.id);
     const linkedCount = linkedTodos.length;
     const openCount = linkedTodos.filter(t => !t.done).length;
+    const linkedTodosHtml = linkedCount === 0
+      ? '<div style="margin-top:8px;font-size:.72rem;color:var(--grey-500);font-style:italic">Nog geen gekoppelde todos</div>'
+      : `<div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;border-top:1px dashed var(--grey-200);padding-top:8px">
+          <div style="font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--grey-600)">Gekoppelde todo's <span style="color:var(--grey-500);font-weight:500">(${openCount} open / ${linkedCount} totaal)</span></div>
+          ${linkedTodos.map(t => `
+            <label class="opp-todo-item" data-inst-id="${escapeHtml(i.id)}" data-todo-id="${escapeHtml(t.id)}" style="display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:.78rem;${t.done ? 'opacity:.55' : ''}">
+              <input type="checkbox" class="opp-todo-check" data-inst-id="${escapeHtml(i.id)}" data-todo-id="${escapeHtml(t.id)}" ${t.done ? 'checked' : ''} style="cursor:pointer;accent-color:var(--orange)">
+              <span style="flex:1;${t.done ? 'text-decoration:line-through;color:var(--grey-600)' : ''}">${escapeHtml(t.text)}</span>
+            </label>`).join('')}
+        </div>`;
     return `
-      <div class="opp-row" data-opp-id="${escapeHtml(o.id)}" style="display:grid;grid-template-columns:1.6fr 110px 130px 28px;gap:8px;align-items:start;padding:10px;border:1px solid var(--grey-200);border-radius:8px;margin-bottom:8px;background:var(--white)">
-        <div>
-          <input type="text" class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="titel" value="${escapeHtml(o.titel || '')}" placeholder="Titel" style="font-weight:600">
-          <textarea class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="omschrijving" placeholder="Omschrijving (optioneel)" style="margin-top:4px;min-height:36px;font-size:.78rem">${escapeHtml(o.omschrijving || '')}</textarea>
-          ${linkedCount > 0 ? `<div style="margin-top:6px;font-size:.72rem;color:var(--grey-600)"><strong>${openCount}</strong> open todo${openCount === 1 ? '' : 's'} &middot; ${linkedCount} totaal</div>` : '<div style="margin-top:6px;font-size:.72rem;color:var(--grey-500)"><em>Nog geen gekoppelde todos</em></div>'}
+      <div class="opp-row" data-opp-id="${escapeHtml(o.id)}" style="padding:10px;border:1px solid var(--grey-200);border-radius:8px;margin-bottom:8px;background:var(--white)">
+        <div style="display:grid;grid-template-columns:1.6fr 110px 130px 28px;gap:8px;align-items:start">
+          <div>
+            <input type="text" class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="titel" value="${escapeHtml(o.titel || '')}" placeholder="Titel" style="font-weight:600">
+            <textarea class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="omschrijving" placeholder="Omschrijving (optioneel)" style="margin-top:4px;min-height:36px;font-size:.78rem">${escapeHtml(o.omschrijving || '')}</textarea>
+          </div>
+          <select class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="status">${statusOpts}</select>
+          <select class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="ownerId" title="Eigenaar">${ownerOpts}</select>
+          <button type="button" class="dir-delete-btn" data-opp-delete="1" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" title="Opportunity verwijderen" aria-label="Verwijderen">&times;</button>
         </div>
-        <select class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="status">${statusOpts}</select>
-        <select class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="ownerId" title="Eigenaar">${ownerOpts}</select>
-        <button type="button" class="dir-delete-btn" data-opp-delete="1" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" title="Opportunity verwijderen" aria-label="Verwijderen">&times;</button>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--grey-700)">
+            Waarde
+            <span style="color:var(--grey-500)">€</span>
+            <input type="number" class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="value_eur" value="${o.value_eur != null ? o.value_eur : ''}" placeholder="0" min="0" step="1000" style="width:120px;font-size:.78rem;padding:4px 8px">
+          </label>
+          ${_renderDeadlineBadge(o)}
+        </div>
+        ${linkedTodosHtml}
       </div>`;
   }).join('');
   return `
@@ -15627,6 +15701,25 @@ function bindOverlayChrome(i){
       openInstelling(instId, 'opportunity');
     });
   });
+  // Linked-todo checkboxen onder elke opp in de Pipeline-accordion.
+  // Toggle direct in plaats van full re-render om de side-pane snel
+  // te houden. Tab-counters + KPI-rij worden wel ge-update.
+  document.querySelectorAll('#overlayPanel .opp-todo-check').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const instId = cb.dataset.instId;
+      const tid = cb.dataset.todoId;
+      toggleTodo(instId, tid);
+      const lbl = cb.closest('.opp-todo-item');
+      if(lbl){
+        lbl.style.opacity = cb.checked ? '.55' : '';
+        const txt = lbl.querySelector('span:last-child');
+        if(txt) txt.style.textDecoration = cb.checked ? 'line-through' : '';
+      }
+      try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
+      try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
+      try { if(typeof renderActies === 'function') renderActies(); } catch(e){}
+    });
+  });
   // Verwijder-knoppen voor bestuurders.
   document.querySelectorAll('#overlayPanel .dir-delete-btn:not([data-opp-delete])').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -15660,12 +15753,23 @@ function saveInlineEdit(instId, el){
     return;
   }
   if(el.classList.contains('ie-opp')){
-    // Opportunity-veld bewerken (titel / omschrijving / status / ownerId)
+    // Opportunity-veld bewerken (titel / omschrijving / status / ownerId / value_eur)
     const oppId = el.dataset.oppId;
     const f = el.dataset.oppField;
     let v = el.value;
-    if(typeof v === 'string' && v.trim() === '' && f !== 'omschrijving') v = null;
+    if(f === 'value_eur'){
+      v = (v === '' || v == null) ? null : Number(v);
+      if(typeof v === 'number' && (isNaN(v) || v < 0)) v = null;
+    } else if(typeof v === 'string' && v.trim() === '' && f !== 'omschrijving'){
+      v = null;
+    }
     updateOpportunity(instId, oppId, { [f]: v });
+    // Status-wissel: deadline-badge moet ge-update worden, dus re-render
+    // de pipeline-accordion. Renderfunnel onder Opportunities-tab ook.
+    if(f === 'status'){
+      try { openInstelling(instId, currentOverlayContext); } catch(e){}
+      try { if(typeof renderOpportunities === 'function') renderOpportunities(); } catch(e){}
+    }
     flashInlineSaved(el);
     return;
   }
@@ -16648,6 +16752,8 @@ async function refreshTenantPane(){
   refreshSchemaPane();
   // Theme-pane initialiseren met de huidige tenant.theme (of GeriCall-default).
   refreshThemePane();
+  // Opportunity-fases-pane initialiseren met tenant.oppStages of defaults.
+  refreshOppStagesPane();
   if(stats){
     const universe = getEntiteitenUniverse();
     const baseN = universe.length;
@@ -16710,6 +16816,138 @@ async function onTenantSave(){
 // Bedrijfsinfo-blok van het klantbeeld voor élke organisatie. Waarden
 // per organisatie blijven in overrides[i.id].customFields[fieldId].
 let _schemaDraft = [];
+
+// ---------------- Opportunity-fases per tenant ----------------
+// Default-fases met SLA-target_days en probability_pct voor de
+// weighted-pipeline-funnel. Tenant kan dit overschrijven via Beheer >
+// Werkomgeving > Opportunity-fases.
+const DEFAULT_OPP_STAGES = [
+  { key: 'Lead',     label: 'Lead',     target_days: 14, probability_pct: 10 },
+  { key: 'Suspect',  label: 'Suspect',  target_days: 30, probability_pct: 25 },
+  { key: 'Prospect', label: 'Prospect', target_days: 60, probability_pct: 50 },
+  { key: 'Contract', label: 'Contract', target_days: 30, probability_pct: 90 },
+];
+function tenantOppStages(){
+  const cfg = currentTenant && currentTenant.oppStages;
+  if(Array.isArray(cfg) && cfg.length > 0) return cfg;
+  return DEFAULT_OPP_STAGES;
+}
+function oppStageByKey(key){
+  return tenantOppStages().find(s => s.key === key) || null;
+}
+function oppTargetCloseDate(opp){
+  // Per-stage SLA. stage_entered_at = wanneer huidige fase begon
+  // (default: createdAt). target = stage_entered_at + target_days van
+  // de huidige fase. Wordt herberekend in updateOpportunity wanneer de
+  // status wijzigt.
+  const stage = oppStageByKey(opp.status) || tenantOppStages()[0];
+  const start = opp.stage_entered_at || opp.createdAt || Date.now();
+  return start + (stage?.target_days || 30) * 86400000;
+}
+function oppDaysToDeadline(opp){
+  const ms = oppTargetCloseDate(opp) - Date.now();
+  return Math.round(ms / 86400000);
+}
+
+let _oppStageDraft = [];
+function refreshOppStagesPane(){
+  _oppStageDraft = tenantOppStages().map(s => ({...s}));
+  renderOppStagesList();
+}
+function renderOppStagesList(){
+  const wrap = document.getElementById('oppStagesList');
+  if(!wrap) return;
+  if(_oppStageDraft.length === 0){
+    wrap.innerHTML = '<div class="dmu-empty" style="padding:10px 12px">Nog geen fases. Voeg er een toe.</div>';
+    return;
+  }
+  wrap.innerHTML = `
+    <div style="display:grid;grid-template-columns:32px 1.4fr 110px 90px 28px;gap:8px;align-items:center;padding:6px 0;font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-500);font-weight:700">
+      <div>#</div><div>Fase</div><div>SLA-dagen</div><div>Kans %</div><div></div>
+    </div>` +
+    _oppStageDraft.map((s, idx) => `
+    <div style="display:grid;grid-template-columns:32px 1.4fr 110px 90px 28px;gap:8px;align-items:center;padding:6px 0">
+      <div style="font-family:'DM Mono',monospace;color:var(--grey-500);font-size:.78rem">${idx + 1}</div>
+      <input type="text" data-stage-idx="${idx}" data-stage-field="label" value="${escapeHtml(s.label || s.key || '')}" placeholder="Label" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.84rem;background:white">
+      <input type="number" min="0" max="365" data-stage-idx="${idx}" data-stage-field="target_days" value="${s.target_days}" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.82rem;background:white">
+      <input type="number" min="0" max="100" data-stage-idx="${idx}" data-stage-field="probability_pct" value="${s.probability_pct}" style="padding:5px 8px;border:1px solid var(--grey-200);border-radius:4px;font:inherit;font-size:.82rem;background:white">
+      <button type="button" class="dir-delete-btn" data-stage-delete="${idx}" title="Fase verwijderen">&times;</button>
+    </div>`).join('');
+  wrap.querySelectorAll('input[data-stage-idx]').forEach(el => {
+    el.addEventListener('change', () => {
+      const i = parseInt(el.dataset.stageIdx, 10);
+      const f = el.dataset.stageField;
+      if(!_oppStageDraft[i]) return;
+      if(f === 'target_days' || f === 'probability_pct'){
+        _oppStageDraft[i][f] = Number(el.value) || 0;
+      } else if(f === 'label'){
+        _oppStageDraft[i].label = el.value;
+        // Key wordt afgeleid van label voor stabiliteit (geen runtime-
+        // rename anders breekt status-references op bestaande opps).
+        if(!_oppStageDraft[i].key) _oppStageDraft[i].key = el.value.trim();
+      }
+    });
+  });
+  wrap.querySelectorAll('[data-stage-delete]').forEach(b => {
+    b.addEventListener('click', () => {
+      const i = parseInt(b.dataset.stageDelete, 10);
+      _oppStageDraft.splice(i, 1);
+      renderOppStagesList();
+    });
+  });
+}
+async function onOppStagesSave(){
+  const cleaned = _oppStageDraft
+    .map(s => ({
+      key: String(s.key || s.label || '').trim().slice(0, 40),
+      label: String(s.label || s.key || '').trim().slice(0, 40),
+      target_days: Math.max(0, Math.min(365, Number(s.target_days) || 0)),
+      probability_pct: Math.max(0, Math.min(100, Number(s.probability_pct) || 0)),
+    }))
+    .filter(s => s.key && s.label);
+  const out = document.getElementById('oppStageResult');
+  try {
+    const r = await apiFetch('/api/tenant?action=update', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oppStages: cleaned })
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || 'Opslaan mislukt');
+    if(j.tenant) currentTenant = j.tenant;
+    if(out) out.innerHTML = '<span style="color:var(--green)">Fases opgeslagen (' + cleaned.length + ').</span>';
+    refreshOppStagesPane();
+    try { if(typeof renderOpportunities === 'function') renderOpportunities(); } catch(e){}
+  } catch(err){
+    if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  }
+}
+function bindOppStagesPane(){
+  const addBtn = document.getElementById('oppStageAddBtn');
+  if(addBtn) addBtn.addEventListener('click', () => {
+    const labelEl = document.getElementById('oppStage-add-label');
+    const daysEl = document.getElementById('oppStage-add-days');
+    const probEl = document.getElementById('oppStage-add-prob');
+    const label = (labelEl?.value || '').trim();
+    if(!label){ alert('Label is verplicht.'); return; }
+    if(_oppStageDraft.some(s => s.key === label)){ alert('Fase met die naam bestaat al.'); return; }
+    _oppStageDraft.push({
+      key: label, label,
+      target_days: Number(daysEl?.value) || 30,
+      probability_pct: Number(probEl?.value) || 25,
+    });
+    if(labelEl) labelEl.value = '';
+    renderOppStagesList();
+  });
+  const reset = document.getElementById('oppStageResetBtn');
+  if(reset) reset.addEventListener('click', () => {
+    if(!confirm('Reset naar default-fases (Lead/Suspect/Prospect/Contract)? Niet opgeslagen tot je op Fases opslaan klikt.')) return;
+    _oppStageDraft = DEFAULT_OPP_STAGES.map(s => ({...s}));
+    renderOppStagesList();
+  });
+  const save = document.getElementById('oppStageSaveBtn');
+  if(save) save.addEventListener('click', onOppStagesSave);
+}
+
 function tenantSchema(){
   return Array.isArray(currentTenant?.klantSchema) ? currentTenant.klantSchema.slice() : [];
 }
@@ -18794,7 +19032,52 @@ function renderOpportunities(){
         }).join('')}
       </div>
     </div>`;
-  document.getElementById('oppList').innerHTML = `<div class="opp-list">${html || empty}</div>${suggestionsHtml}`;
+  // Funnel-visualisatie: tellingen + EUR-totalen + weighted-totalen per
+  // fase. Gebaseerd op tenant.oppStages-config (default L/S/P/C). De
+  // breedte van de bars is relatief tov de fase met het meeste totaal-
+  // bedrag (of count als bedragen ontbreken).
+  const stages = tenantOppStages();
+  const perStage = stages.map(s => {
+    const list = opps.filter(o => o.status === s.key);
+    const sum = list.reduce((acc, o) => acc + (typeof o.value_eur === 'number' ? o.value_eur : 0), 0);
+    const weighted = sum * ((s.probability_pct || 0) / 100);
+    return { stage: s, count: list.length, sum, weighted };
+  });
+  const totalSum = perStage.reduce((a, x) => a + x.sum, 0);
+  const totalWeighted = perStage.reduce((a, x) => a + x.weighted, 0);
+  const totalCount = perStage.reduce((a, x) => a + x.count, 0);
+  const maxBar = Math.max(1, ...perStage.map(x => x.sum || x.count));
+  const fmtEur = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M'
+                    : n >= 1e3 ? Math.round(n / 1e3) + 'k'
+                    : Math.round(n).toString();
+  const funnelHtml = `
+    <div style="background:var(--white);border:1px solid var(--grey-200);border-radius:10px;padding:14px 16px;margin-bottom:18px">
+      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:10px;flex-wrap:wrap">
+        <strong style="font-size:.92rem;color:var(--grey-900)">Pipeline-funnel</strong>
+        <span style="font-size:.74rem;color:var(--grey-600)"><strong>${totalCount}</strong> opp${totalCount === 1 ? '' : 's'} &middot; € ${fmtEur(totalSum)} totaal &middot; € ${fmtEur(totalWeighted)} weighted</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${perStage.map(p => {
+          const barWidth = Math.max(2, Math.round(((p.sum || p.count) / maxBar) * 100));
+          const weightWidth = p.sum > 0 ? Math.max(0, Math.round((p.weighted / p.sum) * barWidth)) : 0;
+          return `<div style="display:grid;grid-template-columns:120px 1fr 220px;gap:10px;align-items:center;font-size:.78rem">
+            <div><strong>${escapeHtml(p.stage.label)}</strong> <span style="color:var(--grey-500);font-weight:500;font-size:.7rem">${p.stage.probability_pct}%</span></div>
+            <div style="position:relative;height:18px;background:var(--grey-100);border-radius:9px;overflow:hidden">
+              <div style="position:absolute;inset:0 ${100 - barWidth}% 0 0;background:var(--orange-pale);border-right:2px solid var(--orange)"></div>
+              <div style="position:absolute;inset:0 ${100 - weightWidth}% 0 0;background:var(--orange);"></div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--grey-700);text-align:right;white-space:nowrap">
+              <strong>${p.count}</strong> &middot; € ${fmtEur(p.sum)} <span style="color:var(--grey-500)">→ € ${fmtEur(p.weighted)}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div style="margin-top:8px;font-size:.7rem;color:var(--grey-500);display:flex;gap:14px;flex-wrap:wrap">
+        <span><span style="display:inline-block;width:10px;height:10px;background:var(--orange-pale);border:1px solid var(--orange);border-radius:2px;vertical-align:middle"></span> totaal € waarde</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:var(--orange);border-radius:2px;vertical-align:middle"></span> weighted (× kans %)</span>
+      </div>
+    </div>`;
+  document.getElementById('oppList').innerHTML = funnelHtml + `<div class="opp-list">${html || empty}</div>${suggestionsHtml}`;
   document.querySelectorAll('#oppList .opp-card').forEach(el => {
     el.addEventListener('click', () => openInstelling(el.dataset.instId, 'opportunity'));
   });

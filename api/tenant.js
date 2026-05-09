@@ -46,6 +46,7 @@ function publicTenant(t) {
     klantSchema: Array.isArray(t.klantSchema) ? t.klantSchema : [],
     theme: t.theme && typeof t.theme === 'object' ? t.theme : null,
     signalPromptOverride: typeof t.signalPromptOverride === 'string' ? t.signalPromptOverride : '',
+    oppStages: Array.isArray(t.oppStages) ? t.oppStages : null,
   };
 }
 
@@ -174,6 +175,27 @@ module.exports = async function handler(req, res) {
       if (typeof body.useLlmCurator === 'boolean') t.useLlmCurator = body.useLlmCurator;
       if (typeof body.signalPromptOverride === 'string') {
         t.signalPromptOverride = String(body.signalPromptOverride).slice(0, 4000);
+      }
+      if (Array.isArray(body.oppStages)) {
+        // Whitelist + normaliseer per fase. Stage-key wordt gebruikt
+        // als waarde in de opportunity-status-dropdown; label is voor
+        // weergave; target_days = SLA in dagen vanaf stage-entry;
+        // probability_pct = kans dat een opp deze fase verlaat met
+        // een win (gebruikt voor weighted-funnel-totals).
+        const seen = new Set();
+        t.oppStages = body.oppStages.slice(0, 12).map((s) => {
+          const key = String(s.key || s.label || '').trim().slice(0, 40);
+          const label = String(s.label || s.key || '').trim().slice(0, 40);
+          if (!key || seen.has(key)) return null;
+          seen.add(key);
+          let target = parseInt(s.target_days, 10);
+          if (isNaN(target) || target < 0) target = 30;
+          if (target > 3650) target = 3650;
+          let prob = parseFloat(s.probability_pct);
+          if (isNaN(prob) || prob < 0) prob = 0;
+          if (prob > 100) prob = 100;
+          return { key, label, target_days: target, probability_pct: prob };
+        }).filter(Boolean);
       }
       if (body.theme === null) {
         // Reset naar default-theme.

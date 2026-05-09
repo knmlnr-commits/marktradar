@@ -70,6 +70,7 @@ function publicTenant(t) {
     klantSchema: Array.isArray(t.klantSchema) ? t.klantSchema : [],
     theme: t.theme && typeof t.theme === 'object' ? t.theme : null,
     signalPromptOverride: typeof t.signalPromptOverride === 'string' ? t.signalPromptOverride : '',
+    oppStages: Array.isArray(t.oppStages) ? t.oppStages : null,
   };
 }
 
