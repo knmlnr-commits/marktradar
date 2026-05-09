@@ -355,6 +355,18 @@ body{
 .lens-row-fill.hot{background:var(--red)}
 .lens-row-desc{font-size:.68rem;color:var(--grey-600);line-height:1.35}
 .opp-list{display:flex;flex-direction:column;gap:8px}
+/* Opp-row in klantbeeld Pipeline: desktop = title | status | owner | × ;
+   mobile = stacked (title on its own row, controls onder elkaar). */
+.opp-row-grid{display:grid;grid-template-columns:1.6fr 110px 130px 28px;gap:8px;align-items:start}
+.opp-row-titel{min-width:0}
+.opp-row-status,.opp-row-owner{min-width:0}
+@media (max-width:720px){
+  .opp-row-grid{grid-template-columns:1fr 28px;grid-template-areas:"titel del" "status status" "owner owner"}
+  .opp-row-titel{grid-area:titel}
+  .opp-row-status{grid-area:status}
+  .opp-row-owner{grid-area:owner}
+  .opp-row-del{grid-area:del}
+}
 .opp-card{background:var(--white);border:1px solid var(--grey-200);border-left:3px solid var(--orange);
   border-radius:10px;padding:12px 16px;display:grid;
   grid-template-columns:minmax(180px,1.6fr) 110px 1.5fr 110px 50px;
@@ -1956,7 +1968,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.19.0",
+    "version": "1.19.1",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -15271,14 +15283,14 @@ function renderOpportunitiesSection(i){
       </div>`;
     return `
       <div class="opp-row" data-opp-id="${escapeHtml(o.id)}" style="padding:10px;border:1px solid var(--grey-200);border-radius:8px;margin-bottom:8px;background:var(--white)">
-        <div style="display:grid;grid-template-columns:1.6fr 110px 130px 28px;gap:8px;align-items:start">
-          <div>
-            <input type="text" class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="titel" value="${escapeHtml(o.titel || '')}" placeholder="Titel" style="font-weight:600">
-            <textarea class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="omschrijving" placeholder="Omschrijving (optioneel)" style="margin-top:4px;min-height:36px;font-size:.78rem">${escapeHtml(o.omschrijving || '')}</textarea>
+        <div class="opp-row-grid">
+          <div class="opp-row-titel">
+            <input type="text" class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="titel" value="${escapeHtml(o.titel || '')}" placeholder="Titel" style="font-weight:600;width:100%">
+            <textarea class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="omschrijving" placeholder="Omschrijving (optioneel)" style="margin-top:4px;min-height:36px;font-size:.78rem;width:100%">${escapeHtml(o.omschrijving || '')}</textarea>
           </div>
-          <select class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="status">${statusOpts}</select>
-          <select class="inline-edit-input ie ie-opp" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="ownerId" title="Eigenaar">${ownerOpts}</select>
-          <button type="button" class="dir-delete-btn" data-opp-delete="1" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" title="Opportunity verwijderen" aria-label="Verwijderen">&times;</button>
+          <select class="inline-edit-input ie ie-opp opp-row-status" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="status">${statusOpts}</select>
+          <select class="inline-edit-input ie ie-opp opp-row-owner" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" data-opp-field="ownerId" title="Eigenaar">${ownerOpts}</select>
+          <button type="button" class="dir-delete-btn opp-row-del" data-opp-delete="1" data-inst-id="${escapeHtml(i.id)}" data-opp-id="${escapeHtml(o.id)}" title="Opportunity verwijderen" aria-label="Verwijderen">&times;</button>
         </div>
         <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
           <label style="display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--grey-700)">
