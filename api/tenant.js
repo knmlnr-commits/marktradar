@@ -49,6 +49,7 @@ function publicTenant(t) {
     oppStages: Array.isArray(t.oppStages) ? t.oppStages : null,
     oppTargets: Array.isArray(t.oppTargets) ? t.oppTargets : [],
     salesPlan: t.salesPlan && typeof t.salesPlan === 'object' ? t.salesPlan : null,
+    decisionMakerRoles: Array.isArray(t.decisionMakerRoles) ? t.decisionMakerRoles : null,
   };
 }
 
@@ -330,6 +331,15 @@ module.exports = async function handler(req, res) {
       if (typeof body.propositie === 'string') t.propositie = String(body.propositie).slice(0, 4000);
       if (typeof body.marktNaam === 'string') t.marktNaam = String(body.marktNaam).slice(0, 200).trim();
       if (typeof body.marktBeschrijving === 'string') t.marktBeschrijving = String(body.marktBeschrijving).slice(0, 4000);
+      if (Array.isArray(body.decisionMakerRoles)) {
+        const roles = body.decisionMakerRoles
+          .map(r => String(r || '').trim())
+          .filter(r => r.length > 0 && r.length <= 80)
+          .slice(0, 12);
+        t.decisionMakerRoles = roles.length > 0 ? roles : null;
+      } else if (body.decisionMakerRoles === null) {
+        t.decisionMakerRoles = null;
+      }
       t.updatedAt = Date.now(); t.updatedBy = session.email;
       await auth.kvSet(auth.tenantMetaKey(session.tenantId), t);
       return res.status(200).json({ tenant: publicTenant(t) });
@@ -643,6 +653,129 @@ ${signalsBlock}
         },
         suggestedTodos,
       });
+    }
+    if (action === 'find-decision-makers' && req.method === 'POST') {
+      // Zoekt publieke LinkedIn-profielen van beslissers bij een specifieke
+      // account via Claude's web_search-tool (server-side). Geen scraping van
+      // LinkedIn zelf — alleen search-engine snippets met site:linkedin.com.
+      // Returns { results: [{ name, title, linkedinUrl, snippet }], cached, queriedAt }.
+      // Cache 24h per (tenantId, instId, rolesHash) zodat herhaaldelijk klikken
+      // niet onnodig kost.
+      if (!process.env.ANTHROPIC_API_KEY) {
+        return res.status(503).json({ error: 'ANTHROPIC_API_KEY niet geconfigureerd' });
+      }
+      const body = await readJsonBody(req);
+      const instId = body && typeof body.instId === 'string' ? body.instId.trim() : '';
+      const force = !!(body && body.force);
+      if (!instId) return res.status(400).json({ error: 'instId verplicht' });
+      const t = await loadOrCreate(session.tenantId);
+      const ent = Array.isArray(t.entiteiten) ? t.entiteiten.find(e => String(e.id) === instId) : null;
+      // Voor seed-tenant GeriCall staan accounts in de baseline (niet in
+      // t.entiteiten); de client stuurt dan de accountnaam mee.
+      const naam = (ent && ent.naam) || (body && typeof body.naam === 'string' ? body.naam.trim() : '');
+      if (!naam) return res.status(400).json({ error: 'account niet gevonden' });
+      const regio = (ent && ent.regio) || (body && typeof body.regio === 'string' ? body.regio : '') || '';
+      const website = (ent && ent.website) || (body && typeof body.website === 'string' ? body.website : '') || '';
+      const DEFAULT_DM_ROLES = ['CEO', 'directeur', 'bestuurder', 'COO', 'CFO', 'CTO', 'algemeen directeur', 'managing director'];
+      const roles = (Array.isArray(t.decisionMakerRoles) && t.decisionMakerRoles.length > 0)
+        ? t.decisionMakerRoles
+        : DEFAULT_DM_ROLES;
+      // Existing contacts om dubbele resultaten uit te filteren in de prompt.
+      const existing = Array.isArray(body && body.existingContacts) ? body.existingContacts : [];
+      const existingNames = existing
+        .map(c => (c && typeof c.naam === 'string') ? c.naam.toLowerCase().trim() : '')
+        .filter(Boolean);
+      // Cache-key: tenant + inst + hash van rollen, zodat een wijziging in de
+      // rol-set de cache invalideert. Eenvoudige hash op join.
+      const rolesHash = Buffer.from(roles.slice().sort().join('|')).toString('base64').slice(0, 16);
+      const cacheKey = 'tenant:' + session.tenantId + ':dmu-search:' + instId + ':' + rolesHash;
+      if (!force) {
+        try {
+          const cached = await auth.kvGet(cacheKey);
+          if (cached && cached.results && Array.isArray(cached.results)) {
+            return res.status(200).json({ ...cached, cached: true });
+          }
+        } catch (e) { /* cache-miss of KV-error: doorvallen naar live-zoek */ }
+      }
+      const sys = 'Je bent een sales-research assistent. Je krijgt een bedrijfsnaam en een lijst beslisser-rollen. Gebruik de web_search-tool om publieke LinkedIn-profielen te vinden via "site:linkedin.com/in" queries. Per query 1 rol-keyword combineren met de bedrijfsnaam. Verzamel resultaten, deduplicate, en lever een schoon JSON-object terug. Geen prose buiten het JSON.';
+      const queriesHint = roles.slice(0, 6).map(r => `site:linkedin.com/in "${naam}" "${r}"`).join('\n');
+      const userMessage = `**Account:** ${naam}
+${regio ? `**Regio/locatie:** ${regio}` : ''}
+${website ? `**Website (verifieer dat het bedrijf klopt):** ${website}` : ''}
+
+**Beslisser-rollen om te zoeken (in deze volgorde):**
+${roles.map(r => '- ' + r).join('\n')}
+
+**Bestaande contacten bij dit account (skip deze in de output):**
+${existingNames.length > 0 ? existingNames.join(', ') : '(geen)'}
+
+**Werkwijze:**
+1. Doe per rol-keyword een web_search met query \`site:linkedin.com/in "${naam}" "[rol]"\`. Begin met de eerste 4-5 rollen; stop zodra je 10 unieke resultaten hebt.
+2. Voorbeeld-queries:
+${queriesHint}
+3. Voor elk gevonden LinkedIn-profiel: extracteer naam (zoals op profiel), titel/functie (uit snippet), LinkedIn-URL (canonical /in/...), en het korte snippet dat de search-engine teruggaf.
+4. Filter alleen profielen waar de bedrijfsnaam expliciet in titel of snippet staat (anders is het geen actuele werknemer). Skip oud-medewerkers ("ex-", "former", "voormalig").
+5. Skip profielen waarvan de naam al in 'bestaande contacten' voorkomt (case-insensitive substring match).
+6. Maximaal 10 resultaten. Als je niets vindt, return een lege array.
+
+**Output: alleen JSON, geen prose:**
+{"results":[{"name":"Voornaam Achternaam","title":"Functie · Bedrijf","linkedinUrl":"https://www.linkedin.com/in/...","snippet":"korte snippet uit search-resultaat"}, ...]}`;
+
+      const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 3000,
+          system: sys,
+          tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 6 }],
+          messages: [{ role: 'user', content: userMessage }],
+        }),
+      });
+      if (!apiRes.ok) {
+        const txt = await apiRes.text();
+        return res.status(502).json({ error: 'Claude API ' + apiRes.status + ': ' + txt.slice(0, 400) });
+      }
+      const j = await apiRes.json();
+      // Pak de laatste assistant-text uit de content-blocks (na alle web_search-rondes).
+      const text = (j.content || [])
+        .filter((b) => b.type === 'text')
+        .map((b) => b.text)
+        .join('\n')
+        .trim();
+      const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+      let parsed;
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch (e) {
+        // Laatste poging: pak de eerste JSON-object-substring uit de tekst.
+        const m = cleaned.match(/\{[\s\S]*\}/);
+        if (m) {
+          try { parsed = JSON.parse(m[0]); } catch (e2) { parsed = null; }
+        }
+      }
+      if (!parsed || !Array.isArray(parsed.results)) {
+        return res.status(502).json({ error: 'Claude-response was geen geldig JSON', raw: text.slice(0, 500) });
+      }
+      const existingSet = new Set(existingNames);
+      const results = parsed.results
+        .filter(r => r && typeof r === 'object' && typeof r.name === 'string' && typeof r.linkedinUrl === 'string')
+        .filter(r => /linkedin\.com\/in\//i.test(r.linkedinUrl))
+        .filter(r => !existingSet.has(r.name.toLowerCase().trim()))
+        .slice(0, 10)
+        .map(r => ({
+          name: String(r.name).slice(0, 120).trim(),
+          title: typeof r.title === 'string' ? r.title.slice(0, 200).trim() : '',
+          linkedinUrl: String(r.linkedinUrl).slice(0, 300).trim(),
+          snippet: typeof r.snippet === 'string' ? r.snippet.slice(0, 400).trim() : '',
+        }));
+      const payload = { results, queriedAt: Date.now() };
+      try { await auth.kvSet(cacheKey, payload, { ttlSec: 86400 }); } catch (e) { /* niet-fataal */ }
+      return res.status(200).json({ ...payload, cached: false });
     }
     return res.status(400).json({ error: 'Onbekende actie of method' });
   } catch (err) {

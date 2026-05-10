@@ -1414,6 +1414,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div class="edit-field full"><label>Propositie — wat verkoop je en aan wie?</label><textarea id="tenant-propositie" style="width:100%;min-height:80px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Eén zin: wat is je product, wie is je doelklant?"></textarea></div>
     <div class="edit-field"><label>Markt-naam</label><input type="text" id="tenant-markt-naam" placeholder="bv. Europese verzekeraars, B2B SaaS, retailers"></div>
     <div class="edit-field full"><label>Markt-beschrijving (optioneel)</label><textarea id="tenant-markt-beschrijving" style="width:100%;min-height:60px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Welke segmenten, regio, omvang?"></textarea></div>
+    <div class="edit-field full"><label>Beslisser-rollen (komma-gescheiden, max 12)</label><input type="text" id="tenant-dm-roles" placeholder="bv. CEO, directeur, bestuurder, COO, CFO, CTO" style="width:100%;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem"><div style="font-size:.72rem;color:var(--grey-600);margin-top:4px">Wordt gebruikt door de "Beslissers zoeken via LinkedIn"-knop in het klantbeeld. Leeg laten voor de standaardlijst (CEO, directeur, bestuurder, COO, CFO, CTO, algemeen directeur, managing director).</div></div>
     </div>
     <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
     <button class="btn-primary" id="tenantSaveBtn">Opslaan</button>
@@ -2027,7 +2028,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.22.1",
+    "version": "1.23.0",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -15438,8 +15439,13 @@ function renderMensenBody(i){
   // zijn samengevoegd: een bestuurder is gewoon een contactpersoon met
   // rol='decider'. Specialisten Ouderengeneeskunde houden een eigen
   // sectie omdat ze per vakgebied gegroepeerd worden (alleen GeriCall).
-  const addBtn = `<div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button type="button" class="add-people-btn" data-add-people="contact" data-inst-id="${escapeHtml(i.id)}" style="background:var(--orange);color:white;border-color:var(--orange)">+ Contactpersoon</button></div>`;
-  return addBtn + renderDmuSection(i) + renderSpecSection(i);
+  const topBar = `
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <button type="button" class="btn-secondary" data-find-dm="1" data-inst-id="${escapeHtml(i.id)}" style="font-size:.78rem;padding:6px 12px">&#128269; Beslissers zoeken via LinkedIn</button>
+      <button type="button" class="add-people-btn" data-add-people="contact" data-inst-id="${escapeHtml(i.id)}" style="background:var(--orange);color:white;border-color:var(--orange)">+ Contactpersoon</button>
+    </div>
+    <div id="dmSearchResults-${escapeHtml(i.id)}" style="margin-bottom:10px"></div>`;
+  return topBar + renderDmuSection(i) + renderSpecSection(i);
 }
 
 function renderGericallContextBody(i){
@@ -16005,6 +16011,13 @@ function bindOverlayChrome(i){
       addPersonToOverlay(btn.dataset.instId, btn.dataset.addPeople);
     });
   });
+  // Beslissers zoeken via LinkedIn (Claude web_search → snippets)
+  document.querySelectorAll('#overlayPanel [data-find-dm]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      runFindDecisionMakers(btn.dataset.instId, btn);
+    });
+  });
   // + Andere leverancier
   document.querySelectorAll('#overlayPanel [data-add-andere]').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -16418,6 +16431,128 @@ function addPersonToOverlay(instId, kind){
     }, 'contact');
   }
 }
+// ---------------- Beslissers zoeken via LinkedIn (web_search) ----------
+async function runFindDecisionMakers(instId, btn){
+  const wrap = document.getElementById('dmSearchResults-' + instId);
+  if(!wrap) return;
+  const inst = getInstellingRaw(instId);
+  if(!inst){ wrap.innerHTML = '<div style="color:var(--red);font-size:.78rem">Account niet gevonden.</div>'; return; }
+  // Bestaande contacten meesturen zodat de backend dubbele resultaten skipt.
+  const existingContacts = combinedDmu(inst).map(c => ({ naam: c.naam || '' })).filter(c => c.naam);
+  const orig = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = '&#9203; Zoeken&hellip;'; }
+  wrap.innerHTML = '<div style="padding:14px;background:var(--grey-50);border:1px solid var(--grey-200);border-radius:8px;font-size:.82rem;color:var(--grey-700)">Claude doet web-search via <code>site:linkedin.com/in</code> queries. Dit duurt 10-30 seconden bij eerste zoekopdracht; daarna gebruikt 24h cache.</div>';
+  try {
+    const r = await apiFetch('/api/tenant?action=find-decision-makers', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        instId,
+        naam: inst.naam,
+        regio: inst.regio || '',
+        website: inst.website || '',
+        existingContacts,
+      })
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+    renderDmSearchResults(instId, j.results || [], j.cached === true, j.queriedAt || null);
+  } catch(err){
+    wrap.innerHTML = '<div style="padding:12px;background:#fdf3f3;border:1px solid #f0c5c5;border-radius:8px;font-size:.82rem;color:#9c2f2f">Zoeken mislukt: ' + escapeHtml(err.message || String(err)) + '</div>';
+  } finally {
+    if(btn){ btn.disabled = false; btn.innerHTML = orig; }
+  }
+}
+function renderDmSearchResults(instId, results, cached, queriedAt){
+  const wrap = document.getElementById('dmSearchResults-' + instId);
+  if(!wrap) return;
+  if(!Array.isArray(results) || results.length === 0){
+    wrap.innerHTML = '<div style="padding:12px;background:var(--grey-50);border:1px solid var(--grey-200);border-radius:8px;font-size:.82rem;color:var(--grey-700)">Geen publieke LinkedIn-profielen gevonden voor dit account met de huidige rol-set. Pas eventueel de beslisser-rollen aan in <strong>Beheer &rsaquo; Werkomgeving</strong>.</div>';
+    return;
+  }
+  // Stash voor de "+ Toevoegen"-handler
+  window._dmSearchCache = window._dmSearchCache || {};
+  window._dmSearchCache[instId] = results;
+  const stamp = queriedAt ? new Date(queriedAt).toLocaleString('nl-NL', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+  const header = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+    <strong style="font-size:.84rem;color:var(--grey-900)">${results.length} beslisser${results.length === 1 ? '' : 's'} gevonden</strong>
+    <span style="font-size:.7rem;color:var(--grey-600)">${cached ? 'uit cache' : 'live'}${stamp ? ' &middot; ' + escapeHtml(stamp) : ''}</span>
+    <button type="button" class="btn-secondary" data-dm-refresh="1" data-inst-id="${escapeHtml(instId)}" style="margin-left:auto;font-size:.7rem;padding:3px 9px">Opnieuw zoeken</button>
+    <button type="button" class="btn-secondary" data-dm-close="1" data-inst-id="${escapeHtml(instId)}" style="font-size:.7rem;padding:3px 9px">Sluiten</button>
+  </div>`;
+  const rows = results.map((r, idx) => `
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--white);border:1px solid var(--grey-200);border-radius:6px;margin-bottom:6px">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:.86rem;color:var(--grey-900)">${escapeHtml(r.name)}</div>
+        ${r.title ? `<div style="font-size:.78rem;color:var(--grey-700);margin-top:2px">${escapeHtml(r.title)}</div>` : ''}
+        ${r.snippet ? `<div style="font-size:.72rem;color:var(--grey-600);margin-top:4px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escapeHtml(r.snippet)}</div>` : ''}
+        <a href="${escapeHtml(r.linkedinUrl)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:4px;font-size:.72rem;color:var(--orange-dark);word-break:break-all">${escapeHtml(r.linkedinUrl)}</a>
+      </div>
+      <button type="button" class="btn-primary" data-dm-add="${idx}" data-inst-id="${escapeHtml(instId)}" style="font-size:.74rem;padding:5px 10px;flex-shrink:0">+ Toevoegen</button>
+    </div>`).join('');
+  wrap.innerHTML = `<div style="padding:10px 12px;background:var(--grey-50);border:1px solid var(--grey-200);border-radius:8px">${header}${rows}<div style="font-size:.7rem;color:var(--grey-600);margin-top:8px;line-height:1.45">Bron: publieke search-engine snippets met <code>site:linkedin.com/in</code>. Verifieer naam en functie zelf op het LinkedIn-profiel — snippets kunnen verouderd zijn.</div></div>`;
+  wrap.querySelectorAll('[data-dm-add]').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const i = parseInt(b.dataset.dmAdd, 10);
+      const r = (window._dmSearchCache[instId] || [])[i];
+      if(!r) return;
+      addContactFromSearchResult(instId, r);
+    });
+  });
+  wrap.querySelectorAll('[data-dm-refresh]').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      runFindDecisionMakersForce(instId);
+    });
+  });
+  wrap.querySelectorAll('[data-dm-close]').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      wrap.innerHTML = '';
+    });
+  });
+}
+async function runFindDecisionMakersForce(instId){
+  // Skip cache via force=true. Hergebruikt dezelfde renderDmSearchResults.
+  const wrap = document.getElementById('dmSearchResults-' + instId);
+  const inst = getInstellingRaw(instId);
+  if(!wrap || !inst) return;
+  const existingContacts = combinedDmu(inst).map(c => ({ naam: c.naam || '' })).filter(c => c.naam);
+  wrap.innerHTML = '<div style="padding:14px;background:var(--grey-50);border:1px solid var(--grey-200);border-radius:8px;font-size:.82rem;color:var(--grey-700)">Opnieuw zoeken (cache wordt overgeslagen)&hellip;</div>';
+  try {
+    const r = await apiFetch('/api/tenant?action=find-decision-makers', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ instId, naam: inst.naam, regio: inst.regio || '', website: inst.website || '', existingContacts, force: true })
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+    renderDmSearchResults(instId, j.results || [], false, j.queriedAt || null);
+  } catch(err){
+    wrap.innerHTML = '<div style="padding:12px;background:#fdf3f3;border:1px solid #f0c5c5;border-radius:8px;font-size:.82rem;color:#9c2f2f">Zoeken mislukt: ' + escapeHtml(err.message || String(err)) + '</div>';
+  }
+}
+function addContactFromSearchResult(instId, r){
+  // Prefill de bestaande contact-modal met search-result-data. User kiest
+  // rol + reviewt naam/functie en saved zelf — geen auto-save zonder review.
+  if(!r) return;
+  const today = new Date().toISOString().slice(0,10);
+  openContactEdit(instId, {
+    naam: r.name || '',
+    functie: r.title || '',
+    rol: 'influencer',
+    vertrouwen: 'middel',
+    email: '', telefoon: '',
+    linkedin: r.linkedinUrl || '',
+    vakgebied: '',
+    sinds: today,
+    recent: false,
+    bron: r.linkedinUrl || '',
+    bronType: 'linkedin-publiek',
+    notitie: r.snippet ? ('Toegevoegd via LinkedIn-zoekfunctie:\n' + r.snippet) : 'Toegevoegd via LinkedIn-zoekfunctie.',
+    _newContact: true
+  }, 'contact');
+}
+
 function bindDmuClickHandlers(i){
   const merged = combinedDmu(i);
   const byKey = new Map(merged.map(c => [dmuKey(c), c]));
@@ -17210,6 +17345,11 @@ async function refreshTenantPane(){
   if(propEl) propEl.value = currentTenant?.propositie || '';
   if(mNaamEl) mNaamEl.value = currentTenant?.marktNaam || '';
   if(mDescEl) mDescEl.value = currentTenant?.marktBeschrijving || '';
+  const dmRolesEl = document.getElementById('tenant-dm-roles');
+  if(dmRolesEl){
+    const roles = Array.isArray(currentTenant?.decisionMakerRoles) ? currentTenant.decisionMakerRoles : [];
+    dmRolesEl.value = roles.join(', ');
+  }
   if(idEl) idEl.value = currentTenant?.id || '—';
   const promptEl = document.getElementById('signalPromptOverride');
   if(promptEl) promptEl.value = currentTenant?.signalPromptOverride || '';
@@ -17273,6 +17413,10 @@ async function onTenantSave(){
   const propositie = (document.getElementById('tenant-propositie').value || '').trim();
   const marktNaam = (document.getElementById('tenant-markt-naam').value || '').trim();
   const marktBeschrijving = (document.getElementById('tenant-markt-beschrijving').value || '').trim();
+  const dmRolesRaw = (document.getElementById('tenant-dm-roles')?.value || '').trim();
+  const decisionMakerRoles = dmRolesRaw
+    ? dmRolesRaw.split(',').map(s => s.trim()).filter(s => s.length > 0).slice(0, 12)
+    : [];
   const useLlmCurator = !!document.getElementById('tenant-use-llm')?.checked;
   const out = document.getElementById('tenantResult');
   if(!naam){ out.innerHTML = '<span style="color:var(--red)">Naam is verplicht.</span>'; return; }
@@ -17288,7 +17432,7 @@ async function onTenantSave(){
     // Propositie + markt-context apart opslaan
     const r2 = await apiFetch('/api/tenant?action=set-propositie', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ propositie, marktNaam, marktBeschrijving })
+      body: JSON.stringify({ propositie, marktNaam, marktBeschrijving, decisionMakerRoles: decisionMakerRoles.length > 0 ? decisionMakerRoles : null })
     });
     const j2 = await r2.json().catch(() => ({}));
     if(j2.tenant) currentTenant = j2.tenant;
