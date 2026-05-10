@@ -1331,6 +1331,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       <span class="tab-label" data-i18n="tab.suppliers">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
     </button>
+    <button class="tab" data-tab="coaching" title="Coaching / 1-on-1" aria-label="Coaching">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="tab-label" data-i18n="tab.coaching">Coaching</span> <span class="tab-count" id="tabCountCoaching">0</span>
+    </button>
     <button class="tab" data-tab="beheer" title="Beheer" aria-label="Beheer">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       <span class="tab-label" data-i18n="tab.admin">Beheer</span>
@@ -1621,6 +1625,45 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <details class="acc admin-acc" name="admin-tenant-acc">
     <summary>
     <span class="acc-icon">⑧</span>
+    <span class="acc-title">SalesPlan</span>
+    <span class="acc-chev">&#9662;</span>
+    </summary>
+    <div class="acc-body">
+      <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">Het SalesPlan beschrijft hoe je de markt bewerkt. Vier vaste secties; samen vormen ze de brug tussen propositie en de dagelijkse pipeline. Gebruik <strong>Genereer concept</strong> voor een AI-startpunt op basis van je propositie + targets, of importeer een voorbeeld-template.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
+        <button type="button" class="btn-secondary" id="salesPlanAiBtn" title="Genereer een concept op basis van propositie, marktdef en targets via Claude">⚡ Genereer concept (AI)</button>
+        <select id="salesPlanTemplateSel" class="sort-select" title="Importeer voorbeeld-template" style="font-size:.82rem">
+          <option value="">— Voorbeeld-template importeren —</option>
+        </select>
+        <span id="salesPlanUpdatedLabel" style="font-size:.72rem;color:var(--grey-500);margin-left:auto"></span>
+      </div>
+      <div id="salesPlanAiResult" style="font-size:.78rem;margin-bottom:10px"></div>
+      <div class="edit-field full" style="margin-bottom:10px">
+        <label style="font-weight:600">1. Doelstellingen — kwantitatief + kwalitatief voor dit jaar</label>
+        <textarea id="salesPlan-doelstellingen" style="width:100%;min-height:90px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Bv: € X omzet uit Y nieuwe klanten; behoud van Z bestaande relaties; doorbraak in segment Q."></textarea>
+      </div>
+      <div class="edit-field full" style="margin-bottom:10px">
+        <label style="font-weight:600">2. Marktbenadering — segmentatie, ICP, kanalen</label>
+        <textarea id="salesPlan-marktbenadering" style="width:100%;min-height:90px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Hoe segmenteer je de markt? Wat is je ideal customer profile? Welke kanalen / proposities per segment?"></textarea>
+      </div>
+      <div class="edit-field full" style="margin-bottom:10px">
+        <label style="font-weight:600">3. Speerpunten — 3-5 prioriteiten dit jaar</label>
+        <textarea id="salesPlan-speerpunten" style="width:100%;min-height:90px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="- Speerpunt 1: ...&#10;- Speerpunt 2: ..."></textarea>
+      </div>
+      <div class="edit-field full" style="margin-bottom:10px">
+        <label style="font-weight:600">4. Mijlpalen — wanneer is dit jaar geslaagd?</label>
+        <textarea id="salesPlan-mijlpalen" style="width:100%;min-height:90px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="- Q1: ...&#10;- Q2: ..."></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn-primary" id="salesPlanSaveBtn">SalesPlan opslaan</button>
+      </div>
+      <div id="salesPlanResult" style="margin-top:8px;font-size:.82rem"></div>
+    </div>
+    </details>
+
+    <details class="acc admin-acc" name="admin-tenant-acc">
+    <summary>
+    <span class="acc-icon">⑨</span>
     <span class="acc-title">Geavanceerd</span>
     <span class="acc-chev">&#9662;</span>
     </summary>
@@ -1727,6 +1770,20 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         </select>
       </div>
       <div id="oppList"></div>
+    </div>
+
+    <div class="tab-pane" id="pane-coaching">
+      <div class="toolbar">
+        <strong style="font-size:1rem;color:var(--grey-900);letter-spacing:-.01em">Coaching / 1-on-1 logboek</strong>
+        <div class="toolbar-spacer"></div>
+        <select class="sort-select filter-compact" id="coachingAmFilter" title="Filter op accountmanager">
+          <option value="all">Alle accountmanagers</option>
+        </select>
+        <button type="button" class="btn-secondary" id="coachingNewBtn" style="font-size:.78rem;padding:6px 12px;border-color:var(--orange);color:var(--orange-dark)">+ Nieuwe sessie</button>
+      </div>
+      <p style="font-size:.78rem;color:var(--grey-700);margin:0 0 14px;padding:0 4px">Leg per coaching-sessie agenda + commitments vast. Een follow-up-datum zet automatisch een reminder-todo bij de gekozen accountmanager. Zichtbaar voor iedereen in deze werkomgeving.</p>
+      <div id="coachingNewForm" style="display:none;background:var(--white);border:1px solid var(--grey-200);border-radius:10px;padding:14px 16px;margin-bottom:14px"></div>
+      <div id="coachingList" style="display:flex;flex-direction:column;gap:10px"></div>
     </div>
 
     <div class="tab-pane" id="pane-trends">
@@ -1970,7 +2027,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.20.0",
+    "version": "1.21.0",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12668,6 +12725,92 @@ async function pushRemoteOpportunities(){
     });
   } catch(e){}
 }
+
+/* ---------------- Coaching / 1-on-1 logbook ---------------- */
+// Per-tenant lijst van coaching-sessies; zichtbaar voor iedereen in
+// de werkomgeving. Sluit aan op SalesDay-Focus 'manager stuurt op
+// activiteit, niet pur sec op resultaat'.
+const COACHING_STORAGE = 'marktradar.coaching.v1';
+let coachingSessions = (function(){
+  try { const raw = localStorage.getItem(COACHING_STORAGE); return raw ? JSON.parse(raw) : []; }
+  catch(e){ return []; }
+})();
+let coachingRemoteAvailable = false;
+function saveCoachingLocal(){ try { localStorage.setItem(COACHING_STORAGE, JSON.stringify(coachingSessions)); } catch(e){} }
+async function syncCoaching(){
+  try {
+    const r = await apiFetch(STATE_API + '?key=coaching');
+    if(r.ok){
+      coachingRemoteAvailable = true;
+      const j = await r.json();
+      // Backwards-compat: KV slaat object op (default) maar wij gebruiken
+      // array. Accepteer beide.
+      const v = j && j.value;
+      coachingSessions = Array.isArray(v) ? v : (v && Array.isArray(v.list) ? v.list : []);
+      saveCoachingLocal();
+    }
+  } catch(e){}
+}
+async function pushRemoteCoaching(){
+  try {
+    await apiFetch(STATE_API, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'coaching', value: coachingSessions })
+    });
+  } catch(e){}
+}
+function makeCoachingId(){ return 'co-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6); }
+function addCoachingSession(entry){
+  const id = makeCoachingId();
+  const session = {
+    id,
+    datum: entry.datum || new Date().toISOString().slice(0,10),
+    amOwnerId: entry.amOwnerId || null,
+    agenda: (entry.agenda || '').slice(0, 4000),
+    commitments: Array.isArray(entry.commitments)
+      ? entry.commitments.slice(0, 30).map(c => ({
+          text: String(c.text || '').slice(0, 300),
+          done: !!c.done,
+        })).filter(c => c.text)
+      : [],
+    followupDate: entry.followupDate || null,
+    followupTodoId: null,
+    createdBy: (currentUser && currentUser.id) || null,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+  coachingSessions.unshift(session);
+  saveCoachingLocal();
+  if(coachingRemoteAvailable) pushRemoteCoaching();
+  // Follow-up wordt niet als 'echte' todo opgeslagen (zou een
+  // pseudo-instelling vereisen + scope-bypass). In plaats daarvan
+  // surface'n we 'm in de Acties-tab via een 'Coaching follow-ups'-
+  // block voor de AM, plus een chip op de coaching-kaart zelf.
+  return session;
+}
+function updateCoachingSession(id, patch){
+  const idx = coachingSessions.findIndex(s => s && s.id === id);
+  if(idx < 0) return;
+  coachingSessions[idx] = { ...coachingSessions[idx], ...patch, updatedAt: Date.now() };
+  saveCoachingLocal();
+  if(coachingRemoteAvailable) pushRemoteCoaching();
+}
+function deleteCoachingSession(id){
+  const idx = coachingSessions.findIndex(s => s && s.id === id);
+  if(idx < 0) return;
+  coachingSessions.splice(idx, 1);
+  saveCoachingLocal();
+  if(coachingRemoteAvailable) pushRemoteCoaching();
+}
+function toggleCoachingCommitment(sessionId, idx){
+  const s = coachingSessions.find(x => x && x.id === sessionId);
+  if(!s || !Array.isArray(s.commitments) || !s.commitments[idx]) return;
+  s.commitments[idx].done = !s.commitments[idx].done;
+  s.updatedAt = Date.now();
+  saveCoachingLocal();
+  if(coachingRemoteAvailable) pushRemoteCoaching();
+}
+
 function makeOppId(){ return 'opp-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6); }
 function getOppsForInst(instId){ return Array.isArray(opportunities[instId]) ? opportunities[instId] : []; }
 function allOpportunitiesFlat(){
@@ -13037,6 +13180,8 @@ function initApp(){
   bindThemePane();
   bindOppStagesPane();
   bindOppTargetsPane();
+  bindSalesPlanPane();
+  bindCoachingTab();
   bindUserMenu();
   bindVersionModal();
   renderVersion();
@@ -13048,6 +13193,9 @@ function initApp(){
   syncDropdowns();
   syncOpportunities().then(() => {
     try { if(typeof renderOpportunities === 'function') renderOpportunities(); } catch(e){}
+  });
+  syncCoaching().then(() => {
+    try { if(typeof renderCoaching === 'function') renderCoaching(); } catch(e){}
   });
   syncRemoteSignals().then(() => {
     try { if(typeof renderSignals === 'function') renderSignals(); } catch(e){}
@@ -13631,6 +13779,14 @@ function renderTabs(){
   if(oppEl) oppEl.textContent = scopeOpp.length;
   const actiesEl = document.getElementById('tabCountActies');
   if(actiesEl) actiesEl.textContent = scopeTodos.filter(t => !t.done).length;
+  // Coaching: open commitments over alle sessies (per definitie tenant-
+  // scope want coaching-sessies kennen geen markt-filter).
+  const coEl = document.getElementById('tabCountCoaching');
+  if(coEl){
+    const openCommit = (Array.isArray(coachingSessions) ? coachingSessions : [])
+      .reduce((a, s) => a + ((s.commitments || []).filter(c => !c.done).length), 0);
+    coEl.textContent = openCommit;
+  }
 }
 function activateTab(target){
   if(!target) return;
@@ -13648,6 +13804,7 @@ function activateTab(target){
   if(target === 'trends'){ renderTrendsLensChips(); renderTrendsTab(); }
   if(target === 'opportunities'){ renderOppLensChips(); renderOpportunities(); }
   if(target === 'acties'){ renderActiesOwnerChips(); renderActies(); }
+  if(target === 'coaching'){ renderCoaching(); }
   // Beheer-tab is lazy-loaded zodat de KV-health-check pas draait wanneer
   // de gebruiker er werkelijk naartoe navigeert.
   if(target === 'beheer' && typeof loadAdminPane === 'function'){
@@ -16915,6 +17072,8 @@ async function refreshTenantPane(){
   refreshOppStagesPane();
   // Pipeline-targets-pane initialiseren met tenant.oppTargets.
   refreshOppTargetsPane();
+  // SalesPlan-pane initialiseren met tenant.salesPlan.
+  refreshSalesPlanPane();
   if(stats){
     const universe = getEntiteitenUniverse();
     const baseN = universe.length;
@@ -17380,6 +17539,139 @@ function bindOppTargetsPane(){
   });
   const save = document.getElementById('oppTargetSaveBtn');
   if(save) save.addEventListener('click', onOppTargetsSave);
+}
+
+// ---------------- SalesPlan ----------------
+// Vier vaste secties (doelstellingen / marktbenadering / speerpunten /
+// mijlpalen) met optioneel AI-concept-generator + voorbeeld-templates.
+const SALESPLAN_TEMPLATES = {
+  'b2b-saas': {
+    label: 'B2B SaaS · jaarplan',
+    sections: {
+      doelstellingen: 'Doelstelling 2026: € 1.2M ARR, waarvan € 800k uit nieuwe logo\'s en € 400k uit expansion bij bestaande klanten. Logo-retentie ≥95%. Sales-cycle korter dan 90 dagen voor mid-market deals.',
+      marktbenadering: 'Focus op mid-market (50-500 FTE) in NL/BE. ICP: organisaties met bestaande HR-tooling die rapporteren over compliance. Kanalen: outbound via LinkedIn + warm referrals; partner-channel met integrators.',
+      speerpunten: '- Inbound-funnel verdriedubbelen via SEO + content\n- Partner-programma met 3 strategische integrators\n- Customer success-team uitbreiden voor expansion-motion\n- ABM-pilot in zorg-segment',
+      mijlpalen: '- Q1: 50 SQLs / maand uit inbound\n- Q2: eerste partner-deal closed\n- Q3: NPS ≥45 + 30% van revenue uit expansion\n- Q4: pipeline 3× target voor 2027',
+    },
+  },
+  'professional-services': {
+    label: 'Professional services · jaarplan',
+    sections: {
+      doelstellingen: 'Doelstelling: 12 nieuwe opdrachten van >€50k, gemiddelde projectwaarde €120k. Bezetting consultancy-team ≥80%. Repeat-business ratio ≥60%.',
+      marktbenadering: 'Twee segmenten: enterprise (Fortune-500 NL) voor strategie-trajecten; scale-ups (50-300 FTE) voor operational excellence. ICP: organisaties in transformatie met C-level sponsor. Kanaal: thought-leadership + referrals.',
+      speerpunten: '- Sectorspecialisatie verdiepen (zorg + financial services)\n- Senior partners als rainmaker met 2 deals/Q\n- Alumni-netwerk activeren als referral-kanaal\n- Pre-sales workshop-programma met 1 workshop/maand',
+      mijlpalen: '- Q1: 3 sectorspecialisaties met case studies live\n- Q2: alumni-event 100+ deelnemers\n- Q3: 8 nieuwe opdrachten gestart\n- Q4: pipeline waarde > 2× revenue 2026',
+    },
+  },
+  'generic': {
+    label: 'Generiek B2B',
+    sections: {
+      doelstellingen: '[Vul in: kwantitatieve omzet/aantal-doelen + kwalitatieve doelen voor het jaar]',
+      marktbenadering: '[Beschrijf segmentatie, ideal customer profile en de proposities/kanalen per segment]',
+      speerpunten: '- [Speerpunt 1: ...]\n- [Speerpunt 2: ...]\n- [Speerpunt 3: ...]',
+      mijlpalen: '- Q1: [...]\n- Q2: [...]\n- Q3: [...]\n- Q4: [...]',
+    },
+  },
+};
+function tenantSalesPlan(){
+  return currentTenant && currentTenant.salesPlan && typeof currentTenant.salesPlan === 'object'
+    ? currentTenant.salesPlan
+    : { doelstellingen: '', marktbenadering: '', speerpunten: '', mijlpalen: '', updatedAt: 0 };
+}
+function refreshSalesPlanPane(){
+  const sp = tenantSalesPlan();
+  ['doelstellingen','marktbenadering','speerpunten','mijlpalen'].forEach(k => {
+    const el = document.getElementById('salesPlan-' + k);
+    if(el) el.value = sp[k] || '';
+  });
+  const tplSel = document.getElementById('salesPlanTemplateSel');
+  if(tplSel){
+    tplSel.innerHTML = '<option value="">— Voorbeeld-template importeren —</option>'
+      + Object.keys(SALESPLAN_TEMPLATES).map(k =>
+          `<option value="${escapeHtml(k)}">${escapeHtml(SALESPLAN_TEMPLATES[k].label)}</option>`
+        ).join('');
+  }
+  const lbl = document.getElementById('salesPlanUpdatedLabel');
+  if(lbl){
+    lbl.textContent = sp.updatedAt
+      ? 'Laatst bijgewerkt: ' + new Date(sp.updatedAt).toLocaleString('nl-NL')
+      : 'Nog niet opgeslagen';
+  }
+}
+async function onSalesPlanSave(){
+  const out = document.getElementById('salesPlanResult');
+  const salesPlan = {
+    doelstellingen: (document.getElementById('salesPlan-doelstellingen')?.value || '').slice(0, 4000),
+    marktbenadering: (document.getElementById('salesPlan-marktbenadering')?.value || '').slice(0, 4000),
+    speerpunten: (document.getElementById('salesPlan-speerpunten')?.value || '').slice(0, 4000),
+    mijlpalen: (document.getElementById('salesPlan-mijlpalen')?.value || '').slice(0, 4000),
+  };
+  try {
+    const r = await apiFetch('/api/tenant?action=update', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ salesPlan })
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || 'Opslaan mislukt');
+    if(j.tenant) currentTenant = j.tenant;
+    if(out) out.innerHTML = '<span style="color:var(--green)">SalesPlan opgeslagen.</span>';
+    refreshSalesPlanPane();
+  } catch(err){
+    if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  }
+}
+async function onSalesPlanAiDraft(){
+  const out = document.getElementById('salesPlanAiResult');
+  const btn = document.getElementById('salesPlanAiBtn');
+  // Bevestig overschrijven als er al iets staat — voorkomt onbedoeld
+  // verlies van handmatig werk.
+  const hasContent = ['doelstellingen','marktbenadering','speerpunten','mijlpalen']
+    .some(k => (document.getElementById('salesPlan-' + k)?.value || '').trim().length > 0);
+  if(hasContent && !confirm('Er staat al tekst in het SalesPlan. AI-concept overschrijft de huidige inhoud (nog niet opgeslagen). Doorgaan?')) return;
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ Concept wordt gegenereerd…'; }
+  if(out) out.innerHTML = '<span style="color:var(--grey-600)">Claude is bezig met genereren op basis van je propositie + targets…</span>';
+  try {
+    const r = await apiFetch('/api/tenant?action=salesplan-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || 'AI-call mislukt');
+    const sec = j.sections || {};
+    ['doelstellingen','marktbenadering','speerpunten','mijlpalen'].forEach(k => {
+      const el = document.getElementById('salesPlan-' + k);
+      if(el && typeof sec[k] === 'string') el.value = sec[k];
+    });
+    if(out) out.innerHTML = '<span style="color:var(--green)">Concept gegenereerd. Redigeer en klik op <strong>SalesPlan opslaan</strong> om te bewaren.</span>';
+  } catch(err){
+    if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = '⚡ Genereer concept (AI)'; }
+  }
+}
+function onSalesPlanTemplate(key){
+  if(!key) return;
+  const tpl = SALESPLAN_TEMPLATES[key];
+  if(!tpl) return;
+  const hasContent = ['doelstellingen','marktbenadering','speerpunten','mijlpalen']
+    .some(k => (document.getElementById('salesPlan-' + k)?.value || '').trim().length > 0);
+  if(hasContent && !confirm('Template overschrijft de huidige (nog niet opgeslagen) inhoud. Doorgaan?')) return;
+  Object.keys(tpl.sections).forEach(k => {
+    const el = document.getElementById('salesPlan-' + k);
+    if(el) el.value = tpl.sections[k];
+  });
+  const out = document.getElementById('salesPlanAiResult');
+  if(out) out.innerHTML = '<span style="color:var(--grey-700)">Template <strong>' + escapeHtml(tpl.label) + '</strong> geladen. Redigeer en sla op.</span>';
+}
+function bindSalesPlanPane(){
+  const save = document.getElementById('salesPlanSaveBtn');
+  if(save) save.addEventListener('click', onSalesPlanSave);
+  const ai = document.getElementById('salesPlanAiBtn');
+  if(ai) ai.addEventListener('click', onSalesPlanAiDraft);
+  const tpl = document.getElementById('salesPlanTemplateSel');
+  if(tpl) tpl.addEventListener('change', () => {
+    onSalesPlanTemplate(tpl.value);
+    tpl.value = ''; // reset zodat je dezelfde template opnieuw kan importeren
+  });
 }
 
 function tenantSchema(){
@@ -19261,6 +19553,165 @@ function renderActiesOwnerChips(){
     c.addEventListener('click', () => { actiesOwnerFilter = c.dataset.owner; renderActiesOwnerChips(); renderActies(); });
   });
 }
+/* ---------------- Coaching / 1-on-1 logbook ---------------- */
+let coachingAmFilter = 'all';
+let coachingFormOpen = false;
+function _coachingOwnerLabel(id){
+  if(!id) return '— onbekend —';
+  const o = ownerById(id);
+  return o ? o.naam : id;
+}
+function _coachingOwnerInitials(naam){
+  return (naam || '?').split(' ').map(s => s[0]).join('').slice(0,2).toUpperCase();
+}
+function renderCoachingForm(){
+  const wrap = document.getElementById('coachingNewForm');
+  if(!wrap) return;
+  if(!coachingFormOpen){
+    wrap.style.display = 'none';
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.style.display = 'block';
+  const today = new Date().toISOString().slice(0,10);
+  const ownerOpts = ['<option value="">— Selecteer accountmanager —</option>']
+    .concat((Array.isArray(OWNERS) ? OWNERS : []).map(o =>
+      `<option value="${escapeHtml(o.id)}">${escapeHtml(o.naam)}</option>`
+    )).join('');
+  wrap.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <strong style="font-size:.92rem;color:var(--grey-900)">Nieuwe coaching-sessie</strong>
+      <span style="margin-left:auto"></span>
+      <button type="button" class="btn-secondary" id="coachingFormCancel" style="font-size:.74rem;padding:4px 10px">Annuleren</button>
+    </div>
+    <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:center;margin-bottom:8px">
+      <label style="font-size:.78rem;color:var(--grey-700);text-align:right">Datum</label>
+      <input type="date" id="coachingForm-datum" value="${today}" style="padding:6px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem;max-width:200px">
+      <label style="font-size:.78rem;color:var(--grey-700);text-align:right">Accountmanager</label>
+      <select id="coachingForm-am" style="padding:6px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem;max-width:280px">${ownerOpts}</select>
+      <label style="font-size:.78rem;color:var(--grey-700);text-align:right;align-self:start;padding-top:6px">Agenda / besproken</label>
+      <textarea id="coachingForm-agenda" placeholder="Wat is er deze sessie besproken? Wat speelt er bij de AM?" style="width:100%;min-height:70px;padding:8px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem"></textarea>
+      <label style="font-size:.78rem;color:var(--grey-700);text-align:right;align-self:start;padding-top:6px">Commitments</label>
+      <textarea id="coachingForm-commitments" placeholder="Eén commitment per regel — verschijnen later als afvink-lijst" style="width:100%;min-height:70px;padding:8px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem"></textarea>
+      <label style="font-size:.78rem;color:var(--grey-700);text-align:right">Follow-up datum</label>
+      <input type="date" id="coachingForm-followup" style="padding:6px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem;max-width:200px">
+    </div>
+    <p style="font-size:.7rem;color:var(--grey-500);margin:6px 0 12px">Bij een follow-up-datum maakt het systeem automatisch een reminder-todo aan voor de accountmanager.</p>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button type="button" class="btn-primary" id="coachingFormSave" style="font-size:.84rem">Sessie opslaan</button>
+    </div>
+    <div id="coachingFormResult" style="margin-top:8px;font-size:.78rem"></div>`;
+  document.getElementById('coachingFormCancel').addEventListener('click', () => {
+    coachingFormOpen = false; renderCoachingForm();
+  });
+  document.getElementById('coachingFormSave').addEventListener('click', () => {
+    const datum = document.getElementById('coachingForm-datum').value;
+    const amOwnerId = document.getElementById('coachingForm-am').value;
+    const agenda = (document.getElementById('coachingForm-agenda').value || '').trim();
+    const commitmentsRaw = (document.getElementById('coachingForm-commitments').value || '').trim();
+    const followupDate = document.getElementById('coachingForm-followup').value || null;
+    const out = document.getElementById('coachingFormResult');
+    if(!amOwnerId){ if(out) out.innerHTML = '<span style="color:var(--red)">Kies een accountmanager.</span>'; return; }
+    if(!agenda){ if(out) out.innerHTML = '<span style="color:var(--red)">Vul een korte agenda/notitie in.</span>'; return; }
+    const commitments = commitmentsRaw.split(/\r?\n/).map(s => s.trim()).filter(Boolean).map(text => ({ text, done: false }));
+    addCoachingSession({ datum, amOwnerId, agenda, commitments, followupDate });
+    coachingFormOpen = false;
+    renderCoachingForm();
+    renderCoaching();
+    try { renderTabs(); } catch(e){}
+  });
+}
+function renderCoachingFilter(){
+  const sel = document.getElementById('coachingAmFilter');
+  if(!sel) return;
+  // Bouw opties uit owners die voorkomen in coachingSessions, plus alle
+  // OWNERS zodat je ook nieuwe sessies kan filteren.
+  const known = new Set();
+  (Array.isArray(coachingSessions) ? coachingSessions : []).forEach(s => { if(s.amOwnerId) known.add(s.amOwnerId); });
+  (Array.isArray(OWNERS) ? OWNERS : []).forEach(o => known.add(o.id));
+  const cur = coachingAmFilter;
+  sel.innerHTML = '<option value="all">Alle accountmanagers</option>'
+    + Array.from(known).map(id => {
+        const naam = _coachingOwnerLabel(id);
+        return `<option value="${escapeHtml(id)}" ${id === cur ? 'selected' : ''}>${escapeHtml(naam)}</option>`;
+      }).join('');
+}
+function renderCoaching(){
+  renderCoachingFilter();
+  renderCoachingForm();
+  const list = (Array.isArray(coachingSessions) ? coachingSessions : []).filter(s => {
+    if(coachingAmFilter !== 'all' && s.amOwnerId !== coachingAmFilter) return false;
+    return true;
+  });
+  // Sorteren op datum (nieuwste eerst).
+  list.sort((a, b) => (b.datum || '').localeCompare(a.datum || ''));
+  const wrap = document.getElementById('coachingList');
+  if(!wrap) return;
+  if(list.length === 0){
+    wrap.innerHTML = `<div class="no-data" style="padding:32px;text-align:center;background:var(--white);border:1px dashed var(--grey-200);border-radius:10px;color:var(--grey-600)">Nog geen coaching-sessies${coachingAmFilter !== 'all' ? ' voor deze accountmanager' : ''}. Klik op <strong>+ Nieuwe sessie</strong> om er een te starten.</div>`;
+    return;
+  }
+  wrap.innerHTML = list.map(s => {
+    const owner = _coachingOwnerLabel(s.amOwnerId);
+    const initials = _coachingOwnerInitials(owner);
+    const created = s.createdBy ? _coachingOwnerLabel(s.createdBy) : '';
+    const datumFmt = s.datum ? new Date(s.datum).toLocaleDateString('nl-NL', {weekday:'short', day:'numeric', month:'short', year:'numeric'}) : '';
+    const fuFmt = s.followupDate ? new Date(s.followupDate).toLocaleDateString('nl-NL', {day:'numeric', month:'short'}) : '';
+    const fuPast = s.followupDate ? (new Date(s.followupDate).getTime() < Date.now() - 86400000) : false;
+    const open = (s.commitments || []).filter(c => !c.done).length;
+    const total = (s.commitments || []).length;
+    const commitmentsHtml = (s.commitments || []).map((c, idx) => `
+      <label style="display:flex;align-items:flex-start;gap:8px;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:.84rem;${c.done ? 'opacity:.55' : ''}">
+        <input type="checkbox" class="coaching-commitment-check" data-session-id="${escapeHtml(s.id)}" data-commitment-idx="${idx}" ${c.done ? 'checked' : ''} style="cursor:pointer;accent-color:var(--orange);margin-top:3px">
+        <span style="flex:1;${c.done ? 'text-decoration:line-through;color:var(--grey-600)' : ''}">${escapeHtml(c.text)}</span>
+      </label>`).join('');
+    return `
+      <div style="background:var(--white);border:1px solid var(--grey-200);border-radius:10px;padding:14px 16px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+          <span class="owner-chip"><span class="owner-mini">${escapeHtml(initials)}</span><span class="owner-chip-name">${escapeHtml(owner)}</span></span>
+          <strong style="font-size:.86rem;color:var(--grey-900)">${escapeHtml(datumFmt)}</strong>
+          <span style="margin-left:auto;display:flex;gap:8px;align-items:center">
+            ${total > 0 ? `<span style="font-size:.72rem;color:${open === 0 ? 'var(--green)' : 'var(--grey-700)'}">${total - open}/${total} commitments</span>` : ''}
+            ${s.followupDate ? `<span style="font-size:.72rem;padding:2px 8px;border-radius:6px;background:${fuPast ? '#fdf3f3' : 'var(--orange-pale)'};color:${fuPast ? '#9c2f2f' : 'var(--orange-dark)'};font-weight:600" title="Follow-up reminder voor ${escapeHtml(owner)}">↻ follow-up ${escapeHtml(fuFmt)}</span>` : ''}
+            <button type="button" class="coaching-delete-btn" data-session-id="${escapeHtml(s.id)}" title="Verwijder deze sessie" style="background:none;border:none;color:var(--grey-500);cursor:pointer;font-size:.86rem;padding:4px">✕</button>
+          </span>
+        </div>
+        ${s.agenda ? `<div style="font-size:.82rem;color:var(--grey-800);line-height:1.5;white-space:pre-wrap;margin-bottom:${total > 0 ? '8px' : '0'}">${escapeHtml(s.agenda)}</div>` : ''}
+        ${total > 0 ? `<div style="border-top:1px solid var(--grey-150);padding-top:8px;margin-top:4px"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-600);font-weight:700;margin-bottom:4px">Commitments</div>${commitmentsHtml}</div>` : ''}
+        ${created && created !== owner ? `<div style="font-size:.66rem;color:var(--grey-500);margin-top:8px;text-align:right">Vastgelegd door ${escapeHtml(created)}</div>` : ''}
+      </div>`;
+  }).join('');
+  document.querySelectorAll('#coachingList .coaching-commitment-check').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const sid = cb.dataset.sessionId;
+      const ci = parseInt(cb.dataset.commitmentIdx, 10);
+      toggleCoachingCommitment(sid, ci);
+      renderCoaching();
+      try { renderTabs(); } catch(e){}
+    });
+  });
+  document.querySelectorAll('#coachingList .coaching-delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(!confirm('Coaching-sessie verwijderen?')) return;
+      deleteCoachingSession(btn.dataset.sessionId);
+      renderCoaching();
+      try { renderTabs(); } catch(e){}
+    });
+  });
+}
+function bindCoachingTab(){
+  const newBtn = document.getElementById('coachingNewBtn');
+  if(newBtn) newBtn.addEventListener('click', () => {
+    coachingFormOpen = !coachingFormOpen;
+    renderCoachingForm();
+  });
+  const filt = document.getElementById('coachingAmFilter');
+  if(filt) filt.addEventListener('change', () => {
+    coachingAmFilter = filt.value;
+    renderCoaching();
+  });
+}
+
 function renderActies(){
   let list = allTodosFlat();
   if(actiesFilter === 'open') list = list.filter(t => !t.done);
@@ -19312,7 +19763,49 @@ function renderActies(){
         <button class="todo-delete" type="button" data-todo-id="${t.id}" data-inst-id="${t.instellingId}" title="Verwijderen" aria-label="Verwijderen">&times;</button>
       </div>`;
   }).join('');
-  document.getElementById('actiesList').innerHTML = `<div class="actie-list">${html || '<div class="no-data" style="padding:32px">Geen acties die voldoen aan dit filter.</div>'}</div>`;
+  // Coaching follow-ups als 'meta-block' boven de todo-lijst. Toont
+  // open follow-ups van de huidige user (of alle als 'mine'-scope uit
+  // staat). Klik opent de Coaching-tab en filtert op die AM.
+  let coachingBlockHtml = '';
+  if(Array.isArray(coachingSessions) && coachingSessions.length > 0){
+    const fuList = coachingSessions
+      .filter(s => s.followupDate)
+      .filter(s => scopeMode !== 'mine' || (currentUser && s.amOwnerId === currentUser.id))
+      .filter(s => actiesOwnerFilter === 'all' || s.amOwnerId === actiesOwnerFilter)
+      .map(s => {
+        const due = new Date(s.followupDate).getTime();
+        return { ...s, due, overdue: due < Date.now() - 86400000, soon: due < Date.now() + 7 * 86400000 };
+      })
+      .filter(s => s.overdue || s.soon)
+      .sort((a, b) => a.due - b.due);
+    if(fuList.length > 0){
+      coachingBlockHtml = `
+        <div style="background:var(--white);border:1px solid var(--grey-200);border-left:3px solid var(--orange);border-radius:10px;padding:12px 14px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <strong style="font-size:.84rem;color:var(--grey-900)">Coaching-follow-ups</strong>
+            <span style="font-size:.7rem;color:var(--grey-600)">${fuList.length} open binnen 7 dagen</span>
+            <button type="button" id="coachingFuOpenTabBtn" style="margin-left:auto;font-size:.7rem;background:none;border:none;color:var(--orange-dark);cursor:pointer;font-weight:600;text-decoration:underline">→ Coaching-tab</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            ${fuList.map(s => {
+              const owner = _coachingOwnerLabel(s.amOwnerId);
+              const dueFmt = new Date(s.followupDate).toLocaleDateString('nl-NL', {weekday:'short', day:'numeric', month:'short'});
+              return `<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:${s.overdue ? '#fdf3f3' : 'var(--grey-50)'};border-radius:4px;font-size:.78rem">
+                <span style="padding:2px 6px;border-radius:4px;background:${s.overdue ? '#9c2f2f' : 'var(--orange-dark)'};color:white;font-size:.66rem;font-weight:700;font-family:'DM Mono',monospace;white-space:nowrap">${escapeHtml(dueFmt)}</span>
+                <span style="font-weight:600;color:var(--grey-900);white-space:nowrap">${escapeHtml(owner)}</span>
+                <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--grey-700)">${escapeHtml((s.agenda || '(geen agenda)').slice(0, 120))}</span>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+    }
+  }
+  document.getElementById('actiesList').innerHTML = coachingBlockHtml + `<div class="actie-list">${html || '<div class="no-data" style="padding:32px">Geen acties die voldoen aan dit filter.</div>'}</div>`;
+  const coBtn = document.getElementById('coachingFuOpenTabBtn');
+  if(coBtn) coBtn.addEventListener('click', () => {
+    const tabBtn = document.querySelector('.tab[data-tab="coaching"]');
+    if(tabBtn) tabBtn.click();
+  });
   document.querySelectorAll('#actiesList .todo-check').forEach(cb => {
     cb.addEventListener('change', () => {
       const row = cb.closest('.actie-row');

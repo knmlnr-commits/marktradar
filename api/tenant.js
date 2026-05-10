@@ -48,6 +48,7 @@ function publicTenant(t) {
     signalPromptOverride: typeof t.signalPromptOverride === 'string' ? t.signalPromptOverride : '',
     oppStages: Array.isArray(t.oppStages) ? t.oppStages : null,
     oppTargets: Array.isArray(t.oppTargets) ? t.oppTargets : [],
+    salesPlan: t.salesPlan && typeof t.salesPlan === 'object' ? t.salesPlan : null,
   };
 }
 
@@ -176,6 +177,25 @@ module.exports = async function handler(req, res) {
       if (typeof body.useLlmCurator === 'boolean') t.useLlmCurator = body.useLlmCurator;
       if (typeof body.signalPromptOverride === 'string') {
         t.signalPromptOverride = String(body.signalPromptOverride).slice(0, 4000);
+      }
+      if (body.salesPlan && typeof body.salesPlan === 'object') {
+        // SalesPlan = vier vaste secties (doelstellingen / marktbenadering /
+        // speerpunten / mijlpalen). Per sectie cap op 4000 chars zodat de
+        // tenant-record beheersbaar blijft. updatedAt wordt server-side
+        // gezet zodat de UI kan tonen wanneer het plan voor het laatst is
+        // bijgewerkt.
+        const sec = (k) => typeof body.salesPlan[k] === 'string'
+          ? String(body.salesPlan[k]).slice(0, 4000)
+          : '';
+        t.salesPlan = {
+          doelstellingen: sec('doelstellingen'),
+          marktbenadering: sec('marktbenadering'),
+          speerpunten: sec('speerpunten'),
+          mijlpalen: sec('mijlpalen'),
+          updatedAt: Date.now(),
+        };
+      } else if (body.salesPlan === null) {
+        t.salesPlan = null;
       }
       if (Array.isArray(body.oppTargets)) {
         // Per (year, stage_key, owner_id) een target_count + target_avg_value_eur.
@@ -417,6 +437,85 @@ module.exports = async function handler(req, res) {
       t.onboardingDoneAt = Date.now();
       await auth.kvSet(auth.tenantMetaKey(session.tenantId), t);
       return res.status(200).json({ tenant: publicTenant(t) });
+    }
+    if (action === 'salesplan-draft' && req.method === 'POST') {
+      // Genereert een concept-SalesPlan in vier secties op basis van de
+      // bestaande tenant-context (propositie, markt, oppStages, oppTargets).
+      // Returns { sections: { doelstellingen, marktbenadering, speerpunten,
+      // mijlpalen } }. Slaat NIETS op — caller zet de tekst in de draft
+      // en de gebruiker beslist wat er bewaard wordt via 'update'.
+      if (!process.env.ANTHROPIC_API_KEY) {
+        return res.status(503).json({ error: 'ANTHROPIC_API_KEY niet geconfigureerd' });
+      }
+      const t = await loadOrCreate(session.tenantId);
+      const stages = Array.isArray(t.oppStages) ? t.oppStages : [];
+      const targets = Array.isArray(t.oppTargets) ? t.oppTargets : [];
+      const curYear = String(new Date().getFullYear());
+      const tenantTargets = targets
+        .filter((tg) => String(tg.year) === curYear && !tg.owner_id)
+        .map((tg) => `  - ${tg.stage_key}: ${tg.target_count} opps × € ${tg.target_avg_value_eur}`)
+        .join('\n') || '  (geen targets gezet)';
+      const stagesList = stages
+        .map((s) => `  - ${s.label} (key=${s.key}, prob=${s.probability_pct}%, SLA=${s.target_days}d)`)
+        .join('\n') || '  (default Lead/Suspect/Prospect/Contract)';
+      const sys = 'Je bent een sales-strateeg die helpt bij het opstellen van een SalesPlan. Geef een gestructureerd concept dat de gebruiker kan redigeren. Schrijf in het Nederlands, concreet en actiegericht. Geen prose buiten het JSON-object. Lengte per sectie: 4-8 zinnen, geen bullet-formatting tenzij bij Speerpunten/Mijlpalen.';
+      const userMessage = `**Werkomgeving:** ${t.naam || ''}
+**Propositie:** ${t.propositie || '(niet gezet)'}
+**Markt:** ${t.marktNaam || '(niet gezet)'}
+**Markt-beschrijving:** ${t.marktBeschrijving || '(niet gezet)'}
+
+**Pipeline-fases:**
+${stagesList}
+
+**Targets ${curYear} (tenant-totaal):**
+${tenantTargets}
+
+**Opdracht:** Genereer een concept-SalesPlan in vier secties:
+1. **Doelstellingen** — kwantitatieve + kwalitatieve doelen voor ${curYear}, gekoppeld aan de targets hierboven.
+2. **Marktbenadering** — segmentatie, ideal customer profile, kanaal-keuze, value proposition per segment.
+3. **Speerpunten** — 3-5 prioriteiten waar de organisatie deze periode op stuurt (bullet-list met '- ' prefix per punt).
+4. **Mijlpalen** — 3-5 concrete kwartaal-mijlpalen met indicator wanneer ze 'gehaald' zijn (bullet-list met '- ' prefix).
+
+**Output: alleen JSON-object, geen prose:**
+{"doelstellingen":"...","marktbenadering":"...","speerpunten":"- ...\\n- ...","mijlpalen":"- Q1: ...\\n- Q2: ..."}`;
+
+      const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 3000,
+          system: sys,
+          messages: [{ role: 'user', content: userMessage }],
+        }),
+      });
+      if (!apiRes.ok) {
+        const txt = await apiRes.text();
+        return res.status(502).json({ error: 'Claude API ' + apiRes.status + ': ' + txt.slice(0, 400) });
+      }
+      const j = await apiRes.json();
+      const text = (j.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
+      // Strip markdown-codeblock-fences als Claude die meestuurt.
+      const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+      let sections;
+      try {
+        sections = JSON.parse(cleaned);
+      } catch (e) {
+        return res.status(502).json({ error: 'Claude-response was geen geldig JSON', raw: text.slice(0, 500) });
+      }
+      const sec = (k) => typeof sections[k] === 'string' ? sections[k].slice(0, 4000) : '';
+      return res.status(200).json({
+        sections: {
+          doelstellingen: sec('doelstellingen'),
+          marktbenadering: sec('marktbenadering'),
+          speerpunten: sec('speerpunten'),
+          mijlpalen: sec('mijlpalen'),
+        },
+      });
     }
     return res.status(400).json({ error: 'Onbekende actie of method' });
   } catch (err) {

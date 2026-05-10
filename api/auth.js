@@ -72,6 +72,7 @@ function publicTenant(t) {
     signalPromptOverride: typeof t.signalPromptOverride === 'string' ? t.signalPromptOverride : '',
     oppStages: Array.isArray(t.oppStages) ? t.oppStages : null,
     oppTargets: Array.isArray(t.oppTargets) ? t.oppTargets : [],
+    salesPlan: t.salesPlan && typeof t.salesPlan === 'object' ? t.salesPlan : null,
   };
 }
 
