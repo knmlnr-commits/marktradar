@@ -563,7 +563,7 @@ ${tenantTargets}
       const signalsBlock = fmtList(ctx.recentSignals, (s) =>
         `  - ${safeStr(s.datum, 12)} · ${safeStr(s.urgentie, 10)} · ${safeStr(s.headline, 200)}`, 8);
 
-      const sys = 'Je bent een sales-strateeg die een accountplan opstelt voor één specifieke account. Gebruik het tenant-SalesPlan als kader en de klantbeeld-context als feiten. Schrijf in het Nederlands, concreet en actiegericht. Geen prose buiten het JSON-object. Lengte per sectie: 3-6 zinnen of 3-6 bullet-punten met "- " prefix.';
+      const sys = 'Je bent een sales-strateeg die een accountplan opstelt voor één specifieke account. Gebruik het tenant-SalesPlan als kader en de klantbeeld-context (inclusief recente signalen) als feiten. Schrijf in het Nederlands, concreet en actiegericht. Geen prose buiten het JSON-object. Lengte per sectie: 3-6 zinnen of 3-6 bullet-punten met "- " prefix.';
       const userMessage = `**Werkomgeving:** ${t.naam || ''}
 **Propositie:** ${t.propositie || '(niet gezet)'}
 **Markt:** ${t.marktNaam || '(niet gezet)'}
@@ -592,16 +592,15 @@ ${todosBlock}
 **Recente signalen:**
 ${signalsBlock}
 
-**Opdracht:** Maak een accountplan in vijf secties + een lijst suggested todos. Alle output gegrond in de feiten hierboven; geen verzonnen contactpersonen of bedragen. Suggested todos zijn concrete acties (5-8) die de account-eigenaar moet doen om dit plan te realiseren — start met een werkwoord, max 120 chars per todo.
+**Opdracht:** Maak een accountplan in vier secties + een lijst suggested todos. Alle output gegrond in de feiten hierboven; geen verzonnen contactpersonen of bedragen. Suggested todos zijn concrete acties (5-8) die de account-eigenaar moet doen om dit plan te realiseren — start met een werkwoord, max 120 chars per todo.
 
-1. **Aanpak** — strategie voor dit account: hoe pakken we het aan, contact-frequentie, wie doet wat.
-2. **Propositie-fit** — welk deel van onze propositie past bij dit account (gegrond in custom-velden + segment), wat zijn de signal-haaks.
-3. **Stakeholder-strategie** — DMU-mapping uit de contacten hierboven; wie is decider/champion/blocker; volgende relaties op te bouwen.
-4. **Risico's & blockers** — wat staat een deal in de weg, ontbrekende info, concurrentie, timing.
-5. **Volgende stappen / mijlpalen** — concrete kwartaal-mijlpalen voor dit account met indicator wanneer 'gehaald'.
+1. **Strategische context** — wat is de positie van dit account binnen ons SalesPlan en de markt; recente ontwikkelingen (gegrond in signalen + custom-velden) en de impact daarvan op onze deal-kansen of risico's.
+2. **Stakeholders & koopcriteria** — DMU-mapping uit de contacten hierboven (decider/champion/blocker), welke koopcriteria spelen, welke relaties moeten nog worden opgebouwd of versterkt.
+3. **Aanpak (propositie + tactiek)** — welke onderdelen van onze propositie passen bij dit account, welke tactische stappen (events, demo, pilot, partnership) en met welke contact-frequentie.
+4. **Volgende stappen** — concrete kwartaal-mijlpalen voor dit account met indicator wanneer 'gehaald'.
 
 **Output: alleen JSON-object, geen prose:**
-{"sections":{"aanpak":"...","propositieFit":"...","stakeholderStrategie":"...","risicos":"...","volgendeStappen":"..."},"suggestedTodos":["Bel decider X om Y te bespreken","Stuur propositie-deck naar Z",...]}`;
+{"sections":{"strategischeContext":"...","stakeholdersKoopcriteria":"...","aanpak":"...","volgendeStappen":"..."},"suggestedTodos":["Bel decider X om Y te bespreken","Stuur propositie-deck naar Z",...]}`;
 
       const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -637,10 +636,9 @@ ${signalsBlock}
         : [];
       return res.status(200).json({
         sections: {
+          strategischeContext: sec('strategischeContext'),
+          stakeholdersKoopcriteria: sec('stakeholdersKoopcriteria'),
           aanpak: sec('aanpak'),
-          propositieFit: sec('propositieFit'),
-          stakeholderStrategie: sec('stakeholderStrategie'),
-          risicos: sec('risicos'),
           volgendeStappen: sec('volgendeStappen'),
         },
         suggestedTodos,
