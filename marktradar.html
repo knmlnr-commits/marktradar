@@ -1331,6 +1331,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       <span class="tab-label" data-i18n="tab.suppliers">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
     </button>
+    <button class="tab" data-tab="accountplannen" title="Accountplannen" aria-label="Accountplannen">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+      <span class="tab-label" data-i18n="tab.accountplans">Accountplan</span> <span class="tab-count" id="tabCountAccountPlans">0</span>
+    </button>
     <button class="tab" data-tab="coaching" title="Coaching / 1-on-1" aria-label="Coaching">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span class="tab-label" data-i18n="tab.coaching">Coaching</span> <span class="tab-count" id="tabCountCoaching">0</span>
@@ -1772,6 +1776,24 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <div id="oppList"></div>
     </div>
 
+    <div class="tab-pane" id="pane-accountplannen">
+      <div class="toolbar">
+        <strong style="font-size:1rem;color:var(--grey-900);letter-spacing:-.01em">Accountplannen</strong>
+        <div class="toolbar-spacer"></div>
+        <select class="sort-select filter-compact" id="apOwnerFilter" title="Filter op account-eigenaar">
+          <option value="all">Alle eigenaren</option>
+        </select>
+        <select class="sort-select filter-compact" id="apStatusFilter" title="Filter op plan-status">
+          <option value="all">Alle accounts</option>
+          <option value="hasPlan">Met plan</option>
+          <option value="noPlan">Zonder plan</option>
+          <option value="stale">Stale (&gt;90d)</option>
+        </select>
+      </div>
+      <p style="font-size:.78rem;color:var(--grey-700);margin:0 0 14px;padding:0 4px">Per account een AI-gegenereerd accountplan op basis van het tenant-SalesPlan plus het volledige klantbeeld (contacten, opportunities, todos, signalen). Klik op een account om het plan te openen of te (her)genereren. Suggested todos worden review-first aangemaakt voor de account-eigenaar.</p>
+      <div id="accountPlansList" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
     <div class="tab-pane" id="pane-coaching">
       <div class="toolbar">
         <strong style="font-size:1rem;color:var(--grey-900);letter-spacing:-.01em">Coaching / 1-on-1 logboek</strong>
@@ -2027,7 +2049,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.21.1",
+    "version": "1.22.0",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12819,6 +12841,116 @@ function toggleCoachingCommitment(sessionId, idx){
   if(coachingRemoteAvailable) pushRemoteCoaching();
 }
 
+/* ---------------- Account-plans ---------------- */
+// Per-account opgeslagen plan (Aanpak / Propositie-fit / Stakeholder-
+// strategie / Risico's / Volgende stappen). Object keyed by instellingId.
+// AI-genereer haalt klantbeeld + opportunities + todos + signalen op,
+// stuurt naar /api/tenant?action=accountplan-draft samen met de
+// tenant.salesPlan en levert sections + suggestedTodos terug. Plan kan
+// zo vaak gegenereerd worden als de gebruiker wil; suggested todos
+// worden review-first als checklist getoond.
+const ACCOUNT_PLANS_STORAGE = 'marktradar.accountPlans.v1';
+let accountPlans = (function(){
+  try { const raw = localStorage.getItem(ACCOUNT_PLANS_STORAGE); return raw ? JSON.parse(raw) : {}; }
+  catch(e){ return {}; }
+})();
+let accountPlansRemoteAvailable = false;
+function saveAccountPlansLocal(){ try { localStorage.setItem(ACCOUNT_PLANS_STORAGE, JSON.stringify(accountPlans)); } catch(e){} }
+async function syncAccountPlans(){
+  try {
+    const r = await apiFetch(STATE_API + '?key=account-plans');
+    if(r.ok){
+      accountPlansRemoteAvailable = true;
+      const j = await r.json();
+      const remote = j && j.value && typeof j.value === 'object' ? j.value : {};
+      accountPlans = remote;
+      saveAccountPlansLocal();
+    }
+  } catch(e){}
+}
+async function pushRemoteAccountPlans(){
+  try {
+    await apiFetch(STATE_API, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'account-plans', value: accountPlans })
+    });
+  } catch(e){}
+}
+function getAccountPlan(instId){
+  return accountPlans && accountPlans[instId] ? accountPlans[instId] : null;
+}
+function saveAccountPlan(instId, sections, opts){
+  if(!instId) return;
+  const existing = accountPlans[instId] || {};
+  accountPlans[instId] = {
+    ...existing,
+    sections: sections || existing.sections || {},
+    suggestedTodos: (opts && Array.isArray(opts.suggestedTodos))
+      ? opts.suggestedTodos
+      : (existing.suggestedTodos || []),
+    generatedAt: (opts && opts.generatedAt) || existing.generatedAt || null,
+    generatedBy: (opts && opts.generatedBy) || existing.generatedBy || null,
+    updatedAt: Date.now(),
+    updatedBy: (currentUser && currentUser.id) || null,
+  };
+  saveAccountPlansLocal();
+  if(accountPlansRemoteAvailable) pushRemoteAccountPlans();
+}
+function deleteAccountPlan(instId){
+  if(!accountPlans[instId]) return;
+  delete accountPlans[instId];
+  saveAccountPlansLocal();
+  if(accountPlansRemoteAvailable) pushRemoteAccountPlans();
+}
+// Bouw de context-payload voor de AI-call. Houdt 'm compact zodat de
+// Claude-call binnen z'n token-budget blijft (5-10kB target).
+function buildAccountPlanContext(instId){
+  const inst = getInstelling(instId);
+  if(!inst) return null;
+  const ownerId = ownerForInst(instId);
+  const owner = ownerId ? ownerById(ownerId) : null;
+  const allTodos = (todos[instId] || []).slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0)).slice(0, 15);
+  const opps = (opportunities[instId] || []).map(o => ({
+    titel: o.titel, status: o.status, value: o.value,
+    eigenaar: o.ownerId ? (ownerById(o.ownerId)?.naam || '') : '',
+  }));
+  const sigs = (typeof signalsForInst === 'function' ? signalsForInst(instId) : [])
+    .slice().sort((a,b) => String(b.datum||'').localeCompare(String(a.datum||'')))
+    .slice(0, 8)
+    .map(s => ({ datum: s.datum, urgentie: s.urgentie, headline: s.headline }));
+  // Custom-fields uit tenant.klantSchema gemerged met overrides.
+  const schema = Array.isArray(currentTenant?.klantSchema) ? currentTenant.klantSchema : [];
+  const cf = {};
+  schema.forEach(f => {
+    const ovCustom = (overrides[instId] && overrides[instId].customFields) || {};
+    const v = ovCustom[f.id] !== undefined ? ovCustom[f.id] : inst[f.id];
+    if(v !== undefined && v !== null && String(v).trim() !== '') cf[f.label] = v;
+  });
+  // Contacts: directie + DMU samen, kort opsommend.
+  const contacts = [];
+  (Array.isArray(inst.directie) ? inst.directie : []).forEach(d => {
+    contacts.push({ naam: d.naam, functie: d.functie, rol: d.rol || 'decider', vertrouwen: d.vertrouwen });
+  });
+  (Array.isArray(inst.dmu) ? inst.dmu : []).forEach(d => {
+    contacts.push({ naam: d.naam, functie: d.functie, rol: d.rol, vertrouwen: d.vertrouwen });
+  });
+  return {
+    naam: inst.naam || instId,
+    eigenaarNaam: owner ? owner.naam : '',
+    regio: inst.regio || inst.provincie || '',
+    segment: inst.segment || inst.type || '',
+    notitie: inst.notitie || '',
+    customFields: cf,
+    contacts: contacts.slice(0, 15),
+    opportunities: opps,
+    recentTodos: allTodos.map(td => ({
+      text: td.text, done: !!td.done,
+      ownerNaam: td.ownerId ? (ownerById(td.ownerId)?.naam || '') : '',
+    })),
+    recentSignals: sigs,
+  };
+}
+
 function makeOppId(){ return 'opp-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6); }
 function getOppsForInst(instId){ return Array.isArray(opportunities[instId]) ? opportunities[instId] : []; }
 function allOpportunitiesFlat(){
@@ -13225,6 +13357,7 @@ function initApp(){
   bindOppTargetsPane();
   bindSalesPlanPane();
   bindCoachingTab();
+  bindAccountPlansTab();
   bindUserMenu();
   bindVersionModal();
   renderVersion();
@@ -13239,6 +13372,10 @@ function initApp(){
   });
   syncCoaching().then(() => {
     try { if(typeof renderCoaching === 'function') renderCoaching(); } catch(e){}
+  });
+  syncAccountPlans().then(() => {
+    try { if(typeof renderAccountPlans === 'function') renderAccountPlans(); } catch(e){}
+    try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
   });
   syncRemoteSignals().then(() => {
     try { if(typeof renderSignals === 'function') renderSignals(); } catch(e){}
@@ -13830,6 +13967,14 @@ function renderTabs(){
       .reduce((a, s) => a + ((s.commitments || []).filter(c => !c.done).length), 0);
     coEl.textContent = openCommit;
   }
+  // Accountplannen: aantal accounts met een opgeslagen plan binnen
+  // markt-scope (signaleert hoeveel accounts geactiveerd zijn).
+  const apEl = document.getElementById('tabCountAccountPlans');
+  if(apEl){
+    const scopedIds = new Set(scopeInst.map(i => String(i.id)));
+    const n = Object.keys(accountPlans || {}).filter(id => scopedIds.has(String(id))).length;
+    apEl.textContent = n;
+  }
 }
 function activateTab(target){
   if(!target) return;
@@ -13848,6 +13993,7 @@ function activateTab(target){
   if(target === 'opportunities'){ renderOppLensChips(); renderOpportunities(); }
   if(target === 'acties'){ renderActiesOwnerChips(); renderActies(); }
   if(target === 'coaching'){ renderCoaching(); }
+  if(target === 'accountplannen'){ renderAccountPlans(); }
   // Beheer-tab is lazy-loaded zodat de KV-health-check pas draait wanneer
   // de gebruiker er werkelijk naartoe navigeert.
   if(target === 'beheer' && typeof loadAdminPane === 'function'){
@@ -15777,6 +15923,19 @@ function openInstelling(id, ctx){
         open: ctxCfg.open[0] === 'pipeline',
         body: renderPipelineBody(i)
       })}
+      ${(() => {
+        const plan = getAccountPlan(i.id);
+        const sug = plan && Array.isArray(plan.suggestedTodos) ? plan.suggestedTodos.filter(s => !s.accepted && !s.dismissed).length : 0;
+        const planMeta = plan
+          ? (_apIsStale(plan) ? 'stale · ' : '') + new Date(plan.generatedAt || plan.updatedAt || Date.now()).toLocaleDateString('nl-NL', {day:'numeric', month:'short'}) + (sug > 0 ? ' · ' + sug + ' suggested' : '')
+          : 'nog geen plan';
+        return accordion({
+          icon: '&#9783;', title: 'Accountplan',
+          meta: planMeta,
+          open: (typeof window !== 'undefined' && window._apPendingFocus) || ctxCfg.open[0] === 'accountplan',
+          body: '<div id="apAccordionBody-' + escapeHtml(i.id) + '">' + renderAccountPlanBodyHtml(i.id) + '</div>'
+        });
+      })()}
       ${accordion({
         icon: '&#9758;', title: 'Mensen',
         meta: dmuCount + ' personen',
@@ -15815,6 +15974,12 @@ function openInstelling(id, ctx){
       ${websiteHtml}
     </div>`;
   document.getElementById('overlayPanel').innerHTML = html;
+  // Accountplan-accordion binden (gen-knop, suggested-todo-checklist
+  // events). Element-id's komen pas in de DOM bij deze innerHTML-set.
+  try { bindAccountPlanAccordion(i.id); } catch(e){}
+  // Reset focus-flag zodat een volgende openInstelling-call zonder
+  // accountplan-context niet per ongeluk de Accountplan-accordion opent.
+  try { if(typeof window !== 'undefined') window._apPendingFocus = false; } catch(e){}
   document.getElementById('overlay').classList.add('show');
   // Side-pane mode op brede schermen: schuift de app in zodat lijst
   // én klantbeeld naast elkaar leesbaar zijn (zie .has-side-overlay
@@ -19604,6 +19769,283 @@ function renderActiesOwnerChips(){
     c.addEventListener('click', () => { actiesOwnerFilter = c.dataset.owner; renderActiesOwnerChips(); renderActies(); });
   });
 }
+/* ---------------- Account-plans tab + klantbeeld-accordion ---------------- */
+let apOwnerFilter = 'all';
+let apStatusFilter = 'all';
+const ACCOUNTPLAN_STALE_DAYS = 90;
+function _apIsStale(plan){
+  if(!plan || !plan.generatedAt) return false;
+  return (Date.now() - plan.generatedAt) > ACCOUNTPLAN_STALE_DAYS * 86400000;
+}
+function _apOwnerNaam(instId){
+  const oid = ownerForInst(instId);
+  return oid ? (ownerById(oid)?.naam || '') : '';
+}
+function renderAccountPlansFilters(){
+  const ownerSel = document.getElementById('apOwnerFilter');
+  if(ownerSel){
+    const owners = (Array.isArray(OWNERS) ? OWNERS : []);
+    ownerSel.innerHTML = '<option value="all">Alle eigenaren</option><option value="unassigned">Geen eigenaar</option>'
+      + owners.map(o => `<option value="${escapeHtml(o.id)}" ${o.id === apOwnerFilter ? 'selected' : ''}>${escapeHtml(o.naam)}</option>`).join('');
+  }
+  const statusSel = document.getElementById('apStatusFilter');
+  if(statusSel) statusSel.value = apStatusFilter;
+}
+function renderAccountPlans(){
+  renderAccountPlansFilters();
+  const wrap = document.getElementById('accountPlansList');
+  if(!wrap) return;
+  let scope = instellingenMerged();
+  if(apOwnerFilter === 'unassigned') scope = scope.filter(i => !ownerForInst(i.id));
+  else if(apOwnerFilter !== 'all') scope = scope.filter(i => ownerForInst(i.id) === apOwnerFilter);
+  // Sortering: accounts met een plan + hoogste leadScore eerst, dan zonder plan.
+  scope.sort((a,b) => {
+    const pa = !!getAccountPlan(a.id), pb = !!getAccountPlan(b.id);
+    if(pa !== pb) return pa ? -1 : 1;
+    return (b.leadScore || 0) - (a.leadScore || 0);
+  });
+  if(apStatusFilter === 'hasPlan') scope = scope.filter(i => !!getAccountPlan(i.id));
+  else if(apStatusFilter === 'noPlan') scope = scope.filter(i => !getAccountPlan(i.id));
+  else if(apStatusFilter === 'stale') scope = scope.filter(i => _apIsStale(getAccountPlan(i.id)));
+  if(scope.length === 0){
+    wrap.innerHTML = `<div class="no-data" style="padding:32px;text-align:center;background:var(--white);border:1px dashed var(--grey-200);border-radius:10px;color:var(--grey-600)">Geen accounts in deze filter.</div>`;
+    return;
+  }
+  wrap.innerHTML = scope.map(i => {
+    const plan = getAccountPlan(i.id);
+    const owner = _apOwnerNaam(i.id);
+    const status = i.gericallStatus || i.leadStatus || '';
+    const summary = plan && plan.sections && plan.sections.aanpak
+      ? plan.sections.aanpak.replace(/\s+/g,' ').slice(0, 200)
+      : '';
+    const stale = _apIsStale(plan);
+    const genFmt = (plan && plan.generatedAt)
+      ? new Date(plan.generatedAt).toLocaleDateString('nl-NL', {day:'numeric', month:'short', year:'numeric'})
+      : '';
+    const openSuggested = plan && Array.isArray(plan.suggestedTodos)
+      ? plan.suggestedTodos.filter(t => t && !t.accepted && !t.dismissed).length
+      : 0;
+    return `
+      <div class="ap-row" data-inst-id="${escapeHtml(i.id)}" style="background:var(--white);border:1px solid var(--grey-200);border-radius:10px;padding:12px 14px;cursor:pointer;transition:border-color .15s">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:${summary ? '6px' : '0'}">
+          <strong style="font-size:.9rem;color:var(--grey-900)">${escapeHtml(i.naam || i.id)}</strong>
+          ${owner ? `<span style="font-size:.7rem;color:var(--grey-700);background:var(--grey-100);padding:2px 8px;border-radius:6px">${escapeHtml(owner)}</span>` : `<span style="font-size:.7rem;color:var(--grey-500);font-style:italic">geen eigenaar</span>`}
+          ${status ? `<span style="font-size:.7rem;color:var(--grey-700)">${escapeHtml(status)}</span>` : ''}
+          <span style="margin-left:auto;display:flex;gap:8px;align-items:center">
+            ${plan
+              ? `<span style="font-size:.7rem;padding:2px 8px;border-radius:6px;background:${stale ? '#fdf3f3' : 'var(--orange-pale)'};color:${stale ? '#9c2f2f' : 'var(--orange-dark)'};font-weight:600">${stale ? 'stale · ' : ''}${escapeHtml(genFmt)}</span>`
+              : `<span style="font-size:.7rem;padding:2px 8px;border-radius:6px;background:var(--grey-100);color:var(--grey-600)">nog geen plan</span>`}
+            ${openSuggested > 0 ? `<span style="font-size:.7rem;padding:2px 8px;border-radius:6px;background:#fff8ec;color:#7a4f00;font-weight:600">${openSuggested} suggested todo${openSuggested === 1 ? '' : 's'}</span>` : ''}
+          </span>
+        </div>
+        ${summary ? `<div style="font-size:.78rem;color:var(--grey-700);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escapeHtml(summary)}${summary.length >= 200 ? '…' : ''}</div>` : ''}
+      </div>`;
+  }).join('');
+  document.querySelectorAll('#accountPlansList .ap-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const id = row.dataset.instId;
+      if(!id) return;
+      // Open klantbeeld; klantbeeld-renderer scrollt naar accordion
+      // 'accountplan' (gestuurd via window._apPendingFocus).
+      try { window._apPendingFocus = true; } catch(e){}
+      if(typeof openInstelling === 'function') openInstelling(id);
+    });
+    row.addEventListener('mouseenter', () => row.style.borderColor = 'var(--orange-light)');
+    row.addEventListener('mouseleave', () => row.style.borderColor = 'var(--grey-200)');
+  });
+}
+function bindAccountPlansTab(){
+  const ownerSel = document.getElementById('apOwnerFilter');
+  if(ownerSel) ownerSel.addEventListener('change', () => { apOwnerFilter = ownerSel.value; renderAccountPlans(); });
+  const statusSel = document.getElementById('apStatusFilter');
+  if(statusSel) statusSel.addEventListener('change', () => { apStatusFilter = statusSel.value; renderAccountPlans(); });
+}
+
+// ---- AI-generate flow + suggested-todos checklist ----
+async function onAccountPlanGenerate(instId){
+  const out = document.getElementById('apResult-' + instId);
+  const btn = document.getElementById('apGenBtn-' + instId);
+  const inst = getInstelling(instId);
+  if(!inst) return;
+  const existing = getAccountPlan(instId);
+  if(existing && !confirm('Er bestaat al een accountplan voor "' + (inst.naam || instId) + '" (gegenereerd ' + new Date(existing.generatedAt || 0).toLocaleDateString('nl-NL') + '). Hergeneren overschrijft de huidige inhoud — niet-aangemaakte suggested todos gaan verloren. Doorgaan?')) return;
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ Plan genereren…'; }
+  if(out) out.innerHTML = '<span style="color:var(--grey-600)">Claude leest klantbeeld + opportunities + todos + signalen…</span>';
+  try {
+    const ctx = buildAccountPlanContext(instId);
+    if(!ctx) throw new Error('Klantbeeld kon niet samengesteld worden');
+    const r = await apiFetch('/api/tenant?action=accountplan-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ context: ctx })
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || 'AI-call mislukt');
+    const sections = j.sections || {};
+    const suggested = (Array.isArray(j.suggestedTodos) ? j.suggestedTodos : [])
+      .map(text => ({ text, accepted: false, dismissed: false, createdTodoId: null }));
+    saveAccountPlan(instId, sections, {
+      generatedAt: Date.now(),
+      generatedBy: (currentUser && currentUser.id) || null,
+      suggestedTodos: suggested,
+    });
+    renderAccountPlanAccordion(instId);
+    try { renderTabs(); } catch(e){}
+    try { renderAccountPlans(); } catch(e){}
+    if(out) out.innerHTML = '<span style="color:var(--green)">Plan gegenereerd. Beoordeel de suggested todos en sla op.</span>';
+  } catch(err){
+    if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = existing ? '↻ Hergenereren (AI)' : '⚡ Genereer accountplan (AI)'; }
+  }
+}
+function onAccountPlanSaveTexts(instId){
+  const sections = {};
+  ['aanpak','propositieFit','stakeholderStrategie','risicos','volgendeStappen'].forEach(k => {
+    const el = document.getElementById('apSec-' + instId + '-' + k);
+    if(el) sections[k] = (el.value || '').slice(0, 4000);
+  });
+  saveAccountPlan(instId, sections, {});
+  const out = document.getElementById('apResult-' + instId);
+  if(out) out.innerHTML = '<span style="color:var(--green)">Tekstuele wijzigingen opgeslagen.</span>';
+  try { renderTabs(); } catch(e){}
+  try { renderAccountPlans(); } catch(e){}
+}
+function onAccountPlanCreateTodos(instId){
+  const plan = getAccountPlan(instId);
+  if(!plan || !Array.isArray(plan.suggestedTodos)) return;
+  const ownerId = ownerForInst(instId) || (currentUser && currentUser.id) || null;
+  let created = 0;
+  plan.suggestedTodos = plan.suggestedTodos.map(s => {
+    if(!s || s.accepted || s.dismissed) return s;
+    const cb = document.getElementById('apTodoCb-' + instId + '-' + plan.suggestedTodos.indexOf(s));
+    return s;
+  });
+  // Tweede pass met directe DOM-lookup (de findIndex hierboven werkt
+  // niet betrouwbaar binnen een map). Iterate explicitly.
+  plan.suggestedTodos.forEach((s, idx) => {
+    if(!s || s.accepted || s.dismissed) return;
+    const cb = document.getElementById('apTodoCb-' + instId + '-' + idx);
+    if(cb && cb.checked){
+      const t = addTodo(instId, s.text, ownerId, {});
+      if(t){
+        s.accepted = true;
+        s.createdTodoId = t.id;
+        s.acceptedAt = Date.now();
+        created++;
+      }
+    }
+  });
+  saveAccountPlan(instId, plan.sections, { suggestedTodos: plan.suggestedTodos, generatedAt: plan.generatedAt, generatedBy: plan.generatedBy });
+  renderAccountPlanAccordion(instId);
+  try { renderTabs(); } catch(e){}
+  try { renderAccountPlans(); } catch(e){}
+  const out = document.getElementById('apResult-' + instId);
+  if(out) out.innerHTML = created > 0
+    ? `<span style="color:var(--green)">${created} todo${created === 1 ? '' : 's'} aangemaakt voor ${ownerId ? (ownerById(ownerId)?.naam || 'eigenaar') : 'niemand (geen eigenaar)'}.</span>`
+    : '<span style="color:var(--grey-600)">Geen todo geselecteerd.</span>';
+}
+function onAccountPlanDismissSuggestion(instId, idx){
+  const plan = getAccountPlan(instId);
+  if(!plan || !Array.isArray(plan.suggestedTodos) || !plan.suggestedTodos[idx]) return;
+  plan.suggestedTodos[idx].dismissed = true;
+  saveAccountPlan(instId, plan.sections, { suggestedTodos: plan.suggestedTodos, generatedAt: plan.generatedAt, generatedBy: plan.generatedBy });
+  renderAccountPlanAccordion(instId);
+  try { renderTabs(); } catch(e){}
+}
+function onAccountPlanDelete(instId){
+  if(!confirm('Accountplan voor deze account verwijderen? Aangemaakte todos blijven staan.')) return;
+  deleteAccountPlan(instId);
+  renderAccountPlanAccordion(instId);
+  try { renderTabs(); } catch(e){}
+  try { renderAccountPlans(); } catch(e){}
+}
+// Render-helper: HTML voor de Accountplan-accordion in het klantbeeld.
+function renderAccountPlanBodyHtml(instId){
+  const plan = getAccountPlan(instId);
+  const ownerId = ownerForInst(instId);
+  const ownerNaam = ownerId ? (ownerById(ownerId)?.naam || '') : '';
+  const sections = (plan && plan.sections) || {};
+  const sec = (k) => typeof sections[k] === 'string' ? sections[k] : '';
+  const genFmt = (plan && plan.generatedAt)
+    ? new Date(plan.generatedAt).toLocaleString('nl-NL')
+    : '';
+  const stale = _apIsStale(plan);
+  const suggested = (plan && Array.isArray(plan.suggestedTodos)) ? plan.suggestedTodos : [];
+  const openSuggested = suggested.filter(s => !s.accepted && !s.dismissed);
+  const acceptedCount = suggested.filter(s => s.accepted).length;
+  const ownerNote = ownerNaam
+    ? `Suggested todos worden aangemaakt voor <strong>${escapeHtml(ownerNaam)}</strong>.`
+    : `<span style="color:#9c2f2f">⚠ Geen account-eigenaar — suggested todos vallen toe aan jou (${escapeHtml((currentUser && currentUser.naam) || 'huidige user')}). Wijs eerst een eigenaar toe voor zuiverheid.</span>`;
+  const suggestedHtml = openSuggested.length > 0 ? `
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--grey-150)">
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-600);margin-bottom:8px">Suggested todos · ${openSuggested.length} open${acceptedCount > 0 ? ' · ' + acceptedCount + ' aangemaakt' : ''}</div>
+      <div style="font-size:.74rem;color:var(--grey-700);margin-bottom:8px">${ownerNote}</div>
+      ${openSuggested.map(s => {
+        const idx = suggested.indexOf(s);
+        return `<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 6px;border-radius:4px;font-size:.84rem">
+          <input type="checkbox" id="apTodoCb-${escapeHtml(instId)}-${idx}" data-ap-cb="${idx}" checked style="cursor:pointer;accent-color:var(--orange);margin-top:3px">
+          <span style="flex:1">${escapeHtml(s.text)}</span>
+          <button type="button" class="ap-todo-dismiss" data-inst-id="${escapeHtml(instId)}" data-idx="${idx}" title="Negeren" style="background:none;border:none;color:var(--grey-500);cursor:pointer;font-size:.86rem;padding:0 4px">✕</button>
+        </div>`;
+      }).join('')}
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+        <button type="button" class="btn-primary" id="apCreateTodosBtn-${escapeHtml(instId)}" style="font-size:.78rem;padding:5px 12px">Maak aangevinkte todos aan</button>
+      </div>
+    </div>` : (acceptedCount > 0 ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--grey-150);font-size:.74rem;color:var(--grey-600)">Alle ${acceptedCount} suggested todos zijn aangemaakt of genegeerd.</div>` : '');
+  const sectionsHtml = `
+    <div style="display:grid;grid-template-columns:1fr;gap:8px">
+      ${[
+        ['aanpak', 'Aanpak'],
+        ['propositieFit', 'Propositie-fit'],
+        ['stakeholderStrategie', 'Stakeholder-strategie'],
+        ['risicos', 'Risico\\u2019s & blockers'],
+        ['volgendeStappen', 'Volgende stappen / mijlpalen'],
+      ].map(([k, label]) => `
+        <div class="edit-field full" style="margin-bottom:0">
+          <label style="font-weight:600;font-size:.78rem">${label}</label>
+          <textarea id="apSec-${escapeHtml(instId)}-${k}" placeholder="${plan ? '' : 'Genereer eerst een AI-concept of typ zelf in.'}" style="width:100%;min-height:80px;padding:8px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem">${escapeHtml(sec(k))}</textarea>
+        </div>`).join('')}
+    </div>`;
+  const headerHtml = `
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+      <button type="button" class="btn-secondary" id="apGenBtn-${escapeHtml(instId)}" data-ap-gen="${escapeHtml(instId)}" style="font-size:.78rem;padding:6px 12px">${plan ? '↻ Hergenereren (AI)' : '⚡ Genereer accountplan (AI)'}</button>
+      ${plan ? `<button type="button" class="btn-secondary" id="apDelBtn-${escapeHtml(instId)}" data-ap-del="${escapeHtml(instId)}" style="font-size:.74rem;padding:4px 10px;color:#9c2f2f;border-color:#f3d2d2">Verwijder plan</button>` : ''}
+      <span style="margin-left:auto;font-size:.72rem;color:${stale ? '#9c2f2f' : 'var(--grey-600)'}">
+        ${plan ? (stale ? `⚠ Stale · gegenereerd ${escapeHtml(genFmt)}` : `Gegenereerd ${escapeHtml(genFmt)}`) : 'Nog geen plan'}
+      </span>
+    </div>`;
+  const saveHtml = plan ? `
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button type="button" class="btn-secondary" id="apSaveTextsBtn-${escapeHtml(instId)}" data-ap-save="${escapeHtml(instId)}" style="font-size:.78rem;padding:6px 12px">Tekstuele wijzigingen opslaan</button>
+    </div>` : '';
+  return `
+    <div style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">Het accountplan vertaalt het tenant-SalesPlan naar concrete aanpak voor deze account. AI gebruikt klantbeeld + contacten + opportunities + todos + signalen als input. Re-generate zo vaak je wilt; suggested todos worden review-first toegevoegd.</div>
+    ${headerHtml}
+    ${sectionsHtml}
+    ${saveHtml}
+    ${suggestedHtml}
+    <div id="apResult-${escapeHtml(instId)}" style="margin-top:10px;font-size:.82rem"></div>`;
+}
+function renderAccountPlanAccordion(instId){
+  const body = document.getElementById('apAccordionBody-' + instId);
+  if(!body) return;
+  body.innerHTML = renderAccountPlanBodyHtml(instId);
+  bindAccountPlanAccordion(instId);
+}
+function bindAccountPlanAccordion(instId){
+  const gen = document.getElementById('apGenBtn-' + instId);
+  if(gen) gen.addEventListener('click', () => onAccountPlanGenerate(instId));
+  const del = document.getElementById('apDelBtn-' + instId);
+  if(del) del.addEventListener('click', () => onAccountPlanDelete(instId));
+  const save = document.getElementById('apSaveTextsBtn-' + instId);
+  if(save) save.addEventListener('click', () => onAccountPlanSaveTexts(instId));
+  const create = document.getElementById('apCreateTodosBtn-' + instId);
+  if(create) create.addEventListener('click', () => onAccountPlanCreateTodos(instId));
+  document.querySelectorAll('.ap-todo-dismiss[data-inst-id="' + instId + '"]').forEach(btn => {
+    btn.addEventListener('click', () => onAccountPlanDismissSuggestion(instId, parseInt(btn.dataset.idx, 10)));
+  });
+}
+
 /* ---------------- Coaching / 1-on-1 logbook ---------------- */
 let coachingAmFilter = 'all';
 let coachingFormOpen = false;

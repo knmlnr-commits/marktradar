@@ -517,6 +517,135 @@ ${tenantTargets}
         },
       });
     }
+    if (action === 'accountplan-draft' && req.method === 'POST') {
+      // Genereert een concept-accountplan voor één account op basis van
+      // de tenant.salesPlan + propositie + de klantbeeld-context die de
+      // client meestuurt (instelling-data, contacts, opportunities,
+      // recente todos, recente signalen). Returns { sections, suggestedTodos }.
+      // Slaat NIETS op — caller toont aan de gebruiker, die kiest welke
+      // todos er aangemaakt worden en slaat dan zelf op.
+      if (!process.env.ANTHROPIC_API_KEY) {
+        return res.status(503).json({ error: 'ANTHROPIC_API_KEY niet geconfigureerd' });
+      }
+      const body = await readJsonBody(req);
+      const ctx = body && body.context && typeof body.context === 'object' ? body.context : null;
+      if (!ctx || !ctx.naam) {
+        return res.status(400).json({ error: 'context.naam (account-naam) verplicht' });
+      }
+      const t = await loadOrCreate(session.tenantId);
+      const sp = t.salesPlan && typeof t.salesPlan === 'object' ? t.salesPlan : null;
+      const salesPlanBlock = sp
+        ? `**Doelstellingen:** ${sp.doelstellingen || '(leeg)'}
+**Marktbenadering:** ${sp.marktbenadering || '(leeg)'}
+**Speerpunten:** ${sp.speerpunten || '(leeg)'}
+**Mijlpalen:** ${sp.mijlpalen || '(leeg)'}`
+        : '(geen SalesPlan opgesteld — geef generiek advies)';
+      const safeStr = (v, max) => typeof v === 'string' ? v.slice(0, max || 1000) : '';
+      const safeNum = (v) => typeof v === 'number' ? v : (typeof v === 'string' ? parseFloat(v) : null);
+      const fmtList = (arr, mapper, max) => {
+        if (!Array.isArray(arr) || arr.length === 0) return '(geen)';
+        return arr.slice(0, max || 20).map(mapper).filter(Boolean).join('\n') || '(geen)';
+      };
+      const customFieldsBlock = ctx.customFields && typeof ctx.customFields === 'object'
+        ? Object.entries(ctx.customFields)
+            .filter(([, v]) => v !== null && v !== undefined && String(v).trim() !== '')
+            .map(([k, v]) => `  - ${k}: ${String(v).slice(0, 200)}`)
+            .join('\n') || '(geen)'
+        : '(geen)';
+      const contactsBlock = fmtList(ctx.contacts, (c) =>
+        `  - ${safeStr(c.naam, 80)}${c.functie ? ' — ' + safeStr(c.functie, 80) : ''}${c.rol ? ' (' + safeStr(c.rol, 30) + ')' : ''}${c.vertrouwen ? ' [vertrouwen: ' + safeStr(c.vertrouwen, 30) + ']' : ''}`, 15);
+      const oppsBlock = fmtList(ctx.opportunities, (o) => {
+        const val = safeNum(o.value);
+        return `  - "${safeStr(o.titel, 120)}" — fase: ${safeStr(o.status, 30) || '(onbekend)'}${val ? ', waarde € ' + val : ''}${o.eigenaar ? ', eigenaar: ' + safeStr(o.eigenaar, 60) : ''}`;
+      }, 10);
+      const todosBlock = fmtList(ctx.recentTodos, (td) =>
+        `  - [${td.done ? 'x' : ' '}] ${safeStr(td.text, 200)}${td.ownerNaam ? ' (eigenaar: ' + safeStr(td.ownerNaam, 60) + ')' : ''}`, 15);
+      const signalsBlock = fmtList(ctx.recentSignals, (s) =>
+        `  - ${safeStr(s.datum, 12)} · ${safeStr(s.urgentie, 10)} · ${safeStr(s.headline, 200)}`, 8);
+
+      const sys = 'Je bent een sales-strateeg die een accountplan opstelt voor één specifieke account. Gebruik het tenant-SalesPlan als kader en de klantbeeld-context als feiten. Schrijf in het Nederlands, concreet en actiegericht. Geen prose buiten het JSON-object. Lengte per sectie: 3-6 zinnen of 3-6 bullet-punten met "- " prefix.';
+      const userMessage = `**Werkomgeving:** ${t.naam || ''}
+**Propositie:** ${t.propositie || '(niet gezet)'}
+**Markt:** ${t.marktNaam || '(niet gezet)'}
+
+**SalesPlan-kader:**
+${salesPlanBlock}
+
+**Account: ${ctx.naam}**
+${ctx.eigenaarNaam ? `Account-eigenaar: ${ctx.eigenaarNaam}` : 'Account-eigenaar: (geen)'}
+${ctx.regio ? `Regio: ${ctx.regio}` : ''}
+${ctx.segment ? `Segment: ${ctx.segment}` : ''}
+${ctx.notitie ? `Notitie: ${safeStr(ctx.notitie, 600)}` : ''}
+
+**Custom-velden:**
+${customFieldsBlock}
+
+**Contactpersonen / DMU:**
+${contactsBlock}
+
+**Lopende opportunities:**
+${oppsBlock}
+
+**Recente todos (open + gedaan):**
+${todosBlock}
+
+**Recente signalen:**
+${signalsBlock}
+
+**Opdracht:** Maak een accountplan in vijf secties + een lijst suggested todos. Alle output gegrond in de feiten hierboven; geen verzonnen contactpersonen of bedragen. Suggested todos zijn concrete acties (5-8) die de account-eigenaar moet doen om dit plan te realiseren — start met een werkwoord, max 120 chars per todo.
+
+1. **Aanpak** — strategie voor dit account: hoe pakken we het aan, contact-frequentie, wie doet wat.
+2. **Propositie-fit** — welk deel van onze propositie past bij dit account (gegrond in custom-velden + segment), wat zijn de signal-haaks.
+3. **Stakeholder-strategie** — DMU-mapping uit de contacten hierboven; wie is decider/champion/blocker; volgende relaties op te bouwen.
+4. **Risico's & blockers** — wat staat een deal in de weg, ontbrekende info, concurrentie, timing.
+5. **Volgende stappen / mijlpalen** — concrete kwartaal-mijlpalen voor dit account met indicator wanneer 'gehaald'.
+
+**Output: alleen JSON-object, geen prose:**
+{"sections":{"aanpak":"...","propositieFit":"...","stakeholderStrategie":"...","risicos":"...","volgendeStappen":"..."},"suggestedTodos":["Bel decider X om Y te bespreken","Stuur propositie-deck naar Z",...]}`;
+
+      const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 4000,
+          system: sys,
+          messages: [{ role: 'user', content: userMessage }],
+        }),
+      });
+      if (!apiRes.ok) {
+        const txt = await apiRes.text();
+        return res.status(502).json({ error: 'Claude API ' + apiRes.status + ': ' + txt.slice(0, 400) });
+      }
+      const j = await apiRes.json();
+      const text = (j.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
+      const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+      let parsed;
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch (e) {
+        return res.status(502).json({ error: 'Claude-response was geen geldig JSON', raw: text.slice(0, 500) });
+      }
+      const secObj = (parsed && parsed.sections && typeof parsed.sections === 'object') ? parsed.sections : {};
+      const sec = (k) => typeof secObj[k] === 'string' ? secObj[k].slice(0, 4000) : '';
+      const suggestedTodos = Array.isArray(parsed.suggestedTodos)
+        ? parsed.suggestedTodos.map((s) => String(s || '').slice(0, 200)).filter(Boolean).slice(0, 12)
+        : [];
+      return res.status(200).json({
+        sections: {
+          aanpak: sec('aanpak'),
+          propositieFit: sec('propositieFit'),
+          stakeholderStrategie: sec('stakeholderStrategie'),
+          risicos: sec('risicos'),
+          volgendeStappen: sec('volgendeStappen'),
+        },
+        suggestedTodos,
+      });
+    }
     return res.status(400).json({ error: 'Onbekende actie of method' });
   } catch (err) {
     return res.status(500).json({ error: String(err.message || err) });
