@@ -1176,7 +1176,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <input type="text" id="gate-tenant" autocomplete="organization" placeholder="bv. Mijn werkomgeving">
       </div>
       <label for="gate-email">Email</label>
-      <input type="email" id="gate-email" autocomplete="email" placeholder="naam@gericall.nl" required>
+      <input type="email" id="gate-email" autocomplete="email" placeholder="naam@bedrijf.nl" required>
       <label for="gate-pw-auth"><span id="gate-pw-label">Wachtwoord</span></label>
       <input type="password" id="gate-pw-auth" autocomplete="current-password" required>
       <label class="gate-remember" for="gate-remember-auth">
@@ -1410,7 +1410,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div class="acc-body">
     <div class="contact-edit-grid" style="margin-bottom:6px">
     <div class="edit-field"><label>Naam werkomgeving</label><input type="text" id="tenant-naam" placeholder="bv. Van Ameyde Group"></div>
-    <div class="edit-field"><label>URL-slug (<code>/app/&lt;slug&gt;</code>)</label><input type="text" id="tenant-slug" placeholder="bijv. gericall"></div>
+    <div class="edit-field"><label>URL-slug (<code>/app/&lt;slug&gt;</code>)</label><input type="text" id="tenant-slug" placeholder="bijv. mijn-bedrijf"></div>
     <div class="edit-field full"><label>Propositie — wat verkoop je en aan wie?</label><textarea id="tenant-propositie" style="width:100%;min-height:80px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Eén zin: wat is je product, wie is je doelklant?"></textarea></div>
     <div class="edit-field"><label>Markt-naam</label><input type="text" id="tenant-markt-naam" placeholder="bv. Europese verzekeraars, B2B SaaS, retailers"></div>
     <div class="edit-field full"><label>Markt-beschrijving (optioneel)</label><textarea id="tenant-markt-beschrijving" style="width:100%;min-height:60px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="Welke segmenten, regio, omvang?"></textarea></div>
@@ -1711,7 +1711,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div class="admin-section-head"><div class="admin-section-title">Nieuwe gebruiker toevoegen</div></div>
     <div class="contact-edit-grid" style="margin-bottom:6px">
     <div class="edit-field"><label>Naam</label><input type="text" id="user-add-naam" placeholder="Voornaam Achternaam"></div>
-    <div class="edit-field"><label>Email</label><input type="email" id="user-add-email" placeholder="naam@gericall.nl"></div>
+    <div class="edit-field"><label>Email</label><input type="email" id="user-add-email" placeholder="naam@bedrijf.nl"></div>
     <div class="edit-field full"><label>Tijdelijk wachtwoord (optioneel)</label><input type="text" id="user-add-pw" placeholder="Laat leeg voor automatisch genereren"></div>
     </div>
     <div style="display:flex;justify-content:flex-end"><button class="btn-primary" id="userAddBtn">Account aanmaken</button></div>
@@ -2027,7 +2027,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.21.0",
+    "version": "1.21.1",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -11626,6 +11626,14 @@ const URL_SLUG = parseUrlSlug();
 // voor branding klaar is. Cache wordt opgebouwd in applyTenantTheme()
 // na elke succesvolle login + theme-change.
 try { applyCachedThemeForSlug(URL_SLUG); } catch(e){}
+// Vroege branding-texten (titel + email-placeholders): currentTenant is hier
+// nog null, dus tenantEmailHint() valt terug op URL_SLUG zodat de gate-
+// login al direct 'naam@<slug>.nl' toont voordat de tenant-API klaar is.
+try {
+  document.addEventListener('DOMContentLoaded', () => {
+    if(typeof applyTenantBrandingTexts === 'function') applyTenantBrandingTexts();
+  });
+} catch(e){}
 
 async function fetchTenantBranding(slug){
   if(!slug) return null;
@@ -13077,6 +13085,41 @@ function leadScoreClass(score){
 // zeggen voor de huidige tenant.
 function snapshotsAvailable(){
   return currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+}
+// Centrale legacy-detectie zodat hardcoded GeriCall-jargon (zorg-vakgebieden,
+// VVT-baselines etc.) alleen aan de seed-tenant getoond wordt en niet lekt
+// naar nieuwe tenants. Alle andere tenants krijgen generieke placeholders.
+function isLegacyGericallTenant(){
+  return currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
+}
+// Bouwt een email-hint placeholder op basis van de tenant-slug. Gebruikt
+// in user-add (Beheer > Gebruikers) en op de gate-login. Slug is meestal
+// een goede proxy voor het email-domein (vanameyde, acme); bij twijfel
+// of voor de seed-tenant valt 'ie terug op het generieke 'bedrijf.nl'.
+function tenantEmailHint(){
+  // Cliënt-side gate-context (voor login): URL_SLUG kan gevuld zijn vóór
+  // currentTenant geladen is. Daarna heeft currentTenant.slug voorrang.
+  const slug = (currentTenant && currentTenant.slug)
+    || (typeof URL_SLUG === 'string' ? URL_SLUG : '');
+  if(!slug || slug === 'gericall') return 'naam@bedrijf.nl';
+  // Strip trailing -2/-3 enz. (multi-tenant disambiguation-suffix).
+  const cleaned = String(slug).replace(/-\d+$/, '');
+  if(!cleaned) return 'naam@bedrijf.nl';
+  return 'naam@' + cleaned + '.nl';
+}
+// Roep aan zodra currentTenant is geladen of vervangen — werkt browser-
+// titel + alle e-mail-placeholders bij zodat een Van-Ameyde-gebruiker
+// 'naam@vanameyde.nl' ziet en 'Van Ameyde · MarktRadar' in z'n tab.
+function applyTenantBrandingTexts(){
+  try {
+    const naam = (currentTenant && currentTenant.naam) || 'MarktRadar';
+    document.title = naam === 'MarktRadar' ? 'MarktRadar' : (naam + ' · MarktRadar');
+    const hint = tenantEmailHint();
+    ['gate-email', 'user-add-email'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.placeholder = hint;
+    });
+  } catch(e){}
 }
 function snapshotCount(){ return snapshotsAvailable() ? (DATA.snapshots || []).length : 0; }
 function snapshotsForInst(id, lens){
@@ -16305,7 +16348,7 @@ function openContactEdit(instId, contact, kind){
       <div class="edit-field"><label>Email</label><input type="email" id="ce-email" value="${escapeHtml(c.email||'')}"></div>
       <div class="edit-field"><label>Telefoon</label><input type="tel" id="ce-telefoon" value="${escapeHtml(c.telefoon||'')}"></div>
       <div class="edit-field full"><label>LinkedIn</label><input type="url" id="ce-linkedin" value="${escapeHtml(c.linkedin||'')}"></div>
-      <div class="edit-field"><label>Vakgebied <small>(optioneel)</small></label><input type="text" id="ce-vakgebied" value="${escapeHtml(c.vakgebied||'')}" placeholder="bv. Specialist Ouderengeneeskunde"></div>
+      <div class="edit-field"><label>Vakgebied <small>(optioneel)</small></label><input type="text" id="ce-vakgebied" value="${escapeHtml(c.vakgebied||'')}" placeholder="${isLegacyGericallTenant() ? 'bv. Specialist Ouderengeneeskunde' : 'bv. inkoop, juridisch, schadeafdeling'}"></div>
       <div class="edit-field"><label>Sinds <small>(optioneel)</small></label><input type="date" id="ce-sinds" value="${escapeHtml(c.sinds||'')}"></div>
       <div class="edit-field full"><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ce-recent" ${c.recent ? 'checked' : ''}> Recente wijziging (&lt;90 dagen) — zichtbaar als badge</label></div>
       <div class="edit-field full"><label>Bron-URL <small>(optioneel)</small></label><input type="url" id="ce-bron" value="${escapeHtml(c.bron||'')}"></div>
@@ -16723,6 +16766,10 @@ function _hexToRgb(hex){
   return r + ', ' + g + ', ' + b;
 }
 function applyTenantTheme(){
+  // Werk ook tenant-aware texten (browser-titel + email-placeholders) bij;
+  // gekoppeld aan de theme-flow zodat een tenant-wissel altijd alle
+  // branding-elementen consistent meeneemt.
+  try { applyTenantBrandingTexts(); } catch(e){}
   const t = (currentTenant && currentTenant.theme) || null;
   const root = document.documentElement;
   // Reset eerst, anders blijven kleuren van een vorige tenant hangen
@@ -18418,6 +18465,10 @@ async function loadAdminPane(){
   const sync = document.getElementById('adminSyncStatus');
   if(sync) sync.innerHTML = renderSyncStatus({ ok: false, reason: 'controleren…' });
   showAdminTab(authMode === 'multi' ? 'tenant' : 'dropdowns');
+  // Werk de tenant-aware placeholders (user-add-email etc.) bij zodra het
+  // admin-paneel zichtbaar is — voorkomt dat een nieuwe Van-Ameyde-admin
+  // 'naam@gericall.nl' ziet bij gebruiker-toevoegen.
+  try { applyTenantBrandingTexts(); } catch(e){}
   const health = await checkKvHealth();
   if(sync) sync.innerHTML = renderSyncStatus(health);
   if(resList) resList.innerHTML = renderResourceList();
