@@ -178,17 +178,20 @@ module.exports = async function handler(req, res) {
         t.signalPromptOverride = String(body.signalPromptOverride).slice(0, 4000);
       }
       if (Array.isArray(body.oppTargets)) {
-        // Per (year, stage_key) een target_count + target_avg_value_eur.
-        // Year is 4-digit kalenderjaar als string. Stage_key wordt
-        // niet gevalideerd tegen oppStages — als de stage later wordt
-        // hernoemd of verwijderd blijft de historische target staan.
+        // Per (year, stage_key, owner_id) een target_count + target_avg_value_eur.
+        // owner_id is optioneel: leeg = tenant-totaal, gevuld = persoonlijk
+        // target voor die owner. Year is 4-digit kalenderjaar als string.
+        // Stage_key wordt niet gevalideerd tegen oppStages — als de stage
+        // later wordt hernoemd of verwijderd blijft de historische target staan.
+        // Cap verhoogd naar 600 entries (200 stage-buckets × ~3 owners).
         const seen = new Set();
-        t.oppTargets = body.oppTargets.slice(0, 200).map((tg) => {
+        t.oppTargets = body.oppTargets.slice(0, 600).map((tg) => {
           const year = String(tg.year || '').trim();
           if (!/^[0-9]{4}$/.test(year)) return null;
           const stage_key = String(tg.stage_key || '').trim().slice(0, 40);
           if (!stage_key) return null;
-          const composite = year + '|' + stage_key;
+          const owner_id = tg.owner_id == null ? '' : String(tg.owner_id).trim().slice(0, 60);
+          const composite = year + '|' + stage_key + '|' + owner_id;
           if (seen.has(composite)) return null;
           seen.add(composite);
           let count = parseInt(tg.target_count, 10);
@@ -197,7 +200,9 @@ module.exports = async function handler(req, res) {
           let avg = parseFloat(tg.target_avg_value_eur);
           if (isNaN(avg) || avg < 0) avg = 0;
           if (avg > 1e12) avg = 1e12;
-          return { year, stage_key, target_count: count, target_avg_value_eur: avg };
+          const out = { year, stage_key, target_count: count, target_avg_value_eur: avg };
+          if (owner_id) out.owner_id = owner_id;
+          return out;
         }).filter(Boolean);
       }
       if (Array.isArray(body.oppStages)) {

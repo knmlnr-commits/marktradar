@@ -1607,6 +1607,8 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
         <label style="font-size:.78rem;color:var(--grey-700)">Jaar:</label>
         <select id="oppTargetYearSel" style="padding:5px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem"></select>
+        <label style="font-size:.78rem;color:var(--grey-700);margin-left:6px">Eigenaar:</label>
+        <select id="oppTargetOwnerSel" title="Tenant-totaal of een persoonlijk target voor één owner" style="padding:5px 10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.84rem"></select>
       </div>
       <div id="oppTargetsList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px"></div>
       <div style="display:flex;justify-content:flex-end;gap:8px">
@@ -1968,7 +1970,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.19.2",
+    "version": "1.20.0",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12689,6 +12691,10 @@ function addOpportunity(instId, partial){
     createdAt: now,
     updatedAt: now,
     stage_entered_at: now,
+    // stageHistory tracks each stage-bezoek met entered_at/exited_at.
+    // Wordt gebruikt voor stage-velocity en conversie-ratio metrics.
+    // Open entry (exited_at = null) is de huidige fase.
+    stageHistory: [{ stage: partial.status || defaultStatus, entered_at: now, exited_at: null }],
   };
   if(!Array.isArray(opportunities[instId])) opportunities[instId] = [];
   opportunities[instId].push(opp);
@@ -12706,10 +12712,23 @@ function updateOpportunity(instId, oppId, patch){
     const n = patch.value_eur === '' || patch.value_eur == null ? null : Number(patch.value_eur);
     next.value_eur = (typeof n === 'number' && !isNaN(n)) ? n : null;
   }
-  // Bij status-wissel: reset stage_entered_at zodat de SLA-deadline
-  // herberekend wordt vanaf het huidige moment voor de nieuwe fase.
+  // Bij status-wissel: reset stage_entered_at + log de transitie in
+  // stageHistory zodat velocity- en conversie-metrics berekenbaar zijn.
   if('status' in patch && patch.status !== arr[idx].status){
-    next.stage_entered_at = Date.now();
+    const now = Date.now();
+    next.stage_entered_at = now;
+    const hist = Array.isArray(next.stageHistory) ? next.stageHistory.slice() : [];
+    // Sluit de vorige open entry af (exited_at = now).
+    if(hist.length > 0 && hist[hist.length - 1].exited_at == null){
+      hist[hist.length - 1] = { ...hist[hist.length - 1], exited_at: now };
+    } else if(hist.length === 0){
+      // Backfill voor opps zonder history: reken de tijd in de oude
+      // fase als 1 entry vanaf createdAt of stage_entered_at tot nu.
+      const start = arr[idx].stage_entered_at || arr[idx].createdAt || now;
+      hist.push({ stage: arr[idx].status, entered_at: start, exited_at: now });
+    }
+    hist.push({ stage: patch.status, entered_at: now, exited_at: null });
+    next.stageHistory = hist;
   }
   arr[idx] = next;
   saveOpportunitiesLocal();
@@ -17097,16 +17116,141 @@ function tenantOppTargets(){
   const arr = currentTenant && currentTenant.oppTargets;
   return Array.isArray(arr) ? arr.slice() : [];
 }
-function getOppTargetsForYear(year){
-  // Returns Map<stage_key, {target_count, target_avg_value_eur}>
+function getOppTargetsForYear(year, ownerId){
+  // Returns Map<stage_key, {target_count, target_avg_value_eur, owner_id}>
+  // ownerId param: undefined/null/'' = tenant-totaal-bucket; specifiek
+  // owner-id = persoonlijk target. Targets uit andere buckets worden
+  // genegeerd zodat aggregaten niet dubbel meetellen.
+  const wantOwner = ownerId == null ? '' : String(ownerId);
   const out = new Map();
   tenantOppTargets()
     .filter(t => String(t.year) === String(year))
+    .filter(t => (t.owner_id || '') === wantOwner)
     .forEach(t => out.set(t.stage_key, t));
   return out;
 }
-let _oppTargetDraft = []; // working copy voor de huidige jaar-tab in de UI
+// ---------------- Stage-velocity & conversion-ratio ----------------
+// Bouwt per stage_key statistieken op basis van opp.stageHistory:
+//   - avg_days: gemiddeld aantal dagen doorgebracht in deze fase
+//     (over afgesloten stage-bezoeken; current open-fase telt niet mee).
+//   - entered: hoeveel opps deze fase ooit hebben aangeraakt.
+//   - forwarded: hoeveel daarvan zijn doorgegaan naar een latere fase.
+//   - conversion_pct: forwarded/entered × 100.
+function computeStageMetrics(oppsArr, stages){
+  const stageOrder = new Map(stages.map((s, i) => [s.key, i]));
+  const acc = new Map();
+  stages.forEach(s => acc.set(s.key, { durations: [], entered: new Set(), forwarded: new Set() }));
+  oppsArr.forEach(o => {
+    const hist = Array.isArray(o.stageHistory) ? o.stageHistory : null;
+    if(!hist || hist.length === 0){
+      // Fallback: gebruik current status met stage_entered_at als open entry
+      const start = o.stage_entered_at || o.createdAt;
+      if(o.status && start){
+        const bucket = acc.get(o.status);
+        if(bucket) bucket.entered.add(o.id);
+      }
+      return;
+    }
+    const maxIdxReached = hist.reduce((m, h) => {
+      const i = stageOrder.has(h.stage) ? stageOrder.get(h.stage) : -1;
+      return i > m ? i : m;
+    }, -1);
+    hist.forEach(h => {
+      const bucket = acc.get(h.stage);
+      if(!bucket) return;
+      bucket.entered.add(o.id);
+      if(typeof h.entered_at === 'number' && typeof h.exited_at === 'number'){
+        const days = (h.exited_at - h.entered_at) / 86400000;
+        if(days >= 0 && days < 365 * 5) bucket.durations.push(days);
+      }
+      const myIdx = stageOrder.has(h.stage) ? stageOrder.get(h.stage) : -1;
+      if(myIdx >= 0 && maxIdxReached > myIdx) bucket.forwarded.add(o.id);
+    });
+  });
+  const out = new Map();
+  stages.forEach(s => {
+    const b = acc.get(s.key);
+    const durations = b.durations;
+    const avgDays = durations.length > 0
+      ? durations.reduce((a,d) => a + d, 0) / durations.length
+      : null;
+    const entered = b.entered.size;
+    const forwarded = b.forwarded.size;
+    const conv = entered > 0 ? Math.round((forwarded / entered) * 100) : null;
+    out.set(s.key, {
+      avg_days: avgDays,
+      entered,
+      forwarded,
+      conversion_pct: conv,
+      sample_size: durations.length,
+    });
+  });
+  return out;
+}
+
+// Stale-deal-detectie: opp staat te lang in dezelfde fase (> target_days × 1.5
+// vanaf stage_entered_at). Sluit closed/won/lost-stages uit (probability >=100
+// of <= 0). Returns [{opp, stageLabel, daysIn, targetDays}].
+function computeStaleOpps(oppsArr, stages){
+  const now = Date.now();
+  const stageMap = new Map(stages.map(s => [s.key, s]));
+  const out = [];
+  oppsArr.forEach(o => {
+    const s = stageMap.get(o.status);
+    if(!s) return;
+    const td = Number(s.target_days) || 0;
+    if(td <= 0) return; // geen SLA gedefinieerd
+    // Closed/won (≥100%) en hard-lost (0%) niet als stale flaggen.
+    const p = Number(s.probability_pct) || 0;
+    if(p >= 100 || p <= 0) return;
+    const start = o.stage_entered_at || o.updatedAt || o.createdAt || now;
+    const days = (now - start) / 86400000;
+    if(days > td * 1.5){
+      out.push({ opp: o, stageLabel: s.label, daysIn: Math.round(days), targetDays: td });
+    }
+  });
+  out.sort((a,b) => b.daysIn - a.daysIn);
+  return out;
+}
+
+// Activity-counter: hoeveel handelingen heeft `ownerId` deze week
+// (sinds maandag 00:00) verricht? Telt afgeronde todos + opp-stage-
+// transities + opp-value/title-wijzigingen op basis van timestamps.
+function _startOfWeek(ts){
+  const d = new Date(ts);
+  d.setHours(0,0,0,0);
+  const dow = d.getDay() === 0 ? 6 : d.getDay() - 1; // ma=0 .. zo=6
+  d.setDate(d.getDate() - dow);
+  return d.getTime();
+}
+function computeWeeklyActivity(ownerId){
+  const start = _startOfWeek(Date.now());
+  let todoDone = 0, oppMoves = 0, oppEdits = 0;
+  Object.keys(todos || {}).forEach(instId => {
+    (todos[instId] || []).forEach(t => {
+      if(t.done && t.completedAt && t.completedAt >= start && (!ownerId || t.ownerId === ownerId)){
+        todoDone++;
+      }
+    });
+  });
+  Object.keys(opportunities || {}).forEach(instId => {
+    (opportunities[instId] || []).forEach(o => {
+      if(ownerId && o.ownerId !== ownerId) return;
+      const hist = Array.isArray(o.stageHistory) ? o.stageHistory : [];
+      hist.forEach(h => {
+        if(typeof h.entered_at === 'number' && h.entered_at >= start) oppMoves++;
+      });
+      if(o.updatedAt && o.updatedAt >= start && (!o.stage_entered_at || o.stage_entered_at < start)){
+        oppEdits++;
+      }
+    });
+  });
+  return { total: todoDone + oppMoves + oppEdits, todoDone, oppMoves, oppEdits, weekStart: start };
+}
+
+let _oppTargetDraft = []; // working copy voor de huidige (jaar, owner)-tab
 let _oppTargetCurrentYear = null;
+let _oppTargetCurrentOwner = ''; // '' = tenant-totaal
 function _availableTargetYears(){
   const now = new Date().getFullYear();
   // Huidig + komend jaar. Als er al targets bestaan voor andere jaren
@@ -17117,15 +17261,23 @@ function _availableTargetYears(){
 }
 function refreshOppTargetsPane(){
   const sel = document.getElementById('oppTargetYearSel');
+  const ownerSel = document.getElementById('oppTargetOwnerSel');
   if(!sel) return;
   const years = _availableTargetYears();
   const cur = _oppTargetCurrentYear || String(new Date().getFullYear());
   sel.innerHTML = years.map(y => `<option value="${y}" ${y === cur ? 'selected' : ''}>${y}</option>`).join('');
   _oppTargetCurrentYear = sel.value;
-  // Draft = bestaande targets voor dit jaar, aangevuld met lege rijen
-  // voor stages zonder target zodat alle fases zichtbaar zijn.
+  if(ownerSel){
+    const opts = ['<option value="">— Tenant-totaal —</option>']
+      .concat((Array.isArray(OWNERS) ? OWNERS : []).map(o =>
+        `<option value="${escapeHtml(o.id)}" ${o.id === _oppTargetCurrentOwner ? 'selected' : ''}>${escapeHtml(o.naam)}</option>`));
+    ownerSel.innerHTML = opts.join('');
+    _oppTargetCurrentOwner = ownerSel.value || '';
+  }
+  // Draft = bestaande targets voor (jaar, owner), aangevuld met lege
+  // rijen voor stages zonder target zodat alle fases zichtbaar zijn.
   const stages = tenantOppStages();
-  const existing = getOppTargetsForYear(_oppTargetCurrentYear);
+  const existing = getOppTargetsForYear(_oppTargetCurrentYear, _oppTargetCurrentOwner);
   _oppTargetDraft = stages.map(s => {
     const t = existing.get(s.key);
     return {
@@ -17176,16 +17328,26 @@ function renderOppTargetsList(){
 }
 async function onOppTargetsSave(){
   const out = document.getElementById('oppTargetResult');
-  // Combineer bestaande targets uit ANDERE jaren met de huidige draft.
-  const others = tenantOppTargets().filter(t => String(t.year) !== String(_oppTargetCurrentYear));
+  // Combineer bestaande targets uit ANDERE (jaar, owner)-buckets met
+  // de huidige draft. Dit voorkomt dat tenant-totaal en persoonlijke
+  // targets elkaar overschrijven.
+  const curYear = String(_oppTargetCurrentYear);
+  const curOwner = String(_oppTargetCurrentOwner || '');
+  const others = tenantOppTargets().filter(t => {
+    return !(String(t.year) === curYear && String(t.owner_id || '') === curOwner);
+  });
   const drafted = _oppTargetDraft
     .filter(t => (t.target_count || 0) > 0 || (t.target_avg_value_eur || 0) > 0)
-    .map(t => ({
-      year: String(_oppTargetCurrentYear),
-      stage_key: t.stage_key,
-      target_count: t.target_count || 0,
-      target_avg_value_eur: t.target_avg_value_eur || 0,
-    }));
+    .map(t => {
+      const out = {
+        year: curYear,
+        stage_key: t.stage_key,
+        target_count: t.target_count || 0,
+        target_avg_value_eur: t.target_avg_value_eur || 0,
+      };
+      if(curOwner) out.owner_id = curOwner;
+      return out;
+    });
   const oppTargets = others.concat(drafted);
   try {
     const r = await apiFetch('/api/tenant?action=update', {
@@ -17195,7 +17357,10 @@ async function onOppTargetsSave(){
     const j = await r.json().catch(() => ({}));
     if(!r.ok) throw new Error(j.error || 'Opslaan mislukt');
     if(j.tenant) currentTenant = j.tenant;
-    if(out) out.innerHTML = '<span style="color:var(--green)">Targets opgeslagen voor ' + escapeHtml(_oppTargetCurrentYear) + ' (' + drafted.length + ' fase' + (drafted.length === 1 ? '' : 's') + ').</span>';
+    const ownerLabel = curOwner
+      ? (ownerById(curOwner)?.naam || curOwner)
+      : 'tenant-totaal';
+    if(out) out.innerHTML = '<span style="color:var(--green)">Targets opgeslagen voor ' + escapeHtml(curYear) + ' · ' + escapeHtml(ownerLabel) + ' (' + drafted.length + ' fase' + (drafted.length === 1 ? '' : 's') + ').</span>';
     refreshOppTargetsPane();
     try { if(typeof renderOpportunities === 'function') renderOpportunities(); } catch(e){}
   } catch(err){
@@ -17206,6 +17371,11 @@ function bindOppTargetsPane(){
   const sel = document.getElementById('oppTargetYearSel');
   if(sel) sel.addEventListener('change', () => {
     _oppTargetCurrentYear = sel.value;
+    refreshOppTargetsPane();
+  });
+  const ownerSel = document.getElementById('oppTargetOwnerSel');
+  if(ownerSel) ownerSel.addEventListener('change', () => {
+    _oppTargetCurrentOwner = ownerSel.value || '';
     refreshOppTargetsPane();
   });
   const save = document.getElementById('oppTargetSaveBtn');
@@ -19331,8 +19501,8 @@ function renderOpportunities(){
     </div>`;
   // Funnel-visualisatie: pyramide-vorm (gestapelde gecentreerde bars
   // die smaller worden van Lead naar Contract). Elk segment toont
-  // label, aantal, € totaal en weighted; rechts naast de pyramide een
-  // 'Verloren'-kolom met dropoff per fase (count_vorige - count_huidige).
+  // label, aantal, € totaal en weighted forecast. Daaronder velocity
+  // (avg dagen in fase) en conversie (% door naar volgende fase).
   const stages = tenantOppStages();
   const perStage = stages.map(s => {
     const list = opps.filter(o => o.status === s.key);
@@ -19347,47 +19517,81 @@ function renderOpportunities(){
   // met kleine aantallen netjes uitziet. De FRAME-breedte is gebaseerd
   // op stage-positie (lineair afnemend van 100% naar 40%); de FILL-
   // breedte binnen de frame is gebaseerd op count relatief tot maxCount.
-  // Op 0 opps zie je nog steeds de pyramide-silhouette (dashed border).
   const N = stages.length;
   const frameWidths = stages.map((_, i) => N <= 1 ? 90 : Math.round(100 - (i / (N - 1)) * 60));
   const maxCount = Math.max(1, ...perStage.map(x => x.count));
   const fmtEur = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M'
                     : n >= 1e3 ? Math.round(n / 1e3) + 'k'
                     : Math.round(n).toString();
-  // Targets voor het huidige kalenderjaar — als referentie-marker en
-  // 'vs target'-readout in de funnel.
+  // Targets voor het huidige kalenderjaar. We laden zowel de
+  // tenant-totaal-bucket ('') als — indien aanwezig — de persoonlijke
+  // bucket voor de ingelogde user. UI toont primair tenant-doel; als
+  // de user persoonlijke targets heeft, komt er een extra 'mij'-regel.
   const currentYear = String(new Date().getFullYear());
-  const targetMap = (typeof getOppTargetsForYear === 'function') ? getOppTargetsForYear(currentYear) : new Map();
-  const totalTargetCount = perStage.reduce((a, p) => a + ((targetMap.get(p.stage.key) || {}).target_count || 0), 0);
+  const tenantTargetMap = getOppTargetsForYear(currentYear, '');
+  const myTargetMap = (currentUser && currentUser.id) ? getOppTargetsForYear(currentYear, currentUser.id) : new Map();
+  const targetMap = tenantTargetMap; // funnel-marker volgt tenant-doel
+  const totalTargetCount = perStage.reduce((a, p) => a + ((tenantTargetMap.get(p.stage.key) || {}).target_count || 0), 0);
   const totalTargetValue = perStage.reduce((a, p) => {
-    const t = targetMap.get(p.stage.key) || {};
+    const t = tenantTargetMap.get(p.stage.key) || {};
+    return a + ((t.target_count || 0) * (t.target_avg_value_eur || 0));
+  }, 0);
+  const totalMyTargetCount = perStage.reduce((a, p) => a + ((myTargetMap.get(p.stage.key) || {}).target_count || 0), 0);
+  const totalMyTargetValue = perStage.reduce((a, p) => {
+    const t = myTargetMap.get(p.stage.key) || {};
     return a + ((t.target_count || 0) * (t.target_avg_value_eur || 0));
   }, 0);
   const hasTargets = totalTargetCount > 0 || totalTargetValue > 0;
+  const hasMyTargets = totalMyTargetCount > 0 || totalMyTargetValue > 0;
+  // Mijn-pipeline (alleen opps van currentUser) voor de 'mij'-readout.
+  const myOpps = (currentUser && currentUser.id) ? opps.filter(o => o.ownerId === currentUser.id) : [];
+  // Velocity + conversie + stale + activity worden over alle zichtbare
+  // opps berekend (dezelfde set die in de funnel staat).
+  const stageMetrics = computeStageMetrics(opps, stages);
+  const staleOpps = computeStaleOpps(opps, stages);
+  const activity = (currentUser && currentUser.id)
+    ? computeWeeklyActivity(currentUser.id)
+    : computeWeeklyActivity(null);
+  const fmtDays = (d) => d == null ? '—' : (d < 1 ? '<1d' : (d < 30 ? Math.round(d) + 'd' : Math.round(d/7) + 'w'));
   const funnelRowsHtml = perStage.map((p, idx) => {
     const frameW = frameWidths[idx];
     const fillPct = p.count === 0 ? 0 : Math.max(8, Math.round((p.count / maxCount) * 100));
-    const tgt = targetMap.get(p.stage.key);
+    const tgt = tenantTargetMap.get(p.stage.key);
     const tgtCount = tgt ? (tgt.target_count || 0) : 0;
     const tgtTotal = tgt ? (tgtCount * (tgt.target_avg_value_eur || 0)) : 0;
+    const myTgt = myTargetMap.get(p.stage.key);
+    const myTgtCount = myTgt ? (myTgt.target_count || 0) : 0;
+    const myCount = myOpps.filter(o => o.status === p.stage.key).length;
     // Target-marker: dunne verticale lijn op de positie waar
     // count = target_count zou liggen, gecentreerd in de frame.
-    // % van frame-breedte = target_count / maxCount.
     const tgtPct = (tgtCount > 0 && maxCount > 0)
       ? Math.min(100, Math.round((tgtCount / maxCount) * 100))
       : null;
-    // Vs-target readout-color: groen als ≥, amber 70-100%, grijs/rood < 70%.
     let vsColor = 'var(--grey-500)';
     if(tgtCount > 0){
       const ratio = p.count / tgtCount;
       vsColor = ratio >= 1 ? 'var(--green)' : ratio >= 0.7 ? '#8a6a1c' : '#9c2f2f';
     }
+    let vsMyColor = 'var(--grey-500)';
+    if(myTgtCount > 0){
+      const ratio = myCount / myTgtCount;
+      vsMyColor = ratio >= 1 ? 'var(--green)' : ratio >= 0.7 ? '#8a6a1c' : '#9c2f2f';
+    }
+    const m = stageMetrics.get(p.stage.key) || {};
+    const velocityChip = m.avg_days != null
+      ? `<span title="Gemiddelde tijd in deze fase (n=${m.sample_size || 0})" style="font-size:.6rem;color:var(--grey-600);font-family:'DM Mono',monospace">⏱ ${fmtDays(m.avg_days)}</span>`
+      : '';
+    const convChip = m.conversion_pct != null
+      ? `<span title="${m.forwarded || 0}/${m.entered || 0} opps zijn doorgegaan naar een latere fase" style="font-size:.6rem;color:var(--grey-600);font-family:'DM Mono',monospace">→ ${m.conversion_pct}%</span>`
+      : '';
     return `
-      <div style="display:grid;grid-template-columns:130px 1fr;gap:10px;align-items:center;padding:5px 0">
+      <div style="display:grid;grid-template-columns:140px 1fr;gap:10px;align-items:center;padding:5px 0">
         <div style="text-align:right;padding-right:8px;min-width:0">
           <div style="font-size:.74rem;font-weight:700;color:var(--grey-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.stage.label)}</div>
           <div style="font-size:.64rem;color:var(--grey-600);font-family:'DM Mono',monospace">${p.count}${tgtCount > 0 ? ` <span style="color:${vsColor}">/ ${tgtCount}</span>` : ''} &middot; ${p.stage.probability_pct}%</div>
-          <div style="font-size:.6rem;color:var(--grey-500);font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="Actual € totaal → weighted${tgtTotal > 0 ? ' &middot; doel € ' + fmtEur(tgtTotal) : ''}">€ ${fmtEur(p.sum)} → € ${fmtEur(p.weighted)}${tgtTotal > 0 ? ` <span style="color:var(--grey-400)">/ € ${fmtEur(tgtTotal)}</span>` : ''}</div>
+          ${hasMyTargets ? `<div style="font-size:.6rem;color:var(--grey-500);font-family:'DM Mono',monospace" title="Jouw aantal vs jouw target">mij ${myCount}${myTgtCount > 0 ? ` <span style="color:${vsMyColor}">/ ${myTgtCount}</span>` : ''}</div>` : ''}
+          <div style="font-size:.6rem;color:var(--grey-500);font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="Actual € totaal → weighted forecast${tgtTotal > 0 ? ' &middot; doel € ' + fmtEur(tgtTotal) : ''}">€ ${fmtEur(p.sum)} → € ${fmtEur(p.weighted)}${tgtTotal > 0 ? ` <span style="color:var(--grey-400)">/ € ${fmtEur(tgtTotal)}</span>` : ''}</div>
+          <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:2px">${velocityChip}${convChip}</div>
         </div>
         <div style="display:flex;justify-content:center;min-width:0">
           <div style="width:${frameW}%;max-width:100%;height:32px;background:var(--grey-50);border:1px dashed var(--grey-300);border-radius:4px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden">
@@ -19401,16 +19605,58 @@ function renderOpportunities(){
   const targetSummary = hasTargets
     ? ` <span style="margin-left:8px;color:var(--grey-500)">|</span> <span style="color:var(--grey-700);font-size:.74rem">Doel ${currentYear}: <strong>${totalTargetCount}</strong> opp${totalTargetCount === 1 ? '' : 's'} &middot; € ${fmtEur(totalTargetValue)}</span>`
     : '';
+  const myWeightedSum = myOpps.reduce((acc, o) => {
+    const s = stages.find(x => x.key === o.status);
+    const v = (typeof o.value_eur === 'number' ? o.value_eur : 0);
+    return acc + v * ((s && s.probability_pct || 0) / 100);
+  }, 0);
+  const myTargetSummary = hasMyTargets
+    ? `<div style="font-size:.74rem;color:var(--grey-700);margin-top:4px">Mijn pipeline: <strong>${myOpps.length}</strong> opp${myOpps.length === 1 ? '' : 's'} &middot; <strong style="color:var(--orange-dark)">€ ${fmtEur(myWeightedSum)}</strong> forecast &middot; <span style="color:var(--grey-600)">doel ${totalMyTargetCount} opp${totalMyTargetCount === 1 ? '' : 's'} / € ${fmtEur(totalMyTargetValue)}</span></div>`
+    : '';
+  const activityChip = `<span style="font-size:.74rem;color:var(--grey-700)" title="Afgeronde todos + opp-stage-transities + opp-edits sinds maandag${activity.weekStart ? ' ' + new Date(activity.weekStart).toLocaleDateString('nl-NL') : ''}">⚡ <strong>${activity.total}</strong> handeling${activity.total === 1 ? '' : 'en'} deze week${currentUser ? ' (mij)' : ''}</span>`;
+  const staleChip = staleOpps.length > 0
+    ? `<button type="button" id="staleOppsToggle" style="font-size:.74rem;color:#9c2f2f;background:#fdf3f3;border:1px solid #f1cccc;border-radius:6px;padding:3px 8px;cursor:pointer;font-weight:600" title="Opps die langer dan 1.5× target_days in dezelfde fase staan">⚠ ${staleOpps.length} stagnerend${staleOpps.length === 1 ? '' : 'e'}</button>`
+    : '';
+  const stalePanelHtml = staleOpps.length > 0
+    ? `<div id="staleOppsPanel" style="display:none;margin-top:10px;padding:10px 12px;background:#fdf3f3;border:1px solid #f1cccc;border-radius:6px">
+        <div style="font-size:.74rem;font-weight:700;color:#9c2f2f;margin-bottom:6px">Stagnerende opps (${staleOpps.length}) — langer dan 1.5× target_days in dezelfde fase</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          ${staleOpps.slice(0, 20).map(s => {
+            const inst = getInstelling(s.opp.instellingId);
+            return `<button type="button" class="stale-opp-row" data-inst-id="${escapeHtml(s.opp.instellingId)}" data-opp-id="${escapeHtml(s.opp.id)}" style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:white;border:1px solid #f1cccc;border-radius:4px;cursor:pointer;font:inherit;text-align:left">
+              <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.78rem;font-weight:600">${escapeHtml(s.opp.titel || '(zonder titel)')}</span>
+              <span style="font-size:.66rem;color:var(--grey-600);white-space:nowrap">${escapeHtml(inst ? inst.naam : '')}</span>
+              <span style="font-size:.66rem;font-family:'DM Mono',monospace;color:#9c2f2f;white-space:nowrap">${s.daysIn}d / ${s.targetDays}d &middot; ${escapeHtml(s.stageLabel)}</span>
+            </button>`;
+          }).join('')}
+          ${staleOpps.length > 20 ? `<div style="font-size:.66rem;color:var(--grey-500);text-align:center;padding-top:4px">+ ${staleOpps.length - 20} meer</div>` : ''}
+        </div>
+      </div>`
+    : '';
   const funnelHtml = `
     <div style="background:var(--white);border:1px solid var(--grey-200);border-radius:10px;padding:18px 20px;margin-bottom:18px">
-      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:14px;flex-wrap:wrap;border-bottom:1px solid var(--grey-150);padding-bottom:10px">
+      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:6px;flex-wrap:wrap;border-bottom:1px solid var(--grey-150);padding-bottom:10px">
         <strong style="font-size:1rem;color:var(--grey-900);letter-spacing:-.01em">Pipeline-funnel</strong>
-        <span style="font-size:.78rem;color:var(--grey-600)"><strong>${totalCount}</strong> opp${totalCount === 1 ? '' : 's'} &middot; € ${fmtEur(totalSum)} totaal &middot; <strong style="color:var(--orange-dark)">€ ${fmtEur(totalWeighted)}</strong> weighted${targetSummary}</span>
-        <span style="margin-left:auto;font-size:.66rem;color:var(--grey-500);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Fase &middot; Pijplijn${hasTargets ? ' &middot; Doel' : ''}</span>
+        <span style="font-size:.78rem;color:var(--grey-600)"><strong>${totalCount}</strong> opp${totalCount === 1 ? '' : 's'} &middot; € ${fmtEur(totalSum)} totaal &middot; <strong style="color:var(--orange-dark)">€ ${fmtEur(totalWeighted)}</strong> forecast${targetSummary}</span>
+        <span style="margin-left:auto;display:flex;gap:8px;align-items:center">${activityChip}${staleChip}</span>
       </div>
-      ${funnelRowsHtml}
+      ${myTargetSummary}
+      ${stalePanelHtml}
+      <div style="margin-top:10px">${funnelRowsHtml}</div>
     </div>`;
   document.getElementById('oppList').innerHTML = funnelHtml + `<div class="opp-list">${html || empty}</div>${suggestionsHtml}`;
+  // Stale-opps-paneel toggle + click-through naar het klantbeeld op de
+  // betreffende opportunity-tab.
+  const staleToggleBtn = document.getElementById('staleOppsToggle');
+  const stalePanel = document.getElementById('staleOppsPanel');
+  if(staleToggleBtn && stalePanel){
+    staleToggleBtn.addEventListener('click', () => {
+      stalePanel.style.display = stalePanel.style.display === 'none' ? 'block' : 'none';
+    });
+  }
+  document.querySelectorAll('#oppList .stale-opp-row').forEach(el => {
+    el.addEventListener('click', () => openInstelling(el.dataset.instId, 'opportunity'));
+  });
   document.querySelectorAll('#oppList .opp-card').forEach(el => {
     el.addEventListener('click', () => openInstelling(el.dataset.instId, 'opportunity'));
   });
