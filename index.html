@@ -289,6 +289,8 @@ const I18N = {
     'form.phone': 'Telefoon (optioneel)', 'form.message': 'Bericht (optioneel)', 'form.submit': 'Aanvragen',
     'form.required': 'Naam, organisatie en email zijn verplicht.',
     'form.sending': 'Versturen…', 'form.ok': 'Bedankt — we nemen binnen één werkdag contact op.',
+    'form.ok.workspace': 'Bedankt! We nemen binnen één werkdag contact op om je werkomgeving op te zetten.',
+    'form.ok.demo': 'Bedankt! We nemen binnen één werkdag contact op om de demo in te plannen.',
     'form.err': 'Er ging iets mis.',
     'foot.copy': '© 2026 MarktRadar', 'foot.login': 'Inloggen',
   },
@@ -327,6 +329,8 @@ const I18N = {
     'form.phone': 'Phone (optional)', 'form.message': 'Message (optional)', 'form.submit': 'Submit',
     'form.required': 'Name, organisation and email are required.',
     'form.sending': 'Sending…', 'form.ok': 'Thanks — we will get in touch within one business day.',
+    'form.ok.workspace': "Thanks! We'll get in touch within one business day to set up your workspace.",
+    'form.ok.demo': "Thanks! We'll get in touch within one business day to schedule the demo.",
     'form.err': 'Something went wrong.',
     'foot.copy': '© 2026 MarktRadar', 'foot.login': 'Log in',
   }
@@ -384,7 +388,10 @@ applyI18n();
         });
         const j = await r.json().catch(() => ({}));
         if(!r.ok) throw new Error(j.error || tt('form.err'));
-        result.textContent = j.message || tt('form.ok');
+        // Negeer server-message (altijd NL); gebruik client-side i18n
+        // zodat de bevestiging in de gekozen taal verschijnt.
+        const okKey = type === 'workspace' ? 'form.ok.workspace' : 'form.ok.demo';
+        result.textContent = tt(okKey);
         result.classList.add('show', 'ok');
         form.reset();
       } catch(err){
