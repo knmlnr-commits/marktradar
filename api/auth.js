@@ -363,20 +363,52 @@ async function registerNewTenant(req, res) {
   return res.status(200).json({ user: publicUser(user), tenant: publicTenant(tenant), token });
 }
 
+async function anyAdminWithoutAccount() {
+  // Returnt true als ten minste één e-mail in ADMIN_EMAILS nog geen
+  // user-record heeft. Wordt gebruikt om de bootstrap-modus open te
+  // houden zolang een gedeployde admin zichzelf nog moet onboarden,
+  // zelfs als er al gewone users in KV staan (bv. testdata).
+  for (const email of auth.ADMIN_EMAILS) {
+    const e = String(email || '').toLowerCase().trim();
+    if (!e || e.includes('set_admin_email_here')) continue;
+    const u = await auth.kvGet(auth.KV_USER_PREFIX + e);
+    if (!u) return true;
+  }
+  return false;
+}
+
 async function needsBootstrap(req, res) {
-  // 'needs-bootstrap' blijft true totdat er minstens één tenant + user bestaat.
-  // Daarna toont de gate 'login + registreer' modus, waarbij registreer
-  // een nieuwe tenant per email aanmaakt.
+  // 'needs-bootstrap' is true bij:
+  //   (a) volledig lege KV — eerste-user-pad voor iedereen,
+  //   (b) er staan al users in KV, maar nog niemand uit ADMIN_EMAILS
+  //       heeft een account. De gate toont dan de bootstrap-modus en
+  //       /api/auth?action=bootstrap accepteert alleen een e-mail uit
+  //       ADMIN_EMAILS (zie bootstrap() hieronder).
   const list = await getGlobalUsersIndex();
-  return res.status(200).json({ needs: list.length === 0 });
+  if (list.length === 0) return res.status(200).json({ needs: true, reason: 'empty' });
+  const adminMissing = await anyAdminWithoutAccount();
+  return res.status(200).json({ needs: adminMissing, reason: adminMissing ? 'admin-missing' : null });
 }
 
 async function bootstrap(req, res) {
   const list = await getGlobalUsersIndex();
-  if (list.length > 0) {
+  if (list.length === 0) {
+    // Eerste-user-pad: open voor iedereen.
+    return registerNewTenant(req, res);
+  }
+  // Niet-leeg pad: alleen e-mails uit ADMIN_EMAILS die nog geen account
+  // hebben mogen via bootstrap. Beschermt tegen open registratie zonder
+  // dat een legitieme admin vastloopt als KV al users bevat.
+  const body = await readJsonBody(req);
+  const email = String(body.email || '').trim().toLowerCase();
+  if (!auth.isAdminEmail(email)) {
     return res.status(403).json({
-      error: 'Bootstrap niet meer mogelijk; gebruikers bestaan al. Gebruik /api/auth?action=register voor een nieuwe tenant.',
+      error: 'Bootstrap niet meer mogelijk; gebruikers bestaan al. Vraag een admin om een account aan te maken.',
     });
+  }
+  const existing = await auth.kvGet(auth.KV_USER_PREFIX + email);
+  if (existing) {
+    return res.status(409).json({ error: 'Er bestaat al een account voor dit admin-adres. Log in of reset het wachtwoord.' });
   }
   return registerNewTenant(req, res);
 }
