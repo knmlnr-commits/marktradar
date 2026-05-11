@@ -1510,6 +1510,19 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <button class="btn-primary" id="feedAddBtn" style="height:38px">+ Feed</button>
     </div>
     <div id="tenantFeedsStatus" style="margin-top:10px;font-size:.78rem"></div>
+    <details style="margin-top:10px;padding:10px 12px;background:var(--grey-50);border:1px solid var(--grey-200);border-radius:6px">
+    <summary style="cursor:pointer;font-size:.78rem;font-weight:600;color:var(--grey-900)">LinkedIn als bron toevoegen</summary>
+    <div style="margin-top:8px;font-size:.74rem;color:var(--grey-700);line-height:1.55">
+    LinkedIn heeft geen eigen RSS-feed (gesloten platform). Twee werkbare paden:
+    <ol style="margin:8px 0 6px 18px;padding:0">
+    <li><strong>LLM-curator (aanbevolen)</strong> — zet 'm hierboven aan; de system-prompt instrueert Claude expliciet om óók LinkedIn-public posts (company-pages + bestuurders) te doorzoeken naast nieuws-sites. Geen extra config.</li>
+    <li><strong>RSSHub-proxy</strong> — open-source service die LinkedIn company-pages omzet naar RSS. Plak een URL van de vorm
+    <code style="display:block;margin:4px 0;padding:6px 8px;background:var(--white);border:1px solid var(--grey-200);border-radius:4px;font-size:.7rem">https://rsshub.app/linkedin/company/&lt;company-slug&gt;</code>
+    (vervang <code>&lt;company-slug&gt;</code> met het LinkedIn-handle, bv. <code>microsoft</code> of <code>kpn</code>). Werkt zonder login voor publieke posts; voor private/grotere accounts moet je een eigen RSSHub-instance hosten met LinkedIn-cookie.</li>
+    </ol>
+    Bij twijfel: laat de LLM-curator het werk doen — die haalt LinkedIn al breed mee.
+    </div>
+    </details>
 
     <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--grey-200)">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
@@ -2148,7 +2161,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.26.3",
+    "version": "1.26.4",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [

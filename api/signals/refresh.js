@@ -162,7 +162,7 @@ async function callAnthropicWithSearch(tenant, recentDateIso) {
 **Te volgen organisaties:**
 ${entsList}
 
-**Opdracht:** Zoek op het web naar marktsignalen na ${recentDateIso} voor deze organisaties. Type signalen: bestuurswisselingen, fusies/overnames, financiële alerts, aanbestedingen (TenderNed), CAO/sector-bewegingen, nieuwe locaties/uitbreiding. Filter strikt op datum (laatste 14 dagen). Voor elk signaal: datum (YYYY-MM-DD), urgentie (laag|middel|hoog), type, instellingNaam (matcht een van bovenstaande organisaties OF leeg voor sector-signaal), headline (max 200 chars), summary (max 500 chars), source (bron-naam), sourceUrl (volledige URL).${overrideBlock}
+**Opdracht:** Zoek op het web naar marktsignalen na ${recentDateIso} voor deze organisaties. Type signalen: bestuurswisselingen, fusies/overnames, financiële alerts, aanbestedingen (TenderNed), CAO/sector-bewegingen, nieuwe locaties/uitbreiding. Doorzoek ook **LinkedIn** (publieke posts van company-pages en sleutel-bestuurders) — daar staan vaak directie-aankondigingen, nieuwe rollen en strategie-updates die eerder en concreter zijn dan persberichten. Filter strikt op datum (laatste 14 dagen). Voor elk signaal: datum (YYYY-MM-DD), urgentie (laag|middel|hoog), type, instellingNaam (matcht een van bovenstaande organisaties OF leeg voor sector-signaal), headline (max 200 chars), summary (max 500 chars), source (bron-naam, incl. "LinkedIn" als de bron LinkedIn is), sourceUrl (volledige URL).${overrideBlock}
 
 **Output: alleen JSON-array, geen prose:**
 [{"datum":"2026-04-23","urgentie":"middel","type":"...","instellingNaam":"...","headline":"...","summary":"...","source":"...","sourceUrl":"..."}]`;
