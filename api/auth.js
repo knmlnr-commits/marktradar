@@ -47,6 +47,13 @@ async function recordLogin(user, method) {
     user.lastLogin = Date.now();
     user.lastLoginMethod = method || 'password';
     await auth.kvSet(auth.KV_USER_PREFIX + user.email, user);
+    // Best-effort audit-log: failures slikken — een login mag niet
+    // falen door een audit-log-issue.
+    await auth.appendAuditEvent({
+      actor: user.email, action: 'user.login',
+      target: user.email, targetType: 'user',
+      meta: { method: user.lastLoginMethod, loginCount: user.loginCount },
+    });
   } catch (e) { /* swallow */ }
 }
 
