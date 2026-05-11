@@ -2253,7 +2253,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.31.1",
+    "version": "1.31.2",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -2704,6 +2704,10 @@ const DATA = {
       {
         "version": "1.31.1", "codename": "Tarazed", "date": "2026-05-11",
         "note": "Login-tracking uitgebreid. (1) Admin > Gebruikers toont nu het volledige tijdstip van laatste inlog (datum + uur:minuut) i.p.v. alleen de datum. (2) Elke succesvolle login (password, register/bootstrap, Google SSO, Microsoft SSO) wordt nu ook als 'user.login'-event naar de audit-log gepusht met methode en login-count in meta. Daarmee zie je niet alleen wié wanneer voor het laatst inlogde, maar ook de hele historie incl. SSO-vs-wachtwoord-keuze. Audit-log heeft een rolling cap van 500 events — bij hoge login-volumes kan dit later verhoogd worden of in een aparte stream gesplitst."
+      },
+      {
+        "version": "1.31.2", "codename": "Tarazed", "date": "2026-05-11",
+        "note": "Admin > Gebruikers sorteert nu op laatste inlog descending (recentste activiteit bovenaan) i.p.v. alfabetisch op e-mail. Users die nog nooit hebben ingelogd vallen terug op aangemaakt-datum descending zodat ze niet onderaan blijven hangen ondanks recent te zijn toegevoegd. Per-tenant Beheer > Gebruikers sorteerde al zo sinds v1.17.3."
       }
     ],
     "totalInstellingen": 64,
@@ -12577,7 +12581,14 @@ function renderAdminUsers(){
   // Daarom gebruiken we hier de specifieke globale-admin-id.
   const wrap = document.getElementById('adminGlobalUsersList');
   if(!wrap) return;
-  const us = _adminState.users || [];
+  // Sortering: laatste login eerst, daarna aangemaakt-datum descending
+  // voor users die nog nooit ingelogd zijn. Bracht admin handmatig in
+  // contact met recent-actieven; inactieven zakken naar onder.
+  const us = (_adminState.users || []).slice().sort((a, b) => {
+    const aTs = a.lastLogin || a.createdAt || 0;
+    const bTs = b.lastLogin || b.createdAt || 0;
+    return bTs - aTs;
+  });
   if(us.length === 0){
     wrap.innerHTML = '<div class="no-data" style="padding:24px;text-align:center;color:var(--grey-600)">Geen gebruikers.</div>';
     return;
