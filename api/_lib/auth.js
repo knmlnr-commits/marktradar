@@ -284,7 +284,7 @@ async function backfillGericallTenant(t) {
 //   const ADMIN_EMAILS = ['rene@knmlnr.nl'];
 // ============================================================
 const ADMIN_EMAILS = [
-  'SET_ADMIN_EMAIL_HERE@example.com', // <-- VERVANG DIT
+  'koen@salesday.nl',
 ];
 function isAdminEmail(email) {
   if (!email) return false;
