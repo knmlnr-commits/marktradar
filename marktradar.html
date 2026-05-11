@@ -2032,7 +2032,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.23.3",
+    "version": "1.23.4",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -17891,6 +17891,49 @@ function _logoForExport(format){
   if(format === 'word' && /^data:image\/svg/i.test(uri)) return null;
   return uri;
 }
+function _renderInlineMarkdown(s){
+  // Eerst escapen, daarna **bold** → <strong>. Geen single-asterisk
+  // italic (te veel false-positives in zakelijke tekst).
+  return escapeHtml(s).replace(/\*\*([^*\n]+?)\*\*/g, '<strong>$1</strong>');
+}
+function _renderMarkdownBody(text, font, color){
+  // Mini-markdown: lege regels = paragraph-break, '- '/'* '/'• ' = ul.
+  // Voor Word/print: <ul> ondersteunen beide goed; gebruik inline styles
+  // zodat Word geen default-marges erop legt.
+  const lines = String(text || '').split(/\r?\n/);
+  const out = [];
+  let bulletBuf = [];
+  let paraBuf = [];
+  const flushBullets = () => {
+    if(bulletBuf.length === 0) return;
+    out.push(`<ul style="margin:6pt 0 6pt 22pt;padding:0;font-family:${font};font-size:10.5pt;line-height:1.65;color:${color}">` +
+      bulletBuf.map(b => `<li style="margin:0 0 4pt;padding:0">${_renderInlineMarkdown(b)}</li>`).join('') +
+      `</ul>`);
+    bulletBuf = [];
+  };
+  const flushPara = () => {
+    if(paraBuf.length === 0) return;
+    out.push(`<div style="margin:0 0 6pt;font-family:${font};font-size:10.5pt;line-height:1.7;color:${color};white-space:pre-wrap">${_renderInlineMarkdown(paraBuf.join('\n'))}</div>`);
+    paraBuf = [];
+  };
+  for(const raw of lines){
+    const trimmed = raw.trim();
+    const bullet = trimmed.match(/^[-*•]\s+(.+)$/);
+    if(bullet){
+      flushPara();
+      bulletBuf.push(bullet[1].trim());
+    } else if(trimmed === ''){
+      flushBullets();
+      flushPara();
+    } else {
+      flushBullets();
+      paraBuf.push(raw);
+    }
+  }
+  flushBullets();
+  flushPara();
+  return out.join('') || `<div style="font-family:${font};font-size:10.5pt;color:${color};font-style:italic">(leeg)</div>`;
+}
 function _exportDocBodyHtml(opts){
   const title = opts.title || '';
   const sections = Array.isArray(opts.sections) ? opts.sections : [];
@@ -17898,16 +17941,10 @@ function _exportDocBodyHtml(opts){
   const c = _themeColorsForExport();
   const tenantNaam = (currentTenant && currentTenant.naam) || 'Werkomgeving';
   const today = new Date().toLocaleDateString('nl-NL', { day:'numeric', month:'long', year:'numeric' });
-  // Eén sans-serif font, sterke hiërarchie via wittruimte + size + weight.
-  // Tenant-kleur wordt heel spaarzaam gebruikt: één dunne streep onder de
-  // header-regel + sectienummers. De rest is rustig zwart/grijs op wit.
   const font = "'Helvetica Neue',Helvetica,Arial,sans-serif";
   const ink = '#1a1a1a';
   const dim = '#777777';
-  // Header-regel: tenant-naam (links) + datum (rechts), uppercase-tracked,
-  // gedimd. Daaronder een hairline in primary kleur — de enige kleur in
-  // het document, en alleen om het 'eigendom' van de werkomgeving aan
-  // te geven.
+  const dimMid = '#b0b0b0';
   const topRow = `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:0 0 1pt">
       <tr>
@@ -17920,17 +17957,23 @@ function _exportDocBodyHtml(opts){
     <h1 style="font-family:${font};color:${ink};font-size:20pt;margin:28pt 0 4pt;font-weight:600;letter-spacing:-.008em;line-height:1.2">${escapeHtml(title)}</h1>
     ${meta ? `<div style="font-family:${font};color:${dim};font-size:9pt;margin:0;line-height:1.5">${escapeHtml(meta)}</div>` : ''}`;
   const body = sections.map((s, idx) => {
+    // Strip eventueel ingebakken nummerprefix uit het label ('1. Foo')
+    // zodat we niet dubbel nummeren ('1. 1. Foo').
+    const labelClean = String(s.label || '').replace(/^\s*\d+\.\s*/, '');
     const text = (s.text || '').trim();
     const empty = text.length === 0;
     const head = `
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:26pt 0 8pt;page-break-after:avoid">
         <tr>
           <td width="22" style="font-family:${font};font-size:10.5pt;font-weight:700;color:${c.primary};vertical-align:top;padding:0;line-height:1.4">${idx + 1}.</td>
-          <td style="font-family:${font};font-size:10.5pt;font-weight:700;color:${ink};vertical-align:top;padding:0;line-height:1.4;letter-spacing:.005em">${escapeHtml(s.label)}</td>
+          <td style="font-family:${font};font-size:10.5pt;font-weight:700;color:${ink};vertical-align:top;padding:0;line-height:1.4;letter-spacing:.005em">${escapeHtml(labelClean)}</td>
         </tr>
       </table>`;
-    const bodyText = `<div style="font-family:${font};font-size:10.5pt;line-height:1.7;color:${empty ? dim : ink};white-space:pre-wrap;margin:0 0 0 22pt;font-style:${empty ? 'italic' : 'normal'}">${escapeHtml(empty ? '(leeg)' : text)}</div>`;
-    return head + bodyText;
+    // Body inspringen op gelijke hoogte met het label-blok (22pt).
+    const bodyHtml = empty
+      ? `<div style="font-family:${font};font-size:10.5pt;line-height:1.7;color:${dimMid};font-style:italic;margin:0 0 0 22pt">(leeg)</div>`
+      : `<div style="margin:0 0 0 22pt">${_renderMarkdownBody(text, font, ink)}</div>`;
+    return head + bodyHtml;
   }).join('');
   return topRow + titleBlock + body;
 }
