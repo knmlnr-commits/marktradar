@@ -70,6 +70,17 @@ img,svg{max-width:100%;display:block}
 .demo-result.show{display:block}
 .demo-result.ok{background:var(--green-light);color:var(--green);border:1px solid var(--green)}
 .demo-result.err{background:var(--red-light);color:var(--red);border:1px solid var(--red)}
+.aanvraag-card{background:var(--white);border:1px solid var(--grey-200);border-radius:10px;margin-top:12px;overflow:hidden}
+.aanvraag-card:first-of-type{margin-top:0}
+.aanvraag-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;background:none;border:0;cursor:pointer;font:inherit;text-align:left}
+.aanvraag-head:hover{background:var(--grey-50)}
+.aanvraag-head-text{display:flex;flex-direction:column;gap:2px}
+.aanvraag-head-title{font-size:.98rem;font-weight:700;color:var(--grey-900)}
+.aanvraag-head-sub{font-size:.78rem;color:var(--grey-700)}
+.aanvraag-chev{flex-shrink:0;width:14px;height:14px;border-right:2px solid var(--grey-500);border-bottom:2px solid var(--grey-500);transform:rotate(45deg);transition:transform .15s ease}
+.aanvraag-card.open .aanvraag-chev{transform:rotate(-135deg)}
+.aanvraag-body{display:none;padding:0 18px 18px}
+.aanvraag-card.open .aanvraag-body{display:block}
 .install-modal{position:fixed;inset:0;background:rgba(26,26,31,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}
 .install-modal.show{display:flex}
 .install-modal-card{background:var(--white);border-radius:14px;padding:24px;max-width:420px;width:100%;box-shadow:0 24px 60px -12px rgba(0,0,0,.35)}
@@ -164,47 +175,64 @@ img,svg{max-width:100%;display:block}
   </div>
 </section>
 
-<section class="demo" id="workspace" style="background:var(--white)">
+<section class="demo" id="aanvraag">
   <div class="wrap">
-    <h2 data-i18n="ws.h2">Werkomgeving aanvragen</h2>
-    <p class="lead" data-i18n="ws.lead">Vraag een eigen MarktRadar-omgeving aan. We zetten 'm voor je op en sturen je inloggegevens — binnen één werkdag.</p>
-    <form id="workspaceForm" class="demo-form" autocomplete="on">
-      <div class="row">
-        <div><label for="wf-naam" data-i18n="form.name">Naam</label><input id="wf-naam" name="naam" required maxlength="200"></div>
-        <div><label for="wf-organisatie" data-i18n="form.org">Organisatie</label><input id="wf-organisatie" name="organisatie" required maxlength="200"></div>
-      </div>
-      <div class="row">
-        <div><label for="wf-email" data-i18n="form.email">Email</label><input id="wf-email" name="email" type="email" required maxlength="200"></div>
-        <div><label for="wf-telefoon" data-i18n="form.phone">Telefoon (optioneel)</label><input id="wf-telefoon" name="telefoon" type="tel" maxlength="50"></div>
-      </div>
-      <div class="row">
-        <div><label for="wf-werkomgevingNaam" data-i18n="ws.wsName">Naam werkomgeving (optioneel)</label><input id="wf-werkomgevingNaam" name="werkomgevingNaam" maxlength="200" placeholder="bv. Acme B.V."></div>
-        <div><label for="wf-marktNaam" data-i18n="ws.marktName">Markt of segment (optioneel)</label><input id="wf-marktNaam" name="marktNaam" maxlength="200" placeholder="bv. VVT, Bouw, IT-dienstverlening"></div>
-      </div>
-      <div><label for="wf-bericht" data-i18n="ws.message">Toelichting (optioneel)</label><textarea id="wf-bericht" name="bericht" maxlength="4000" placeholder="Wat verkoop je en aan wie? Hoe meer context, hoe sneller we 'm opzetten."></textarea></div>
-      <div class="demo-result" id="workspaceResult"></div>
-      <div><button class="btn btn-primary" type="submit" id="workspaceSubmit" data-i18n="ws.submit">Werkomgeving aanvragen</button></div>
-    </form>
-  </div>
-</section>
+    <h2 data-i18n="aanvraag.h2">Aan de slag</h2>
+    <p class="lead" data-i18n="aanvraag.lead">Vraag een eigen werkomgeving aan, of vraag eerst een korte demo.</p>
 
-<section class="demo" id="demo">
-  <div class="wrap">
-    <h2 data-i18n="demo.h2">Demo aanvragen</h2>
-    <p class="lead" data-i18n="demo.lead">Vul je gegevens in. We nemen binnen één werkdag contact op.</p>
-    <form id="demoForm" class="demo-form" autocomplete="on">
-      <div class="row">
-        <div><label for="df-naam" data-i18n="form.name">Naam</label><input id="df-naam" name="naam" required maxlength="200"></div>
-        <div><label for="df-organisatie" data-i18n="form.org">Organisatie</label><input id="df-organisatie" name="organisatie" required maxlength="200"></div>
+    <div class="aanvraag-card" id="aanvraagCard-workspace" data-anchor="workspace">
+      <button type="button" class="aanvraag-head" data-aanvraag-toggle="workspace" aria-expanded="false">
+        <span class="aanvraag-head-text">
+          <span class="aanvraag-head-title" data-i18n="ws.h2">Werkomgeving aanvragen</span>
+          <span class="aanvraag-head-sub" data-i18n="ws.lead">Vraag een eigen MarktRadar-omgeving aan. We zetten 'm voor je op en sturen je inloggegevens — binnen één werkdag.</span>
+        </span>
+        <span class="aanvraag-chev" aria-hidden="true"></span>
+      </button>
+      <div class="aanvraag-body">
+        <form id="workspaceForm" class="demo-form" autocomplete="on">
+          <div class="row">
+            <div><label for="wf-naam" data-i18n="form.name">Naam</label><input id="wf-naam" name="naam" required maxlength="200"></div>
+            <div><label for="wf-organisatie" data-i18n="form.org">Organisatie</label><input id="wf-organisatie" name="organisatie" required maxlength="200"></div>
+          </div>
+          <div class="row">
+            <div><label for="wf-email" data-i18n="form.email">Email</label><input id="wf-email" name="email" type="email" required maxlength="200"></div>
+            <div><label for="wf-telefoon" data-i18n="form.phone">Telefoon (optioneel)</label><input id="wf-telefoon" name="telefoon" type="tel" maxlength="50"></div>
+          </div>
+          <div class="row">
+            <div><label for="wf-werkomgevingNaam" data-i18n="ws.wsName">Naam werkomgeving (optioneel)</label><input id="wf-werkomgevingNaam" name="werkomgevingNaam" maxlength="200" placeholder="bv. Acme B.V."></div>
+            <div><label for="wf-marktNaam" data-i18n="ws.marktName">Markt of segment (optioneel)</label><input id="wf-marktNaam" name="marktNaam" maxlength="200" data-i18n-placeholder="ws.marktNamePh" placeholder="bv. Bouw, IT-dienstverlening, verzekeringen"></div>
+          </div>
+          <div><label for="wf-bericht" data-i18n="ws.message">Toelichting (optioneel)</label><textarea id="wf-bericht" name="bericht" maxlength="4000" data-i18n-placeholder="ws.messagePh" placeholder="Wat verkoop je en aan wie? Hoe meer context, hoe sneller we 'm opzetten."></textarea></div>
+          <div class="demo-result" id="workspaceResult"></div>
+          <div><button class="btn btn-primary" type="submit" id="workspaceSubmit" data-i18n="ws.submit">Werkomgeving aanvragen</button></div>
+        </form>
       </div>
-      <div class="row">
-        <div><label for="df-email" data-i18n="form.email">Email</label><input id="df-email" name="email" type="email" required maxlength="200"></div>
-        <div><label for="df-telefoon" data-i18n="form.phone">Telefoon (optioneel)</label><input id="df-telefoon" name="telefoon" type="tel" maxlength="50"></div>
+    </div>
+
+    <div class="aanvraag-card" id="aanvraagCard-demo" data-anchor="demo">
+      <button type="button" class="aanvraag-head" data-aanvraag-toggle="demo" aria-expanded="false">
+        <span class="aanvraag-head-text">
+          <span class="aanvraag-head-title" data-i18n="demo.h2">Demo aanvragen</span>
+          <span class="aanvraag-head-sub" data-i18n="demo.lead">Vul je gegevens in. We nemen binnen één werkdag contact op.</span>
+        </span>
+        <span class="aanvraag-chev" aria-hidden="true"></span>
+      </button>
+      <div class="aanvraag-body">
+        <form id="demoForm" class="demo-form" autocomplete="on">
+          <div class="row">
+            <div><label for="df-naam" data-i18n="form.name">Naam</label><input id="df-naam" name="naam" required maxlength="200"></div>
+            <div><label for="df-organisatie" data-i18n="form.org">Organisatie</label><input id="df-organisatie" name="organisatie" required maxlength="200"></div>
+          </div>
+          <div class="row">
+            <div><label for="df-email" data-i18n="form.email">Email</label><input id="df-email" name="email" type="email" required maxlength="200"></div>
+            <div><label for="df-telefoon" data-i18n="form.phone">Telefoon (optioneel)</label><input id="df-telefoon" name="telefoon" type="tel" maxlength="50"></div>
+          </div>
+          <div><label for="df-bericht" data-i18n="form.message">Bericht (optioneel)</label><textarea id="df-bericht" name="bericht" maxlength="4000"></textarea></div>
+          <div class="demo-result" id="demoResult"></div>
+          <div><button class="btn btn-primary" type="submit" id="demoSubmit" data-i18n="form.submit">Aanvragen</button></div>
+        </form>
       </div>
-      <div><label for="df-bericht" data-i18n="form.message">Bericht (optioneel)</label><textarea id="df-bericht" name="bericht" maxlength="4000"></textarea></div>
-      <div class="demo-result" id="demoResult"></div>
-      <div><button class="btn btn-primary" type="submit" id="demoSubmit" data-i18n="form.submit">Aanvragen</button></div>
-    </form>
+    </div>
   </div>
 </section>
 
@@ -248,10 +276,14 @@ const I18N = {
     'step2.title': 'Markt', 'step2.text': 'Plak je organisaties — bedrijven, accounts of relaties.',
     'step3.title': 'Signalen', 'step3.text': 'Krijg meldingen over wijzigingen in jouw markt.',
     'step4.title': 'Klanten', 'step4.text': 'Markeer relaties handmatig of via CRM-import.',
+    'aanvraag.h2': 'Aan de slag',
+    'aanvraag.lead': 'Vraag een eigen werkomgeving aan, of vraag eerst een korte demo.',
     'demo.h2': 'Demo aanvragen', 'demo.lead': 'Vul je gegevens in. We nemen binnen één werkdag contact op.',
     'ws.h2': 'Werkomgeving aanvragen',
     'ws.lead': "Vraag een eigen MarktRadar-omgeving aan. We zetten 'm voor je op en sturen je inloggegevens — binnen één werkdag.",
     'ws.wsName': 'Naam werkomgeving (optioneel)', 'ws.marktName': 'Markt of segment (optioneel)',
+    'ws.marktNamePh': 'bv. Bouw, IT-dienstverlening, verzekeringen',
+    'ws.messagePh': "Wat verkoop je en aan wie? Hoe meer context, hoe sneller we 'm opzetten.",
     'ws.message': 'Toelichting (optioneel)', 'ws.submit': 'Werkomgeving aanvragen',
     'form.name': 'Naam', 'form.org': 'Organisatie', 'form.email': 'Email',
     'form.phone': 'Telefoon (optioneel)', 'form.message': 'Bericht (optioneel)', 'form.submit': 'Aanvragen',
@@ -282,10 +314,14 @@ const I18N = {
     'step2.title': 'Market', 'step2.text': 'Paste your organisations — companies, accounts or contacts.',
     'step3.title': 'Signals', 'step3.text': 'Get alerts on changes in your market.',
     'step4.title': 'Customers', 'step4.text': 'Mark relationships manually or via CRM import.',
+    'aanvraag.h2': 'Get started',
+    'aanvraag.lead': 'Request your own workspace, or start with a short demo.',
     'demo.h2': 'Request a demo', 'demo.lead': 'Fill in your details. We will get in touch within one business day.',
     'ws.h2': 'Request a workspace',
     'ws.lead': "Request your own MarktRadar workspace. We'll set it up and send your login details — within one business day.",
     'ws.wsName': 'Workspace name (optional)', 'ws.marktName': 'Market or segment (optional)',
+    'ws.marktNamePh': 'e.g. Construction, IT services, insurance',
+    'ws.messagePh': "What do you sell and to whom? The more context, the faster we'll set it up.",
     'ws.message': 'Notes (optional)', 'ws.submit': 'Request workspace',
     'form.name': 'Name', 'form.org': 'Organisation', 'form.email': 'Email',
     'form.phone': 'Phone (optional)', 'form.message': 'Message (optional)', 'form.submit': 'Submit',
@@ -306,6 +342,9 @@ function applyI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const k = el.dataset.i18n;
     if(el.dataset.i18nHtml) el.innerHTML = tt(k); else el.textContent = tt(k);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = tt(el.dataset.i18nPlaceholder);
   });
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
   document.title = l === 'en' ? 'MarktRadar' : 'MarktRadar';
@@ -366,6 +405,49 @@ applyI18n();
     werkomgevingNaam: 'wf-werkomgevingNaam', marktNaam: 'wf-marktNaam',
     bericht: 'wf-bericht',
   });
+})();
+
+(function(){
+  // Invouwbare aanvraag-kaarten: 'workspace' en 'demo' delen één sectie.
+  // Beide standaard dicht; klik op de header om te openen (exclusief —
+  // de andere kaart sluit dan automatisch). URL-hash /#workspace en
+  // /#demo (vanaf landing-CTAs en gate-link) opent de juiste kaart en
+  // scrollt 'm in beeld.
+  function setOpen(anchor){
+    document.querySelectorAll('.aanvraag-card').forEach(c => {
+      const isMatch = c.dataset.anchor === anchor;
+      c.classList.toggle('open', isMatch);
+      const btn = c.querySelector('.aanvraag-head');
+      if(btn) btn.setAttribute('aria-expanded', isMatch ? 'true' : 'false');
+    });
+  }
+  function closeAll(){
+    document.querySelectorAll('.aanvraag-card').forEach(c => {
+      c.classList.remove('open');
+      const btn = c.querySelector('.aanvraag-head');
+      if(btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+  document.querySelectorAll('[data-aanvraag-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.aanvraagToggle;
+      const card = document.getElementById('aanvraagCard-' + target);
+      if(!card) return;
+      if(card.classList.contains('open')) closeAll();
+      else setOpen(target);
+    });
+  });
+  function applyHash(){
+    const h = (location.hash || '').replace(/^#/, '');
+    if(h !== 'workspace' && h !== 'demo') return;
+    // Browser jumpt niet automatisch (we hebben geen elementen met die
+    // id meer); doe het zelf naar de aanvraag-sectie.
+    setOpen(h);
+    const sec = document.getElementById('aanvraag');
+    if(sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  window.addEventListener('hashchange', applyHash);
+  applyHash();
 })();
 
 /* ===== PWA install-flow =====
