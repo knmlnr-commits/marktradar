@@ -341,6 +341,39 @@ body{
   text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:5px;}
 .signal-source:hover{background:var(--grey-100);color:var(--grey-700)}
 .inst-grid{background:var(--white);border:1px solid var(--grey-200);border-radius:12px;overflow:hidden;}
+.mt-wrap{max-width:1280px;margin:14px auto;padding:0 24px}
+.mt-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.mt-toolbar h2{font-size:1.1rem;font-weight:700;margin:0}
+.mt-card{background:var(--white);border:1px solid var(--grey-200);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.mt-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px}
+.mt-card-title{font-size:.82rem;font-weight:700;color:var(--grey-900);letter-spacing:-.01em}
+.mt-card-sub{font-size:.72rem;color:var(--grey-600)}
+.mt-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mt-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mt-kpi{padding:12px 14px;background:var(--grey-50);border:1px solid var(--grey-150);border-radius:8px}
+.mt-kpi-val{font-size:1.45rem;font-weight:700;color:var(--grey-900);line-height:1.1}
+.mt-kpi-lbl{font-size:.7rem;color:var(--grey-600);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.mt-bar-row{display:grid;grid-template-columns:140px 1fr 64px;gap:10px;align-items:center;padding:5px 0;font-size:.8rem}
+.mt-bar-label{color:var(--grey-700);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mt-bar-track{position:relative;height:18px;background:var(--grey-100);border-radius:4px;overflow:hidden}
+.mt-bar-fill{position:absolute;top:0;left:0;bottom:0;background:var(--orange);border-radius:4px}
+.mt-bar-fill.klant{background:var(--orange)}
+.mt-bar-fill.nonklant{background:var(--grey-400)}
+.mt-bar-stack{position:absolute;top:0;bottom:0;border-radius:0}
+.mt-bar-stack.klant{background:var(--orange);left:0}
+.mt-bar-stack.nonklant{background:var(--grey-400)}
+.mt-bar-val{font-family:'DM Mono',monospace;font-size:.74rem;color:var(--grey-700);text-align:right}
+.mt-snap-row{display:flex;align-items:center;gap:10px;font-size:.82rem;padding:6px 0;border-top:1px solid var(--grey-200)}
+.mt-snap-row:first-child{border-top:none}
+.mt-snap-date{font-family:'DM Mono',monospace;color:var(--grey-700);flex:0 0 130px}
+.mt-snap-val{font-family:'DM Mono',monospace}
+.mt-chart svg{width:100%;height:auto;display:block}
+.mt-empty{padding:18px;text-align:center;color:var(--grey-600);font-size:.84rem;background:var(--grey-50);border:1px dashed var(--grey-300);border-radius:8px}
+@media(max-width:760px){
+  .mt-grid-2{grid-template-columns:1fr}
+  .mt-grid-4{grid-template-columns:repeat(2,1fr)}
+  .mt-bar-row{grid-template-columns:120px 1fr 56px}
+}
 .inst-head{display:grid;grid-template-columns:minmax(220px,2.2fr) 1fr 1fr 1fr 1fr 90px 60px;
   gap:12px;padding:11px 18px;background:var(--grey-50);border-bottom:1px solid var(--grey-200);
   font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-500);}
@@ -1361,6 +1394,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
       <span class="tab-label" data-i18n="tab.trends">Trends</span> <span class="tab-count" id="tabCountTrends">0</span>
     </button>
+    <button class="tab" data-tab="markttrends" title="Markt-trends" aria-label="Markt-trends">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span class="tab-label" data-i18n="tab.markttrends">Markt-trends</span>
+    </button>
     <button class="tab" data-tab="leveranciers" title="Leveranciers" aria-label="Leveranciers">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       <span class="tab-label" data-i18n="tab.suppliers">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
@@ -1417,6 +1454,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       </div>
       <div class="chip-row" id="instSegmentChips" style="padding:0 24px 10px;display:none"></div>
       <div class="inst-grid" id="instGrid"></div>
+    </div>
+
+    <div class="tab-pane" id="pane-markttrends">
+      <div class="mt-wrap" id="markttrendsBody"></div>
     </div>
 
     <div class="tab-pane" id="pane-leveranciers">
@@ -2162,7 +2203,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.27.0",
+    "version": "1.28.0",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -13376,6 +13417,85 @@ async function pushRemoteAccountPlans(){
     });
   } catch(e){}
 }
+
+/* ---------------- Markt-trends snapshots ---------------- */
+// Per-tenant array van aggregaten-snapshots; vormt de tijd-as voor de
+// Markt-trends-tab. Elk record: { ts, label, totals: { orgs, klanten,
+// bedden, klantBedden }, provincies: {prov: {orgs, bedden, klanten,
+// klantBedden}}, segmenten: {seg: {orgs, bedden, klanten}} }. Max 100
+// records (rolling); ouder valt af zodra de cap is bereikt.
+const TREND_SNAPSHOTS_STORAGE = 'marktradar.trend-snapshots.v1';
+const TREND_SNAPSHOTS_MAX = 100;
+let trendSnapshots = (function(){
+  try { const raw = localStorage.getItem(TREND_SNAPSHOTS_STORAGE); return raw ? (JSON.parse(raw) || []) : []; }
+  catch(e){ return []; }
+})();
+let trendSnapshotsRemoteAvailable = false;
+function saveTrendSnapshotsLocal(){ try { localStorage.setItem(TREND_SNAPSHOTS_STORAGE, JSON.stringify(trendSnapshots)); } catch(e){} }
+async function syncTrendSnapshots(){
+  try {
+    const r = await apiFetch(STATE_API + '?key=trend-snapshots');
+    if(r.ok){
+      trendSnapshotsRemoteAvailable = true;
+      const j = await r.json();
+      const remote = j && Array.isArray(j.value) ? j.value : [];
+      trendSnapshots = remote;
+      saveTrendSnapshotsLocal();
+    }
+  } catch(e){}
+}
+async function pushRemoteTrendSnapshots(){
+  try {
+    await apiFetch(STATE_API, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'trend-snapshots', value: trendSnapshots })
+    });
+  } catch(e){}
+}
+function computeTrendAggregate(){
+  // Bouw aggregaten uit de huidige tenant-data. Universe-aware (gebruikt
+  // getMarketInstellingen om alleen de tenant-scope mee te nemen).
+  const items = instellingenMerged();
+  const totals = { orgs: items.length, klanten: 0, bedden: 0, klantBedden: 0 };
+  const provincies = {};
+  const segmenten = {};
+  items.forEach(i => {
+    const beds = Number(i.aantalBedden) || 0;
+    const isKlant = i.gericallStatus === 'klant';
+    totals.bedden += beds;
+    if(isKlant){ totals.klanten++; totals.klantBedden += beds; }
+    const p = i.provincie || '—';
+    const pp = provincies[p] = provincies[p] || { orgs: 0, bedden: 0, klanten: 0, klantBedden: 0 };
+    pp.orgs++; pp.bedden += beds;
+    if(isKlant){ pp.klanten++; pp.klantBedden += beds; }
+    const seg = i.klantSegment || '—';
+    const ss = segmenten[seg] = segmenten[seg] || { orgs: 0, bedden: 0, klanten: 0 };
+    ss.orgs++; ss.bedden += beds;
+    if(isKlant) ss.klanten++;
+  });
+  return { totals, provincies, segmenten };
+}
+async function takeTrendSnapshot(label){
+  const agg = computeTrendAggregate();
+  const snap = {
+    ts: Date.now(),
+    label: String(label || '').slice(0, 80) || null,
+    ...agg,
+  };
+  trendSnapshots = (trendSnapshots || []).concat(snap);
+  if(trendSnapshots.length > TREND_SNAPSHOTS_MAX){
+    trendSnapshots = trendSnapshots.slice(trendSnapshots.length - TREND_SNAPSHOTS_MAX);
+  }
+  saveTrendSnapshotsLocal();
+  await pushRemoteTrendSnapshots();
+  return snap;
+}
+async function deleteTrendSnapshot(ts){
+  trendSnapshots = (trendSnapshots || []).filter(s => s.ts !== ts);
+  saveTrendSnapshotsLocal();
+  await pushRemoteTrendSnapshots();
+}
+
 function getAccountPlan(instId){
   return accountPlans && accountPlans[instId] ? accountPlans[instId] : null;
 }
@@ -13874,6 +13994,7 @@ function initApp(){
     try { if(typeof renderCoaching === 'function') renderCoaching(); } catch(e){}
   });
   syncAccountPlans();
+  syncTrendSnapshots();
   syncRemoteSignals().then(() => {
     try { if(typeof renderSignals === 'function') renderSignals(); } catch(e){}
     try { if(typeof renderTabs === 'function') renderTabs(); } catch(e){}
@@ -14118,7 +14239,7 @@ const I18N = {
     'scope.help': "Filtert todo's, instellingen en signalen op jouw eigenaarschap.",
     // Tabs
     'tab.todo': 'Todo', 'tab.signals': 'Signalen', 'tab.orgs': 'Organisaties',
-    'tab.suppliers': 'Leveranciers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends',
+    'tab.suppliers': 'Leveranciers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends', 'tab.markttrends': 'Markt-trends',
     'tab.admin': 'Beheer',
     // User menu
     'menu.password': 'Wachtwoord wijzigen', 'menu.logout': 'Uitloggen',
@@ -14197,7 +14318,7 @@ const I18N = {
     'scope.label': 'Show:', 'scope.mine': 'My todos', 'scope.all': 'All',
     'scope.help': 'Filters todos, organisations and signals on ownership.',
     'tab.todo': 'Todos', 'tab.signals': 'Signals', 'tab.orgs': 'Organisations',
-    'tab.suppliers': 'Suppliers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends',
+    'tab.suppliers': 'Suppliers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends', 'tab.markttrends': 'Market trends',
     'tab.admin': 'Admin',
     'menu.password': 'Change password', 'menu.logout': 'Log out',
     'admin.title': 'Admin',
@@ -14481,6 +14602,7 @@ function activateTab(target){
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   pane.classList.add('active');
   if(target === 'trends'){ renderTrendsLensChips(); renderTrendsTab(); }
+  if(target === 'markttrends'){ renderMarktTrendsTab(); syncTrendSnapshots().then(() => renderMarktTrendsTab()); }
   if(target === 'opportunities'){ renderOppLensChips(); renderOpportunities(); }
   if(target === 'acties'){ renderActiesOwnerChips(); renderActies(); }
   if(target === 'coaching'){ renderCoaching(); }
@@ -17452,7 +17574,8 @@ async function importAllStateJson(jsonText, mergeMode){
 // wil je een schone start zonder een nieuw account aan te maken.
 async function resetCurrentTenantData(){
   const stateKeys = ['todos','dmu-overrides','spec-overrides','overrides',
-    'dropdowns','owners','signal-history','opportunities','supplier-overrides'];
+    'dropdowns','owners','signal-history','opportunities','supplier-overrides',
+    'trend-snapshots'];
   const errors = [];
   for(const key of stateKeys){
     try {
@@ -20592,6 +20715,280 @@ function findStale(thresholdSnapshots){
   });
   stale.sort((a, b) => b.lastScore - a.lastScore);
   return stale;
+}
+
+/* ============== Markt-trends tab renderer ============== */
+function _fmtInt(n){
+  if(n == null || isNaN(n)) return '–';
+  return Math.round(n).toLocaleString('nl-NL');
+}
+function _fmtSnapDate(ts){
+  if(!ts) return '–';
+  return new Date(ts).toLocaleDateString('nl-NL', {day:'numeric', month:'short', year:'numeric'});
+}
+function _mtBarRow(label, total, klantPart, maxV){
+  // Stacked bar: klantPart in oranje, (total-klantPart) in grijs.
+  const pct = maxV > 0 ? (total / maxV) * 100 : 0;
+  const klantPct = total > 0 ? (klantPart / total) * 100 : 0;
+  const fillKlant = (pct * klantPct / 100).toFixed(2);
+  const fillNon = (pct - (pct * klantPct / 100)).toFixed(2);
+  return `
+    <div class="mt-bar-row">
+      <span class="mt-bar-label" title="${escapeHtml(label)}">${escapeHtml(label)}</span>
+      <span class="mt-bar-track">
+        <span class="mt-bar-stack klant" style="width:${fillKlant}%"></span>
+        <span class="mt-bar-stack nonklant" style="left:${fillKlant}%;width:${fillNon}%"></span>
+      </span>
+      <span class="mt-bar-val">${_fmtInt(total)}${klantPart > 0 ? ' / ' + _fmtInt(klantPart) : ''}</span>
+    </div>`;
+}
+function _mtSimpleBar(label, value, maxV, color){
+  const pct = maxV > 0 ? (value / maxV) * 100 : 0;
+  const c = color || 'var(--orange)';
+  return `
+    <div class="mt-bar-row">
+      <span class="mt-bar-label" title="${escapeHtml(label)}">${escapeHtml(label)}</span>
+      <span class="mt-bar-track">
+        <span class="mt-bar-fill" style="width:${pct.toFixed(2)}%;background:${c}"></span>
+      </span>
+      <span class="mt-bar-val">${_fmtInt(value)}</span>
+    </div>`;
+}
+function _mtLineChart(series, opts){
+  // series: [{label, color, points: [{x, y}]}], x = timestamp, y = number.
+  // Schaalt automatisch op min/max y over alle series, datum-as op min/max x.
+  // SVG-only (geen externe lib). Toont legenda + dots op de meetpunten.
+  const cfg = Object.assign({ w: 720, h: 220, pad: 30 }, opts || {});
+  const allPts = [].concat(...series.map(s => s.points || []));
+  if(allPts.length === 0) return '<div class="mt-empty">Nog geen snapshots — klik "Snapshot maken" om te beginnen met meten.</div>';
+  const xs = allPts.map(p => p.x), ys = allPts.map(p => p.y);
+  const xMin = Math.min(...xs), xMax = Math.max(...xs);
+  const yMin = Math.min(0, Math.min(...ys));
+  const yMax = Math.max(...ys, 1);
+  const w = cfg.w, h = cfg.h, pad = cfg.pad;
+  const xScale = (x) => xMax === xMin ? (pad + (w - 2 * pad) / 2) : pad + ((x - xMin) / (xMax - xMin)) * (w - 2 * pad);
+  const yScale = (y) => h - pad - ((y - yMin) / (yMax - yMin || 1)) * (h - 2 * pad);
+  const gridLines = [];
+  for (let i = 0; i <= 4; i++){
+    const yv = yMin + (yMax - yMin) * (i / 4);
+    const yp = yScale(yv);
+    gridLines.push(`<line x1="${pad}" y1="${yp}" x2="${w - pad}" y2="${yp}" stroke="#e5e5ea" stroke-width="1"/>`);
+    gridLines.push(`<text x="${pad - 6}" y="${yp + 3}" font-size="9" fill="#888" text-anchor="end" font-family="DM Mono, monospace">${_fmtInt(yv)}</text>`);
+  }
+  // X-as labels: eerste en laatste timestamp.
+  const xLabels = `
+    <text x="${pad}" y="${h - pad + 14}" font-size="9" fill="#888" font-family="DM Mono, monospace">${escapeHtml(_fmtSnapDate(xMin))}</text>
+    <text x="${w - pad}" y="${h - pad + 14}" font-size="9" fill="#888" text-anchor="end" font-family="DM Mono, monospace">${escapeHtml(_fmtSnapDate(xMax))}</text>`;
+  const paths = series.map(s => {
+    const pts = (s.points || []).slice().sort((a, b) => a.x - b.x);
+    if(pts.length === 0) return '';
+    const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${xScale(p.x).toFixed(1)},${yScale(p.y).toFixed(1)}`).join(' ');
+    const dots = pts.map(p => `<circle cx="${xScale(p.x).toFixed(1)}" cy="${yScale(p.y).toFixed(1)}" r="2.5" fill="${s.color}"/>`).join('');
+    return `<path d="${d}" stroke="${s.color}" stroke-width="1.8" fill="none"/>${dots}`;
+  }).join('');
+  const legend = series.map((s, i) => `
+    <g transform="translate(${pad + i * 130}, 12)">
+      <rect width="10" height="10" fill="${s.color}" rx="2"/>
+      <text x="14" y="9" font-size="10" fill="#333" font-family="DM Sans, sans-serif">${escapeHtml(s.label)}</text>
+    </g>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" role="img">
+    ${gridLines.join('')}
+    ${xLabels}
+    ${paths}
+    ${legend}
+  </svg>`;
+}
+function renderMarktTrendsTab(){
+  const wrap = document.getElementById('markttrendsBody');
+  if(!wrap) return;
+  const items = instellingenMerged();
+  if(items.length === 0){
+    wrap.innerHTML = `<div class="mt-empty" style="margin:24px 0">Geen organisaties in deze werkomgeving. Voeg organisaties toe via <strong>+ Organisatie</strong> op de Organisaties-tab om hier marktontwikkelingen te zien.</div>`;
+    return;
+  }
+  // ---------- 1. KPI-tegels ----------
+  const agg = computeTrendAggregate();
+  const t = agg.totals;
+  const klantBeddenPct = t.bedden > 0 ? Math.round((t.klantBedden / t.bedden) * 100) : 0;
+  const klantOrgPct = t.orgs > 0 ? Math.round((t.klanten / t.orgs) * 100) : 0;
+  const kpis = `
+    <div class="mt-grid-4">
+      <div class="mt-kpi"><div class="mt-kpi-val">${_fmtInt(t.orgs)}</div><div class="mt-kpi-lbl">Organisaties</div></div>
+      <div class="mt-kpi"><div class="mt-kpi-val">${_fmtInt(t.klanten)}</div><div class="mt-kpi-lbl">Waarvan klant (${klantOrgPct}%)</div></div>
+      <div class="mt-kpi"><div class="mt-kpi-val">${_fmtInt(t.bedden)}</div><div class="mt-kpi-lbl">Bedden totaal</div></div>
+      <div class="mt-kpi"><div class="mt-kpi-val">${_fmtInt(t.klantBedden)}</div><div class="mt-kpi-lbl">Bedden bij klanten (${klantBeddenPct}%)</div></div>
+    </div>`;
+
+  // ---------- 2. Provincies ----------
+  const provEntries = Object.entries(agg.provincies)
+    .map(([k, v]) => ({ k, ...v }))
+    .sort((a, b) => b.bedden - a.bedden);
+  const provMax = Math.max(0, ...provEntries.map(p => p.bedden));
+  const provHtml = provEntries.length === 0
+    ? `<div class="mt-empty">Geen provincie-data.</div>`
+    : provEntries.map(p => _mtBarRow(p.k, p.bedden, p.klantBedden, provMax)).join('');
+
+  // ---------- 3. Segmenten ----------
+  const segEntries = Object.entries(agg.segmenten)
+    .map(([k, v]) => ({ k, ...v }))
+    .sort((a, b) => b.orgs - a.orgs);
+  const segMax = Math.max(0, ...segEntries.map(s => s.orgs));
+  const segHtml = segEntries.length === 0
+    ? `<div class="mt-empty">Nog geen klant-segmenten toegekend. Stel segmenten in via klantbeeld &rarr; GeriCall-context &rarr; Klant-segment.</div>`
+    : segEntries.map(s => _mtBarRow(s.k, s.orgs, s.klanten, segMax)).join('');
+
+  // ---------- 4. Top-10 grootste organisaties ----------
+  const top10 = items.slice().sort((a, b) => (b.aantalBedden || 0) - (a.aantalBedden || 0)).slice(0, 10);
+  const top10Max = Math.max(0, ...top10.map(i => i.aantalBedden || 0));
+  const top10Html = top10.length === 0 || top10Max === 0
+    ? `<div class="mt-empty">Geen bedden-data op organisaties. Vul "aantalBedden" in op je organisaties om dit overzicht te zien.</div>`
+    : top10.map(i => _mtSimpleBar(
+        `${i.naam}${i.gericallStatus === 'klant' ? ' ★' : ''}`,
+        i.aantalBedden || 0,
+        top10Max,
+        i.gericallStatus === 'klant' ? 'var(--orange)' : 'var(--grey-500)'
+      )).join('');
+
+  // ---------- 5. Snapshots & time-series ----------
+  const snaps = (trendSnapshots || []).slice().sort((a, b) => a.ts - b.ts);
+  const snapCount = snaps.length;
+  const seriesOrgs = snaps.map(s => ({ x: s.ts, y: (s.totals && s.totals.orgs) || 0 }));
+  const seriesKlanten = snaps.map(s => ({ x: s.ts, y: (s.totals && s.totals.klanten) || 0 }));
+  const seriesBedden = snaps.map(s => ({ x: s.ts, y: (s.totals && s.totals.bedden) || 0 }));
+  const seriesKlantBedden = snaps.map(s => ({ x: s.ts, y: (s.totals && s.totals.klantBedden) || 0 }));
+  const chartA = _mtLineChart([
+    { label: 'Organisaties', color: '#5fa3b8', points: seriesOrgs },
+    { label: 'Klanten', color: '#e87722', points: seriesKlanten },
+  ], { w: 720, h: 220 });
+  const chartB = _mtLineChart([
+    { label: 'Bedden totaal', color: '#5fa3b8', points: seriesBedden },
+    { label: 'Bedden bij klanten', color: '#e87722', points: seriesKlantBedden },
+  ], { w: 720, h: 220 });
+  const snapList = snapCount === 0
+    ? ''
+    : '<div style="margin-top:10px;max-height:180px;overflow-y:auto">' + snaps.slice().reverse().map(s => `
+        <div class="mt-snap-row">
+          <span class="mt-snap-date">${escapeHtml(_fmtSnapDate(s.ts))}</span>
+          <span class="mt-snap-val">${_fmtInt(s.totals?.orgs)} orgs &middot; ${_fmtInt(s.totals?.klanten)} klant &middot; ${_fmtInt(s.totals?.bedden)} bedden</span>
+          ${s.label ? '<span style="font-size:.74rem;color:var(--grey-600);margin-left:auto;font-style:italic">' + escapeHtml(s.label) + '</span>' : '<span style="margin-left:auto"></span>'}
+          <button type="button" class="btn-secondary" data-mt-snap-del="${s.ts}" style="font-size:.7rem;padding:2px 8px;color:#9c2f2f;border-color:#f3d2d2">Verwijder</button>
+        </div>`).join('') + '</div>';
+
+  // ---------- 6. Externe markt-data placeholder ----------
+  const externalBlock = `
+    <div class="mt-card">
+      <div class="mt-card-head">
+        <div>
+          <div class="mt-card-title">Externe markt-data</div>
+          <div class="mt-card-sub">CBS / branchecijfers (in ontwikkeling)</div>
+        </div>
+      </div>
+      <p style="font-size:.84rem;color:var(--grey-700);line-height:1.5;margin:0">Importeer externe markt-cijfers (CBS-tabellen, branchevereniging-cijfers, KvK-aggregaten) zodat je interne data tegen de macro-trend kunt afzetten. Volgende versie: CSV-upload (kolommen <code>period</code>, <code>metric</code>, <code>value</code>, <code>segment?</code>). Vraag is wel: welke databron heeft jouw markt? Laat het weten — dan bouw ik er een specifieke import voor.</p>
+    </div>`;
+
+  wrap.innerHTML = `
+    <div class="mt-toolbar">
+      <h2>Markt-trends</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:.74rem;color:var(--grey-600)">${snapCount} snapshot${snapCount === 1 ? '' : 's'} bewaard</span>
+        <button class="btn-secondary" id="mtRefreshBtn" style="font-size:.78rem;padding:5px 12px">Verversen</button>
+        <button class="btn-primary" id="mtSnapshotBtn" style="font-size:.78rem;padding:5px 14px">+ Snapshot maken</button>
+      </div>
+    </div>
+
+    <div class="mt-card">
+      <div class="mt-card-head">
+        <div>
+          <div class="mt-card-title">Huidige stand</div>
+          <div class="mt-card-sub">Live aggregaten op basis van je tenant-data</div>
+        </div>
+      </div>
+      ${kpis}
+    </div>
+
+    <div class="mt-grid-2">
+      <div class="mt-card">
+        <div class="mt-card-head">
+          <div>
+            <div class="mt-card-title">Bedden per provincie</div>
+            <div class="mt-card-sub">Oranje = bedden bij klanten</div>
+          </div>
+        </div>
+        ${provHtml}
+      </div>
+      <div class="mt-card">
+        <div class="mt-card-head">
+          <div>
+            <div class="mt-card-title">Organisaties per klant-segment</div>
+            <div class="mt-card-sub">Oranje = klanten binnen het segment</div>
+          </div>
+        </div>
+        ${segHtml}
+      </div>
+    </div>
+
+    <div class="mt-card">
+      <div class="mt-card-head">
+        <div>
+          <div class="mt-card-title">Top-10 organisaties (bedden)</div>
+          <div class="mt-card-sub">&starf; = klant</div>
+        </div>
+      </div>
+      ${top10Html}
+    </div>
+
+    <div class="mt-grid-2">
+      <div class="mt-card">
+        <div class="mt-card-head">
+          <div>
+            <div class="mt-card-title">Trend over tijd: organisaties &amp; klanten</div>
+            <div class="mt-card-sub">Tijdas opgebouwd uit snapshots</div>
+          </div>
+        </div>
+        <div class="mt-chart">${chartA}</div>
+      </div>
+      <div class="mt-card">
+        <div class="mt-card-head">
+          <div>
+            <div class="mt-card-title">Trend over tijd: bedden &amp; klant-bedden</div>
+            <div class="mt-card-sub">Tijdas opgebouwd uit snapshots</div>
+          </div>
+        </div>
+        <div class="mt-chart">${chartB}</div>
+      </div>
+    </div>
+
+    ${snapList ? `<div class="mt-card"><div class="mt-card-head"><div><div class="mt-card-title">Snapshot-historie</div><div class="mt-card-sub">Laatste ${snapCount} (max ${TREND_SNAPSHOTS_MAX})</div></div></div>${snapList}</div>` : ''}
+
+    ${externalBlock}
+  `;
+
+  const snapBtn = document.getElementById('mtSnapshotBtn');
+  if(snapBtn) snapBtn.addEventListener('click', async () => {
+    snapBtn.disabled = true;
+    const lbl = prompt('Optioneel label voor deze snapshot (bv. "Q1 2026 baseline"). Laat leeg voor automatisch.', '');
+    try {
+      await takeTrendSnapshot(lbl);
+      renderMarktTrendsTab();
+    } catch(e){
+      alert('Snapshot mislukt: ' + (e.message || e));
+    } finally {
+      snapBtn.disabled = false;
+    }
+  });
+  const refreshBtn = document.getElementById('mtRefreshBtn');
+  if(refreshBtn) refreshBtn.addEventListener('click', async () => {
+    await syncTrendSnapshots();
+    renderMarktTrendsTab();
+  });
+  wrap.querySelectorAll('[data-mt-snap-del]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const ts = Number(btn.dataset.mtSnapDel);
+      if(!confirm('Snapshot verwijderen?')) return;
+      await deleteTrendSnapshot(ts);
+      renderMarktTrendsTab();
+    });
+  });
 }
 
 function renderTrendsTab(){

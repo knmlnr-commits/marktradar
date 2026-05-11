@@ -8,6 +8,7 @@ const ALLOWED_KEYS = new Set([
   'todos', 'dmu-overrides', 'spec-overrides', 'overrides',
   'dropdowns', 'owners', 'signal-history', 'opportunities',
   'supplier-overrides', 'coaching', 'account-plans',
+  'trend-snapshots',
 ]);
 
 module.exports = async function handler(req, res) {
