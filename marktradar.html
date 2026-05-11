@@ -2032,7 +2032,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.23.2",
+    "version": "1.23.3",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -17895,44 +17895,44 @@ function _exportDocBodyHtml(opts){
   const title = opts.title || '';
   const sections = Array.isArray(opts.sections) ? opts.sections : [];
   const meta = opts.meta || '';
-  const format = opts.format || 'pdf';
   const c = _themeColorsForExport();
   const tenantNaam = (currentTenant && currentTenant.naam) || 'Werkomgeving';
-  const logoUri = _logoForExport(format);
   const today = new Date().toLocaleDateString('nl-NL', { day:'numeric', month:'long', year:'numeric' });
-  const sans = "'Helvetica Neue',Helvetica,Arial,sans-serif";
-  const serif = 'Georgia,Cambria,"Times New Roman",serif';
-  const logoImg = logoUri
-    ? `<img src="${logoUri}" alt="" style="height:34px;display:block;margin-bottom:6pt;background:transparent">`
-    : '';
-  const cover = `
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:0 0 22pt">
-      <tr><td style="background:${c.primary};padding:16pt 18pt;color:#ffffff;font-family:${sans}">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-          <td style="vertical-align:middle">${logoImg}<div style="font-size:15pt;font-weight:600;letter-spacing:.01em;line-height:1.2">${escapeHtml(tenantNaam)}</div></td>
-          <td style="vertical-align:middle;text-align:right;font-size:9pt;color:#ffffff;opacity:.85;letter-spacing:.04em;text-transform:uppercase">${escapeHtml(today)}</td>
-        </tr></table>
-      </td></tr>
-    </table>`;
+  // Eén sans-serif font, sterke hiërarchie via wittruimte + size + weight.
+  // Tenant-kleur wordt heel spaarzaam gebruikt: één dunne streep onder de
+  // header-regel + sectienummers. De rest is rustig zwart/grijs op wit.
+  const font = "'Helvetica Neue',Helvetica,Arial,sans-serif";
+  const ink = '#1a1a1a';
+  const dim = '#777777';
+  // Header-regel: tenant-naam (links) + datum (rechts), uppercase-tracked,
+  // gedimd. Daaronder een hairline in primary kleur — de enige kleur in
+  // het document, en alleen om het 'eigendom' van de werkomgeving aan
+  // te geven.
+  const topRow = `
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:0 0 1pt">
+      <tr>
+        <td style="font-family:${font};font-size:8.5pt;color:${dim};letter-spacing:.14em;text-transform:uppercase;padding:0 0 6pt;vertical-align:bottom">${escapeHtml(tenantNaam)}</td>
+        <td style="font-family:${font};font-size:8.5pt;color:${dim};letter-spacing:.06em;text-align:right;padding:0 0 6pt;vertical-align:bottom">${escapeHtml(today)}</td>
+      </tr>
+    </table>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td height="1" style="background:${c.primary};line-height:1px;font-size:1px">&nbsp;</td></tr></table>`;
   const titleBlock = `
-    <h1 style="font-family:${sans};color:${c.primaryDark};font-size:24pt;margin:0 0 4pt;font-weight:700;letter-spacing:-.015em;line-height:1.15">${escapeHtml(title)}</h1>
-    ${meta ? `<div style="font-family:${sans};color:#8a8a8a;font-size:9pt;margin:0;letter-spacing:.02em">${escapeHtml(meta)}</div>` : ''}
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:14pt 0 0"><tr><td height="3" style="background:${c.primary};line-height:3px;font-size:1px">&nbsp;</td></tr></table>`;
+    <h1 style="font-family:${font};color:${ink};font-size:20pt;margin:28pt 0 4pt;font-weight:600;letter-spacing:-.008em;line-height:1.2">${escapeHtml(title)}</h1>
+    ${meta ? `<div style="font-family:${font};color:${dim};font-size:9pt;margin:0;line-height:1.5">${escapeHtml(meta)}</div>` : ''}`;
   const body = sections.map((s, idx) => {
     const text = (s.text || '').trim();
     const empty = text.length === 0;
-    const header = `
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:${idx === 0 ? '22pt' : '20pt'} 0 8pt;border-collapse:collapse;page-break-after:avoid">
+    const head = `
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:26pt 0 8pt;page-break-after:avoid">
         <tr>
-          <td width="5" style="background:${c.primary};padding:0;line-height:1;font-size:1px">&nbsp;</td>
-          <td width="10" style="padding:0">&nbsp;</td>
-          <td style="padding:0"><div style="font-family:${sans};font-size:13pt;font-weight:700;color:${c.primaryDark};letter-spacing:.01em;line-height:1.2">${escapeHtml(s.label)}</div></td>
+          <td width="22" style="font-family:${font};font-size:10.5pt;font-weight:700;color:${c.primary};vertical-align:top;padding:0;line-height:1.4">${idx + 1}.</td>
+          <td style="font-family:${font};font-size:10.5pt;font-weight:700;color:${ink};vertical-align:top;padding:0;line-height:1.4;letter-spacing:.005em">${escapeHtml(s.label)}</td>
         </tr>
       </table>`;
-    const bodyText = `<div style="font-family:${serif};font-size:11pt;line-height:1.65;color:${empty ? '#b0b0b0' : '#222222'};white-space:pre-wrap;margin:0 0 0 15pt;font-style:${empty ? 'italic' : 'normal'}">${escapeHtml(empty ? '(leeg)' : text)}</div>`;
-    return header + bodyText;
+    const bodyText = `<div style="font-family:${font};font-size:10.5pt;line-height:1.7;color:${empty ? dim : ink};white-space:pre-wrap;margin:0 0 0 22pt;font-style:${empty ? 'italic' : 'normal'}">${escapeHtml(empty ? '(leeg)' : text)}</div>`;
+    return head + bodyText;
   }).join('');
-  return cover + titleBlock + body;
+  return topRow + titleBlock + body;
 }
 function _safeFilename(s){
   return String(s || 'export')
@@ -18017,8 +18017,8 @@ function exportTenantIdentity(format){
     { label: 'Markt-beschrijving', text: marktBeschrijving },
     { label: 'Beslisser-rollen', text: dmRoles || '(standaard: CEO, directeur, bestuurder, COO, CFO, CTO, algemeen directeur, managing director)' },
   ];
-  const title = naam + ' — Identiteit & propositie';
-  const meta = 'Geëxporteerd ' + new Date().toLocaleString('nl-NL');
+  const title = 'Identiteit & propositie';
+  const meta = '';
   const file = 'identiteit-' + _safeFilename(naam) + '-' + new Date().toISOString().slice(0,10);
   if(format === 'pdf') downloadAsPdf(title, sections, meta);
   else downloadAsWord(file, title, sections, meta);
@@ -18032,11 +18032,11 @@ function exportSalesPlan(format){
     { label: '3. Speerpunten', text: sec('speerpunten') },
     { label: '4. Mijlpalen', text: sec('mijlpalen') },
   ];
-  const title = tenantNaam + ' — SalesPlan';
+  const title = 'SalesPlan ' + new Date().getFullYear();
   const sp = tenantSalesPlan();
-  const meta = (sp && sp.updatedAt
-    ? ('Laatst opgeslagen ' + new Date(sp.updatedAt).toLocaleString('nl-NL') + ' · ')
-    : '') + 'Geëxporteerd ' + new Date().toLocaleString('nl-NL');
+  const meta = sp && sp.updatedAt
+    ? 'Laatst opgeslagen ' + new Date(sp.updatedAt).toLocaleDateString('nl-NL', {day:'numeric', month:'long', year:'numeric'})
+    : '';
   const file = 'salesplan-' + _safeFilename(tenantNaam) + '-' + new Date().toISOString().slice(0,10);
   if(format === 'pdf') downloadAsPdf(title, sections, meta);
   else downloadAsWord(file, title, sections, meta);
@@ -18054,13 +18054,10 @@ function exportAccountPlan(instId, format){
   const plan = getAccountPlan(instId);
   const ownerId = ownerForInst(instId);
   const ownerNaam = ownerId ? (ownerById(ownerId)?.naam || '') : '';
-  const tenantNaam = (currentTenant && currentTenant.naam) || '';
   const metaParts = [];
-  if(tenantNaam) metaParts.push(tenantNaam);
-  if(ownerNaam) metaParts.push('eigenaar ' + ownerNaam);
-  if(plan && plan.generatedAt) metaParts.push('plan gegenereerd ' + new Date(plan.generatedAt).toLocaleString('nl-NL'));
-  metaParts.push('geëxporteerd ' + new Date().toLocaleString('nl-NL'));
-  const title = accountNaam + ' — Accountplan';
+  if(ownerNaam) metaParts.push('Account-eigenaar: ' + ownerNaam);
+  if(plan && plan.generatedAt) metaParts.push('AI-concept ' + new Date(plan.generatedAt).toLocaleDateString('nl-NL', {day:'numeric', month:'long', year:'numeric'}));
+  const title = 'Accountplan — ' + accountNaam;
   const file = 'accountplan-' + _safeFilename(accountNaam) + '-' + new Date().toISOString().slice(0,10);
   if(format === 'pdf') downloadAsPdf(title, sections, metaParts.join(' · '));
   else downloadAsWord(file, title, sections, metaParts.join(' · '));
