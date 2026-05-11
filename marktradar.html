@@ -2148,7 +2148,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.26.1",
+    "version": "1.26.2",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12113,7 +12113,17 @@ function adminFeedback(kind, msg){
 }
 function escAdminAttr(s){ return String(s == null ? '' : s).replace(/"/g, '&quot;'); }
 async function adminApi(action, opts){
-  const r = await apiFetch('/api/admin?action=' + encodeURIComponent(action), opts || {});
+  // Optionele extra query-params via opts.params (object). Voorbeeld:
+  //   adminApi('list-audit-log', { params: { limit: 200 } })
+  // adminApi('list-tenants') => /api/admin?action=list-tenants
+  let url = '/api/admin?action=' + encodeURIComponent(action);
+  if(opts && opts.params){
+    const usp = new URLSearchParams();
+    Object.entries(opts.params).forEach(([k, v]) => { if(v != null && v !== '') usp.set(k, String(v)); });
+    const qs = usp.toString();
+    if(qs) url += '&' + qs;
+  }
+  const r = await apiFetch(url, opts || {});
   const j = await r.json().catch(() => ({}));
   if(!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
   return j;
@@ -12201,7 +12211,7 @@ async function refreshAdminUsers(){
 }
 async function refreshAdminAudit(){
   try {
-    const j = await adminApi('list-audit-log&limit=200');
+    const j = await adminApi('list-audit-log', { params: { limit: 200 } });
     _adminState.audit = Array.isArray(j.events) ? j.events : [];
     renderAdminAudit();
     const cnt = document.getElementById('adminTabCountAudit');
