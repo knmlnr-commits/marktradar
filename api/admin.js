@@ -11,21 +11,16 @@ const authMod = require('./auth');
 const demoReq = require('./demo-request');
 
 async function requireAdminSession(req, res) {
-  // Sessie-cookie → e-mail. Daarna alleen door als de e-mail in
-  // lib.ADMIN_EMAILS staat. Zo niet: 403, geen leak van wat er wél is.
+  // Bearer-token (Authorization: Bearer <token>) → sessie → e-mail.
+  // Daarna alleen door als de e-mail in lib.ADMIN_EMAILS staat.
+  // Zo niet: 403, geen leak van wat er wél is.
   if (!lib.kvConfigured()) {
     res.status(503).json({ error: 'Vercel KV niet geconfigureerd' });
     return null;
   }
-  const cookieHeader = req.headers.cookie || '';
-  const match = /(?:^|;\s*)mr_session=([^;]+)/.exec(cookieHeader);
-  if (!match) {
+  const session = await lib.getSession(req);
+  if (!session) {
     res.status(401).json({ error: 'Niet ingelogd' });
-    return null;
-  }
-  const session = await lib.kvGet(lib.KV_SESSION_PREFIX + match[1]);
-  if (!session || (session.expires && session.expires < Date.now())) {
-    res.status(401).json({ error: 'Sessie verlopen' });
     return null;
   }
   if (!lib.isAdminEmail(session.email)) {
