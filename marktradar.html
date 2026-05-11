@@ -2021,7 +2021,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <h2>Gebruikers</h2>
         <button class="btn-primary" id="adminAddUserBtn">+ Gebruiker toevoegen</button>
       </div>
-      <div id="adminUsersList" class="admin-list"></div>
+      <div id="adminGlobalUsersList" class="admin-list"></div>
     </section>
     <section class="admin-pane" id="adminPane-audit">
       <div class="admin-toolbar">
@@ -2148,7 +2148,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.26.2",
+    "version": "1.26.3",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12259,7 +12259,10 @@ function renderAdminTenants(){
   wrap.querySelectorAll('[data-adm-delete-tenant]').forEach(b => b.addEventListener('click', () => onAdminDeleteTenant(b.dataset.admDeleteTenant)));
 }
 function renderAdminUsers(){
-  const wrap = document.getElementById('adminUsersList');
+  // Let op: 'adminUsersList' is óók de id van de Beheer-modal users-
+  // sectie in de gewone tenant-app — die staat eerder in de DOM.
+  // Daarom gebruiken we hier de specifieke globale-admin-id.
+  const wrap = document.getElementById('adminGlobalUsersList');
   if(!wrap) return;
   const us = _adminState.users || [];
   if(us.length === 0){
