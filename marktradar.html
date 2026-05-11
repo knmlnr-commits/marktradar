@@ -1452,7 +1452,8 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
           <option value="name">A-Z</option>
         </select>
       </div>
-      <div class="chip-row" id="instSegmentChips" style="padding:0 24px 10px;display:none"></div>
+      <div class="chip-row" id="instSegmentChips" style="padding:0 24px 6px;display:none"></div>
+      <div class="chip-row" id="instBusinessLineChips" style="padding:0 24px 10px;display:none"></div>
       <div class="inst-grid" id="instGrid"></div>
     </div>
 
@@ -1863,6 +1864,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
           <option value="name">A-Z</option>
         </select>
       </div>
+      <div class="chip-row" id="oppBusinessLineChips" style="padding:0 24px 8px;display:none"></div>
       <div id="oppList"></div>
     </div>
 
@@ -2203,7 +2205,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.28.1",
+    "version": "1.29.0",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -2638,6 +2640,10 @@ const DATA = {
       {
         "version": "1.28.1", "codename": "Tarazed", "date": "2026-05-11",
         "note": "Release-history bijgewerkt met entries voor v1.17.2 t/m v1.28.0 — eerder eindigde de in-app changelog op v1.17.1 Rigel terwijl de versie-pill al op v1.28.0 stond. Geen functionele wijzigingen; alleen documentatie. NB: codenames zijn niet 100% strikt-alfabetisch — Sirius is ge-hergebruikt voor de v1.24-1.27 admin-omgeving-serie en Tarazed voor zowel v1.19 (pipeline-targets) als v1.28 (markt-trends). Toekomstige minors pakken de alfabet-sequentie weer op vanaf U/V/W."
+      },
+      {
+        "version": "1.29.0", "codename": "Tarazed", "date": "2026-05-11",
+        "note": "Business-line tagging op organisaties en opportunities (Jeff comment #2). (1) Nieuwe beheerbare dropdown 'businessLine' in DROPDOWN_REGISTRY met defaults '@Emergency / @Medical / @Home / GeriForce'. (2) Per-organisatie multi-select chip-rij in klantbeeld > GeriCall-context > Business-lines: klik een chip om de waarde aan/uit te zetten; saveert direct via setOverrides. (3) 'Auto-tag'-knop runt een trefwoord-heuristiek (BUSINESS_LINE_KEYWORDS) op de organisatie-naam, notitie, opportunity-veld, opp-titels en signal-headlines en stelt matches voor; admin bevestigt voordat ze worden weggeschreven. (4) Twee nieuwe filter-chip-rijen: instBusinessLineChips boven Organisaties-grid en oppBusinessLineChips boven Opportunities-grid — multi-select, OR binnen dimensie, AND met andere filters. Opportunities erven de business-lines van hun organisatie als ze zelf geen eigen tags hebben. State persisteert via saveUiState."
       }
     ],
     "totalInstellingen": 64,
@@ -12974,6 +12980,12 @@ let instOwner = 'all';
 // Multi-select klant-segment-filter. Leeg = geen filter (toon alles).
 // Speciale key '__none__' = toon organisaties zonder klantSegment.
 let instSegmentSet = new Set();
+// Multi-select business-line-filter (zelfde semantiek). Een organisatie
+// kan meerdere business-lines hebben (array i.businessLines); chip
+// matcht als één van die lines in de set zit.
+let instBusinessLineSet = new Set();
+// Idem voor de Opportunities-tab.
+let oppBusinessLineSet = new Set();
 let searchQuery = '';
 let trendsLens = 'auto';
 let trendsSort = 'delta-abs';
@@ -12994,6 +13006,8 @@ function saveUiState(){
       signalFilter, signalSort,
       instFilter, instSort, instProv, instRegio, instOwner,
       instSegments: Array.from(instSegmentSet),
+      instBusinessLines: Array.from(instBusinessLineSet),
+      oppBusinessLines: Array.from(oppBusinessLineSet),
       searchQuery,
       trendsLens, trendsSort,
       actiesFilter: typeof actiesFilter !== 'undefined' ? actiesFilter : null,
@@ -13019,6 +13033,8 @@ function applyUiState(state){
   if(typeof state.instRegio === 'string') instRegio = state.instRegio;
   if(typeof state.instOwner === 'string') instOwner = state.instOwner;
   if(Array.isArray(state.instSegments)) instSegmentSet = new Set(state.instSegments.map(String));
+  if(Array.isArray(state.instBusinessLines)) instBusinessLineSet = new Set(state.instBusinessLines.map(String));
+  if(Array.isArray(state.oppBusinessLines)) oppBusinessLineSet = new Set(state.oppBusinessLines.map(String));
   if(typeof state.searchQuery === 'string') searchQuery = state.searchQuery;
   if(typeof state.trendsLens === 'string') trendsLens = state.trendsLens;
   if(typeof state.trendsSort === 'string') trendsSort = state.trendsSort;
@@ -14124,6 +14140,7 @@ function initApp(){
   renderProvinceFilter();
   renderOwnerFilter();
   renderInstSegmentChips();
+  renderInstBusinessLineChips();
   renderInstellingen();
   renderLeveranciers();
   bindTabs();
@@ -14795,7 +14812,7 @@ function activateTab(target){
   pane.classList.add('active');
   if(target === 'trends'){ renderTrendsLensChips(); renderTrendsTab(); }
   if(target === 'markttrends'){ renderMarktTrendsTab(); syncTrendSnapshots().then(() => renderMarktTrendsTab()); }
-  if(target === 'opportunities'){ renderOppLensChips(); renderOpportunities(); }
+  if(target === 'opportunities'){ renderOppLensChips(); renderOppBusinessLineChips(); renderOpportunities(); }
   if(target === 'acties'){ renderActiesOwnerChips(); renderActies(); }
   if(target === 'coaching'){ renderCoaching(); }
   // Beheer-tab is lazy-loaded zodat de KV-health-check pas draait wanneer
@@ -15263,6 +15280,93 @@ function renderInstFilters(){
   if(stale) stale.remove();
 }
 
+// Generieke multi-select chip-rij voor een dimensie op de Organisaties-
+// of Opportunities-tab. ddKey = entry in DROPDOWN_REGISTRY; itemValues
+// returnt voor een item de string-waarde of array van waardes; onChange
+// wordt aangeroepen nadat de Set is gemuteerd.
+function renderMultiChipFilter({ wrapId, ddKey, filterSet, items, getItemValues, onChange, totalLabel, noneLabel }){
+  const wrap = document.getElementById(wrapId);
+  if(!wrap) return;
+  const counts = {};
+  let zonder = 0;
+  items.forEach(it => {
+    const raw = getItemValues(it);
+    const vals = Array.isArray(raw) ? raw : (raw ? [raw] : []);
+    if(vals.length === 0) zonder++;
+    else vals.forEach(v => { if(v) counts[v] = (counts[v]||0) + 1; });
+  });
+  const schemaList = (dropdowns[ddKey] && dropdowns[ddKey].length > 0)
+    ? dropdowns[ddKey].slice()
+    : (DROPDOWN_REGISTRY[ddKey]?.defaults || []).slice();
+  const allValues = Array.from(new Set([...schemaList, ...Object.keys(counts)]));
+  if(allValues.length === 0 && zonder === 0){ wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+  const chips = [];
+  chips.push(`<button type="button" class="chip${filterSet.size === 0 ? ' active' : ''}" data-mc-val="__reset__">${escapeHtml(totalLabel || 'Alle')} (${items.length})</button>`);
+  allValues.forEach(v => {
+    const c = counts[v] || 0;
+    const active = filterSet.has(v);
+    chips.push(`<button type="button" class="chip${active ? ' active' : ''}" data-mc-val="${escAdminAttr(v)}">${escapeHtml(v)} (${c})</button>`);
+  });
+  if(zonder > 0){
+    const active = filterSet.has('__none__');
+    chips.push(`<button type="button" class="chip${active ? ' active' : ''}" data-mc-val="__none__">${escapeHtml(noneLabel || 'Geen')} (${zonder})</button>`);
+  }
+  wrap.innerHTML = chips.join('');
+  // Reset eerdere handler door listener te vervangen via dataset-flag.
+  if(!wrap.dataset.bound){
+    wrap.dataset.bound = '1';
+    wrap.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-mc-val]');
+      if(!btn) return;
+      const v = btn.dataset.mcVal;
+      if(v === '__reset__') filterSet.clear();
+      else if(filterSet.has(v)) filterSet.delete(v);
+      else filterSet.add(v);
+      if(typeof onChange === 'function') onChange();
+    });
+  }
+}
+
+function renderInstBusinessLineChips(){
+  renderMultiChipFilter({
+    wrapId: 'instBusinessLineChips', ddKey: 'businessLine',
+    filterSet: instBusinessLineSet,
+    items: instellingenMerged(),
+    getItemValues: (i) => Array.isArray(i.businessLines) ? i.businessLines : [],
+    totalLabel: 'Alle business-lines', noneLabel: 'Geen business-line',
+    onChange: () => {
+      renderInstBusinessLineChips();
+      renderInstellingen();
+      saveUiState();
+    }
+  });
+}
+
+function renderOppBusinessLineChips(){
+  // Opportunities erven de business-lines van hun organisatie als ze
+  // zelf geen eigen tags hebben (zie renderOpportunities). Voor de
+  // chip-counts gebruiken we diezelfde effectieve waarde.
+  const opps = (typeof allOpportunitiesFlat === 'function') ? allOpportunitiesFlat() : [];
+  renderMultiChipFilter({
+    wrapId: 'oppBusinessLineChips', ddKey: 'businessLine',
+    filterSet: oppBusinessLineSet,
+    items: opps,
+    getItemValues: (o) => {
+      const own = Array.isArray(o.businessLines) ? o.businessLines : [];
+      if(own.length > 0) return own;
+      const inst = getInstelling(o.instellingId);
+      return Array.isArray(inst?.businessLines) ? inst.businessLines : [];
+    },
+    totalLabel: 'Alle business-lines', noneLabel: 'Geen business-line',
+    onChange: () => {
+      renderOppBusinessLineChips();
+      renderOpportunities();
+      saveUiState();
+    }
+  });
+}
+
 function renderInstSegmentChips(){
   // Multi-select chip-rij. Toon alleen als er minstens één segment is
   // toegekend aan een organisatie OR als de dropdown een schema heeft.
@@ -15486,6 +15590,13 @@ function renderInstellingen(){
       const seg = i.klantSegment || '';
       if(!seg) return instSegmentSet.has('__none__');
       return instSegmentSet.has(seg);
+    });
+  }
+  if(instBusinessLineSet.size > 0){
+    instellingen = instellingen.filter(i => {
+      const bls = Array.isArray(i.businessLines) ? i.businessLines : [];
+      if(bls.length === 0) return instBusinessLineSet.has('__none__');
+      return bls.some(b => instBusinessLineSet.has(b));
     });
   }
   if(searchQuery){
@@ -15788,6 +15899,7 @@ const DROPDOWN_REGISTRY = {
   regio:           { label: 'Regio',                 legacyOnly: true,  defaults: ['Noord','Oost','Midden','West','Zuid','Landelijk'] },
   gericallStatus:  { label: 'Lead-status',           defaults: ['klant','prospect','lead','cold'], labelMap: {} },
   klantSegment:    { label: 'Klant-segment',         defaults: ['Strategisch','Standaard','Long-tail'] },
+  businessLine:    { label: 'Business-line',         defaults: ['@Emergency','@Medical','@Home','GeriForce'] },
   anwModelKort:    { label: 'ANW-model (kort)',      legacyOnly: true,  defaults: ['eigen','samen','extern','onbekend'] },
   grootte:         { label: 'Grootte',               legacyOnly: true,  defaults: ['g','k'], labelMap: { g: 'Groot (>=500 bedden)', k: 'Klein/middelgroot' } },
   ecdLeverancier:  { label: 'ECD-leveranciers',      legacyOnly: true,  defaults: ['Nedap ONS','PinkRoccade Ysis','Gerimedica Ysis','Mextra','ChipSoft','Onbekend'] },
@@ -16190,6 +16302,63 @@ function ieTextarea(instId, field, value, ph){
 function ieDropdown(instId, field, ddKey, value){
   return ddSelectHtml(ddKey, value, { 'class': 'dd-managed inline-edit-input ie', 'data-inst-id': instId, 'data-field': field });
 }
+// Multi-select chip-rij voor een array-veld (zoals businessLines). Klik
+// op een chip toggled de waarde aan/uit; saveert via setOverrides met
+// het volledige array. Auto-tag-knop runt heuristiek op (i) signal-
+// historie en (ii) opp-titels om suggesties op te halen — admin kiest
+// zelf wat 'ie accepteert (geen automatische write zonder klik).
+function ieBusinessLinesChips(instId, valuesIn){
+  const schemaList = (dropdowns.businessLine && dropdowns.businessLine.length > 0)
+    ? dropdowns.businessLine.slice()
+    : (DROPDOWN_REGISTRY.businessLine?.defaults || []).slice();
+  const values = Array.isArray(valuesIn) ? valuesIn : [];
+  const chips = schemaList.map(v => {
+    const on = values.includes(v);
+    return `<button type="button" class="chip${on ? ' active' : ''}" data-bl-inst="${escAdminAttr(instId)}" data-bl-val="${escAdminAttr(v)}">${escapeHtml(v)}</button>`;
+  }).join('');
+  return `<div class="chip-row" data-bl-row="${escAdminAttr(instId)}" style="gap:6px;flex-wrap:wrap">${chips}<button type="button" class="btn-secondary" data-bl-auto="${escAdminAttr(instId)}" style="font-size:.7rem;padding:3px 10px;margin-left:4px">Auto-tag</button></div>`;
+}
+function toggleBusinessLine(instId, val){
+  const cur = getInstelling(instId);
+  if(!cur) return;
+  const list = Array.isArray(cur.businessLines) ? cur.businessLines.slice() : [];
+  const idx = list.indexOf(val);
+  if(idx >= 0) list.splice(idx, 1); else list.push(val);
+  setOverrides(instId, { businessLines: list });
+  // Re-render alleen de chip-rij van deze organisatie, geen volledige
+  // re-render zodat openstaande accordions niet inklappen.
+  const row = document.querySelector(`[data-bl-row="${CSS.escape(String(instId))}"]`);
+  if(row){
+    row.outerHTML = ieBusinessLinesChips(instId, list);
+  }
+  // Filter-chips boven Organisaties moeten counts updaten.
+  renderInstBusinessLineChips();
+}
+// Eenvoudige keyword-heuristiek per business-line. Tenant-onafhankelijk
+// (default SalesDay-aansluiting). Scan: organisatie-naam + propositie-
+// notitie + signal-headlines + opp-titels die aan deze inst hangen.
+const BUSINESS_LINE_KEYWORDS = {
+  '@Emergency': ['spoed','acuut','anw','24/7','crisis','emergency','urgent'],
+  '@Medical': ['medisch','behandel','specialist','diagnose','consult','medicat','poli'],
+  '@Home': ['thuis','wijkverpl','domein','huisbezoek','ambulant','community'],
+  'GeriForce': ['geriforce','geriatr','ouderen','vvt','so-arts','specialist ouderengeneeskunde'],
+};
+function autoTagBusinessLines(instId){
+  const inst = getInstelling(instId);
+  if(!inst) return [];
+  const blob = [
+    inst.naam || '',
+    inst.gericallNote || '',
+    inst.opportunity || '',
+    (signalsForInst(inst.id) || []).slice(0, 10).map(s => (s.headline || '') + ' ' + (s.summary || '')).join(' '),
+    ((opportunities[instId] || []).map(o => (o.titel || '') + ' ' + (o.omschrijving || '')).join(' ')),
+  ].join(' ').toLowerCase();
+  const matched = [];
+  Object.entries(BUSINESS_LINE_KEYWORDS).forEach(([bl, kws]) => {
+    if(kws.some(k => blob.includes(k))) matched.push(bl);
+  });
+  return matched;
+}
 function ieSegment(instId, segKey, on, label){
   return `<label class="segment-tag ${on ? 'has' : ''}" style="cursor:pointer;display:inline-flex;align-items:center;gap:4px">
     <input type="checkbox" class="ie ie-segment" data-inst-id="${escapeHtml(instId)}" data-seg="${escapeHtml(segKey)}" ${on ? 'checked' : ''} style="margin:0">
@@ -16362,6 +16531,10 @@ function renderGericallContextBody(i){
       <div>
         <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Klant-segment</div>
         ${ieDropdown(i.id, 'klantSegment', 'klantSegment', i.klantSegment)}
+      </div>
+      <div>
+        <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Business-lines</div>
+        ${ieBusinessLinesChips(i.id, i.businessLines)}
       </div>
       <div>
         <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Status-notitie</div>
@@ -16910,6 +17083,32 @@ function bindOverlayChrome(i){
       el.addEventListener('change', () => onIeChange(el));
       el.addEventListener('blur', () => onIeChange(el));
     }
+  });
+  // Business-line chip toggles + auto-tag-knop in klantbeeld.
+  document.querySelectorAll('#overlayPanel [data-bl-val]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      toggleBusinessLine(btn.dataset.blInst, btn.dataset.blVal);
+    });
+  });
+  document.querySelectorAll('#overlayPanel [data-bl-auto]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const id = btn.dataset.blAuto;
+      const suggestions = autoTagBusinessLines(id);
+      if(suggestions.length === 0){
+        alert('Geen automatische match gevonden op trefwoorden. Voeg handmatig toe via de chips.');
+        return;
+      }
+      const cur = getInstelling(id);
+      const existing = Array.isArray(cur?.businessLines) ? cur.businessLines : [];
+      const merged = Array.from(new Set([...existing, ...suggestions]));
+      if(!confirm('Auto-tag-voorstel: ' + suggestions.join(', ') + (existing.length ? '\n\nBestaand: ' + existing.join(', ') : '') + '\n\nToepassen?')) return;
+      setOverrides(id, { businessLines: merged });
+      const row = document.querySelector(`[data-bl-row="${CSS.escape(String(id))}"]`);
+      if(row) row.outerHTML = ieBusinessLinesChips(id, merged);
+      renderInstBusinessLineChips();
+    });
   });
   // Add-people knoppen (DMU / spec / directie).
   document.querySelectorAll('#overlayPanel [data-add-people]').forEach(btn => {
@@ -20339,6 +20538,7 @@ function bindEditFormHandlers(i){
     renderRegioFilter();
     renderInstFilters();
     renderInstSegmentChips();
+    renderInstBusinessLineChips();
     renderKpiRow();
   });
   const resetBtn = document.getElementById('editResetBtn-' + i.id);
@@ -21878,6 +22078,19 @@ function renderOpportunities(){
     opps = opps.filter(o => o.ownerId === currentUser.id || ownerForInst(o.instellingId) === currentUser.id);
   }
   if(oppLensFilter !== 'all') opps = opps.filter(o => o.status === oppLensFilter);
+  // Business-line filter (multi-select). Een opp matcht als ze zelf
+  // geen businessLines heeft maar de organisatie wel, OR als de eigen
+  // opp.businessLines een match heeft. '__none__' = inherited+own beide leeg.
+  if(oppBusinessLineSet.size > 0){
+    opps = opps.filter(o => {
+      const ownBls = Array.isArray(o.businessLines) ? o.businessLines : [];
+      const inst = getInstelling(o.instellingId);
+      const instBls = Array.isArray(inst?.businessLines) ? inst.businessLines : [];
+      const effective = ownBls.length > 0 ? ownBls : instBls;
+      if(effective.length === 0) return oppBusinessLineSet.has('__none__');
+      return effective.some(b => oppBusinessLineSet.has(b));
+    });
+  }
   if(oppSort === 'name') opps.sort((a,b) => {
     const ia = getInstelling(a.instellingId);
     const ib = getInstelling(b.instellingId);
