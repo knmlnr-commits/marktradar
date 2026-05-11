@@ -128,6 +128,39 @@ body{
   font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-500);}
 .app{display:none;min-height:100vh}
 .app.active{display:block}
+.admin-app{display:none;min-height:100vh;background:var(--grey-50)}
+.admin-app.active{display:block}
+.admin-head{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--white);border-bottom:1px solid var(--grey-200);position:sticky;top:0;z-index:50}
+.admin-head-left{display:flex;align-items:center;gap:10px;font-size:1rem}
+.admin-head-mark{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--orange);color:white;border-radius:6px;font-size:14px}
+.admin-head-right{display:flex;align-items:center;gap:12px;font-size:.84rem}
+.admin-user{color:var(--grey-700);font-weight:500}
+.admin-tabs{display:flex;gap:0;padding:0 24px;background:var(--white);border-bottom:1px solid var(--grey-200)}
+.admin-tab{flex:none;padding:12px 18px;border:0;border-bottom:2px solid transparent;background:none;cursor:pointer;font-family:inherit;font-size:.86rem;color:var(--grey-700);font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.admin-tab:hover{color:var(--grey-900)}
+.admin-tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+.admin-tab-count{display:inline-block;min-width:18px;padding:1px 6px;border-radius:9px;background:var(--grey-100);color:var(--grey-700);font-size:.7rem;font-weight:600;text-align:center}
+.admin-tab.active .admin-tab-count{background:var(--orange-pale);color:var(--orange-dark)}
+.admin-main{max-width:1080px;margin:0 auto;padding:24px}
+.admin-pane{display:none}
+.admin-pane.active{display:block}
+.admin-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.admin-toolbar h2{margin:0;font-size:1.1rem;color:var(--grey-900);font-weight:600;letter-spacing:-.005em}
+.admin-list{display:flex;flex-direction:column;gap:8px}
+.admin-feedback{margin-top:14px;font-size:.82rem;min-height:18px}
+.admin-feedback.ok{color:var(--green)}
+.admin-feedback.err{color:var(--red)}
+.admin-row{background:var(--white);border:1px solid var(--grey-200);border-radius:8px;padding:12px 14px}
+.admin-row-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.admin-row-naam{font-weight:600;color:var(--grey-900);font-size:.92rem}
+.admin-row-meta{font-size:.76rem;color:var(--grey-600);margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.admin-row-pill{display:inline-block;padding:1px 8px;border-radius:6px;background:var(--grey-100);color:var(--grey-700);font-size:.7rem;font-weight:500}
+.admin-row-pill.legacy{background:var(--orange-pale);color:var(--orange-dark)}
+.admin-row-pill.admin{background:#eaf3ff;color:#1e5fa3}
+.admin-row-sub{font-size:.76rem;color:var(--grey-600);margin-top:4px}
+.admin-row-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.admin-row-actions button{font-size:.74rem;padding:4px 10px}
+.admin-temp-pw{margin-top:8px;padding:10px 12px;background:#fff8ec;border:1px solid #f1d8a2;border-radius:6px;font-family:'DM Mono',monospace;font-size:.82rem;color:#7a4f00}
 /* z-index 130: hoger dan de admin/refresh-modal-overlay (z:120) zodat
    topbar + tabs zichtbaar én klikbaar blijven terwijl de Beheer-modal
    open is. Klik op een tab sluit de modal automatisch. */
@@ -1211,7 +1244,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       </div>
       <div class="err" id="gate-err-auth"><span></span></div>
       <div class="gate-help" id="gate-help">
-        <button type="button" id="gate-toggle-mode" class="gate-toggle-mode">Nog geen account? Maak je eigen werkomgeving aan</button>
+        <button type="button" id="gate-toggle-mode" class="gate-toggle-mode" style="display:none"></button>
       </div>
     </form>
     <!-- Legacy toegangscode-gate is uitgefaseerd; multi-tenant auth via gate-form-auth. -->
@@ -1957,6 +1990,79 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   </div>
 </div>
 
+<!-- =================== Admin-app (/app/admin) =================== -->
+<div class="admin-app" id="adminApp">
+  <header class="admin-head">
+    <div class="admin-head-left">
+      <span class="admin-head-mark">&#9881;</span>
+      <strong>Beheer omgeving</strong>
+    </div>
+    <div class="admin-head-right">
+      <span id="adminUserBadge" class="admin-user"></span>
+      <button class="btn-secondary" id="adminLogoutBtn">Uitloggen</button>
+    </div>
+  </header>
+  <nav class="admin-tabs">
+    <button class="admin-tab" data-admin-tab="tenants">Werkomgevingen <span class="admin-tab-count" id="adminTabCountTenants">0</span></button>
+    <button class="admin-tab" data-admin-tab="users">Gebruikers <span class="admin-tab-count" id="adminTabCountUsers">0</span></button>
+  </nav>
+  <main class="admin-main">
+    <section class="admin-pane" id="adminPane-tenants">
+      <div class="admin-toolbar">
+        <h2>Werkomgevingen</h2>
+        <button class="btn-primary" id="adminCreateTenantBtn">+ Nieuwe werkomgeving</button>
+      </div>
+      <div id="adminTenantsList" class="admin-list"></div>
+    </section>
+    <section class="admin-pane" id="adminPane-users">
+      <div class="admin-toolbar">
+        <h2>Gebruikers</h2>
+        <button class="btn-primary" id="adminAddUserBtn">+ Gebruiker toevoegen</button>
+      </div>
+      <div id="adminUsersList" class="admin-list"></div>
+    </section>
+    <div id="adminFeedback" class="admin-feedback"></div>
+  </main>
+</div>
+
+<div class="refresh-modal" id="adminCreateTenantModal">
+  <div class="refresh-modal-panel" style="max-width:540px">
+    <h3 style="margin-bottom:6px">Nieuwe werkomgeving aanmaken</h3>
+    <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:14px">Maakt een nieuwe (lege) werkomgeving met een initi&euml;le admin-gebruiker. Zonder wachtwoord wordt er een tijdelijk wachtwoord gegenereerd dat eenmalig wordt getoond.</p>
+    <div class="contact-edit-grid" style="margin-bottom:6px">
+      <div class="edit-field full"><label>Naam werkomgeving *</label><input type="text" id="admCt-naam" placeholder="bv. Acme BV"></div>
+      <div class="edit-field"><label>URL-slug (optioneel)</label><input type="text" id="admCt-slug" placeholder="acme"></div>
+      <div class="edit-field"><label>Admin-naam *</label><input type="text" id="admCt-adminNaam" placeholder="bv. Jan de Vries"></div>
+      <div class="edit-field full"><label>Admin-e-mail *</label><input type="email" id="admCt-adminEmail" placeholder="jan@acme.nl"></div>
+      <div class="edit-field full"><label>Wachtwoord (leeg = autogeneer)</label><input type="text" id="admCt-adminPw" placeholder="min. 8 tekens, leeg laten voor tijdelijk"></div>
+    </div>
+    <div id="admCtResult" style="font-size:.82rem;margin:8px 0"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button class="btn-secondary" data-close-admin-modal="adminCreateTenantModal">Annuleer</button>
+      <button class="btn-primary" id="admCtSubmit">Aanmaken</button>
+    </div>
+  </div>
+</div>
+
+<div class="refresh-modal" id="adminAddUserModal">
+  <div class="refresh-modal-panel" style="max-width:540px">
+    <h3 style="margin-bottom:6px">Gebruiker toevoegen aan werkomgeving</h3>
+    <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:14px">Voegt een nieuwe gebruiker toe aan een bestaande werkomgeving. Zonder wachtwoord wordt er een tijdelijk wachtwoord gegenereerd.</p>
+    <div class="contact-edit-grid" style="margin-bottom:6px">
+      <div class="edit-field full"><label>Werkomgeving *</label><select id="admAu-tenant" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"></select></div>
+      <div class="edit-field"><label>Naam *</label><input type="text" id="admAu-naam"></div>
+      <div class="edit-field"><label>E-mail *</label><input type="email" id="admAu-email"></div>
+      <div class="edit-field"><label>Rol</label><select id="admAu-role" style="width:100%;padding:8px 12px;border:1px solid var(--grey-300);border-radius:6px;font:inherit"><option value="user">Gebruiker</option><option value="admin">Tenant-admin</option></select></div>
+      <div class="edit-field"><label>Wachtwoord (leeg = autogeneer)</label><input type="text" id="admAu-pw" placeholder="min. 8 tekens, leeg = tijdelijk"></div>
+    </div>
+    <div id="admAuResult" style="font-size:.82rem;margin:8px 0"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button class="btn-secondary" data-close-admin-modal="adminAddUserModal">Annuleer</button>
+      <button class="btn-primary" id="admAuSubmit">Toevoegen</button>
+    </div>
+  </div>
+</div>
+
 <div class="refresh-modal" id="signalCreateModal">
   <div class="refresh-modal-panel" style="max-width:640px">
     <h3 style="margin-bottom:6px">Nieuw signaal</h3>
@@ -2032,7 +2138,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.23.4",
+    "version": "1.24.0",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -11626,6 +11732,11 @@ function parseUrlSlug(){
   return decodeURIComponent(m[1]).toLowerCase().replace(/[^a-z0-9-]/g, '');
 }
 const URL_SLUG = parseUrlSlug();
+// /app/admin is een speciale gereserveerde route — geen tenant-lookup,
+// maar de admin-pane (zichtbaar alleen voor users met isAdmin=true via
+// de ADMIN_EMAILS-lijst in api/_lib/auth.js). Niet-admins die hier
+// landen worden na login naar hun eigen tenant geredirect.
+const IS_ADMIN_ROUTE = URL_SLUG === 'admin';
 // Synchroon: pas eventueel gecached theme toe vóór ANY async-werk.
 // Voorkomt dat de gate flasht in default-oranje voordat het API-call
 // voor branding klaar is. Cache wordt opgebouwd in applyTenantTheme()
@@ -11973,8 +12084,316 @@ function rememberAuth(){
 function forgetAuth(){
   try { localStorage.removeItem(AUTH_KEY); } catch(e){}
 }
+// ================ Admin-app (/app/admin) ================
+let _adminState = { tab: 'tenants', tenants: [], users: [] };
+function adminFeedback(kind, msg){
+  const el = document.getElementById('adminFeedback');
+  if(!el) return;
+  el.className = 'admin-feedback ' + (kind || '');
+  el.textContent = msg || '';
+}
+function escAdminAttr(s){ return String(s == null ? '' : s).replace(/"/g, '&quot;'); }
+async function adminApi(action, opts){
+  const r = await apiFetch('/api/admin?action=' + encodeURIComponent(action), opts || {});
+  const j = await r.json().catch(() => ({}));
+  if(!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+  return j;
+}
+function initAdminApp(){
+  const badge = document.getElementById('adminUserBadge');
+  if(badge) badge.textContent = (currentUser && (currentUser.naam || currentUser.email)) || '';
+  document.querySelectorAll('#adminApp [data-admin-tab]').forEach(b => {
+    b.addEventListener('click', () => activateAdminTab(b.dataset.adminTab));
+  });
+  const logoutBtn = document.getElementById('adminLogoutBtn');
+  if(logoutBtn) logoutBtn.addEventListener('click', () => logout());
+  const createBtn = document.getElementById('adminCreateTenantBtn');
+  if(createBtn) createBtn.addEventListener('click', () => openAdminModal('adminCreateTenantModal'));
+  const addUserBtn = document.getElementById('adminAddUserBtn');
+  if(addUserBtn) addUserBtn.addEventListener('click', () => openAdminModal('adminAddUserModal'));
+  document.querySelectorAll('[data-close-admin-modal]').forEach(b => {
+    b.addEventListener('click', () => closeAdminModal(b.dataset.closeAdminModal));
+  });
+  const ctSubmit = document.getElementById('admCtSubmit');
+  if(ctSubmit) ctSubmit.addEventListener('click', onAdminCreateTenant);
+  const auSubmit = document.getElementById('admAuSubmit');
+  if(auSubmit) auSubmit.addEventListener('click', onAdminAddUser);
+  activateAdminTab(_adminState.tab);
+  refreshAdminAll();
+}
+function activateAdminTab(tab){
+  _adminState.tab = tab;
+  document.querySelectorAll('#adminApp .admin-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.adminTab === tab);
+  });
+  document.querySelectorAll('#adminApp .admin-pane').forEach(p => {
+    p.classList.toggle('active', p.id === 'adminPane-' + tab);
+  });
+}
+function openAdminModal(id){
+  const m = document.getElementById(id);
+  if(!m) return;
+  // Reset velden + reset feedback in de modal
+  m.querySelectorAll('input').forEach(i => { i.value = ''; });
+  const out = m.querySelector('[id$=Result]');
+  if(out) out.innerHTML = '';
+  if(id === 'adminAddUserModal'){
+    // Tenant-select vullen met huidige tenants
+    const sel = document.getElementById('admAu-tenant');
+    if(sel){
+      sel.innerHTML = (_adminState.tenants || []).map(t =>
+        `<option value="${escAdminAttr(t.id)}">${escapeHtml(t.naam || t.id)}${t.slug ? ' (' + escapeHtml(t.slug) + ')' : ''}</option>`
+      ).join('');
+    }
+  }
+  m.classList.add('show');
+  setTimeout(() => { const first = m.querySelector('input'); if(first) first.focus(); }, 50);
+}
+function closeAdminModal(id){
+  const m = document.getElementById(id);
+  if(m) m.classList.remove('show');
+}
+async function refreshAdminAll(){
+  await Promise.all([refreshAdminTenants(), refreshAdminUsers()]);
+}
+async function refreshAdminTenants(){
+  try {
+    const j = await adminApi('list-tenants');
+    _adminState.tenants = Array.isArray(j.tenants) ? j.tenants : [];
+    renderAdminTenants();
+    const cnt = document.getElementById('adminTabCountTenants');
+    if(cnt) cnt.textContent = _adminState.tenants.length;
+  } catch(err){
+    adminFeedback('err', 'Tenants ophalen mislukt: ' + err.message);
+  }
+}
+async function refreshAdminUsers(){
+  try {
+    const j = await adminApi('list-users');
+    _adminState.users = Array.isArray(j.users) ? j.users : [];
+    renderAdminUsers();
+    const cnt = document.getElementById('adminTabCountUsers');
+    if(cnt) cnt.textContent = _adminState.users.length;
+  } catch(err){
+    adminFeedback('err', 'Users ophalen mislukt: ' + err.message);
+  }
+}
+function _fmtDate(ts){
+  if(!ts) return '—';
+  return new Date(ts).toLocaleDateString('nl-NL', {day:'numeric', month:'short', year:'numeric'});
+}
+function renderAdminTenants(){
+  const wrap = document.getElementById('adminTenantsList');
+  if(!wrap) return;
+  const ts = _adminState.tenants || [];
+  if(ts.length === 0){
+    wrap.innerHTML = '<div class="no-data" style="padding:24px;text-align:center;color:var(--grey-600)">Geen werkomgevingen.</div>';
+    return;
+  }
+  wrap.innerHTML = ts.map(t => {
+    const created = _fmtDate(t.createdAt);
+    const slug = t.slug ? `<a href="/app/${escAdminAttr(t.slug)}" target="_blank" style="color:var(--orange-dark)">/app/${escapeHtml(t.slug)}</a>` : '<em style="color:var(--grey-500)">geen slug</em>';
+    const legacyPill = t.isLegacy ? '<span class="admin-row-pill legacy">legacy</span>' : '';
+    return `
+      <div class="admin-row" data-tenant="${escAdminAttr(t.id)}">
+        <div class="admin-row-head">
+          <span class="admin-row-naam">${escapeHtml(t.naam || t.id)}</span>
+          ${legacyPill}
+          <span class="admin-row-meta">
+            <span>${slug}</span>
+            <span class="admin-row-pill">${t.userCount} user${t.userCount === 1 ? '' : 's'}</span>
+            <span>${escapeHtml(created)}</span>
+          </span>
+        </div>
+        <div class="admin-row-sub">tenant-ID <code>${escapeHtml(t.id)}</code>${t.createdBy ? ' &middot; eigenaar ' + escapeHtml(t.createdBy) : ''}</div>
+        <div class="admin-row-actions">
+          ${t.slug ? `<a class="btn-secondary" href="/app/${escAdminAttr(t.slug)}" target="_blank" style="text-decoration:none">Open werkomgeving &rarr;</a>` : ''}
+          <button class="btn-secondary" data-adm-transfer="${escAdminAttr(t.id)}">Overdragen</button>
+          ${t.isLegacy ? '' : `<button class="btn-secondary" data-adm-delete-tenant="${escAdminAttr(t.id)}" style="color:#9c2f2f;border-color:#f3d2d2">Verwijder</button>`}
+        </div>
+      </div>`;
+  }).join('');
+  wrap.querySelectorAll('[data-adm-transfer]').forEach(b => b.addEventListener('click', () => onAdminTransferTenant(b.dataset.admTransfer)));
+  wrap.querySelectorAll('[data-adm-delete-tenant]').forEach(b => b.addEventListener('click', () => onAdminDeleteTenant(b.dataset.admDeleteTenant)));
+}
+function renderAdminUsers(){
+  const wrap = document.getElementById('adminUsersList');
+  if(!wrap) return;
+  const us = _adminState.users || [];
+  if(us.length === 0){
+    wrap.innerHTML = '<div class="no-data" style="padding:24px;text-align:center;color:var(--grey-600)">Geen gebruikers.</div>';
+    return;
+  }
+  const tenantsById = new Map((_adminState.tenants || []).map(t => [t.id, t]));
+  wrap.innerHTML = us.map(u => {
+    const tenant = tenantsById.get(u.tenantId);
+    const tenantLabel = tenant ? (tenant.naam || u.tenantId) : (u.tenantId || '—');
+    const last = u.lastLogin ? _fmtDate(u.lastLogin) : 'nooit';
+    const adminPill = u.isAdmin ? '<span class="admin-row-pill admin">admin</span>' : '';
+    const mustPill = u.mustChangePassword ? '<span class="admin-row-pill">tijdelijk pw</span>' : '';
+    const isSelf = currentUser && currentUser.email === u.email;
+    return `
+      <div class="admin-row" data-user="${escAdminAttr(u.email)}">
+        <div class="admin-row-head">
+          <span class="admin-row-naam">${escapeHtml(u.naam || u.email)}${isSelf ? ' <span style="font-size:.7rem;color:var(--grey-500);font-weight:500">(jij)</span>' : ''}</span>
+          ${adminPill}
+          ${mustPill}
+          <span class="admin-row-meta">
+            <span>${escapeHtml(tenantLabel)}</span>
+            <span>laatst ingelogd ${escapeHtml(last)}</span>
+          </span>
+        </div>
+        <div class="admin-row-sub">${escapeHtml(u.email)} &middot; aangemaakt ${escapeHtml(_fmtDate(u.createdAt))}${u.loginCount ? ' &middot; ' + u.loginCount + ' logins' : ''}</div>
+        <div class="admin-row-actions">
+          <button class="btn-secondary" data-adm-reset-pw="${escAdminAttr(u.email)}">Reset wachtwoord</button>
+          ${isSelf ? '' : `<button class="btn-secondary" data-adm-remove-user="${escAdminAttr(u.email)}" style="color:#9c2f2f;border-color:#f3d2d2">Verwijder</button>`}
+        </div>
+      </div>`;
+  }).join('');
+  wrap.querySelectorAll('[data-adm-reset-pw]').forEach(b => b.addEventListener('click', () => onAdminResetPw(b.dataset.admResetPw)));
+  wrap.querySelectorAll('[data-adm-remove-user]').forEach(b => b.addEventListener('click', () => onAdminRemoveUser(b.dataset.admRemoveUser)));
+}
+async function onAdminCreateTenant(){
+  const out = document.getElementById('admCtResult');
+  const naam = (document.getElementById('admCt-naam').value || '').trim();
+  const slug = (document.getElementById('admCt-slug').value || '').trim();
+  const adminNaam = (document.getElementById('admCt-adminNaam').value || '').trim();
+  const adminEmail = (document.getElementById('admCt-adminEmail').value || '').trim().toLowerCase();
+  const adminPassword = (document.getElementById('admCt-adminPw').value || '').trim();
+  if(!naam || !adminNaam || !adminEmail){
+    out.innerHTML = '<span style="color:var(--red)">Vul alle verplichte velden in.</span>'; return;
+  }
+  try {
+    const j = await adminApi('create-tenant', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tenantNaam: naam, slug, adminNaam, adminEmail, adminPassword })
+    });
+    let html = '<span style="color:var(--green)">Werkomgeving aangemaakt.</span>';
+    if(j.tempPassword){
+      html += `<div class="admin-temp-pw">Tijdelijk wachtwoord (kopieer nu — alleen één keer getoond):<br><strong>${escapeHtml(j.tempPassword)}</strong></div>`;
+    }
+    out.innerHTML = html;
+    await refreshAdminAll();
+    // Modal blijft open zodat user temp-pw kan kopiëren; sluit later handmatig.
+  } catch(err){
+    out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  }
+}
+async function onAdminAddUser(){
+  const out = document.getElementById('admAuResult');
+  const tenantId = document.getElementById('admAu-tenant').value;
+  const naam = (document.getElementById('admAu-naam').value || '').trim();
+  const email = (document.getElementById('admAu-email').value || '').trim().toLowerCase();
+  const role = document.getElementById('admAu-role').value || 'user';
+  const password = (document.getElementById('admAu-pw').value || '').trim();
+  if(!tenantId || !naam || !email){
+    out.innerHTML = '<span style="color:var(--red)">Vul alle verplichte velden in.</span>'; return;
+  }
+  try {
+    const j = await adminApi('add-user', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tenantId, naam, email, role, password })
+    });
+    let html = '<span style="color:var(--green)">Gebruiker toegevoegd.</span>';
+    if(j.tempPassword){
+      html += `<div class="admin-temp-pw">Tijdelijk wachtwoord (kopieer nu — alleen één keer getoond):<br><strong>${escapeHtml(j.tempPassword)}</strong></div>`;
+    }
+    out.innerHTML = html;
+    await refreshAdminAll();
+  } catch(err){
+    out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message) + '</span>';
+  }
+}
+async function onAdminResetPw(email){
+  const u = (_adminState.users || []).find(x => x.email === email);
+  if(!u){ adminFeedback('err', 'Gebruiker niet gevonden'); return; }
+  const custom = prompt('Reset wachtwoord voor ' + email + '\n\nLeeg laten voor een autogegenereerd tijdelijk wachtwoord, of typ zelf een wachtwoord (min. 8 tekens):', '');
+  if(custom === null) return;
+  try {
+    const j = await adminApi('reset-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: custom })
+    });
+    if(j.tempPassword){
+      adminFeedback('ok', 'Wachtwoord gereset. Tijdelijk wachtwoord: ' + j.tempPassword + ' (kopieer nu)');
+    } else {
+      adminFeedback('ok', 'Wachtwoord gereset voor ' + email);
+    }
+    await refreshAdminUsers();
+  } catch(err){
+    adminFeedback('err', 'Reset mislukt: ' + err.message);
+  }
+}
+async function onAdminRemoveUser(email){
+  if(!confirm('Verwijder gebruiker ' + email + '?\n\nDe gebruiker kan daarna niet meer inloggen. Tenant-data blijft bestaan.')) return;
+  try {
+    await adminApi('remove-user', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    adminFeedback('ok', 'Gebruiker ' + email + ' verwijderd');
+    await refreshAdminUsers();
+  } catch(err){
+    adminFeedback('err', 'Verwijderen mislukt: ' + err.message);
+  }
+}
+async function onAdminTransferTenant(tenantId){
+  const t = (_adminState.tenants || []).find(x => x.id === tenantId);
+  if(!t) return;
+  const candidates = (_adminState.users || []).filter(u => u.tenantId === tenantId).map(u => u.email);
+  if(candidates.length === 0){ adminFeedback('err', 'Geen users in deze werkomgeving om aan over te dragen'); return; }
+  const list = candidates.map((e, i) => (i+1) + '. ' + e).join('\n');
+  const email = prompt('Tenant "' + (t.naam || tenantId) + '" overdragen aan welke user?\n\nBeschikbare users:\n' + list + '\n\nType het e-mail-adres:', '');
+  if(!email) return;
+  try {
+    await adminApi('transfer-tenant', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tenantId, newOwnerEmail: email.trim().toLowerCase() })
+    });
+    adminFeedback('ok', 'Eigendom overgedragen aan ' + email);
+    await refreshAdminTenants();
+  } catch(err){
+    adminFeedback('err', 'Overdracht mislukt: ' + err.message);
+  }
+}
+async function onAdminDeleteTenant(tenantId){
+  const t = (_adminState.tenants || []).find(x => x.id === tenantId);
+  if(!t) return;
+  const naam = t.naam || tenantId;
+  if(!confirm('WAARSCHUWING — onomkeerbaar.\n\nDit verwijdert tenant "' + naam + '" volledig: alle users (' + t.userCount + '), alle data (todos, plannen, opportunities, overrides). Dit kan niet ongedaan worden gemaakt.\n\nDoorgaan?')) return;
+  const typed = prompt('Type de exacte tenant-naam ter bevestiging:', '');
+  if(typed !== naam){
+    if(typed !== null) adminFeedback('err', 'Naam-bevestiging klopt niet — geannuleerd');
+    return;
+  }
+  try {
+    const j = await adminApi('delete-tenant', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tenantId, confirm: naam })
+    });
+    adminFeedback('ok', 'Werkomgeving "' + naam + '" verwijderd (' + j.removedUsers + ' users meegenomen)');
+    await refreshAdminAll();
+  } catch(err){
+    adminFeedback('err', 'Verwijderen mislukt: ' + err.message);
+  }
+}
+
 function openApp(){
   document.getElementById('gate').classList.add('hidden');
+  // /app/admin: alleen admin krijgt admin-pane; anders kick terug naar
+  // de eigen tenant-route. Niet-admins zien dus nooit het admin-paneel,
+  // ook niet via DOM-manipulatie (alle API-calls eisen serverside admin-
+  // sessie via /api/admin).
+  if(IS_ADMIN_ROUTE){
+    if(!currentUser || !currentUser.isAdmin){
+      const slug = (currentTenant && currentTenant.slug) || '';
+      location.replace(slug ? tenantUrl(slug) : '/');
+      return;
+    }
+    document.getElementById('adminApp').classList.add('active');
+    initAdminApp();
+    return;
+  }
   document.getElementById('app').classList.add('active');
   initApp();
 }
@@ -12014,21 +12433,10 @@ function showGateMode(mode){
   // Help-link toggelt tussen "maak werkomgeving" en "ik heb al een account"
   const help = document.getElementById('gate-help');
   if(help) help.style.display = '';
+  // Open registratie is uitgeschakeld; de toggle is verborgen. Nieuwe
+  // tenants worden door een admin aangemaakt via /app/admin.
   const toggle = document.getElementById('gate-toggle-mode');
-  if(toggle){
-    if(mode === 'login'){
-      toggle.textContent = 'Nog geen account? Maak je eigen werkomgeving aan';
-      toggle.dataset.target = 'register';
-      toggle.style.display = '';
-    } else if(mode === 'register'){
-      toggle.textContent = 'Ik heb al een account → inloggen';
-      toggle.dataset.target = 'login';
-      toggle.style.display = '';
-    } else {
-      toggle.textContent = '';
-      toggle.style.display = 'none';
-    }
-  }
+  if(toggle){ toggle.textContent = ''; toggle.style.display = 'none'; }
   document.getElementById('gate-err-auth').classList.remove('show');
   // Welkom-banner alleen bij allereerste setup (bootstrap)
   let banner = document.getElementById('gate-bootstrap-banner');
@@ -12186,11 +12594,11 @@ function consumeOAuthFragment(){
       } catch(e){}
     }
     const needs = await authNeedsBootstrap();
-    // Default-modus: login. Als de URL slug niet bestaat én er bestaan al
-    // users, preselecteer 'register' zodat een nieuwe werkomgeving direct
-    // de URL-slug kan claimen.
-    let initialMode = needs ? 'bootstrap' : 'login';
-    if(!needs && URL_SLUG && !branding){ initialMode = 'register'; }
+    // Open registratie is uitgeschakeld; preselecteer altijd 'login'
+    // (behalve bij allereerste setup via bootstrap-flow). Een onbestaande
+    // URL-slug levert dus een login-formulier waar je geen tenant kunt
+    // claimen — alleen een admin kan dat via /app/admin.
+    const initialMode = needs ? 'bootstrap' : 'login';
     showGateMode(initialMode);
   } else {
     // Backend niet geconfigureerd → laat setup-banner zien.

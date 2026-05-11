@@ -29,6 +29,7 @@ function publicUser(u) {
     naam: u.naam,
     tenantId: u.tenantId,
     role: u.role || 'admin',
+    isAdmin: auth.isAdminEmail(u.email),
     createdAt: u.createdAt,
     mustChangePassword: !!u.mustChangePassword,
     loginCount: u.loginCount || 0,
@@ -381,8 +382,13 @@ async function bootstrap(req, res) {
 }
 
 async function register(req, res) {
-  // Open registratie: elk nieuw email-adres krijgt een eigen tenant.
-  return registerNewTenant(req, res);
+  // Open registratie is uitgeschakeld. Nieuwe tenants worden uitsluitend
+  // door een admin aangemaakt via /api/admin?action=create-tenant. De
+  // registerNewTenant-functie wordt nog intern gebruikt door bootstrap
+  // (first-user) en door admin-create-tenant; zie api/admin.js.
+  return res.status(403).json({
+    error: 'Open registratie is uitgeschakeld. Vraag een admin om een account aan te maken.',
+  });
 }
 
 async function login(req, res) {
@@ -798,3 +804,28 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: String(e.message || e) });
   }
 };
+
+// Helpers t.b.v. api/admin.js (server-side). Attached to the handler-
+// export zodat de handler de default-export blijft (Vercel-functie-
+// contract) terwijl named helpers ook beschikbaar zijn voor sibling-
+// endpoints. Geen helpers met netwerk-side-effects — alleen pure
+// orchestratie + KV-reads/writes.
+Object.assign(module.exports, {
+  publicUser,
+  publicTenant,
+  readJsonBody,
+  newUserRecord,
+  createTenant,
+  registerNewTenant,
+  loadTenant,
+  getTenantsIndex,
+  getTenantUsersIndex,
+  getGlobalUsersIndex,
+  appendGlobalUserIndex,
+  removeGlobalUserIndex,
+  appendTenantUserIndex,
+  removeTenantUserIndex,
+  appendTenantIndex,
+  generateTempPassword,
+  ensureUniqueSlug,
+});

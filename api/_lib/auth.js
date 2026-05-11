@@ -274,7 +274,26 @@ async function backfillGericallTenant(t) {
   return t;
 }
 
+// ============================================================
+// ADMIN-LIST — handmatig onderhouden, hardcoded in code.
+// Alleen e-mails op deze lijst krijgen toegang tot /api/admin
+// en de /app/admin route. Lege lijst = geen admin (admin-pane
+// is dan onbereikbaar). E-mails MOETEN lowercase zijn.
+//
+// PAS DEZE LIJST AAN VOOR JE DEPLOYT. Voorbeeld:
+//   const ADMIN_EMAILS = ['rene@knmlnr.nl'];
+// ============================================================
+const ADMIN_EMAILS = [
+  'SET_ADMIN_EMAIL_HERE@example.com', // <-- VERVANG DIT
+];
+function isAdminEmail(email) {
+  if (!email) return false;
+  return ADMIN_EMAILS.includes(String(email).toLowerCase().trim());
+}
+
 module.exports = {
+  ADMIN_EMAILS,
+  isAdminEmail,
   KV_USER_PREFIX,
   KV_SESSION_PREFIX,
   KV_USERS_INDEX,
