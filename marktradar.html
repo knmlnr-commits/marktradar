@@ -369,6 +369,19 @@ body{
 .mt-snap-val{font-family:'DM Mono',monospace}
 .mt-chart svg{width:100%;height:auto;display:block}
 .mt-empty{padding:18px;text-align:center;color:var(--grey-600);font-size:.84rem;background:var(--grey-50);border:1px dashed var(--grey-300);border-radius:8px}
+.kaart-wrap{display:flex;flex-direction:column;height:calc(100vh - 110px)}
+.kaart-toolbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--white);border-bottom:1px solid var(--grey-200);flex-wrap:wrap}
+.kaart-toolbar-spacer{flex:1}
+.kaart-legend{display:flex;gap:14px;flex-wrap:wrap}
+.kaart-legend-item{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;color:var(--grey-700)}
+.kaart-dot{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--grey-300)}
+.kaart-popup-title{font-size:.92rem;font-weight:700;margin-bottom:4px}
+.kaart-popup-meta{font-size:.74rem;color:var(--grey-600);line-height:1.4}
+.kaart-popup-status{display:inline-block;padding:1px 8px;border-radius:10px;font-size:.7rem;font-weight:600;margin-right:6px}
+.kaart-popup-status.klant{background:#e6f7ec;color:#2a7a3f}
+.kaart-popup-status.prospect,.kaart-popup-status.lead{background:#fff7e6;color:#a85a00}
+.kaart-popup-status.cold{background:#f0f0f3;color:#666}
+.kaart-popup-status.lost{background:#fdebec;color:#9c2f2f}
 @media(max-width:760px){
   .mt-grid-2{grid-template-columns:1fr}
   .mt-grid-4{grid-template-columns:repeat(2,1fr)}
@@ -1398,6 +1411,10 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       <span class="tab-label" data-i18n="tab.markttrends">Markt-trends</span>
     </button>
+    <button class="tab" data-tab="kaart" title="Kaart" aria-label="Kaart">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span class="tab-label" data-i18n="tab.kaart">Kaart</span>
+    </button>
     <button class="tab" data-tab="leveranciers" title="Leveranciers" aria-label="Leveranciers">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       <span class="tab-label" data-i18n="tab.suppliers">Leveranciers</span> <span class="tab-count" id="tabCountLev">0</span>
@@ -1459,6 +1476,23 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
 
     <div class="tab-pane" id="pane-markttrends">
       <div class="mt-wrap" id="markttrendsBody"></div>
+    </div>
+
+    <div class="tab-pane" id="pane-kaart">
+      <div class="kaart-wrap">
+        <div class="kaart-toolbar">
+          <div class="kaart-legend">
+            <span class="kaart-legend-item"><span class="kaart-dot" style="background:#2a7a3f"></span>Klant</span>
+            <span class="kaart-legend-item"><span class="kaart-dot" style="background:#e87722"></span>Prospect / Lead</span>
+            <span class="kaart-legend-item"><span class="kaart-dot" style="background:#9c2f2f"></span>Verloren opportunity</span>
+            <span class="kaart-legend-item"><span class="kaart-dot" style="background:#888"></span>Cold / overig</span>
+          </div>
+          <div class="kaart-toolbar-spacer"></div>
+          <button class="btn-secondary" id="kaartGeocodeBtn" title="Adressen geocoderen via OpenStreetMap (rate-limited 1/sec)">Geocode adressen</button>
+        </div>
+        <div id="kaartMap" style="height:calc(100vh - 220px);min-height:420px;border-top:1px solid var(--grey-200)"></div>
+        <div id="kaartStatus" style="padding:6px 16px;font-size:.72rem;color:var(--grey-600);background:var(--grey-50);border-top:1px solid var(--grey-200)"></div>
+      </div>
     </div>
 
     <div class="tab-pane" id="pane-leveranciers">
@@ -2205,7 +2239,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.29.0",
+    "version": "1.30.0",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -2644,6 +2678,10 @@ const DATA = {
       {
         "version": "1.29.0", "codename": "Tarazed", "date": "2026-05-11",
         "note": "Business-line tagging op organisaties en opportunities (Jeff comment #2). (1) Nieuwe beheerbare dropdown 'businessLine' in DROPDOWN_REGISTRY met defaults '@Emergency / @Medical / @Home / GeriForce'. (2) Per-organisatie multi-select chip-rij in klantbeeld > GeriCall-context > Business-lines: klik een chip om de waarde aan/uit te zetten; saveert direct via setOverrides. (3) 'Auto-tag'-knop runt een trefwoord-heuristiek (BUSINESS_LINE_KEYWORDS) op de organisatie-naam, notitie, opportunity-veld, opp-titels en signal-headlines en stelt matches voor; admin bevestigt voordat ze worden weggeschreven. (4) Twee nieuwe filter-chip-rijen: instBusinessLineChips boven Organisaties-grid en oppBusinessLineChips boven Opportunities-grid — multi-select, OR binnen dimensie, AND met andere filters. Opportunities erven de business-lines van hun organisatie als ze zelf geen eigen tags hebben. State persisteert via saveUiState."
+      },
+      {
+        "version": "1.30.0", "codename": "Tarazed", "date": "2026-05-11",
+        "note": "Kaart-tab met gekleurde markers per organisatie (Jeff comment #1). (1) Nieuwe top-level tab 'Kaart' tussen Markt-trends en Leveranciers. Leaflet via CDN, lazy-geladen bij eerste tab-bezoek (geen impact op initial bundle voor gebruikers die de kaart niet gebruiken). OpenStreetMap-tiles. (2) Marker-kleuren: groen = klant, oranje = prospect/lead, rood = organisatie met verloren opportunity, grijs = cold/overig. Markers zijn klikbaar — popup toont naam, status, klant-segment, business-lines, en een 'Open klantbeeld'-link. (3) Geocoding-strategie: eerst inst.lat/lng (als gezet), dan tenant-state geocode-cache (key = hoofdvestiging+provincie), dan provincie-centroïde als fallback met deterministische jitter (~10 km) zodat orgs in dezelfde provincie niet stapelen. (4) 'Geocode adressen'-knop fetcht ontbrekende coords via OpenStreetMap Nominatim API (rate-limited 1 req/sec per ToS), cached in tenant-state KV onder 'geocode-cache' (whitelisted in api/state.js). Geen externe API-keys nodig. (5) Niet gekoppeld aan GeriForce — dat wacht op CSV-export of API-spec (Jeff comment #3)."
       }
     ],
     "totalInstellingen": 64,
@@ -14448,7 +14486,7 @@ const I18N = {
     'scope.help': "Filtert todo's, instellingen en signalen op jouw eigenaarschap.",
     // Tabs
     'tab.todo': 'Todo', 'tab.signals': 'Signalen', 'tab.orgs': 'Organisaties',
-    'tab.suppliers': 'Leveranciers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends', 'tab.markttrends': 'Markt-trends',
+    'tab.suppliers': 'Leveranciers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends', 'tab.markttrends': 'Markt-trends', 'tab.kaart': 'Kaart',
     'tab.admin': 'Beheer',
     // User menu
     'menu.password': 'Wachtwoord wijzigen', 'menu.logout': 'Uitloggen',
@@ -14527,7 +14565,7 @@ const I18N = {
     'scope.label': 'Show:', 'scope.mine': 'My todos', 'scope.all': 'All',
     'scope.help': 'Filters todos, organisations and signals on ownership.',
     'tab.todo': 'Todos', 'tab.signals': 'Signals', 'tab.orgs': 'Organisations',
-    'tab.suppliers': 'Suppliers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends', 'tab.markttrends': 'Market trends',
+    'tab.suppliers': 'Suppliers', 'tab.opps': 'Opportunities', 'tab.trends': 'Trends', 'tab.markttrends': 'Market trends', 'tab.kaart': 'Map',
     'tab.admin': 'Admin',
     'menu.password': 'Change password', 'menu.logout': 'Log out',
     'admin.title': 'Admin',
@@ -14812,6 +14850,7 @@ function activateTab(target){
   pane.classList.add('active');
   if(target === 'trends'){ renderTrendsLensChips(); renderTrendsTab(); }
   if(target === 'markttrends'){ renderMarktTrendsTab(); syncTrendSnapshots().then(() => renderMarktTrendsTab()); }
+  if(target === 'kaart'){ renderKaartTab(); syncGeocodeCache().then(() => renderKaartTab()); }
   if(target === 'opportunities'){ renderOppLensChips(); renderOppBusinessLineChips(); renderOpportunities(); }
   if(target === 'acties'){ renderActiesOwnerChips(); renderActies(); }
   if(target === 'coaching'){ renderCoaching(); }
@@ -17966,7 +18005,7 @@ async function importAllStateJson(jsonText, mergeMode){
 async function resetCurrentTenantData(){
   const stateKeys = ['todos','dmu-overrides','spec-overrides','overrides',
     'dropdowns','owners','signal-history','opportunities','supplier-overrides',
-    'trend-snapshots'];
+    'trend-snapshots','geocode-cache'];
   const errors = [];
   for(const key of stateKeys){
     try {
@@ -21381,6 +21420,230 @@ function renderMarktTrendsTab(){
       renderMarktTrendsTab();
     });
   });
+}
+
+/* ============== Kaart-tab ============== */
+// Leaflet wordt lazy geladen bij eerste tab-bezoek (vermijdt 50kb gz
+// in initial bundle voor gebruikers die de Kaart-tab nooit openen).
+// Geocodes worden gecached in tenant-state KV onder 'geocode-cache'.
+const KAART_PROVINCIE_CENTROID = {
+  'Drenthe':       [52.84, 6.60],
+  'Flevoland':     [52.55, 5.60],
+  'Friesland':     [53.10, 5.80],
+  'Fryslân':       [53.10, 5.80],
+  'Gelderland':    [52.05, 5.90],
+  'Groningen':     [53.22, 6.60],
+  'Limburg':       [51.20, 5.90],
+  'Noord-Brabant': [51.60, 5.10],
+  'Noord-Holland': [52.50, 4.80],
+  'Overijssel':    [52.40, 6.50],
+  'Utrecht':       [52.10, 5.10],
+  'Zeeland':       [51.50, 3.80],
+  'Zuid-Holland':  [52.05, 4.45],
+};
+const KAART_NL_CENTER = [52.15, 5.30];
+let _leafletPromise = null;
+function loadLeaflet(){
+  if(_leafletPromise) return _leafletPromise;
+  _leafletPromise = new Promise((resolve, reject) => {
+    if(window.L){ resolve(window.L); return; }
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    css.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+    css.crossOrigin = '';
+    document.head.appendChild(css);
+    const sc = document.createElement('script');
+    sc.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    sc.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+    sc.crossOrigin = '';
+    sc.onload = () => resolve(window.L);
+    sc.onerror = () => reject(new Error('Leaflet kon niet geladen worden'));
+    document.head.appendChild(sc);
+  });
+  return _leafletPromise;
+}
+// Geocode-cache state: { [normalizedAddress]: [lat, lng] }
+const GEOCODE_STORAGE = 'marktradar.geocode-cache.v1';
+let geocodeCache = (function(){
+  try { return JSON.parse(localStorage.getItem(GEOCODE_STORAGE) || '{}'); }
+  catch(e){ return {}; }
+})();
+let geocodeCacheRemoteAvailable = false;
+function saveGeocodeCacheLocal(){ try { localStorage.setItem(GEOCODE_STORAGE, JSON.stringify(geocodeCache)); } catch(e){} }
+async function syncGeocodeCache(){
+  try {
+    const r = await apiFetch(STATE_API + '?key=geocode-cache');
+    if(r.ok){
+      geocodeCacheRemoteAvailable = true;
+      const j = await r.json();
+      geocodeCache = (j && j.value && typeof j.value === 'object') ? j.value : {};
+      saveGeocodeCacheLocal();
+    }
+  } catch(e){}
+}
+async function pushRemoteGeocodeCache(){
+  try {
+    await apiFetch(STATE_API, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'geocode-cache', value: geocodeCache })
+    });
+  } catch(e){}
+}
+function _addrKey(inst){
+  // Normalize naar lowercase + dedup-spaces. Cache-key.
+  const parts = [inst.hoofdvestiging || '', inst.provincie || '', 'Netherlands'].filter(Boolean);
+  return parts.join(', ').toLowerCase().replace(/\s+/g, ' ').trim();
+}
+function _orgCoordsFromCacheOrFallback(inst){
+  if(typeof inst.lat === 'number' && typeof inst.lng === 'number') return [inst.lat, inst.lng];
+  const key = _addrKey(inst);
+  if(geocodeCache[key]) return geocodeCache[key];
+  // Provincie-fallback met deterministische jitter zodat orgs in
+  // dezelfde provincie niet exact stapelen.
+  const prov = inst.provincie && KAART_PROVINCIE_CENTROID[inst.provincie];
+  if(prov){
+    // 8-bit hash van inst.id voor stabiele jitter (~10 km spreiding)
+    const idStr = String(inst.id || inst.naam || '');
+    let h = 0; for(let i = 0; i < idStr.length; i++){ h = (h * 31 + idStr.charCodeAt(i)) & 0xff; }
+    const jLat = ((h & 0x0f) - 7) * 0.012;
+    const jLng = (((h >> 4) & 0x0f) - 7) * 0.018;
+    return [prov[0] + jLat, prov[1] + jLng];
+  }
+  return null;
+}
+function _orgMarkerColor(inst){
+  // Rood: er bestaat een 'verloren' opp voor deze inst.
+  const opps = opportunities && opportunities[inst.id];
+  if(Array.isArray(opps) && opps.some(o => /verloren|lost|niet\sdoor/i.test(String(o.status || '')))){
+    return '#9c2f2f';
+  }
+  switch(inst.gericallStatus){
+    case 'klant': return '#2a7a3f';
+    case 'prospect': return '#e87722';
+    case 'lead': return '#e87722';
+    case 'cold': return '#888';
+    default: return '#888';
+  }
+}
+let _kaartMap = null;
+let _kaartLayer = null;
+async function renderKaartTab(){
+  const mapEl = document.getElementById('kaartMap');
+  const statusEl = document.getElementById('kaartStatus');
+  if(!mapEl) return;
+  let L;
+  try { L = await loadLeaflet(); }
+  catch(err){
+    mapEl.innerHTML = `<div style="padding:24px;text-align:center;color:var(--red)">Kaart-library kon niet geladen worden: ${escapeHtml(err.message)}</div>`;
+    return;
+  }
+  // (Re-)init map
+  if(_kaartMap){ try { _kaartMap.remove(); } catch(e){} _kaartMap = null; }
+  _kaartMap = L.map('kaartMap').setView(KAART_NL_CENTER, 7);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 18,
+  }).addTo(_kaartMap);
+  _kaartLayer = L.layerGroup().addTo(_kaartMap);
+
+  const items = instellingenMerged();
+  let placed = 0, missing = 0;
+  const bounds = [];
+  items.forEach(i => {
+    const coords = _orgCoordsFromCacheOrFallback(i);
+    if(!coords){ missing++; return; }
+    placed++;
+    bounds.push(coords);
+    const color = _orgMarkerColor(i);
+    const m = L.circleMarker(coords, {
+      radius: 8, color: '#fff', weight: 2, fillColor: color, fillOpacity: 0.92,
+    });
+    const bls = Array.isArray(i.businessLines) ? i.businessLines : [];
+    const segLine = i.klantSegment ? `<div class="kaart-popup-meta"><strong>${escapeHtml(i.klantSegment)}</strong></div>` : '';
+    const blsLine = bls.length > 0 ? `<div class="kaart-popup-meta">${bls.map(b => `<span style="background:var(--grey-100);padding:1px 6px;border-radius:4px;margin-right:3px;font-size:.7rem">${escapeHtml(b)}</span>`).join('')}</div>` : '';
+    const bedden = i.aantalBedden ? `${i.aantalBedden} bedden` : '';
+    const stat = i.gericallStatus || 'onbekend';
+    m.bindPopup(`
+      <div class="kaart-popup-title">${escapeHtml(i.naam || '')}</div>
+      <div class="kaart-popup-meta">
+        <span class="kaart-popup-status ${escapeHtml(stat)}">${escapeHtml(stat)}</span>
+        ${escapeHtml(i.hoofdvestiging || i.provincie || '')}${bedden ? ' · ' + escapeHtml(bedden) : ''}
+      </div>
+      ${segLine}
+      ${blsLine}
+      <div style="margin-top:8px"><a href="#" data-kaart-open="${escAdminAttr(i.id)}" style="color:var(--orange-dark);font-size:.78rem;text-decoration:none">Open klantbeeld →</a></div>
+    `);
+    m.addTo(_kaartLayer);
+  });
+  if(bounds.length > 1){
+    try { _kaartMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 9 }); } catch(e){}
+  }
+  // Click-handler op popup-link (Leaflet popups gebruiken innerHTML + delegatie)
+  _kaartMap.on('popupopen', (e) => {
+    const link = e.popup.getElement().querySelector('[data-kaart-open]');
+    if(link){
+      link.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const id = link.dataset.kaartOpen;
+        try { openInstelling(id); } catch(err){}
+        try { _kaartMap.closePopup(); } catch(err){}
+      });
+    }
+  });
+  if(statusEl){
+    statusEl.textContent = `${placed} organisaties op kaart · ${missing} zonder coords · ${Object.keys(geocodeCache).length} gecached`;
+  }
+  // Hook geocode-knop
+  const btn = document.getElementById('kaartGeocodeBtn');
+  if(btn && !btn.dataset.bound){
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', () => geocodeMissingOrgs());
+  }
+}
+
+// Geocode organisaties zonder cached coords via OpenStreetMap
+// Nominatim (gratis, 1 req/sec). Rate-limited zodat we de ToS niet
+// breken. Schrijft naar geocodeCache + sync naar KV.
+async function geocodeMissingOrgs(){
+  const statusEl = document.getElementById('kaartStatus');
+  const btn = document.getElementById('kaartGeocodeBtn');
+  if(btn) btn.disabled = true;
+  const items = instellingenMerged();
+  const todo = items.filter(i => {
+    if(typeof i.lat === 'number' && typeof i.lng === 'number') return false;
+    const key = _addrKey(i);
+    return !geocodeCache[key] && (i.hoofdvestiging || i.provincie);
+  });
+  if(todo.length === 0){
+    if(statusEl) statusEl.textContent = 'Geen organisaties zonder coords — niets te geocoderen.';
+    if(btn) btn.disabled = false;
+    return;
+  }
+  let done = 0, failed = 0;
+  for(const inst of todo){
+    const q = [inst.hoofdvestiging, inst.provincie, 'Netherlands'].filter(Boolean).join(', ');
+    if(statusEl) statusEl.textContent = `Geocoderen ${done + 1}/${todo.length}: ${q}…`;
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`, {
+        headers: { 'Accept': 'application/json' },
+      });
+      if(r.ok){
+        const arr = await r.json();
+        if(Array.isArray(arr) && arr.length > 0 && arr[0].lat && arr[0].lon){
+          geocodeCache[_addrKey(inst)] = [Number(arr[0].lat), Number(arr[0].lon)];
+          done++;
+        } else { failed++; }
+      } else { failed++; }
+    } catch(e){ failed++; }
+    // Nominatim ToS: max 1 req/sec
+    await new Promise(r => setTimeout(r, 1100));
+  }
+  saveGeocodeCacheLocal();
+  await pushRemoteGeocodeCache();
+  if(statusEl) statusEl.textContent = `Geocode klaar: ${done} succes, ${failed} mislukt. Kaart wordt opnieuw geladen…`;
+  if(btn) btn.disabled = false;
+  renderKaartTab();
 }
 
 function renderTrendsTab(){
