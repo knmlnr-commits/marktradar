@@ -2203,7 +2203,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.28.0",
+    "version": "1.28.1",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -2446,6 +2446,198 @@ const DATA = {
         "codename": "Rigel",
         "date": "2026-05-06",
         "note": "Schema-editor uitgebreid met secties + nieuwe types + voorbeeld-templates. (1) Drie nieuwe veld-types: 'url' (url-input met validatie), 'list-text' (komma-gescheiden lijst, zoals merken/aliases), 'list-enum' (multi-select uit een vaste set, zoals lines-of-business). API-validatie in api/tenant.js accepteert deze types + cap verhoogd naar 60 fields. (2) Sectie-grouping: schema-velden krijgen een optionele section-string (bv. 'A. Identiteit'). Editor groepeert visueel per sectie zodat 27+ velden scanbaar blijven; klantbeeld rendert ook per sectie met responsive auto-fit grid (220px-min per veld). (3) 'Importeer voorbeeld-template'-dropdown bovenin de editor met twee templates: 'Van Ameyde · verzekeraar' (27 velden, 5 secties: Identiteit / Classificatie / Schadekenmerken / Commercieel / Operationeel — exact volgens de spec) en 'Generiek B2B' (8 velden, 4 secties). Eén klik laadt de template in de draft; reviewen + opslaan om actief te maken. (4) Save-handler is nu type-bewust: list-text splitst op komma's, list-enum leest uit selectedOptions, url + text blijven string. Lege waarden worden uit customFields verwijderd."
+      },
+      {
+        "version": "1.17.2", "codename": "Rigel", "date": "2026-05-06",
+        "note": "Leveranciers-tab krijgt list-rows + detail-side-pane in plaats van card-grid. Compactere indeling, klik op een row opent de detail rechts (zelfde mechanisme als klantbeeld) — sneller scannen, meer items in beeld."
+      },
+      {
+        "version": "1.17.3", "codename": "Rigel", "date": "2026-05-06",
+        "note": "Login-tracking per user. Bij elke succesvolle login wordt user.lastLogin + user.loginCount geüpdatet in KV; admin-pane (Beheer > Gebruikers) toont 'laatst ingelogd' + login-count zodat je inactieve users kunt opsporen."
+      },
+      {
+        "version": "1.17.4", "codename": "Rigel", "date": "2026-05-06",
+        "note": "Bulk-import van organisaties via CSV. Beheer > Markt krijgt een 'Bulk import'-blok dat een schema-aware template-CSV downloadt (alle tenant-schema-velden als kolommen). Upload van een ingevulde CSV parseert per regel naar tenant.entiteiten + override-velden; conflict-detectie op id/naam met merge of overslaan."
+      },
+      {
+        "version": "1.17.5", "codename": "Rigel", "date": "2026-05-06",
+        "note": "Klantbeeld side-pane begint nu pas onder de topbar (top:54px) zodat de topbar zichtbaar blijft tijdens openen/sluiten. Voorkomt jitter en blijft de tabnav klikbaar terwijl het klantbeeld open is."
+      },
+      {
+        "version": "1.17.6", "codename": "Rigel", "date": "2026-05-06",
+        "note": "Per-tenant kleurenschema. tenant.theme = { primary, primaryDark, accent? } wordt op render-tijd via CSS-variabelen toegepast (--orange / --orange-dark vervangen door --tenant-primary). Beheer > Werkomgeving krijgt een color-picker; Van Ameyde preset (donkerblauw) wordt automatisch toegepast op die tenant. Standaard blijft de oranje SalesDay-baseline."
+      },
+      {
+        "version": "1.17.7", "codename": "Rigel", "date": "2026-05-06",
+        "note": "Theme-uitbreiding: niet alleen accent-kleuren maar ook frame-borders, focus-glows (0 0 0 3px tenant-rgb / .14), pill-backgrounds en hover-states volgen nu de tenant-primary. Voorkomt dat je in een blauw thema oranje rand-glows ziet wanneer je een input focust."
+      },
+      {
+        "version": "1.17.8", "codename": "Rigel", "date": "2026-05-06",
+        "note": "Voorloop-scherm (gate / login) past nu ook tenant-thema toe. applyCachedThemeForSlug(URL_SLUG) leest het laatst-gebruikte thema uit localStorage en past 't toe op de gate vóór de tenant-fetch klaar is — geen oranje-flash meer voor blauwe tenants tijdens login."
+      },
+      {
+        "version": "1.17.9", "codename": "Rigel", "date": "2026-05-06",
+        "note": "(1) Theme-cache localStorage-key per slug zodat /app/<slug> direct in het juiste thema laadt. (2) Tab-counters (Acties, Signalen, Opportunities) updaten nu live bij elke todo-check / nieuwe opp / signal-acknowledge zonder full re-render."
+      },
+      {
+        "version": "1.17.10", "codename": "Rigel", "date": "2026-05-06",
+        "note": "Header blijft stabiel tijdens openen/sluiten van het klantbeeld. Eerder herstelde de topbar bij elke open/close-operatie (kleine padding-shift) — nu via een persistente .has-side-overlay-class op .app i.p.v. inline-styles."
+      },
+      {
+        "version": "1.17.11", "codename": "Rigel", "date": "2026-05-06",
+        "note": "Opportunity-titel in klantbeeld pakt de volledige rij (eerder 1fr+90px-grid die de titel afkapte). Font-size +1px voor leesbaarheid; status-pill verplaatst naar een meta-row eronder."
+      },
+      {
+        "version": "1.17.12", "codename": "Rigel", "date": "2026-05-07",
+        "note": "(1) Beheer > Markt krijgt een regio-filter naast de provincie-filter (handig voor tenants die hun markt op regio-niveau scopen). (2) Bulk eigenaar-toewijzing: select rows + dropdown 'Wijs eigenaar toe aan selectie' update assignments in één call."
+      },
+      {
+        "version": "1.17.13", "codename": "Rigel", "date": "2026-05-07",
+        "note": "(1) Signal-prompt-editor: textarea + Opslaan-knop in Beheer > Werkomgeving > Automatische signalen waar de admin extra LLM-instructies kan meegeven (tenant.signalPromptOverride). (2) Klantbeeld todo-check vinkje schreef niet door naar het overzicht — fix: toggle-handler post nu naar /api/state vóór re-render."
+      },
+      {
+        "version": "1.17.14", "codename": "Rigel", "date": "2026-05-07",
+        "note": "Klantbeeld todo-accordion: afgeronde todo's standaard ingevouwen achter een 'Toon X afgeronde'-knop. Open todo's blijven direct zichtbaar; reduces clutter voor accounts met veel historie."
+      },
+      {
+        "version": "1.17.15", "codename": "Rigel", "date": "2026-05-07",
+        "note": "'Bijgewerkt'-pill in topbar/Beheer-pane toont nu de laatste cron-run-tijd van de signal-refresh (uit signals/list lastRun). Geeft je in één oogopslag of de auto-feed nog draait."
+      },
+      {
+        "version": "1.18.0", "codename": "Sirius", "date": "2026-05-09",
+        "note": "Opportunity feature-pack. Stages worden tenant-configurabel via Beheer > Dropdowns > Opportunity-status (Lead/Suspect/Prospect/Contract default). Per opp: value_eur, deadline (auto-berekend uit stage_entered_at), eigenaar. Nieuwe Opportunities-tab + Funnel-visualisatie die de opp's per stage telt en de waarde-totalen per stage toont. Stage-wissel slaat stage_entered_at op zodat de deadline-badge meeloopt."
+      },
+      {
+        "version": "1.18.1", "codename": "Sirius", "date": "2026-05-09",
+        "note": "Bug-fix: status-wijziging in een opportunity-row klapte alle accordions in het klantbeeld in (full re-render). Nu lokale DOM-update van de deadline-badge + klein patch-render zonder accordion-reset."
+      },
+      {
+        "version": "1.18.2", "codename": "Sirius", "date": "2026-05-09",
+        "note": "Funnel als SalesDay-stijl pyramide. Verloren-kolom rechts naast de pyramide voor opp's die niet doorgaan; visueel scheiding tussen actieve pipeline en uitgevallen opportunities."
+      },
+      {
+        "version": "1.18.3", "codename": "Sirius", "date": "2026-05-09",
+        "note": "Quick-add todo direct onder elke opportunity in het klantbeeld. Eén-klik: 'todo bij deze opp' opent een mini-form (titel, deadline, eigenaar) en saveert; geen modal-detour."
+      },
+      {
+        "version": "1.18.4", "codename": "Sirius", "date": "2026-05-09",
+        "note": "Funnel-frame is nu vast (pyramide-shape blijft gelijk ongeacht counts) zodat je consistente visuele vergelijking houdt tussen weken. Verloren-kolom verwijderd — verloren opp's tellen mee in de hoogte van hun stage maar krijgen geen aparte kolom meer (te veel ruimte)."
+      },
+      {
+        "version": "1.18.5", "codename": "Sirius", "date": "2026-05-09",
+        "note": "Funnel responsive op mobile: kleinere fase-namen, ellipsis op te lange labels, behoud van pyramide-shape op smalle viewports."
+      },
+      {
+        "version": "1.18.6", "codename": "Sirius", "date": "2026-05-09",
+        "note": "Browser-back-knop sluit het klantbeeld in plaats van uit de app te navigeren. pushState bij openInstelling, popstate-handler call closeOverlay zonder daadwerkelijk te navigeren."
+      },
+      {
+        "version": "1.19.0", "codename": "Tarazed", "date": "2026-05-09",
+        "note": "Pipeline-targets per jaar. Beheer > Werkomgeving > Pipeline-targets: omzet-target per jaar (numeriek input). Funnel-readout toont nu 'X% van EUR Y target' onder de waarde-totalen; visuele voortgangsbalk."
+      },
+      {
+        "version": "1.19.1", "codename": "Tarazed", "date": "2026-05-09",
+        "note": "Opportunity-row in klantbeeld: 2-kolom-grid op desktop (titel+meta | actions), op mobiel stacken naar 1 kolom met inline action-bar onder. Voorkomt overflow + horizontaal scrollen op telefoon."
+      },
+      {
+        "version": "1.19.2", "codename": "Tarazed", "date": "2026-05-09",
+        "note": "Quick-add todo onder een opportunity heeft nu een eigenaar-dropdown (defaulted op currentUser) zodat je niet altijd een vervolgstap krijgt 'kies eigenaar'."
+      },
+      {
+        "version": "1.20.0", "codename": "Unukalhai", "date": "2026-05-10",
+        "note": "SalesDay-aansluiting met per-owner targets, activity-tracking en velocity-metrics. Beheer > Werkomgeving > Targets per eigenaar (omzet/jaar + acties/week). Owner-card in Acties/Opportunities-tab toont realisatie tegen target + velocity (gemiddelde dagen tussen opp-stage-wissels). Sluit aan op SalesDay-Focus 'manager stuurt op activiteit, niet pur sec op resultaat'."
+      },
+      {
+        "version": "1.21.0", "codename": "Vega", "date": "2026-05-10",
+        "note": "Twee nieuwe artefacten: (1) SalesPlan — per-tenant strategisch plan (markt-positionering, ICP, sales-motion, kwartaaldoelen) als bewerkbare doc met secties + AI-assist via Claude. (2) Coaching / 1-on-1 logbook — per-eigenaar sessie-historie (datum, focus, notities, acties); per-tenant zichtbaar voor management. Nieuwe Coaching-tab en SalesPlan-pane in Beheer."
+      },
+      {
+        "version": "1.21.1", "codename": "Vega", "date": "2026-05-10",
+        "note": "Tenant-isolatie pass: GeriCall-jargon weg uit niet-GeriCall placeholders. Onboarding-hints, edit-form-placeholders en empty-states gebruiken nu sector-neutrale voorbeelden (verzekeraars, B2B, SaaS) of context-vrije teksten i.p.v. VVT/zorg-termen."
+      },
+      {
+        "version": "1.22.0", "codename": "Wezen", "date": "2026-05-10",
+        "note": "Accountplannen — per-organisatie AI-gegenereerd plan op basis van SalesPlan + klantbeeld. Genereert via Claude een gestructureerd plan met (a) huidige situatie, (b) gewenste situatie, (c) strategie, (d) concrete actie-stappen. Opgeslagen per instelling in tenant-state KV ('account-plans'). Bewerkbaar; regenereer-knop refresht de AI-output."
+      },
+      {
+        "version": "1.22.1", "codename": "Wezen", "date": "2026-05-10",
+        "note": "Accountplan UX-vereenvoudiging: alleen klantbeeld-accordion + 4 vaste secties (situatie / doel / strategie / acties). Free-form-secties uit v1.22.0 verwijderd — gaf te veel speelruimte zonder duidelijke output. Per-sectie regenerate; AI-output is nu consistent."
+      },
+      {
+        "version": "1.23.0", "codename": "Yildun", "date": "2026-05-10",
+        "note": "Beslissers zoeken via LinkedIn — eenvoudige zoekfunctie. In klantbeeld DMU-accordion: knop '+ Beslisser zoeken op LinkedIn' opent een Google-LinkedIn-zoekquery (site:linkedin.com/in + organisatienaam + functie-trefwoorden). Geen scraping, geen API — alleen een handige link die het zoekwerk voorbereidt."
+      },
+      {
+        "version": "1.23.1", "codename": "Yildun", "date": "2026-05-11",
+        "note": "PDF + Word download op Identiteit, SalesPlan en Accountplan. Server-side render via Puppeteer (PDF) + docx-library (Word) zodat beide formaten een client-shareable artefact opleveren. Knop in elk van de drie panes."
+      },
+      {
+        "version": "1.23.2", "codename": "Yildun", "date": "2026-05-11",
+        "note": "Export-styling iteratie 1: strakke opmaak met tenant-kleuren in headers + tenant-logo bovenaan elk document. Footer met paginanummering."
+      },
+      {
+        "version": "1.23.3", "codename": "Yildun", "date": "2026-05-11",
+        "note": "Export-styling iteratie 2: memo-style — kleur spaarzaam ingezet (alleen accents in headers en bullets), strakke typografie, geen volle-kleur-blokken. Past beter bij executive readers."
+      },
+      {
+        "version": "1.23.4", "codename": "Yildun", "date": "2026-05-11",
+        "note": "Export-fixes: bullet-points en bold-tekst worden nu correct gerenderd (eerder verloren bij Markdown→PDF/Word). Dubbele nummering bij genest gestructureerde lijsten weggewerkt."
+      },
+      {
+        "version": "1.24.0", "codename": "Sirius", "date": "2026-05-11",
+        "note": "Admin-omgeving + open registratie uit. Nieuwe /app/admin route met aparte UI (Werkomgevingen + Gebruikers tabs) voor superusers in ADMIN_EMAILS. Open registratie via gate is uitgeschakeld; nieuwe accounts worden alleen aangemaakt door admins via 'Nieuwe werkomgeving'. Gate-toggle 'maak je eigen werkomgeving' verborgen."
+      },
+      {
+        "version": "1.25.0", "codename": "Sirius", "date": "2026-05-11",
+        "note": "Werkomgeving-aanvraagformulier op de landing-page (#workspace) en gate-link 'Vraag een werkomgeving aan'. POST /api/demo-request met type='workspace' (uitgebreid met type-discriminator + werkomgevingNaam/marktNaam-velden). Admin-UI krijgt een Aanvragen-tab met status-flow (nieuw/bezig/klaar/afgewezen) en 'Werkomgeving aanmaken'-knop die de create-tenant-modal voorvult. Aanvragen-tab is in v1.26.0 vervangen door Audit-log; aanvraag-API blijft bestaan."
+      },
+      {
+        "version": "1.25.1", "codename": "Sirius", "date": "2026-05-11",
+        "note": "Aanvraag-sectie op landing invouwbaar gemaakt — één sectie 'Aan de slag' met twee accordion-cards (Werkomgeving / Demo) i.p.v. twee losse formulieren onder elkaar. Markt-placeholder generiek (Bouw, IT, verzekeringen) zonder VVT-jargon."
+      },
+      {
+        "version": "1.25.2", "codename": "Sirius", "date": "2026-05-11",
+        "note": "Bevestigingsmelding na aanvraag wordt nu client-side vertaald (form.ok.workspace / form.ok.demo) zodat NL/EN beide werken — server returnt nog wel een Nederlandse message maar die wordt genegeerd."
+      },
+      {
+        "version": "1.25.3", "codename": "Sirius", "date": "2026-05-11",
+        "note": "ADMIN_EMAILS placeholder vervangen door koen@salesday.nl — eerste admin-account voor SalesDay-deployment. Kan via gate-bootstrap zelf z'n account aanmaken."
+      },
+      {
+        "version": "1.25.4", "codename": "Sirius", "date": "2026-05-11",
+        "note": "Bootstrap-modus blijft open zolang er nog geen admin een account heeft. needsBootstrap returnt true als (a) KV leeg of (b) één van de ADMIN_EMAILS heeft nog geen account. bootstrap() accepteert in geval (b) alleen ADMIN_EMAILS — voorkomt open-registratie-leak."
+      },
+      {
+        "version": "1.26.0", "codename": "Sirius", "date": "2026-05-11",
+        "note": "Drie kritische fixes + audit-log. (1) Nieuwe tenants bleven écht leeg: getEntiteitenUniverse + getMarketSignalen vielen voor élke tenant zonder eigen entiteiten terug op de hardcoded GeriCall-baseline (DATA.instellingen + DATA.signalen) — fix: alleen legacy GeriCall (slug/id 'gericall') krijgt nog die fallback, andere tenants zien []. (2) /app/admin redirect-bug: na bootstrap/login op admin-route stuurde submit-handler door naar /app/<tenant-slug>; uitzondering toegevoegd voor IS_ADMIN_ROUTE. (3) 'admin' is nu gereserveerde slug. (4) Audit-log: append-only buffer (laatste 500 events) onder marktradar:audit-log; nieuwe Audit-log-tab in admin (vervangt Aanvragen-tab uit v1.25.0; aanvraag-data blijft in KV beschikbaar)."
+      },
+      {
+        "version": "1.26.1", "codename": "Sirius", "date": "2026-05-11",
+        "note": "/api/admin zocht naar mr_session-cookie die nooit gezet wordt — de app gebruikt Bearer-tokens via apiFetch. Daardoor kreeg élke admin-API-call 401 'Niet ingelogd'. Fix: requireAdminSession gebruikt nu lib.getSession (zelfde Bearer-flow als rest van API)."
+      },
+      {
+        "version": "1.26.2", "codename": "Sirius", "date": "2026-05-11",
+        "note": "adminApi accepteert nu opts.params voor extra query-keys. list-audit-log faalde met 'Onbekende actie of method' omdat de client 'list-audit-log&limit=200' als één gecodeerd action-param meestuurde (& werd %26)."
+      },
+      {
+        "version": "1.26.3", "codename": "Sirius", "date": "2026-05-11",
+        "note": "Globale admin-pane bleef leeg in Gebruikers-tab: 'adminUsersList' was duplicate ID (ook in tenant-app Beheer-modal eerder in DOM). getElementById gaf de verstopte node terug. Fix: globale pane gebruikt nu adminGlobalUsersList."
+      },
+      {
+        "version": "1.26.4", "codename": "Sirius", "date": "2026-05-11",
+        "note": "LinkedIn als signal-bron. (1) LLM-curator user-message instrueert Claude expliciet om LinkedIn-public posts (company-pages + sleutel-bestuurders) mee te nemen in z'n web-search naast nieuws-sites/persberichten. (2) Help-uitvouwer in Beheer > Werkomgeving > Automatische signalen > RSS-feeds met uitleg over LinkedIn-bronnen — LLM-curator pakt 't al breed mee, of via een RSSHub-proxy met URL-patroon https://rsshub.app/linkedin/company/<slug>."
+      },
+      {
+        "version": "1.27.0", "codename": "Sirius", "date": "2026-05-11",
+        "note": "Klant-segmenten + multi-select filter. (1) Nieuwe beheerbare dropdown 'klantSegment' in DROPDOWN_REGISTRY met defaults Strategisch/Standaard/Long-tail; admin past tiers aan via Beheer > Dropdowns. (2) Per-organisatie segment-toewijzing via klantbeeld > GeriCall-context > Klant-segment als inline dropdown. (3) Multi-select chip-rij boven Organisaties-grid: per-segment-chip met count + 'Geen segment' + 'Alle segmenten'. Klik = toggle, meerdere actief tegelijk; OR-binnen-segment, AND met andere filters. State persisteert via saveUiState."
+      },
+      {
+        "version": "1.28.0", "codename": "Tarazed", "date": "2026-05-11",
+        "note": "Markt-trends tab (tussen Trends en Leveranciers). (1) KPI-tegels: organisaties / klanten% / bedden / klant-bedden%. (2) Bar-charts: bedden per provincie (klant-bedden in oranje stacked vs rest), organisaties per klant-segment (klanten vs rest), top-10 grootste organisaties (★ = klant). (3) Snapshot-mechanisme: '+ Snapshot maken'-knop captured huidige aggregaten in tenant-state KV onder 'trend-snapshots' (whitelisted in api/state.js, rolling cap 100). Tijdas-grafieken (SVG, geen externe lib) voor organisaties+klanten en bedden+klant-bedden. Snapshot-historie als verwijderbare lijst. (4) Externe markt-data placeholder — CSV-import (kolommen period/metric/value/segment) volgt zodra een specifieke databron wordt aangereikt."
+      },
+      {
+        "version": "1.28.1", "codename": "Tarazed", "date": "2026-05-11",
+        "note": "Release-history bijgewerkt met entries voor v1.17.2 t/m v1.28.0 — eerder eindigde de in-app changelog op v1.17.1 Rigel terwijl de versie-pill al op v1.28.0 stond. Geen functionele wijzigingen; alleen documentatie. NB: codenames zijn niet 100% strikt-alfabetisch — Sirius is ge-hergebruikt voor de v1.24-1.27 admin-omgeving-serie en Tarazed voor zowel v1.19 (pipeline-targets) als v1.28 (markt-trends). Toekomstige minors pakken de alfabet-sequentie weer op vanaf U/V/W."
       }
     ],
     "totalInstellingen": 64,
