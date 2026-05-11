@@ -2032,7 +2032,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.23.1",
+    "version": "1.23.2",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -17872,12 +17872,67 @@ function bindOppTargetsPane(){
 // PDF" in de print-dialog (geen extra dependency). Word: HTML-blob met
 // application/msword MIME-type → Word/Pages opent het als gewoon
 // document. Beide verbruiken dezelfde sections-shape: [{label, text}].
-function _exportDocBodyHtml(title, sections, meta){
-  const metaHtml = meta ? `<p style="color:#666;font-size:10pt;margin:4px 0 16pt">${escapeHtml(meta)}</p>` : '';
-  const body = sections.map(s => `
-    <h2 style="font-size:13pt;color:#333;margin-top:18pt;margin-bottom:6pt;border-bottom:1px solid #ccc;padding-bottom:4pt;page-break-after:avoid">${escapeHtml(s.label)}</h2>
-    <div style="white-space:pre-wrap;font-size:11pt;line-height:1.55;margin-bottom:6pt">${escapeHtml(s.text || '(leeg)')}</div>`).join('');
-  return `<h1 style="font-size:18pt;color:#222;margin:0 0 4pt">${escapeHtml(title)}</h1>${metaHtml}${body}`;
+// Strakke opmaak met tenant-kleuren: cover-band met logo + tenant-naam,
+// titel in primary-dark, sectie-headers met accent-bar links. Inline
+// styles + table-layouts zodat Word en Chrome-print beide consistent
+// renderen (Word ondersteunt geen flexbox/grid betrouwbaar).
+function _themeColorsForExport(){
+  const t = (currentTenant && currentTenant.theme) || null;
+  const primary      = (t && t.primary)      || '#E8732A';
+  const primaryDark  = (t && t.primaryDark)  || primary;
+  const primaryLight = (t && t.primaryLight) || primary;
+  const primaryPale  = (t && t.primaryPale)  || '#FDF2EA';
+  return { primary, primaryDark, primaryLight, primaryPale };
+}
+function _logoForExport(format){
+  const uri = currentTenant && currentTenant.logoDataUri;
+  if(!uri) return null;
+  // Word rendert SVG-data-URIs onbetrouwbaar — skip in Word-export.
+  if(format === 'word' && /^data:image\/svg/i.test(uri)) return null;
+  return uri;
+}
+function _exportDocBodyHtml(opts){
+  const title = opts.title || '';
+  const sections = Array.isArray(opts.sections) ? opts.sections : [];
+  const meta = opts.meta || '';
+  const format = opts.format || 'pdf';
+  const c = _themeColorsForExport();
+  const tenantNaam = (currentTenant && currentTenant.naam) || 'Werkomgeving';
+  const logoUri = _logoForExport(format);
+  const today = new Date().toLocaleDateString('nl-NL', { day:'numeric', month:'long', year:'numeric' });
+  const sans = "'Helvetica Neue',Helvetica,Arial,sans-serif";
+  const serif = 'Georgia,Cambria,"Times New Roman",serif';
+  const logoImg = logoUri
+    ? `<img src="${logoUri}" alt="" style="height:34px;display:block;margin-bottom:6pt;background:transparent">`
+    : '';
+  const cover = `
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:0 0 22pt">
+      <tr><td style="background:${c.primary};padding:16pt 18pt;color:#ffffff;font-family:${sans}">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="vertical-align:middle">${logoImg}<div style="font-size:15pt;font-weight:600;letter-spacing:.01em;line-height:1.2">${escapeHtml(tenantNaam)}</div></td>
+          <td style="vertical-align:middle;text-align:right;font-size:9pt;color:#ffffff;opacity:.85;letter-spacing:.04em;text-transform:uppercase">${escapeHtml(today)}</td>
+        </tr></table>
+      </td></tr>
+    </table>`;
+  const titleBlock = `
+    <h1 style="font-family:${sans};color:${c.primaryDark};font-size:24pt;margin:0 0 4pt;font-weight:700;letter-spacing:-.015em;line-height:1.15">${escapeHtml(title)}</h1>
+    ${meta ? `<div style="font-family:${sans};color:#8a8a8a;font-size:9pt;margin:0;letter-spacing:.02em">${escapeHtml(meta)}</div>` : ''}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:14pt 0 0"><tr><td height="3" style="background:${c.primary};line-height:3px;font-size:1px">&nbsp;</td></tr></table>`;
+  const body = sections.map((s, idx) => {
+    const text = (s.text || '').trim();
+    const empty = text.length === 0;
+    const header = `
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:${idx === 0 ? '22pt' : '20pt'} 0 8pt;border-collapse:collapse;page-break-after:avoid">
+        <tr>
+          <td width="5" style="background:${c.primary};padding:0;line-height:1;font-size:1px">&nbsp;</td>
+          <td width="10" style="padding:0">&nbsp;</td>
+          <td style="padding:0"><div style="font-family:${sans};font-size:13pt;font-weight:700;color:${c.primaryDark};letter-spacing:.01em;line-height:1.2">${escapeHtml(s.label)}</div></td>
+        </tr>
+      </table>`;
+    const bodyText = `<div style="font-family:${serif};font-size:11pt;line-height:1.65;color:${empty ? '#b0b0b0' : '#222222'};white-space:pre-wrap;margin:0 0 0 15pt;font-style:${empty ? 'italic' : 'normal'}">${escapeHtml(empty ? '(leeg)' : text)}</div>`;
+    return header + bodyText;
+  }).join('');
+  return cover + titleBlock + body;
 }
 function _safeFilename(s){
   return String(s || 'export')
@@ -17886,10 +17941,18 @@ function _safeFilename(s){
     .slice(0, 80) || 'export';
 }
 function downloadAsWord(filename, title, sections, meta){
-  const inner = _exportDocBodyHtml(title, sections, meta);
+  const inner = _exportDocBodyHtml({ title, sections, meta, format: 'word' });
+  // Section1 geeft Word consistente A4-margins; mso-page-orientation is
+  // expliciet zodat Word niet teruglandt op US-Letter.
   const docHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-<head><meta charset="utf-8"><title>${escapeHtml(title)}</title></head>
-<body style="font-family:Calibri,Arial,sans-serif;color:#222;padding:24pt">${inner}</body></html>`;
+<head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
+<style>
+  @page Section1 { size: 21cm 29.7cm; margin: 2cm 2cm 2.5cm 2cm; mso-page-orientation: portrait }
+  div.Section1 { page: Section1 }
+  body { margin: 0; padding: 0 }
+</style>
+</head>
+<body><div class="Section1">${inner}</div></body></html>`;
   const blob = new Blob(['﻿', docHtml], { type: 'application/msword' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -17898,23 +17961,45 @@ function downloadAsWord(filename, title, sections, meta){
   setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
 }
 function downloadAsPdf(title, sections, meta){
-  const inner = _exportDocBodyHtml(title, sections, meta);
+  const inner = _exportDocBodyHtml({ title, sections, meta, format: 'pdf' });
+  const tenantNaamEsc = ((currentTenant && currentTenant.naam) || 'Werkomgeving').replace(/"/g, '\\"');
   const w = window.open('', '_blank');
   if(!w){
     alert('Pop-ups blokkeren PDF-export. Sta pop-ups toe voor deze site, of gebruik de Word-knop.');
     return;
   }
+  // print-color-adjust:exact is essentieel — anders skipt Chrome de
+  // gekleurde banner en accent-bars in de geprinte PDF. @bottom-* werkt
+  // in Chromium; Safari/Firefox krijgen geen footer (graceful fallback).
   w.document.write(`<!DOCTYPE html><html lang="nl"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
 <style>
-  @page { size: A4; margin: 18mm 16mm; }
-  body { font-family:'Helvetica Neue',Arial,sans-serif; color:#222; margin:0; padding:0 }
-  h1, h2 { page-break-after: avoid }
-  @media screen { body { max-width: 720px; margin: 24px auto; padding: 0 24px } }
+  @page {
+    size: A4;
+    margin: 16mm 14mm 18mm 14mm;
+    @bottom-left { content: "${tenantNaamEsc}"; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 8pt; color: #aaa; }
+    @bottom-right { content: counter(page) " / " counter(pages); font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 8pt; color: #aaa; }
+  }
+  html, body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
+  @media screen {
+    body { background: #f0f0f0; padding: 28px 0 }
+    .page { background: #fff; max-width: 760px; margin: 0 auto; padding: 32px 36px; box-shadow: 0 2px 12px rgba(0,0,0,.08); border-radius: 4px; }
+    .print-toolbar { position: fixed; top: 12px; right: 12px; display: flex; gap: 8px; }
+    .print-toolbar button { font: 600 12px 'Helvetica Neue',Arial,sans-serif; padding: 8px 14px; background: #fff; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+    .print-toolbar button:hover { background: #f8f8f8 }
+  }
+  @media print {
+    body { background: #fff }
+    .page { background: #fff; padding: 0; box-shadow: none; max-width: none; margin: 0 }
+    .print-toolbar { display: none }
+  }
 </style>
-</head><body>${inner}</body></html>`);
+</head><body>
+<div class="print-toolbar"><button onclick="window.print()">Print / Bewaar als PDF</button><button onclick="window.close()">Sluiten</button></div>
+<div class="page">${inner}</div>
+</body></html>`);
   w.document.close();
-  // Wacht tot fonts/layout klaar zijn voor we print triggeren.
-  setTimeout(() => { try { w.focus(); w.print(); } catch(e){} }, 300);
+  // Wacht tot fonts + layout klaar zijn voor we print() triggeren.
+  setTimeout(() => { try { w.focus(); w.print(); } catch(e){} }, 350);
 }
 
 // Concrete export-handlers voor de 3 plekken die het gebruiken. Lezen
