@@ -8,6 +8,7 @@
 
 const lib = require('./_lib/auth');
 const authMod = require('./auth');
+const demoReq = require('./demo-request');
 
 async function requireAdminSession(req, res) {
   // Sessie-cookie → e-mail. Daarna alleen door als de e-mail in
@@ -255,6 +256,67 @@ async function deleteTenantAction(req, res, session) {
   return res.status(200).json({ ok: true, removedUsers: userEmails.length, removedBy: session.email });
 }
 
+async function listRequests(req, res) {
+  // Demo + workspace aanvragen. Newest first. Index bevat lightweight
+  // records; we hydrateren elk record via kvGet voor de volledige data.
+  const filter = String((req.query && req.query.type) || '').trim().toLowerCase();
+  const index = (await lib.kvGet(demoReq.INDEX_KEY)) || [];
+  const out = [];
+  for (const entry of index) {
+    const full = await lib.kvGet(demoReq.KEY_PREFIX + entry.id);
+    if (!full) continue;
+    if (filter && (full.type || 'demo') !== filter) continue;
+    out.push({
+      id: full.id,
+      type: full.type || 'demo',
+      naam: full.naam || '',
+      organisatie: full.organisatie || '',
+      email: full.email || '',
+      telefoon: full.telefoon || '',
+      rol: full.rol || '',
+      bericht: full.bericht || '',
+      werkomgevingNaam: full.werkomgevingNaam || '',
+      marktNaam: full.marktNaam || '',
+      status: full.status || 'nieuw',
+      createdAt: full.createdAt || 0,
+      handledAt: full.handledAt || null,
+      handledBy: full.handledBy || null,
+    });
+  }
+  out.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  return res.status(200).json({ requests: out });
+}
+
+async function updateRequestStatus(req, res, session) {
+  const body = await authMod.readJsonBody(req);
+  const id = String(body.id || '').trim();
+  const status = String(body.status || '').trim().toLowerCase();
+  if (!id) return res.status(400).json({ error: 'id verplicht' });
+  if (!['nieuw', 'bezig', 'klaar', 'afgewezen'].includes(status)) {
+    return res.status(400).json({ error: 'Ongeldige status' });
+  }
+  const record = await lib.kvGet(demoReq.KEY_PREFIX + id);
+  if (!record) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
+  record.status = status;
+  if (status !== 'nieuw') {
+    record.handledAt = Date.now();
+    record.handledBy = session.email;
+  }
+  await lib.kvSet(demoReq.KEY_PREFIX + id, record);
+  return res.status(200).json({ ok: true, status });
+}
+
+async function deleteRequest(req, res) {
+  const body = await authMod.readJsonBody(req);
+  const id = String(body.id || '').trim();
+  if (!id) return res.status(400).json({ error: 'id verplicht' });
+  await lib.kvDel(demoReq.KEY_PREFIX + id);
+  const index = (await lib.kvGet(demoReq.INDEX_KEY)) || [];
+  const remaining = index.filter((e) => e.id !== id);
+  await lib.kvSet(demoReq.INDEX_KEY, remaining);
+  return res.status(200).json({ ok: true });
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   try {
@@ -284,6 +346,15 @@ module.exports = async function handler(req, res) {
     }
     if (action === 'delete-tenant' && req.method === 'POST') {
       return deleteTenantAction(req, res, session);
+    }
+    if (action === 'list-requests' && (req.method === 'GET' || req.method === 'POST')) {
+      return listRequests(req, res);
+    }
+    if (action === 'update-request' && req.method === 'POST') {
+      return updateRequestStatus(req, res, session);
+    }
+    if (action === 'delete-request' && req.method === 'POST') {
+      return deleteRequest(req, res);
     }
     return res.status(400).json({ error: 'Onbekende actie of method' });
   } catch (err) {

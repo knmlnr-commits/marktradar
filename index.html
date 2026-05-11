@@ -117,6 +117,7 @@ img,svg{max-width:100%;display:block}
         <button class="lang-btn" data-lang="en" title="English" aria-label="English">🇬🇧</button>
       </span>
       <button type="button" class="btn btn-ghost btn-sm" id="installBtn" style="display:none" data-i18n="nav.install">Installeer app</button>
+      <a class="btn btn-ghost btn-sm" href="#workspace" data-i18n="nav.workspace">Werkomgeving aanvragen</a>
       <a class="btn btn-ghost btn-sm" href="#demo" data-i18n="nav.demo">Demo aanvragen</a>
       <a class="btn btn-primary btn-sm" href="/app" data-i18n="nav.login">Inloggen</a>
     </div>
@@ -128,7 +129,7 @@ img,svg{max-width:100%;display:block}
     <h1 data-i18n="hero.h1" data-i18n-html="1">Volg je <em>markt</em>.</h1>
     <p data-i18n="hero.lead">Definieer je propositie, plak je organisaties, koppel je klanten — en houd je markt scherp in één werkomgeving.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary" href="/app" data-i18n="hero.cta1">Maak werkomgeving</a>
+      <a class="btn btn-primary" href="#workspace" data-i18n="hero.cta1">Werkomgeving aanvragen</a>
       <a class="btn btn-ghost" href="#demo" data-i18n="hero.cta2">Demo aanvragen</a>
       <button type="button" class="btn btn-ghost" id="installBtnHero" style="display:none" data-i18n="hero.install">📱 Installeer als app</button>
     </div>
@@ -160,6 +161,30 @@ img,svg{max-width:100%;display:block}
         <p data-i18n="step4.text">Markeer relaties handmatig of via CRM-import.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="demo" id="workspace" style="background:var(--white)">
+  <div class="wrap">
+    <h2 data-i18n="ws.h2">Werkomgeving aanvragen</h2>
+    <p class="lead" data-i18n="ws.lead">Vraag een eigen MarktRadar-omgeving aan. We zetten 'm voor je op en sturen je inloggegevens — binnen één werkdag.</p>
+    <form id="workspaceForm" class="demo-form" autocomplete="on">
+      <div class="row">
+        <div><label for="wf-naam" data-i18n="form.name">Naam</label><input id="wf-naam" name="naam" required maxlength="200"></div>
+        <div><label for="wf-organisatie" data-i18n="form.org">Organisatie</label><input id="wf-organisatie" name="organisatie" required maxlength="200"></div>
+      </div>
+      <div class="row">
+        <div><label for="wf-email" data-i18n="form.email">Email</label><input id="wf-email" name="email" type="email" required maxlength="200"></div>
+        <div><label for="wf-telefoon" data-i18n="form.phone">Telefoon (optioneel)</label><input id="wf-telefoon" name="telefoon" type="tel" maxlength="50"></div>
+      </div>
+      <div class="row">
+        <div><label for="wf-werkomgevingNaam" data-i18n="ws.wsName">Naam werkomgeving (optioneel)</label><input id="wf-werkomgevingNaam" name="werkomgevingNaam" maxlength="200" placeholder="bv. Acme B.V."></div>
+        <div><label for="wf-marktNaam" data-i18n="ws.marktName">Markt of segment (optioneel)</label><input id="wf-marktNaam" name="marktNaam" maxlength="200" placeholder="bv. VVT, Bouw, IT-dienstverlening"></div>
+      </div>
+      <div><label for="wf-bericht" data-i18n="ws.message">Toelichting (optioneel)</label><textarea id="wf-bericht" name="bericht" maxlength="4000" placeholder="Wat verkoop je en aan wie? Hoe meer context, hoe sneller we 'm opzetten."></textarea></div>
+      <div class="demo-result" id="workspaceResult"></div>
+      <div><button class="btn btn-primary" type="submit" id="workspaceSubmit" data-i18n="ws.submit">Werkomgeving aanvragen</button></div>
+    </form>
   </div>
 </section>
 
@@ -202,7 +227,8 @@ img,svg{max-width:100%;display:block}
 <script>
 const I18N = {
   nl: {
-    'nav.demo': 'Demo aanvragen', 'nav.login': 'Inloggen', 'nav.install': 'Installeer app',
+    'nav.demo': 'Demo aanvragen', 'nav.workspace': 'Werkomgeving aanvragen',
+    'nav.login': 'Inloggen', 'nav.install': 'Installeer app',
     'hero.install': '📱 Installeer als app',
     'install.h': 'Installeer MarktRadar als app',
     'install.lead': 'Werk vanuit een eigen app-icoon op je beginscherm — zonder browser, full-screen.',
@@ -216,13 +242,17 @@ const I18N = {
     'install.installing': 'Installeren…',
     'hero.h1': 'Volg je <em>markt</em>.',
     'hero.lead': 'Definieer je propositie, plak je organisaties, koppel je klanten — en houd je markt scherp in één werkomgeving.',
-    'hero.cta1': 'Maak werkomgeving', 'hero.cta2': 'Demo aanvragen',
+    'hero.cta1': 'Werkomgeving aanvragen', 'hero.cta2': 'Demo aanvragen',
     'steps.h2': 'Hoe het werkt',
     'step1.title': 'Propositie', 'step1.text': 'Beschrijf in één zin wat je verkoopt en aan wie.',
     'step2.title': 'Markt', 'step2.text': 'Plak je organisaties — bedrijven, accounts of relaties.',
     'step3.title': 'Signalen', 'step3.text': 'Krijg meldingen over wijzigingen in jouw markt.',
     'step4.title': 'Klanten', 'step4.text': 'Markeer relaties handmatig of via CRM-import.',
     'demo.h2': 'Demo aanvragen', 'demo.lead': 'Vul je gegevens in. We nemen binnen één werkdag contact op.',
+    'ws.h2': 'Werkomgeving aanvragen',
+    'ws.lead': "Vraag een eigen MarktRadar-omgeving aan. We zetten 'm voor je op en sturen je inloggegevens — binnen één werkdag.",
+    'ws.wsName': 'Naam werkomgeving (optioneel)', 'ws.marktName': 'Markt of segment (optioneel)',
+    'ws.message': 'Toelichting (optioneel)', 'ws.submit': 'Werkomgeving aanvragen',
     'form.name': 'Naam', 'form.org': 'Organisatie', 'form.email': 'Email',
     'form.phone': 'Telefoon (optioneel)', 'form.message': 'Bericht (optioneel)', 'form.submit': 'Aanvragen',
     'form.required': 'Naam, organisatie en email zijn verplicht.',
@@ -231,7 +261,8 @@ const I18N = {
     'foot.copy': '© 2026 MarktRadar', 'foot.login': 'Inloggen',
   },
   en: {
-    'nav.demo': 'Request demo', 'nav.login': 'Log in', 'nav.install': 'Install app',
+    'nav.demo': 'Request demo', 'nav.workspace': 'Request workspace',
+    'nav.login': 'Log in', 'nav.install': 'Install app',
     'hero.install': '📱 Install as app',
     'install.h': 'Install MarktRadar as an app',
     'install.lead': 'Work from a dedicated app icon on your home screen — no browser, full-screen.',
@@ -245,13 +276,17 @@ const I18N = {
     'install.installing': 'Installing…',
     'hero.h1': 'Track your <em>market</em>.',
     'hero.lead': 'Define your value proposition, paste your organisations, connect your customers — and keep your market in focus in one workspace.',
-    'hero.cta1': 'Create workspace', 'hero.cta2': 'Request demo',
+    'hero.cta1': 'Request workspace', 'hero.cta2': 'Request demo',
     'steps.h2': 'How it works',
     'step1.title': 'Proposition', 'step1.text': 'Describe in one sentence what you sell and to whom.',
     'step2.title': 'Market', 'step2.text': 'Paste your organisations — companies, accounts or contacts.',
     'step3.title': 'Signals', 'step3.text': 'Get alerts on changes in your market.',
     'step4.title': 'Customers', 'step4.text': 'Mark relationships manually or via CRM import.',
     'demo.h2': 'Request a demo', 'demo.lead': 'Fill in your details. We will get in touch within one business day.',
+    'ws.h2': 'Request a workspace',
+    'ws.lead': "Request your own MarktRadar workspace. We'll set it up and send your login details — within one business day.",
+    'ws.wsName': 'Workspace name (optional)', 'ws.marktName': 'Market or segment (optional)',
+    'ws.message': 'Notes (optional)', 'ws.submit': 'Request workspace',
     'form.name': 'Name', 'form.org': 'Organisation', 'form.email': 'Email',
     'form.phone': 'Phone (optional)', 'form.message': 'Message (optional)', 'form.submit': 'Submit',
     'form.required': 'Name, organisation and email are required.',
@@ -283,41 +318,53 @@ document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', 
 applyI18n();
 
 (function(){
-  const form = document.getElementById('demoForm');
-  const result = document.getElementById('demoResult');
-  const submit = document.getElementById('demoSubmit');
-  if(!form) return;
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    result.classList.remove('show', 'ok', 'err');
-    const data = {
-      naam: document.getElementById('df-naam').value.trim(),
-      organisatie: document.getElementById('df-organisatie').value.trim(),
-      email: document.getElementById('df-email').value.trim(),
-      telefoon: document.getElementById('df-telefoon').value.trim(),
-      bericht: document.getElementById('df-bericht').value.trim(),
-    };
-    if(!data.naam || !data.organisatie || !data.email){
-      result.textContent = tt('form.required');
-      result.classList.add('show', 'err'); return;
-    }
-    submit.disabled = true; const orig = submit.textContent; submit.textContent = tt('form.sending');
-    try {
-      const r = await fetch('/api/demo-request', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      const j = await r.json().catch(() => ({}));
-      if(!r.ok) throw new Error(j.error || tt('form.err'));
-      result.textContent = j.message || tt('form.ok');
-      result.classList.add('show', 'ok');
-      form.reset();
-    } catch(err){
-      result.textContent = err.message || tt('form.err');
-      result.classList.add('show', 'err');
-    } finally {
-      submit.disabled = false; submit.textContent = orig;
-    }
+  // Beide formulieren (#demoForm en #workspaceForm) posten naar
+  // /api/demo-request. Verschil: extra velden + de 'type'-discriminator.
+  function wire(formId, resultId, submitId, type, fieldMap){
+    const form = document.getElementById(formId);
+    const result = document.getElementById(resultId);
+    const submit = document.getElementById(submitId);
+    if(!form) return;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      result.classList.remove('show', 'ok', 'err');
+      const data = { type };
+      for (const [key, elId] of Object.entries(fieldMap)){
+        const el = document.getElementById(elId);
+        data[key] = el ? el.value.trim() : '';
+      }
+      if(!data.naam || !data.organisatie || !data.email){
+        result.textContent = tt('form.required');
+        result.classList.add('show', 'err'); return;
+      }
+      submit.disabled = true; const orig = submit.textContent; submit.textContent = tt('form.sending');
+      try {
+        const r = await fetch('/api/demo-request', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const j = await r.json().catch(() => ({}));
+        if(!r.ok) throw new Error(j.error || tt('form.err'));
+        result.textContent = j.message || tt('form.ok');
+        result.classList.add('show', 'ok');
+        form.reset();
+      } catch(err){
+        result.textContent = err.message || tt('form.err');
+        result.classList.add('show', 'err');
+      } finally {
+        submit.disabled = false; submit.textContent = orig;
+      }
+    });
+  }
+  wire('demoForm', 'demoResult', 'demoSubmit', 'demo', {
+    naam: 'df-naam', organisatie: 'df-organisatie', email: 'df-email',
+    telefoon: 'df-telefoon', bericht: 'df-bericht',
+  });
+  wire('workspaceForm', 'workspaceResult', 'workspaceSubmit', 'workspace', {
+    naam: 'wf-naam', organisatie: 'wf-organisatie', email: 'wf-email',
+    telefoon: 'wf-telefoon',
+    werkomgevingNaam: 'wf-werkomgevingNaam', marktNaam: 'wf-marktNaam',
+    bericht: 'wf-bericht',
   });
 })();
 

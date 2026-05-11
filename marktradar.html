@@ -1244,6 +1244,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       </div>
       <div class="err" id="gate-err-auth"><span></span></div>
       <div class="gate-help" id="gate-help">
+        <a href="/#workspace" id="gate-request-link" class="gate-toggle-mode" data-i18n="gate.request">Nog geen account? Vraag een werkomgeving aan →</a>
         <button type="button" id="gate-toggle-mode" class="gate-toggle-mode" style="display:none"></button>
       </div>
     </form>
@@ -2005,6 +2006,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   <nav class="admin-tabs">
     <button class="admin-tab" data-admin-tab="tenants">Werkomgevingen <span class="admin-tab-count" id="adminTabCountTenants">0</span></button>
     <button class="admin-tab" data-admin-tab="users">Gebruikers <span class="admin-tab-count" id="adminTabCountUsers">0</span></button>
+    <button class="admin-tab" data-admin-tab="requests">Aanvragen <span class="admin-tab-count" id="adminTabCountRequests">0</span></button>
   </nav>
   <main class="admin-main">
     <section class="admin-pane" id="adminPane-tenants">
@@ -2020,6 +2022,21 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <button class="btn-primary" id="adminAddUserBtn">+ Gebruiker toevoegen</button>
       </div>
       <div id="adminUsersList" class="admin-list"></div>
+    </section>
+    <section class="admin-pane" id="adminPane-requests">
+      <div class="admin-toolbar">
+        <h2>Aanvragen</h2>
+        <div style="display:flex;gap:6px;align-items:center">
+          <select id="adminRequestFilter" style="padding:6px 10px;border:1px solid var(--grey-300);border-radius:6px;font:inherit;font-size:.82rem">
+            <option value="">Alle aanvragen</option>
+            <option value="workspace">Werkomgeving</option>
+            <option value="demo">Demo</option>
+          </select>
+          <button class="btn-secondary" id="adminRequestsRefresh">Verversen</button>
+        </div>
+      </div>
+      <p style="font-size:.78rem;color:var(--grey-700);margin:0 0 12px">Aanvragen via de publieke landing-page (<code>/#workspace</code> en <code>/#demo</code>). Markeer ze als 'bezig' of 'klaar' zodra je ze hebt afgehandeld, of verwijder ze.</p>
+      <div id="adminRequestsList" class="admin-list"></div>
     </section>
     <div id="adminFeedback" class="admin-feedback"></div>
   </main>
@@ -2138,8 +2155,8 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.24.0",
-    "codename": "Sirius",
+    "version": "1.25.0",
+    "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
       {
@@ -12085,7 +12102,7 @@ function forgetAuth(){
   try { localStorage.removeItem(AUTH_KEY); } catch(e){}
 }
 // ================ Admin-app (/app/admin) ================
-let _adminState = { tab: 'tenants', tenants: [], users: [] };
+let _adminState = { tab: 'tenants', tenants: [], users: [], requests: [] };
 function adminFeedback(kind, msg){
   const el = document.getElementById('adminFeedback');
   if(!el) return;
@@ -12118,6 +12135,10 @@ function initAdminApp(){
   if(ctSubmit) ctSubmit.addEventListener('click', onAdminCreateTenant);
   const auSubmit = document.getElementById('admAuSubmit');
   if(auSubmit) auSubmit.addEventListener('click', onAdminAddUser);
+  const reqFilter = document.getElementById('adminRequestFilter');
+  if(reqFilter) reqFilter.addEventListener('change', () => refreshAdminRequests());
+  const reqRefresh = document.getElementById('adminRequestsRefresh');
+  if(reqRefresh) reqRefresh.addEventListener('click', () => refreshAdminRequests());
   activateAdminTab(_adminState.tab);
   refreshAdminAll();
 }
@@ -12154,7 +12175,7 @@ function closeAdminModal(id){
   if(m) m.classList.remove('show');
 }
 async function refreshAdminAll(){
-  await Promise.all([refreshAdminTenants(), refreshAdminUsers()]);
+  await Promise.all([refreshAdminTenants(), refreshAdminUsers(), refreshAdminRequests()]);
 }
 async function refreshAdminTenants(){
   try {
@@ -12176,6 +12197,24 @@ async function refreshAdminUsers(){
     if(cnt) cnt.textContent = _adminState.users.length;
   } catch(err){
     adminFeedback('err', 'Users ophalen mislukt: ' + err.message);
+  }
+}
+async function refreshAdminRequests(){
+  try {
+    const filter = (document.getElementById('adminRequestFilter')?.value || '').trim();
+    const path = filter ? ('list-requests&type=' + encodeURIComponent(filter)) : 'list-requests';
+    const j = await adminApi(path);
+    _adminState.requests = Array.isArray(j.requests) ? j.requests : [];
+    renderAdminRequests();
+    const cnt = document.getElementById('adminTabCountRequests');
+    if(cnt){
+      // Tel alleen niet-afgehandelde aanvragen ('nieuw') voor de badge —
+      // dat is wat een admin direct moet zien.
+      const nieuw = _adminState.requests.filter(r => (r.status || 'nieuw') === 'nieuw').length;
+      cnt.textContent = nieuw;
+    }
+  } catch(err){
+    adminFeedback('err', 'Aanvragen ophalen mislukt: ' + err.message);
   }
 }
 function _fmtDate(ts){
@@ -12252,6 +12291,105 @@ function renderAdminUsers(){
   }).join('');
   wrap.querySelectorAll('[data-adm-reset-pw]').forEach(b => b.addEventListener('click', () => onAdminResetPw(b.dataset.admResetPw)));
   wrap.querySelectorAll('[data-adm-remove-user]').forEach(b => b.addEventListener('click', () => onAdminRemoveUser(b.dataset.admRemoveUser)));
+}
+function _fmtDateTime(ts){
+  if(!ts) return '—';
+  return new Date(ts).toLocaleString('nl-NL', {day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+function renderAdminRequests(){
+  const wrap = document.getElementById('adminRequestsList');
+  if(!wrap) return;
+  const rs = _adminState.requests || [];
+  if(rs.length === 0){
+    wrap.innerHTML = '<div class="no-data" style="padding:24px;text-align:center;color:var(--grey-600)">Nog geen aanvragen binnengekomen.</div>';
+    return;
+  }
+  wrap.innerHTML = rs.map(r => {
+    const isWs = r.type === 'workspace';
+    const typeLabel = isWs ? 'Werkomgeving' : 'Demo';
+    const typeColor = isWs ? 'background:var(--orange-pale);color:var(--orange-dark)' : 'background:var(--grey-100);color:var(--grey-700)';
+    const status = r.status || 'nieuw';
+    const statusColors = {
+      nieuw: 'background:#fff7e6;color:#a85a00;border:1px solid #f0c98a',
+      bezig: 'background:#e6f1ff;color:#1e58a8;border:1px solid #b4cef0',
+      klaar: 'background:#e6f7ec;color:#2a7a3f;border:1px solid #b8ddc1',
+      afgewezen: 'background:#fdebec;color:#9c2f2f;border:1px solid #f3d2d2',
+    };
+    const wsExtra = isWs && (r.werkomgevingNaam || r.marktNaam)
+      ? `<div class="admin-row-sub">${r.werkomgevingNaam ? 'Werkomgeving: <strong>' + escapeHtml(r.werkomgevingNaam) + '</strong>' : ''}${r.werkomgevingNaam && r.marktNaam ? ' &middot; ' : ''}${r.marktNaam ? 'Markt: <strong>' + escapeHtml(r.marktNaam) + '</strong>' : ''}</div>`
+      : '';
+    const berichtBlock = r.bericht
+      ? `<div class="admin-row-sub" style="white-space:pre-wrap;background:var(--white);padding:8px 10px;border:1px solid var(--grey-200);border-radius:6px;margin-top:6px">${escapeHtml(r.bericht)}</div>`
+      : '';
+    const handled = (r.status && r.status !== 'nieuw' && r.handledAt)
+      ? ` &middot; ${escapeHtml(status)} door ${escapeHtml(r.handledBy || '?')} op ${escapeHtml(_fmtDateTime(r.handledAt))}`
+      : '';
+    return `
+      <div class="admin-row" data-request="${escAdminAttr(r.id)}">
+        <div class="admin-row-head">
+          <span class="admin-row-naam">${escapeHtml(r.naam || r.email)}</span>
+          <span class="admin-row-pill" style="${typeColor}">${typeLabel}</span>
+          <span class="admin-row-pill" style="${statusColors[status] || ''}">${escapeHtml(status)}</span>
+          <span class="admin-row-meta">
+            <span>${escapeHtml(r.organisatie || '')}</span>
+            <span>${escapeHtml(_fmtDateTime(r.createdAt))}</span>
+          </span>
+        </div>
+        <div class="admin-row-sub"><a href="mailto:${escAdminAttr(r.email)}" style="color:var(--orange-dark)">${escapeHtml(r.email)}</a>${r.telefoon ? ' &middot; ' + escapeHtml(r.telefoon) : ''}${r.rol ? ' &middot; ' + escapeHtml(r.rol) : ''}${handled}</div>
+        ${wsExtra}
+        ${berichtBlock}
+        <div class="admin-row-actions">
+          <button class="btn-secondary" data-adm-req-status="${escAdminAttr(r.id)}" data-status="bezig"${status === 'bezig' ? ' disabled' : ''}>Markeer bezig</button>
+          <button class="btn-secondary" data-adm-req-status="${escAdminAttr(r.id)}" data-status="klaar"${status === 'klaar' ? ' disabled' : ''}>Markeer klaar</button>
+          <button class="btn-secondary" data-adm-req-status="${escAdminAttr(r.id)}" data-status="afgewezen"${status === 'afgewezen' ? ' disabled' : ''}>Afwijzen</button>
+          ${isWs ? `<button class="btn-secondary" data-adm-req-create="${escAdminAttr(r.id)}">Werkomgeving aanmaken &rarr;</button>` : ''}
+          <button class="btn-secondary" data-adm-req-delete="${escAdminAttr(r.id)}" style="color:#9c2f2f;border-color:#f3d2d2">Verwijder</button>
+        </div>
+      </div>`;
+  }).join('');
+  wrap.querySelectorAll('[data-adm-req-status]').forEach(b => b.addEventListener('click', () => onAdminRequestStatus(b.dataset.admReqStatus, b.dataset.status)));
+  wrap.querySelectorAll('[data-adm-req-create]').forEach(b => b.addEventListener('click', () => onAdminRequestCreateTenant(b.dataset.admReqCreate)));
+  wrap.querySelectorAll('[data-adm-req-delete]').forEach(b => b.addEventListener('click', () => onAdminRequestDelete(b.dataset.admReqDelete)));
+}
+async function onAdminRequestStatus(id, status){
+  try {
+    await adminApi('update-request', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status })
+    });
+    adminFeedback('ok', 'Status bijgewerkt.');
+    await refreshAdminRequests();
+  } catch(err){
+    adminFeedback('err', 'Status bijwerken mislukt: ' + err.message);
+  }
+}
+async function onAdminRequestDelete(id){
+  if(!confirm('Aanvraag definitief verwijderen?')) return;
+  try {
+    await adminApi('delete-request', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    adminFeedback('ok', 'Aanvraag verwijderd.');
+    await refreshAdminRequests();
+  } catch(err){
+    adminFeedback('err', 'Verwijderen mislukt: ' + err.message);
+  }
+}
+function onAdminRequestCreateTenant(id){
+  // Open de bestaande "create tenant"-modal met velden voorgevuld vanuit
+  // de aanvraag — admin checkt + bevestigt, geen handmatig overtypen.
+  const r = (_adminState.requests || []).find(x => x.id === id);
+  if(!r) return;
+  openAdminModal('adminCreateTenantModal');
+  const fill = (elId, val) => { const e = document.getElementById(elId); if(e) e.value = val || ''; };
+  fill('admCt-naam', r.werkomgevingNaam || r.organisatie || '');
+  fill('admCt-adminNaam', r.naam || '');
+  fill('admCt-adminEmail', r.email || '');
+  // Markeer de aanvraag als 'bezig' zodat 'm uit de badge verdwijnt.
+  if((r.status || 'nieuw') === 'nieuw'){
+    onAdminRequestStatus(id, 'bezig').catch(() => {});
+  }
 }
 async function onAdminCreateTenant(){
   const out = document.getElementById('admCtResult');
@@ -14002,6 +14140,7 @@ const I18N = {
     'gate.bootstrap': 'Eerste account aanmaken →',
     'gate.toggle.toRegister': 'Nog geen account? Maak je eigen werkomgeving aan',
     'gate.toggle.toLogin': 'Ik heb al een account → inloggen',
+    'gate.request': 'Nog geen account? Vraag een werkomgeving aan →',
     'topbar.admin': 'Beheer',
     'scope.label': 'Toon:', 'scope.mine': 'Mijn todo', 'scope.all': 'Alles',
     'scope.help': "Filtert todo's, instellingen en signalen op jouw eigenaarschap.",
@@ -14081,6 +14220,7 @@ const I18N = {
     'gate.bootstrap': 'Create first account →',
     'gate.toggle.toRegister': 'No account yet? Create your own workspace',
     'gate.toggle.toLogin': 'I already have an account → log in',
+    'gate.request': 'No account yet? Request a workspace →',
     'topbar.admin': 'Admin',
     'scope.label': 'Show:', 'scope.mine': 'My todos', 'scope.all': 'All',
     'scope.help': 'Filters todos, organisations and signals on ownership.',
