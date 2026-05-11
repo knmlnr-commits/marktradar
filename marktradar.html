@@ -1415,6 +1415,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
           <option value="name">A-Z</option>
         </select>
       </div>
+      <div class="chip-row" id="instSegmentChips" style="padding:0 24px 10px;display:none"></div>
       <div class="inst-grid" id="instGrid"></div>
     </div>
 
@@ -2161,7 +2162,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.26.4",
+    "version": "1.27.0",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -12737,6 +12738,9 @@ let instSort = 'auto';
 let instProv = 'all';
 let instRegio = 'all';
 let instOwner = 'all';
+// Multi-select klant-segment-filter. Leeg = geen filter (toon alles).
+// Speciale key '__none__' = toon organisaties zonder klantSegment.
+let instSegmentSet = new Set();
 let searchQuery = '';
 let trendsLens = 'auto';
 let trendsSort = 'delta-abs';
@@ -12756,6 +12760,7 @@ function saveUiState(){
       overlayCtx: typeof currentOverlayContext !== 'undefined' ? currentOverlayContext : null,
       signalFilter, signalSort,
       instFilter, instSort, instProv, instRegio, instOwner,
+      instSegments: Array.from(instSegmentSet),
       searchQuery,
       trendsLens, trendsSort,
       actiesFilter: typeof actiesFilter !== 'undefined' ? actiesFilter : null,
@@ -12780,6 +12785,7 @@ function applyUiState(state){
   if(typeof state.instProv === 'string') instProv = state.instProv;
   if(typeof state.instRegio === 'string') instRegio = state.instRegio;
   if(typeof state.instOwner === 'string') instOwner = state.instOwner;
+  if(Array.isArray(state.instSegments)) instSegmentSet = new Set(state.instSegments.map(String));
   if(typeof state.searchQuery === 'string') searchQuery = state.searchQuery;
   if(typeof state.trendsLens === 'string') trendsLens = state.trendsLens;
   if(typeof state.trendsSort === 'string') trendsSort = state.trendsSort;
@@ -13805,6 +13811,7 @@ function initApp(){
   renderRegioFilter();
   renderProvinceFilter();
   renderOwnerFilter();
+  renderInstSegmentChips();
   renderInstellingen();
   renderLeveranciers();
   bindTabs();
@@ -14942,6 +14949,64 @@ function renderInstFilters(){
   if(stale) stale.remove();
 }
 
+function renderInstSegmentChips(){
+  // Multi-select chip-rij. Toon alleen als er minstens één segment is
+  // toegekend aan een organisatie OR als de dropdown een schema heeft.
+  // Zo verschijnt 'ie pas zodra de feature relevant is en blijft de UI
+  // rustig voor tenants die hier niets mee doen.
+  const wrap = document.getElementById('instSegmentChips');
+  if(!wrap) return;
+  const scoped = instellingenMerged();
+  const counts = {};
+  let zonder = 0;
+  scoped.forEach(i => {
+    const seg = i.klantSegment || '';
+    if(!seg) zonder++;
+    else counts[seg] = (counts[seg]||0) + 1;
+  });
+  const usedSegments = Object.keys(counts);
+  // Schema = dropdown-waardes uit DROPDOWN_REGISTRY + custom overrides.
+  const schemaList = (dropdowns.klantSegment && dropdowns.klantSegment.length > 0)
+    ? dropdowns.klantSegment.slice()
+    : (DROPDOWN_REGISTRY.klantSegment?.defaults || []).slice();
+  // Toon alle schema-waardes (ook count=0) + organisaties zonder segment
+  // (alleen als er minstens één is) + eventuele in-use waardes die niet
+  // in 't schema staan (legacy data).
+  const allValues = Array.from(new Set([
+    ...schemaList,
+    ...usedSegments,
+  ]));
+  if(allValues.length === 0 && zonder === 0){ wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+  const chips = [];
+  // 'Allemaal'-chip — actief als geen filter
+  chips.push(`<button type="button" class="chip${instSegmentSet.size === 0 ? ' active' : ''}" data-seg="__reset__">Alle segmenten (${scoped.length})</button>`);
+  allValues.forEach(seg => {
+    const active = instSegmentSet.has(seg);
+    const c = counts[seg] || 0;
+    chips.push(`<button type="button" class="chip${active ? ' active' : ''}" data-seg="${escAdminAttr(seg)}">${escapeHtml(seg)} (${c})</button>`);
+  });
+  if(zonder > 0){
+    const active = instSegmentSet.has('__none__');
+    chips.push(`<button type="button" class="chip${active ? ' active' : ''}" data-seg="__none__">Geen segment (${zonder})</button>`);
+  }
+  wrap.innerHTML = chips.join('');
+  if(!wrap.dataset.bound){
+    wrap.dataset.bound = '1';
+    wrap.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-seg]');
+      if(!btn) return;
+      const v = btn.dataset.seg;
+      if(v === '__reset__'){ instSegmentSet.clear(); }
+      else if(instSegmentSet.has(v)){ instSegmentSet.delete(v); }
+      else { instSegmentSet.add(v); }
+      renderInstSegmentChips();
+      renderInstellingen();
+      saveUiState();
+    });
+  }
+}
+
 function renderProvinceFilter(){
   const provCounts = {};
   instellingenMerged().forEach(i => { const p = i.provincie || '—'; provCounts[p] = (provCounts[p] || 0) + 1; });
@@ -15101,6 +15166,13 @@ function renderInstellingen(){
   if(instOwner !== 'all'){
     if(instOwner === 'unassigned') instellingen = instellingen.filter(i => !ownerForInst(i.id));
     else instellingen = instellingen.filter(i => ownerForInst(i.id) === instOwner);
+  }
+  if(instSegmentSet.size > 0){
+    instellingen = instellingen.filter(i => {
+      const seg = i.klantSegment || '';
+      if(!seg) return instSegmentSet.has('__none__');
+      return instSegmentSet.has(seg);
+    });
   }
   if(searchQuery){
     const q = searchQuery.toLowerCase();
@@ -15401,6 +15473,7 @@ function renderSpecSection(i){
 const DROPDOWN_REGISTRY = {
   regio:           { label: 'Regio',                 legacyOnly: true,  defaults: ['Noord','Oost','Midden','West','Zuid','Landelijk'] },
   gericallStatus:  { label: 'Lead-status',           defaults: ['klant','prospect','lead','cold'], labelMap: {} },
+  klantSegment:    { label: 'Klant-segment',         defaults: ['Strategisch','Standaard','Long-tail'] },
   anwModelKort:    { label: 'ANW-model (kort)',      legacyOnly: true,  defaults: ['eigen','samen','extern','onbekend'] },
   grootte:         { label: 'Grootte',               legacyOnly: true,  defaults: ['g','k'], labelMap: { g: 'Groot (>=500 bedden)', k: 'Klein/middelgroot' } },
   ecdLeverancier:  { label: 'ECD-leveranciers',      legacyOnly: true,  defaults: ['Nedap ONS','PinkRoccade Ysis','Gerimedica Ysis','Mextra','ChipSoft','Onbekend'] },
@@ -15971,6 +16044,10 @@ function renderGericallContextBody(i){
       <div>
         <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Status</div>
         ${ieDropdown(i.id, 'gericallStatus', 'gericallStatus', i.gericallStatus)}
+      </div>
+      <div>
+        <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Klant-segment</div>
+        ${ieDropdown(i.id, 'klantSegment', 'klantSegment', i.klantSegment)}
       </div>
       <div>
         <div style="font-size:.78rem;color:var(--grey-600);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Status-notitie</div>
@@ -19946,6 +20023,7 @@ function bindEditFormHandlers(i){
     renderProvinceFilter();
     renderRegioFilter();
     renderInstFilters();
+    renderInstSegmentChips();
     renderKpiRow();
   });
   const resetBtn = document.getElementById('editResetBtn-' + i.id);
