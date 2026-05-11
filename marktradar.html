@@ -1417,6 +1417,8 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
     <div class="edit-field full"><label>Beslisser-rollen (komma-gescheiden, max 12)</label><input type="text" id="tenant-dm-roles" placeholder="bv. CEO, directeur, bestuurder, COO, CFO, CTO" style="width:100%;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem"><div style="font-size:.72rem;color:var(--grey-600);margin-top:4px">Wordt gebruikt door de "Beslissers zoeken via LinkedIn"-knop in het klantbeeld. Leeg laten voor de standaardlijst (CEO, directeur, bestuurder, COO, CFO, CTO, algemeen directeur, managing director).</div></div>
     </div>
     <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+    <button class="btn-secondary" id="tenantExportPdfBtn" type="button" style="font-size:.78rem;padding:6px 12px">&#128196; PDF</button>
+    <button class="btn-secondary" id="tenantExportWordBtn" type="button" style="font-size:.78rem;padding:6px 12px">&#128221; Word</button>
     <button class="btn-primary" id="tenantSaveBtn">Opslaan</button>
     </div>
     <div id="tenantResult" style="font-size:.82rem"></div>
@@ -1656,6 +1658,8 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
         <textarea id="salesPlan-mijlpalen" style="width:100%;min-height:90px;padding:10px;border:1px solid var(--grey-200);border-radius:6px;font:inherit;font-size:.86rem" placeholder="- Q1: ...&#10;- Q2: ..."></textarea>
       </div>
       <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn-secondary" id="salesPlanExportPdfBtn" type="button" style="font-size:.78rem;padding:6px 12px">&#128196; PDF</button>
+        <button class="btn-secondary" id="salesPlanExportWordBtn" type="button" style="font-size:.78rem;padding:6px 12px">&#128221; Word</button>
         <button class="btn-primary" id="salesPlanSaveBtn">SalesPlan opslaan</button>
       </div>
       <div id="salesPlanResult" style="margin-top:8px;font-size:.82rem"></div>
@@ -2028,7 +2032,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.23.0",
+    "version": "1.23.1",
     "codename": "Sirius",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -17862,6 +17866,121 @@ function bindOppTargetsPane(){
   if(save) save.addEventListener('click', onOppTargetsSave);
 }
 
+// ---------------- Document-export (PDF + Word) ----------------
+// Generieke helpers gebruikt door Identiteit & propositie, SalesPlan en
+// Accountplan. PDF: print-window met A4 styles → user kiest "Bewaar als
+// PDF" in de print-dialog (geen extra dependency). Word: HTML-blob met
+// application/msword MIME-type → Word/Pages opent het als gewoon
+// document. Beide verbruiken dezelfde sections-shape: [{label, text}].
+function _exportDocBodyHtml(title, sections, meta){
+  const metaHtml = meta ? `<p style="color:#666;font-size:10pt;margin:4px 0 16pt">${escapeHtml(meta)}</p>` : '';
+  const body = sections.map(s => `
+    <h2 style="font-size:13pt;color:#333;margin-top:18pt;margin-bottom:6pt;border-bottom:1px solid #ccc;padding-bottom:4pt;page-break-after:avoid">${escapeHtml(s.label)}</h2>
+    <div style="white-space:pre-wrap;font-size:11pt;line-height:1.55;margin-bottom:6pt">${escapeHtml(s.text || '(leeg)')}</div>`).join('');
+  return `<h1 style="font-size:18pt;color:#222;margin:0 0 4pt">${escapeHtml(title)}</h1>${metaHtml}${body}`;
+}
+function _safeFilename(s){
+  return String(s || 'export')
+    .replace(/[^a-z0-9\-_]+/gi, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80) || 'export';
+}
+function downloadAsWord(filename, title, sections, meta){
+  const inner = _exportDocBodyHtml(title, sections, meta);
+  const docHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${escapeHtml(title)}</title></head>
+<body style="font-family:Calibri,Arial,sans-serif;color:#222;padding:24pt">${inner}</body></html>`;
+  const blob = new Blob(['﻿', docHtml], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = _safeFilename(filename) + '.doc';
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+}
+function downloadAsPdf(title, sections, meta){
+  const inner = _exportDocBodyHtml(title, sections, meta);
+  const w = window.open('', '_blank');
+  if(!w){
+    alert('Pop-ups blokkeren PDF-export. Sta pop-ups toe voor deze site, of gebruik de Word-knop.');
+    return;
+  }
+  w.document.write(`<!DOCTYPE html><html lang="nl"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  body { font-family:'Helvetica Neue',Arial,sans-serif; color:#222; margin:0; padding:0 }
+  h1, h2 { page-break-after: avoid }
+  @media screen { body { max-width: 720px; margin: 24px auto; padding: 0 24px } }
+</style>
+</head><body>${inner}</body></html>`);
+  w.document.close();
+  // Wacht tot fonts/layout klaar zijn voor we print triggeren.
+  setTimeout(() => { try { w.focus(); w.print(); } catch(e){} }, 300);
+}
+
+// Concrete export-handlers voor de 3 plekken die het gebruiken. Lezen
+// uit de DOM-velden (niet uit currentTenant) zodat ongesaved wijzigingen
+// óók in de export terechtkomen — anders is de download misleidend.
+function exportTenantIdentity(format){
+  const naam = (document.getElementById('tenant-naam')?.value || '').trim() || 'Werkomgeving';
+  const propositie = (document.getElementById('tenant-propositie')?.value || '').trim();
+  const marktNaam = (document.getElementById('tenant-markt-naam')?.value || '').trim();
+  const marktBeschrijving = (document.getElementById('tenant-markt-beschrijving')?.value || '').trim();
+  const dmRoles = (document.getElementById('tenant-dm-roles')?.value || '').trim();
+  const sections = [
+    { label: 'Propositie', text: propositie },
+    { label: 'Markt-naam', text: marktNaam },
+    { label: 'Markt-beschrijving', text: marktBeschrijving },
+    { label: 'Beslisser-rollen', text: dmRoles || '(standaard: CEO, directeur, bestuurder, COO, CFO, CTO, algemeen directeur, managing director)' },
+  ];
+  const title = naam + ' — Identiteit & propositie';
+  const meta = 'Geëxporteerd ' + new Date().toLocaleString('nl-NL');
+  const file = 'identiteit-' + _safeFilename(naam) + '-' + new Date().toISOString().slice(0,10);
+  if(format === 'pdf') downloadAsPdf(title, sections, meta);
+  else downloadAsWord(file, title, sections, meta);
+}
+function exportSalesPlan(format){
+  const tenantNaam = (currentTenant && currentTenant.naam) || 'Werkomgeving';
+  const sec = (id) => (document.getElementById('salesPlan-' + id)?.value || '').trim();
+  const sections = [
+    { label: '1. Doelstellingen', text: sec('doelstellingen') },
+    { label: '2. Marktbenadering', text: sec('marktbenadering') },
+    { label: '3. Speerpunten', text: sec('speerpunten') },
+    { label: '4. Mijlpalen', text: sec('mijlpalen') },
+  ];
+  const title = tenantNaam + ' — SalesPlan';
+  const sp = tenantSalesPlan();
+  const meta = (sp && sp.updatedAt
+    ? ('Laatst opgeslagen ' + new Date(sp.updatedAt).toLocaleString('nl-NL') + ' · ')
+    : '') + 'Geëxporteerd ' + new Date().toLocaleString('nl-NL');
+  const file = 'salesplan-' + _safeFilename(tenantNaam) + '-' + new Date().toISOString().slice(0,10);
+  if(format === 'pdf') downloadAsPdf(title, sections, meta);
+  else downloadAsWord(file, title, sections, meta);
+}
+function exportAccountPlan(instId, format){
+  const inst = getInstellingRaw(instId);
+  const accountNaam = (inst && inst.naam) || instId;
+  const sec = (k) => (document.getElementById('apSec-' + instId + '-' + k)?.value || '').trim();
+  const sections = [
+    { label: '1. Strategische context', text: sec('strategischeContext') },
+    { label: '2. Stakeholders & koopcriteria', text: sec('stakeholdersKoopcriteria') },
+    { label: '3. Aanpak (propositie + tactiek)', text: sec('aanpak') },
+    { label: '4. Volgende stappen', text: sec('volgendeStappen') },
+  ];
+  const plan = getAccountPlan(instId);
+  const ownerId = ownerForInst(instId);
+  const ownerNaam = ownerId ? (ownerById(ownerId)?.naam || '') : '';
+  const tenantNaam = (currentTenant && currentTenant.naam) || '';
+  const metaParts = [];
+  if(tenantNaam) metaParts.push(tenantNaam);
+  if(ownerNaam) metaParts.push('eigenaar ' + ownerNaam);
+  if(plan && plan.generatedAt) metaParts.push('plan gegenereerd ' + new Date(plan.generatedAt).toLocaleString('nl-NL'));
+  metaParts.push('geëxporteerd ' + new Date().toLocaleString('nl-NL'));
+  const title = accountNaam + ' — Accountplan';
+  const file = 'accountplan-' + _safeFilename(accountNaam) + '-' + new Date().toISOString().slice(0,10);
+  if(format === 'pdf') downloadAsPdf(title, sections, metaParts.join(' · '));
+  else downloadAsWord(file, title, sections, metaParts.join(' · '));
+}
+
 // ---------------- SalesPlan ----------------
 // Vier vaste secties (doelstellingen / marktbenadering / speerpunten /
 // mijlpalen) met optioneel AI-concept-generator + voorbeeld-templates.
@@ -17988,6 +18107,10 @@ function bindSalesPlanPane(){
   if(save) save.addEventListener('click', onSalesPlanSave);
   const ai = document.getElementById('salesPlanAiBtn');
   if(ai) ai.addEventListener('click', onSalesPlanAiDraft);
+  const pdf = document.getElementById('salesPlanExportPdfBtn');
+  if(pdf) pdf.addEventListener('click', () => exportSalesPlan('pdf'));
+  const word = document.getElementById('salesPlanExportWordBtn');
+  if(word) word.addEventListener('click', () => exportSalesPlan('word'));
   const tpl = document.getElementById('salesPlanTemplateSel');
   if(tpl) tpl.addEventListener('change', () => {
     onSalesPlanTemplate(tpl.value);
@@ -18813,6 +18936,10 @@ function bindAdminModal(){
   if(addBtn) addBtn.addEventListener('click', onUserAdd);
   const tenantSaveBtn = document.getElementById('tenantSaveBtn');
   if(tenantSaveBtn) tenantSaveBtn.addEventListener('click', onTenantSave);
+  const tenantPdfBtn = document.getElementById('tenantExportPdfBtn');
+  if(tenantPdfBtn) tenantPdfBtn.addEventListener('click', () => exportTenantIdentity('pdf'));
+  const tenantWordBtn = document.getElementById('tenantExportWordBtn');
+  if(tenantWordBtn) tenantWordBtn.addEventListener('click', () => exportTenantIdentity('word'));
   const tenantObBtn = document.getElementById('tenantOnboardingBtn');
   if(tenantObBtn) tenantObBtn.addEventListener('click', () => openOnboarding());
   const feedAddBtn = document.getElementById('feedAddBtn');
@@ -20029,6 +20156,8 @@ function renderAccountPlanBodyHtml(instId){
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
       <button type="button" class="btn-secondary" id="apGenBtn-${escapeHtml(instId)}" data-ap-gen="${escapeHtml(instId)}" style="font-size:.78rem;padding:6px 12px">${plan ? '↻ Hergenereren (AI)' : '⚡ Genereer accountplan (AI)'}</button>
       ${plan ? `<button type="button" class="btn-secondary" id="apDelBtn-${escapeHtml(instId)}" data-ap-del="${escapeHtml(instId)}" style="font-size:.74rem;padding:4px 10px;color:#9c2f2f;border-color:#f3d2d2">Verwijder plan</button>` : ''}
+      <button type="button" class="btn-secondary" data-ap-pdf="${escapeHtml(instId)}" style="font-size:.74rem;padding:4px 10px">&#128196; PDF</button>
+      <button type="button" class="btn-secondary" data-ap-word="${escapeHtml(instId)}" style="font-size:.74rem;padding:4px 10px">&#128221; Word</button>
       <span style="margin-left:auto;font-size:.72rem;color:${stale ? '#9c2f2f' : 'var(--grey-600)'}">
         ${plan ? (stale ? `⚠ Stale · gegenereerd ${escapeHtml(genFmt)}` : `Gegenereerd ${escapeHtml(genFmt)}`) : 'Nog geen plan'}
       </span>
@@ -20060,6 +20189,8 @@ function bindAccountPlanAccordion(instId){
   if(save) save.addEventListener('click', () => onAccountPlanSaveTexts(instId));
   const create = document.getElementById('apCreateTodosBtn-' + instId);
   if(create) create.addEventListener('click', () => onAccountPlanCreateTodos(instId));
+  document.querySelectorAll(`[data-ap-pdf="${instId}"]`).forEach(b => b.addEventListener('click', () => exportAccountPlan(instId, 'pdf')));
+  document.querySelectorAll(`[data-ap-word="${instId}"]`).forEach(b => b.addEventListener('click', () => exportAccountPlan(instId, 'word')));
   document.querySelectorAll('.ap-todo-dismiss[data-inst-id="' + instId + '"]').forEach(btn => {
     btn.addEventListener('click', () => onAccountPlanDismissSuggestion(instId, parseInt(btn.dataset.idx, 10)));
   });
