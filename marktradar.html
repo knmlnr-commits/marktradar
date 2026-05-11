@@ -1675,6 +1675,20 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       </div>
       <div id="csvImportResult" style="margin-top:10px;font-size:.82rem"></div>
     </div>
+
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--grey-200)">
+      <h4 style="font-size:.86rem;color:var(--grey-900);margin-bottom:6px">GeriForce-klantdata importeren</h4>
+      <p style="font-size:.78rem;color:var(--grey-700);margin-bottom:10px">
+        Upload een CSV-export uit GeriForce (klantnaam + bedden + optioneel locatie/adres). Bestaande organisaties met dezelfde naam worden geüpdatet met aantalBedden en klant-status; onbekende namen worden als nieuwe organisaties toegevoegd. Veiliger dan de generieke CSV-importer omdat namen fuzzy-gematcht worden (case-insensitive, accent-blind).
+      </p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn-secondary" id="geriforceImportBtn">Importeer GeriForce CSV&hellip;</button>
+        <input type="file" id="geriforceImportFile" accept=".csv,text/csv" style="display:none">
+        <a href="#" id="geriforceTemplateBtn" style="font-size:.74rem;color:var(--orange-dark);text-decoration:none">Download voorbeeld-CSV</a>
+        <span style="font-size:.74rem;color:var(--grey-600);margin-left:auto">Herkende kolomnamen: klantnaam/naam/organisatie · bedden/aantalBedden/capacity · plaats/locatie/adres/hoofdvestiging · provincie</span>
+      </div>
+      <div id="geriforceImportResult" style="margin-top:10px;font-size:.82rem"></div>
+    </div>
     </div>
     </details>
 
@@ -2239,7 +2253,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.30.0",
+    "version": "1.31.0",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -2682,6 +2696,10 @@ const DATA = {
       {
         "version": "1.30.0", "codename": "Tarazed", "date": "2026-05-11",
         "note": "Kaart-tab met gekleurde markers per organisatie (Jeff comment #1). (1) Nieuwe top-level tab 'Kaart' tussen Markt-trends en Leveranciers. Leaflet via CDN, lazy-geladen bij eerste tab-bezoek (geen impact op initial bundle voor gebruikers die de kaart niet gebruiken). OpenStreetMap-tiles. (2) Marker-kleuren: groen = klant, oranje = prospect/lead, rood = organisatie met verloren opportunity, grijs = cold/overig. Markers zijn klikbaar — popup toont naam, status, klant-segment, business-lines, en een 'Open klantbeeld'-link. (3) Geocoding-strategie: eerst inst.lat/lng (als gezet), dan tenant-state geocode-cache (key = hoofdvestiging+provincie), dan provincie-centroïde als fallback met deterministische jitter (~10 km) zodat orgs in dezelfde provincie niet stapelen. (4) 'Geocode adressen'-knop fetcht ontbrekende coords via OpenStreetMap Nominatim API (rate-limited 1 req/sec per ToS), cached in tenant-state KV onder 'geocode-cache' (whitelisted in api/state.js). Geen externe API-keys nodig. (5) Niet gekoppeld aan GeriForce — dat wacht op CSV-export of API-spec (Jeff comment #3)."
+      },
+      {
+        "version": "1.31.0", "codename": "Tarazed", "date": "2026-05-11",
+        "note": "GeriForce-CSV-importer in Beheer > Data & sync > 'GeriForce-klantdata importeren' (Jeff comment #3). Accepteert losse column-namen via aliassen — klantnaam/naam/organisatie/customer/huis voor de naam-kolom; bedden/aantalBedden/beds/capaciteit voor de bedden-kolom; plaats/locatie/adres/stad voor de vestigingsplaats; provincie/province. Fuzzy-match op naam (case-insensitive + accent-blind + substring-fallback). (1) Matches: bestaande organisatie krijgt override aantalBedden + gericallStatus='klant' + hoofdvestiging (als CSV die heeft). (2) Onbekende namen: aangemaakt als nieuwe entiteit met klant=true. (3) Preview-dialog vóór commit met aantallen + eerste 10 namen per categorie. (4) 'Download voorbeeld-CSV' om de juiste header-volgorde te zien (klantnaam,aantalBedden,plaats,provincie). Bron-stempel 'geriforceImported' timestamp op elke geïmporteerde organisatie zodat we later kunnen filteren op door-GeriForce-gepopuleerde data."
       }
     ],
     "totalInstellingen": 64,
@@ -19543,6 +19561,29 @@ function bindSchemaPane(){
       }
     });
   }
+  const gfBtn = document.getElementById('geriforceImportBtn');
+  const gfFile = document.getElementById('geriforceImportFile');
+  const gfTpl = document.getElementById('geriforceTemplateBtn');
+  if(gfBtn && gfFile){
+    gfBtn.addEventListener('click', () => gfFile.click());
+    gfFile.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const text = await file.text();
+      e.target.value = '';
+      try { await applyGeriforceCsvImport(text); }
+      catch(err){
+        const out = document.getElementById('geriforceImportResult');
+        if(out) out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(err.message || String(err)) + '</span>';
+      }
+    });
+  }
+  if(gfTpl){
+    gfTpl.addEventListener('click', (e) => {
+      e.preventDefault();
+      downloadGeriforceTemplate();
+    });
+  }
 }
 
 // CSV-template + import voor bulk-load van organisaties met de tenant-
@@ -19760,6 +19801,148 @@ async function applyEntiteitenCsvImport(text){
 
   const summary = `<strong style="color:var(--green)">Import gelukt.</strong> ${added} nieuw, ${updated} bijgewerkt, ${Object.keys(cfPerInst).length} met schema-velden gevuld.`;
   if(out) out.innerHTML = summary + (errors.length ? '<br><span style="color:var(--amber-dark);font-size:.78rem">Waarschuwingen: ' + escapeHtml(errors.slice(0, 3).join(' · ')) + (errors.length > 3 ? ' (+' + (errors.length - 3) + ' meer)' : '') + '</span>' : '');
+}
+
+/* ============== GeriForce-CSV-importer ============== */
+// Specialer dan de generieke entiteiten-importer: accepteert losse
+// column-namen (klantnaam/bedden/locatie/...), fuzzy-matcht op naam,
+// markeert matches als klant + zet aantalBedden via overrides. Nieuwe
+// namen worden als nieuwe entiteit aangemaakt met klant=true.
+const GERIFORCE_NAAM_ALIASES = ['klantnaam','klant','naam','organisatie','organisation','organization','name','customer','customername','huis','huisnaam','instelling'];
+const GERIFORCE_BEDDEN_ALIASES = ['bedden','aantalbedden','beds','capacity','capaciteit','plaatsen','locaties'];
+const GERIFORCE_LOCATIE_ALIASES = ['hoofdvestiging','plaats','locatie','stad','city','adres','address','vestigingsplaats'];
+const GERIFORCE_PROV_ALIASES = ['provincie','province','region'];
+function _gfNormalize(s){
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function _gfFindCol(headers, aliases){
+  const norm = headers.map(h => _gfNormalize(h));
+  for(const a of aliases){
+    const i = norm.indexOf(a);
+    if(i >= 0) return i;
+  }
+  // Substring fallback
+  for(const a of aliases){
+    const i = norm.findIndex(h => h.includes(a));
+    if(i >= 0) return i;
+  }
+  return -1;
+}
+function downloadGeriforceTemplate(){
+  const lines = [
+    'klantnaam,aantalBedden,plaats,provincie',
+    'Cordaan,3500,Amsterdam,Noord-Holland',
+    'Zonnehuisgroep IJssel-Vecht,1200,Zwolle,Overijssel',
+    'Nieuw klant BV,450,Utrecht,Utrecht',
+  ];
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'geriforce-import-voorbeeld.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+async function applyGeriforceCsvImport(text){
+  const out = document.getElementById('geriforceImportResult');
+  const rows = _parseCsv(text);
+  if(rows.length < 2) throw new Error('CSV is leeg of bevat alleen header-rij.');
+  const headers = rows[0].map(h => h.trim());
+  const idxNaam = _gfFindCol(headers, GERIFORCE_NAAM_ALIASES);
+  const idxBedden = _gfFindCol(headers, GERIFORCE_BEDDEN_ALIASES);
+  const idxLoc = _gfFindCol(headers, GERIFORCE_LOCATIE_ALIASES);
+  const idxProv = _gfFindCol(headers, GERIFORCE_PROV_ALIASES);
+  if(idxNaam < 0) throw new Error('Geen klant-naam kolom gevonden. Verwacht een van: ' + GERIFORCE_NAAM_ALIASES.join(', '));
+  if(idxBedden < 0 && idxLoc < 0) throw new Error('Geen bedden- of locatie-kolom gevonden. Voeg minstens \'aantalBedden\' of \'plaats\' toe.');
+  const dataRows = rows.slice(1).filter(r => r.some(c => String(c || '').trim() !== ''));
+  if(dataRows.length === 0) throw new Error('Geen data-rijen gevonden.');
+
+  const existingEnts = Array.isArray(currentTenant?.entiteiten) ? currentTenant.entiteiten.slice() : [];
+  const byNormName = new Map();
+  existingEnts.forEach(e => byNormName.set(_gfNormalize(e.naam || ''), e));
+
+  const plan = { matched: [], nieuw: [], skipped: [] };
+  for(const row of dataRows){
+    const naam = (row[idxNaam] || '').trim();
+    if(!naam){ plan.skipped.push('(lege naam-rij)'); continue; }
+    const bedden = idxBedden >= 0 ? parseInt((row[idxBedden] || '').replace(/[^0-9]/g, ''), 10) : null;
+    const loc = idxLoc >= 0 ? (row[idxLoc] || '').trim() : '';
+    const prov = idxProv >= 0 ? (row[idxProv] || '').trim() : '';
+    const norm = _gfNormalize(naam);
+    const match = byNormName.get(norm);
+    if(match){
+      plan.matched.push({ id: match.id, naam: match.naam, csvNaam: naam, bedden, loc, prov });
+    } else {
+      // Fuzzy: substring contains (one direction or other) op normalized.
+      let fuzzy = null;
+      for(const [k, ent] of byNormName.entries()){
+        if(k.length > 4 && norm.length > 4 && (k.includes(norm) || norm.includes(k))){ fuzzy = ent; break; }
+      }
+      if(fuzzy){
+        plan.matched.push({ id: fuzzy.id, naam: fuzzy.naam, csvNaam: naam, bedden, loc, prov, fuzzy: true });
+      } else {
+        plan.nieuw.push({ naam, bedden, loc, prov });
+      }
+    }
+  }
+
+  // Preview-prompt
+  const fuzzyCount = plan.matched.filter(m => m.fuzzy).length;
+  const msg = `GeriForce-import voorstel:\n\n• ${plan.matched.length} gematcht op bestaande organisatie${fuzzyCount > 0 ? ' (waarvan ' + fuzzyCount + ' via fuzzy-match)' : ''}\n• ${plan.nieuw.length} nieuwe organisatie${plan.nieuw.length === 1 ? '' : 's'} toevoegen\n• ${plan.skipped.length} overgeslagen\n\nGematcht (status → klant, bedden geupdatet):\n${plan.matched.slice(0, 10).map(m => '  - ' + m.naam + (m.bedden ? ' (' + m.bedden + ' bedden)' : '') + (m.fuzzy ? ' [fuzzy]' : '')).join('\n')}${plan.matched.length > 10 ? '\n  ... en ' + (plan.matched.length - 10) + ' meer' : ''}\n\nNieuw aanmaken:\n${plan.nieuw.slice(0, 10).map(n => '  - ' + n.naam + (n.bedden ? ' (' + n.bedden + ' bedden)' : '')).join('\n')}${plan.nieuw.length > 10 ? '\n  ... en ' + (plan.nieuw.length - 10) + ' meer' : ''}\n\nDoorvoeren?`;
+  if(!confirm(msg)){
+    if(out) out.innerHTML = '<span style="color:var(--grey-600)">Import geannuleerd.</span>';
+    return;
+  }
+
+  // Nieuwe entiteiten appenden via set-entiteiten
+  const newEnts = plan.nieuw.map(n => ({
+    id: '', // server slugifies
+    naam: n.naam, hoofdvestiging: n.loc || null,
+    provincie: n.prov || null, klant: true, notes: null,
+  }));
+  if(newEnts.length > 0){
+    const merged = existingEnts.concat(newEnts);
+    const r = await apiFetch('/api/tenant?action=set-entiteiten', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ entiteiten: merged }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok) throw new Error(j.error || 'set-entiteiten mislukte');
+    if(j.tenant) currentTenant = j.tenant;
+  }
+
+  // Map nieuwe namen naar hun nieuwe id voor overrides.
+  const finalById = new Map((currentTenant?.entiteiten || []).map(e => [_gfNormalize(e.naam || ''), e.id]));
+  const idForName = (naam) => finalById.get(_gfNormalize(naam));
+
+  // Overrides: matches + nieuwe → status klant + bedden + locatie.
+  const patch = { ...overrides };
+  const apply = (id, bedden, loc, prov) => {
+    if(!id) return;
+    const cur = patch[id] || {};
+    const next = { ...cur };
+    if(bedden && bedden > 0) next.aantalBedden = bedden;
+    if(loc) next.hoofdvestiging = loc;
+    if(prov) next.provincie = prov;
+    next.gericallStatus = 'klant';
+    // Tag tenant-isolation: bron-stempel zodat we later kunnen filteren
+    // op 'door GeriForce-import gepopuleerde organisaties'.
+    next.geriforceImported = Date.now();
+    patch[id] = next;
+  };
+  plan.matched.forEach(m => apply(m.id, m.bedden, m.loc, m.prov));
+  plan.nieuw.forEach(n => apply(idForName(n.naam), n.bedden, n.loc, n.prov));
+
+  overrides = patch;
+  saveOverridesLocal();
+  await pushRemoteOverrides();
+
+  // Re-render Organisaties + KPI.
+  try { if(typeof renderInstellingen === 'function') renderInstellingen(); } catch(e){}
+  try { if(typeof renderKpiRow === 'function') renderKpiRow(); } catch(e){}
+  try { if(typeof renderInstFilters === 'function') renderInstFilters(); } catch(e){}
+
+  if(out) out.innerHTML = `<strong style="color:var(--green)">GeriForce-import gelukt.</strong> ${plan.matched.length} gematcht (waarvan ${fuzzyCount} fuzzy) · ${plan.nieuw.length} nieuw aangemaakt · ${plan.skipped.length} overgeslagen. Open Organisaties of Markt-trends om de nieuwe bedden-aantallen te zien.`;
 }
 
 // Voorbeeld-templates die de tenant-admin met één klik in de schema-
