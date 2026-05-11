@@ -88,6 +88,9 @@ async function ensureUniqueSlug(base, ownTenantId) {
   if (ownTenantId !== auth.LEGACY_TENANT_ID && /^gericall(-|$)/.test(cleaned)) {
     return null;
   }
+  // 'admin' is een gereserveerde route (/app/admin) — geen tenant mag
+  // 'm claimen, want dat zou conflicteren met de admin-pane.
+  if (cleaned === 'admin') return null;
   let candidate = cleaned;
   for (let i = 0; i < 50; i++) {
     const existing = await auth.kvGet(auth.tenantSlugKey(candidate));

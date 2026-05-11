@@ -75,6 +75,14 @@ async function listAllUsers(res) {
   return res.status(200).json({ users: out });
 }
 
+async function listAuditLog(req, res) {
+  const limit = Math.min(Math.max(parseInt((req.query && req.query.limit) || '200', 10) || 200, 1), 500);
+  const list = (await lib.kvGet(lib.KV_AUDIT_LOG)) || [];
+  // Newest-first; respecteer limit.
+  const sorted = list.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, limit);
+  return res.status(200).json({ events: sorted, total: list.length, cap: lib.AUDIT_LOG_MAX });
+}
+
 async function createTenantAction(req, res, session) {
   const body = await authMod.readJsonBody(req);
   const tenantNaam = String(body.tenantNaam || '').trim();
@@ -120,6 +128,10 @@ async function createTenantAction(req, res, session) {
   await lib.kvSet(lib.KV_USER_PREFIX + adminEmail, user);
   await authMod.appendGlobalUserIndex(adminEmail);
   await authMod.appendTenantUserIndex(tenantId, adminEmail);
+  await lib.appendAuditEvent({
+    actor: session.email, action: 'tenant.create', target: tenantId, targetType: 'tenant',
+    meta: { naam: tenantNaam, slug: tenant.slug, adminEmail },
+  });
   return res.status(200).json({
     tenant: authMod.publicTenant(tenant),
     user: authMod.publicUser(user),
@@ -153,13 +165,17 @@ async function addUserToTenantAction(req, res, session) {
   await lib.kvSet(lib.KV_USER_PREFIX + email, user);
   await authMod.appendGlobalUserIndex(email);
   await authMod.appendTenantUserIndex(tenantId, email);
+  await lib.appendAuditEvent({
+    actor: session.email, action: 'user.create', target: email, targetType: 'user',
+    meta: { tenantId, role, naam },
+  });
   return res.status(200).json({
     user: authMod.publicUser(user),
     tempPassword: tempGenerated ? password : null,
   });
 }
 
-async function resetUserPasswordAction(req, res) {
+async function resetUserPasswordAction(req, res, session) {
   const body = await authMod.readJsonBody(req);
   const email = String(body.email || '').trim().toLowerCase();
   let password = String(body.password || '');
@@ -174,6 +190,10 @@ async function resetUserPasswordAction(req, res) {
   user.mustChangePassword = tempGenerated;
   user.updatedAt = Date.now();
   await lib.kvSet(lib.KV_USER_PREFIX + email, user);
+  await lib.appendAuditEvent({
+    actor: session.email, action: 'user.reset-password', target: email, targetType: 'user',
+    meta: { tempGenerated },
+  });
   return res.status(200).json({
     user: authMod.publicUser(user),
     tempPassword: tempGenerated ? password : null,
@@ -190,10 +210,14 @@ async function removeUserAction(req, res, session) {
   await lib.kvDel(lib.KV_USER_PREFIX + email);
   await authMod.removeGlobalUserIndex(email);
   if (user.tenantId) await authMod.removeTenantUserIndex(user.tenantId, email);
+  await lib.appendAuditEvent({
+    actor: session.email, action: 'user.delete', target: email, targetType: 'user',
+    meta: { tenantId: user.tenantId || null },
+  });
   return res.status(200).json({ ok: true });
 }
 
-async function transferTenantAction(req, res) {
+async function transferTenantAction(req, res, session) {
   const body = await authMod.readJsonBody(req);
   const tenantId = String(body.tenantId || '').trim();
   const newOwnerEmail = String(body.newOwnerEmail || '').trim().toLowerCase();
@@ -206,9 +230,14 @@ async function transferTenantAction(req, res) {
   if (owner.tenantId !== tenantId) {
     return res.status(400).json({ error: 'Nieuwe eigenaar moet al lid zijn van deze werkomgeving' });
   }
+  const previousOwner = tenant.createdBy || null;
   tenant.createdBy = newOwnerEmail;
   tenant.updatedAt = Date.now();
   await lib.kvSet(lib.tenantMetaKey(tenantId), tenant);
+  await lib.appendAuditEvent({
+    actor: session.email, action: 'tenant.transfer', target: tenantId, targetType: 'tenant',
+    meta: { from: previousOwner, to: newOwnerEmail },
+  });
   return res.status(200).json({ tenant: authMod.publicTenant(tenant) });
 }
 
@@ -253,6 +282,10 @@ async function deleteTenantAction(req, res, session) {
   const ids = await authMod.getTenantsIndex();
   const remaining = ids.filter((id) => id !== tenantId);
   await lib.kvSet(lib.KV_TENANTS_INDEX, remaining);
+  await lib.appendAuditEvent({
+    actor: session.email, action: 'tenant.delete', target: tenantId, targetType: 'tenant',
+    meta: { naam: tenant.naam || tenantId, removedUsers: userEmails.length },
+  });
   return res.status(200).json({ ok: true, removedUsers: userEmails.length, removedBy: session.email });
 }
 
@@ -336,13 +369,16 @@ module.exports = async function handler(req, res) {
       return addUserToTenantAction(req, res, session);
     }
     if (action === 'reset-password' && req.method === 'POST') {
-      return resetUserPasswordAction(req, res);
+      return resetUserPasswordAction(req, res, session);
     }
     if (action === 'remove-user' && req.method === 'POST') {
       return removeUserAction(req, res, session);
     }
     if (action === 'transfer-tenant' && req.method === 'POST') {
-      return transferTenantAction(req, res);
+      return transferTenantAction(req, res, session);
+    }
+    if (action === 'list-audit-log' && (req.method === 'GET' || req.method === 'POST')) {
+      return listAuditLog(req, res);
     }
     if (action === 'delete-tenant' && req.method === 'POST') {
       return deleteTenantAction(req, res, session);

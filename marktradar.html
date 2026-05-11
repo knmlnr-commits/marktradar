@@ -2006,7 +2006,7 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
   <nav class="admin-tabs">
     <button class="admin-tab" data-admin-tab="tenants">Werkomgevingen <span class="admin-tab-count" id="adminTabCountTenants">0</span></button>
     <button class="admin-tab" data-admin-tab="users">Gebruikers <span class="admin-tab-count" id="adminTabCountUsers">0</span></button>
-    <button class="admin-tab" data-admin-tab="requests">Aanvragen <span class="admin-tab-count" id="adminTabCountRequests">0</span></button>
+    <button class="admin-tab" data-admin-tab="audit">Audit-log <span class="admin-tab-count" id="adminTabCountAudit">0</span></button>
   </nav>
   <main class="admin-main">
     <section class="admin-pane" id="adminPane-tenants">
@@ -2023,20 +2023,13 @@ select.inline-edit-input{padding:6px 28px 6px 8px;cursor:pointer}
       </div>
       <div id="adminUsersList" class="admin-list"></div>
     </section>
-    <section class="admin-pane" id="adminPane-requests">
+    <section class="admin-pane" id="adminPane-audit">
       <div class="admin-toolbar">
-        <h2>Aanvragen</h2>
-        <div style="display:flex;gap:6px;align-items:center">
-          <select id="adminRequestFilter" style="padding:6px 10px;border:1px solid var(--grey-300);border-radius:6px;font:inherit;font-size:.82rem">
-            <option value="">Alle aanvragen</option>
-            <option value="workspace">Werkomgeving</option>
-            <option value="demo">Demo</option>
-          </select>
-          <button class="btn-secondary" id="adminRequestsRefresh">Verversen</button>
-        </div>
+        <h2>Audit-log</h2>
+        <button class="btn-secondary" id="adminAuditRefresh">Verversen</button>
       </div>
-      <p style="font-size:.78rem;color:var(--grey-700);margin:0 0 12px">Aanvragen via de publieke landing-page (<code>/#workspace</code> en <code>/#demo</code>). Markeer ze als 'bezig' of 'klaar' zodra je ze hebt afgehandeld, of verwijder ze.</p>
-      <div id="adminRequestsList" class="admin-list"></div>
+      <p style="font-size:.78rem;color:var(--grey-700);margin:0 0 12px">Append-only log van admin-acties (laatste 500 events). Toont wie wat heeft gedaan en wanneer.</p>
+      <div id="adminAuditList" class="admin-list"></div>
     </section>
     <div id="adminFeedback" class="admin-feedback"></div>
   </main>
@@ -2155,7 +2148,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.25.4",
+    "version": "1.26.0",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -11802,7 +11795,9 @@ function tenantUrl(slug){ return '/app/' + (slug || ''); }
 function redirectToOwnTenantIfNeeded(){
   // Als de URL een slug heeft die niet matcht met de ingelogde tenant,
   // stuur de browser door naar /app/<eigen-slug> zodat de URL altijd
-  // de werkomgeving reflecteert.
+  // de werkomgeving reflecteert. /app/admin is uitgezonderd: de admin-
+  // route hoort niet bij een tenant en moet blijven staan.
+  if(IS_ADMIN_ROUTE) return false;
   if(!currentTenant || !currentTenant.slug) return false;
   if(URL_SLUG && URL_SLUG !== currentTenant.slug){
     location.replace(tenantUrl(currentTenant.slug));
@@ -11828,20 +11823,27 @@ function isInMarket(instId){
   if(!MARKET_DEFINED || !MARKET_SET) return true;
   return MARKET_SET.has(String(instId));
 }
-// Universe = "alles wat deze tenant volgt". Voor tenants met eigen
-// entiteiten: gebruik die. Voor GeriCall (en andere tenants zonder eigen
-// entiteiten): val terug op de baseline DATA.instellingen.
+// Universe = "alles wat deze tenant volgt". Alleen de legacy GeriCall-
+// tenant (slug/id 'gericall') valt terug op de hardcoded baseline-
+// instellingen (DATA.instellingen) — voor elke andere tenant is een
+// lege entiteiten[] een lege omgeving en moet de gebruiker zelf zijn
+// eigen organisaties toevoegen via Beheer.
+function isLegacyTenant(){
+  return !!(currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall'));
+}
 function tenantHasOwnEntities(){
   return !!(currentTenant && Array.isArray(currentTenant.entiteiten) && currentTenant.entiteiten.length > 0);
 }
 function getEntiteitenUniverse(){
-  if(!tenantHasOwnEntities()) return DATA.instellingen;
+  if(!tenantHasOwnEntities()){
+    return isLegacyTenant() ? DATA.instellingen : [];
+  }
   // Voor GeriCall: de tenant.entiteiten[] is een lichte seed (id, naam,
   // regio, klant-flag) — voor opportunities/scoring/dmu hebben we de
   // rijke DATA.instellingen-data nodig. Match op id en gebruik baseline
   // als bron. tenant.klanten[] kan klant-status overschrijven.
   const klantSet = new Set((currentTenant.klanten || []).map(String));
-  const isLegacy = currentTenant.slug === 'gericall' || currentTenant.id === 'gericall';
+  const isLegacy = isLegacyTenant();
   const baselineMap = isLegacy ? new Map(DATA.instellingen.map(i => [String(i.id), i])) : null;
   return currentTenant.entiteiten.map(e => {
     const baseline = baselineMap ? baselineMap.get(String(e.id)) : null;
@@ -11899,8 +11901,8 @@ function getMarketSignalen(){
   // meer als signaal-baseline-keuze. Detecteer GeriCall op slug/id en
   // hou de hardcoded DATA.signalen als baseline; andere tenants vullen
   // hun signalen volledig via /api/signals/list (cron).
-  const isLegacy = currentTenant && (currentTenant.slug === 'gericall' || currentTenant.id === 'gericall');
-  const base = !isLegacy && tenantHasOwnEntities() ? [] : (Array.isArray(DATA.signalen) ? DATA.signalen : []);
+  const isLegacy = isLegacyTenant();
+  const base = isLegacy ? (Array.isArray(DATA.signalen) ? DATA.signalen : []) : [];
   const combined = [];
   const seenIds = new Set();
   const seenUrls = new Set();
@@ -12102,7 +12104,7 @@ function forgetAuth(){
   try { localStorage.removeItem(AUTH_KEY); } catch(e){}
 }
 // ================ Admin-app (/app/admin) ================
-let _adminState = { tab: 'tenants', tenants: [], users: [], requests: [] };
+let _adminState = { tab: 'tenants', tenants: [], users: [], audit: [] };
 function adminFeedback(kind, msg){
   const el = document.getElementById('adminFeedback');
   if(!el) return;
@@ -12135,10 +12137,8 @@ function initAdminApp(){
   if(ctSubmit) ctSubmit.addEventListener('click', onAdminCreateTenant);
   const auSubmit = document.getElementById('admAuSubmit');
   if(auSubmit) auSubmit.addEventListener('click', onAdminAddUser);
-  const reqFilter = document.getElementById('adminRequestFilter');
-  if(reqFilter) reqFilter.addEventListener('change', () => refreshAdminRequests());
-  const reqRefresh = document.getElementById('adminRequestsRefresh');
-  if(reqRefresh) reqRefresh.addEventListener('click', () => refreshAdminRequests());
+  const auditRefresh = document.getElementById('adminAuditRefresh');
+  if(auditRefresh) auditRefresh.addEventListener('click', () => refreshAdminAudit());
   activateAdminTab(_adminState.tab);
   refreshAdminAll();
 }
@@ -12175,7 +12175,7 @@ function closeAdminModal(id){
   if(m) m.classList.remove('show');
 }
 async function refreshAdminAll(){
-  await Promise.all([refreshAdminTenants(), refreshAdminUsers(), refreshAdminRequests()]);
+  await Promise.all([refreshAdminTenants(), refreshAdminUsers(), refreshAdminAudit()]);
 }
 async function refreshAdminTenants(){
   try {
@@ -12199,22 +12199,15 @@ async function refreshAdminUsers(){
     adminFeedback('err', 'Users ophalen mislukt: ' + err.message);
   }
 }
-async function refreshAdminRequests(){
+async function refreshAdminAudit(){
   try {
-    const filter = (document.getElementById('adminRequestFilter')?.value || '').trim();
-    const path = filter ? ('list-requests&type=' + encodeURIComponent(filter)) : 'list-requests';
-    const j = await adminApi(path);
-    _adminState.requests = Array.isArray(j.requests) ? j.requests : [];
-    renderAdminRequests();
-    const cnt = document.getElementById('adminTabCountRequests');
-    if(cnt){
-      // Tel alleen niet-afgehandelde aanvragen ('nieuw') voor de badge —
-      // dat is wat een admin direct moet zien.
-      const nieuw = _adminState.requests.filter(r => (r.status || 'nieuw') === 'nieuw').length;
-      cnt.textContent = nieuw;
-    }
+    const j = await adminApi('list-audit-log&limit=200');
+    _adminState.audit = Array.isArray(j.events) ? j.events : [];
+    renderAdminAudit();
+    const cnt = document.getElementById('adminTabCountAudit');
+    if(cnt) cnt.textContent = _adminState.audit.length;
   } catch(err){
-    adminFeedback('err', 'Aanvragen ophalen mislukt: ' + err.message);
+    adminFeedback('err', 'Audit-log ophalen mislukt: ' + err.message);
   }
 }
 function _fmtDate(ts){
@@ -12296,100 +12289,44 @@ function _fmtDateTime(ts){
   if(!ts) return '—';
   return new Date(ts).toLocaleString('nl-NL', {day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'});
 }
-function renderAdminRequests(){
-  const wrap = document.getElementById('adminRequestsList');
+function renderAdminAudit(){
+  const wrap = document.getElementById('adminAuditList');
   if(!wrap) return;
-  const rs = _adminState.requests || [];
-  if(rs.length === 0){
-    wrap.innerHTML = '<div class="no-data" style="padding:24px;text-align:center;color:var(--grey-600)">Nog geen aanvragen binnengekomen.</div>';
+  const evs = _adminState.audit || [];
+  if(evs.length === 0){
+    wrap.innerHTML = '<div class="no-data" style="padding:24px;text-align:center;color:var(--grey-600)">Nog geen events gelogd.</div>';
     return;
   }
-  wrap.innerHTML = rs.map(r => {
-    const isWs = r.type === 'workspace';
-    const typeLabel = isWs ? 'Werkomgeving' : 'Demo';
-    const typeColor = isWs ? 'background:var(--orange-pale);color:var(--orange-dark)' : 'background:var(--grey-100);color:var(--grey-700)';
-    const status = r.status || 'nieuw';
-    const statusColors = {
-      nieuw: 'background:#fff7e6;color:#a85a00;border:1px solid #f0c98a',
-      bezig: 'background:#e6f1ff;color:#1e58a8;border:1px solid #b4cef0',
-      klaar: 'background:#e6f7ec;color:#2a7a3f;border:1px solid #b8ddc1',
-      afgewezen: 'background:#fdebec;color:#9c2f2f;border:1px solid #f3d2d2',
-    };
-    const wsExtra = isWs && (r.werkomgevingNaam || r.marktNaam)
-      ? `<div class="admin-row-sub">${r.werkomgevingNaam ? 'Werkomgeving: <strong>' + escapeHtml(r.werkomgevingNaam) + '</strong>' : ''}${r.werkomgevingNaam && r.marktNaam ? ' &middot; ' : ''}${r.marktNaam ? 'Markt: <strong>' + escapeHtml(r.marktNaam) + '</strong>' : ''}</div>`
-      : '';
-    const berichtBlock = r.bericht
-      ? `<div class="admin-row-sub" style="white-space:pre-wrap;background:var(--white);padding:8px 10px;border:1px solid var(--grey-200);border-radius:6px;margin-top:6px">${escapeHtml(r.bericht)}</div>`
-      : '';
-    const handled = (r.status && r.status !== 'nieuw' && r.handledAt)
-      ? ` &middot; ${escapeHtml(status)} door ${escapeHtml(r.handledBy || '?')} op ${escapeHtml(_fmtDateTime(r.handledAt))}`
-      : '';
+  const actionLabels = {
+    'tenant.create': 'Werkomgeving aangemaakt',
+    'tenant.delete': 'Werkomgeving verwijderd',
+    'tenant.transfer': 'Werkomgeving overgedragen',
+    'user.create': 'Gebruiker toegevoegd',
+    'user.delete': 'Gebruiker verwijderd',
+    'user.reset-password': 'Wachtwoord gereset',
+  };
+  wrap.innerHTML = evs.map(e => {
+    const label = actionLabels[e.action] || e.action;
+    const metaBits = [];
+    if(e.targetType && e.target) metaBits.push(`<code>${escapeHtml(e.targetType)}: ${escapeHtml(e.target)}</code>`);
+    if(e.meta && typeof e.meta === 'object'){
+      Object.entries(e.meta).forEach(([k, v]) => {
+        if(v == null || v === '') return;
+        metaBits.push(`${escapeHtml(k)}=<strong>${escapeHtml(String(v))}</strong>`);
+      });
+    }
     return `
-      <div class="admin-row" data-request="${escAdminAttr(r.id)}">
+      <div class="admin-row">
         <div class="admin-row-head">
-          <span class="admin-row-naam">${escapeHtml(r.naam || r.email)}</span>
-          <span class="admin-row-pill" style="${typeColor}">${typeLabel}</span>
-          <span class="admin-row-pill" style="${statusColors[status] || ''}">${escapeHtml(status)}</span>
+          <span class="admin-row-naam">${escapeHtml(label)}</span>
           <span class="admin-row-meta">
-            <span>${escapeHtml(r.organisatie || '')}</span>
-            <span>${escapeHtml(_fmtDateTime(r.createdAt))}</span>
+            <span>${escapeHtml(e.actor || '?')}</span>
+            <span>${escapeHtml(_fmtDateTime(e.ts))}</span>
           </span>
         </div>
-        <div class="admin-row-sub"><a href="mailto:${escAdminAttr(r.email)}" style="color:var(--orange-dark)">${escapeHtml(r.email)}</a>${r.telefoon ? ' &middot; ' + escapeHtml(r.telefoon) : ''}${r.rol ? ' &middot; ' + escapeHtml(r.rol) : ''}${handled}</div>
-        ${wsExtra}
-        ${berichtBlock}
-        <div class="admin-row-actions">
-          <button class="btn-secondary" data-adm-req-status="${escAdminAttr(r.id)}" data-status="bezig"${status === 'bezig' ? ' disabled' : ''}>Markeer bezig</button>
-          <button class="btn-secondary" data-adm-req-status="${escAdminAttr(r.id)}" data-status="klaar"${status === 'klaar' ? ' disabled' : ''}>Markeer klaar</button>
-          <button class="btn-secondary" data-adm-req-status="${escAdminAttr(r.id)}" data-status="afgewezen"${status === 'afgewezen' ? ' disabled' : ''}>Afwijzen</button>
-          ${isWs ? `<button class="btn-secondary" data-adm-req-create="${escAdminAttr(r.id)}">Werkomgeving aanmaken &rarr;</button>` : ''}
-          <button class="btn-secondary" data-adm-req-delete="${escAdminAttr(r.id)}" style="color:#9c2f2f;border-color:#f3d2d2">Verwijder</button>
-        </div>
+        ${metaBits.length ? `<div class="admin-row-sub">${metaBits.join(' &middot; ')}</div>` : ''}
       </div>`;
   }).join('');
-  wrap.querySelectorAll('[data-adm-req-status]').forEach(b => b.addEventListener('click', () => onAdminRequestStatus(b.dataset.admReqStatus, b.dataset.status)));
-  wrap.querySelectorAll('[data-adm-req-create]').forEach(b => b.addEventListener('click', () => onAdminRequestCreateTenant(b.dataset.admReqCreate)));
-  wrap.querySelectorAll('[data-adm-req-delete]').forEach(b => b.addEventListener('click', () => onAdminRequestDelete(b.dataset.admReqDelete)));
-}
-async function onAdminRequestStatus(id, status){
-  try {
-    await adminApi('update-request', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status })
-    });
-    adminFeedback('ok', 'Status bijgewerkt.');
-    await refreshAdminRequests();
-  } catch(err){
-    adminFeedback('err', 'Status bijwerken mislukt: ' + err.message);
-  }
-}
-async function onAdminRequestDelete(id){
-  if(!confirm('Aanvraag definitief verwijderen?')) return;
-  try {
-    await adminApi('delete-request', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id })
-    });
-    adminFeedback('ok', 'Aanvraag verwijderd.');
-    await refreshAdminRequests();
-  } catch(err){
-    adminFeedback('err', 'Verwijderen mislukt: ' + err.message);
-  }
-}
-function onAdminRequestCreateTenant(id){
-  // Open de bestaande "create tenant"-modal met velden voorgevuld vanuit
-  // de aanvraag — admin checkt + bevestigt, geen handmatig overtypen.
-  const r = (_adminState.requests || []).find(x => x.id === id);
-  if(!r) return;
-  openAdminModal('adminCreateTenantModal');
-  const fill = (elId, val) => { const e = document.getElementById(elId); if(e) e.value = val || ''; };
-  fill('admCt-naam', r.werkomgevingNaam || r.organisatie || '');
-  fill('admCt-adminNaam', r.naam || '');
-  fill('admCt-adminEmail', r.email || '');
-  // Markeer de aanvraag als 'bezig' zodat 'm uit de badge verdwijnt.
-  if((r.status || 'nieuw') === 'nieuw'){
-    onAdminRequestStatus(id, 'bezig').catch(() => {});
-  }
 }
 async function onAdminCreateTenant(){
   const out = document.getElementById('admCtResult');
@@ -12627,8 +12564,10 @@ document.getElementById('gate-form-auth').addEventListener('submit', async (e) =
     if((mode === 'bootstrap' || mode === 'register') && currentUser){
       try { await ensureOwnerInList({ id: currentUser.id, naam: currentUser.naam, email: currentUser.email }); } catch(e){}
     }
-    // Stuur naar /app/<eigen-slug> als URL nog generiek of mismatched is
-    if(currentTenant && currentTenant.slug && URL_SLUG !== currentTenant.slug){
+    // Stuur naar /app/<eigen-slug> als URL nog generiek of mismatched is.
+    // Uitzondering: /app/admin is een gereserveerde admin-route — daar
+    // blijven we, openApp() schakelt dan door naar de admin-pane.
+    if(!IS_ADMIN_ROUTE && currentTenant && currentTenant.slug && URL_SLUG !== currentTenant.slug){
       location.replace(tenantUrl(currentTenant.slug));
       return;
     }

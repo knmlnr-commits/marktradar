@@ -18,6 +18,8 @@ const KV_SESSION_PREFIX = 'marktradar:session:';
 const KV_USERS_INDEX = 'marktradar:users:index';
 const KV_TENANTS_INDEX = 'marktradar:tenants:index';
 const KV_TENANT_SLUG_PREFIX = 'marktradar:tenant-slug:';
+const KV_AUDIT_LOG = 'marktradar:audit-log';
+const AUDIT_LOG_MAX = 500;
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const SESSION_TTL_SEC = 30 * 24 * 60 * 60;
 
@@ -291,6 +293,31 @@ function isAdminEmail(email) {
   return ADMIN_EMAILS.includes(String(email).toLowerCase().trim());
 }
 
+// Audit-log append. Rolling-buffer (laatste AUDIT_LOG_MAX events). Best-
+// effort: failures worden gelogd maar laten de oorspronkelijke actie
+// niet falen — een audit-log-fout mag een tenant-delete niet blokkeren.
+async function appendAuditEvent(event) {
+  if (!kvConfigured()) return;
+  try {
+    const entry = {
+      ts: Date.now(),
+      actor: String((event && event.actor) || '').toLowerCase(),
+      action: String((event && event.action) || ''),
+      target: event && event.target ? String(event.target) : null,
+      targetType: event && event.targetType ? String(event.targetType) : null,
+      meta: event && event.meta && typeof event.meta === 'object' ? event.meta : null,
+    };
+    const list = (await kvGet(KV_AUDIT_LOG)) || [];
+    list.push(entry);
+    // Capped: hou de laatste AUDIT_LOG_MAX events.
+    const trimmed = list.length > AUDIT_LOG_MAX ? list.slice(list.length - AUDIT_LOG_MAX) : list;
+    await kvSet(KV_AUDIT_LOG, trimmed);
+  } catch (e) {
+    // Bewust slikken — een falende audit-log mag niet doorwerken in
+    // de calling action.
+  }
+}
+
 module.exports = {
   ADMIN_EMAILS,
   isAdminEmail,
@@ -299,6 +326,9 @@ module.exports = {
   KV_USERS_INDEX,
   KV_TENANTS_INDEX,
   KV_TENANT_SLUG_PREFIX,
+  KV_AUDIT_LOG,
+  AUDIT_LOG_MAX,
+  appendAuditEvent,
   SESSION_TTL_MS,
   SESSION_TTL_SEC,
   LEGACY_TENANT_ID,
