@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GeriCall · MarktRadar</title>
+<title>MarktRadar</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -2253,7 +2253,7 @@ const DATA = {
       "Zorgvisie",
       "ICTHealth"
     ],
-    "version": "1.31.2",
+    "version": "1.31.3",
     "codename": "Tarazed",
     "promptVersion": "1.15.0",
     "releaseHistory": [
@@ -2708,6 +2708,10 @@ const DATA = {
       {
         "version": "1.31.2", "codename": "Tarazed", "date": "2026-05-11",
         "note": "Admin > Gebruikers sorteert nu op laatste inlog descending (recentste activiteit bovenaan) i.p.v. alfabetisch op e-mail. Users die nog nooit hebben ingelogd vallen terug op aangemaakt-datum descending zodat ze niet onderaan blijven hangen ondanks recent te zijn toegevoegd. Per-tenant Beheer > Gebruikers sorteerde al zo sinds v1.17.3."
+      },
+      {
+        "version": "1.31.3", "codename": "Tarazed", "date": "2026-05-11",
+        "note": "Browser-tab-titel niet meer hardcoded 'GeriCall'. (1) Statische <title> in HTML van 'GeriCall · MarktRadar' naar 'MarktRadar' — initial paint voor non-GeriCall tenants toont nu de juiste naam. (2) Dynamische document.title bij version-pill-render is tenant-aware: '<tenantNaam> · MarktRadar · v… <codename>' zodat browser-tab + history-entries de werkomgeving reflecteren; valt terug op alleen 'MarktRadar · v…' als tenant nog niet geladen is (bv. admin-route)."
       }
     ],
     "totalInstellingen": 64,
@@ -14801,7 +14805,10 @@ function renderVersion(){
   if(cnEl) cnEl.textContent = cn;
   const gateEl = document.getElementById('gate-version');
   if(gateEl) gateEl.textContent = 'Client-side · v' + v + ' · ' + cn;
-  document.title = 'GeriCall · MarktRadar v' + v + ' ' + cn;
+  // Tenant-aware; valt terug op alleen 'MarktRadar' als tenant nog
+  // niet is geladen of voor de admin-route.
+  const tnaam = (typeof currentTenant !== 'undefined' && currentTenant && currentTenant.naam) ? currentTenant.naam : null;
+  document.title = (tnaam ? tnaam + ' · ' : '') + 'MarktRadar · v' + v + ' ' + cn;
 }
 
 function renderVersionHistory(){
